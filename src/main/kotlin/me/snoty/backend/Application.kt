@@ -6,15 +6,15 @@ import io.ktor.server.netty.*
 import me.snoty.backend.server.plugins.*
 
 fun main() {
-    embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
-        .start(wait=true)
+	embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
+		.start(wait = true)
 }
 
 fun Application.module() {
-    configureMonitoring()
-    configureHTTP()
-    configureSecurity()
-    configureSerialization()
-    configureDatabases()
-    configureRouting()
+	configureMonitoring()
+	configureHTTP()
+	configureSecurity()
+	configureSerialization()
+	configureDatabases()
+	configureRouting()
 }
