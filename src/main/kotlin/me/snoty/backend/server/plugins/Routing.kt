@@ -1,35 +1,41 @@
 package me.snoty.backend.server.plugins
 
-import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.doublereceive.*
 import io.ktor.server.plugins.statuspages.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import io.ktor.server.webjars.*
+import me.snoty.backend.config.Config
+import me.snoty.backend.server.handler.*
+import me.snoty.backend.server.resources.aboutResource
+import me.snoty.backend.utils.getKoinInstance
+import me.snoty.backend.utils.ifDev
+import me.snoty.backend.utils.otherwise
+import me.snoty.backend.utils.respondStatus
 
 fun Application.configureRouting() {
-	install(Webjars) {
-		path = "/webjars" //defaults to /webjars
-	}
+	val config = getKoinInstance<Config>()
 	install(StatusPages) {
+		// catch manually created exceptions
+		// the casts to IHttpStatusException are necessary because of a bug in kotlinx.serialization
+		// that causes "no serializer found" exceptions when trying to serialize the concrete instance
+		exception<HttpStatusException> { call, cause ->
+			call.respondStatus(cause as IHttpStatusException)
+		}
+		// catch-all for exceptions
 		exception<Throwable> { call, cause ->
-			call.respondText(text = "500: $cause", status = HttpStatusCode.InternalServerError)
+			val message = config ifDev { cause.message ?: cause.javaClass.simpleName } otherwise { UNKNOWN_ERROR }
+			call.respondStatus(InternalServerErrorException(message))
+		}
+		// catch-all for unhandled calls
+		unhandled { call ->
+			call.respondStatus(NotFoundException())
 		}
 	}
+
 	install(DoubleReceive)
-	routing {
-		get("/") {
-			call.respondText("Hello World!")
-		}
-		get("/webjars") {
-			call.respondText("<script src='/webjars/jquery/jquery.js'></script>", ContentType.Text.Html)
-		}
-		post("/double-receive") {
-			val first = call.receiveText()
-			val theSame = call.receiveText()
-			call.respondText(first + " " + theSame)
-		}
-	}
+
+	configureResources()
+}
+
+private fun Application.configureResources() {
+	aboutResource()
 }

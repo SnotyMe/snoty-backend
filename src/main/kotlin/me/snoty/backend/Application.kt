@@ -1,20 +1,27 @@
 package me.snoty.backend
 
-import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import me.snoty.backend.server.plugins.*
+import me.snoty.backend.build.BuildInfo
+import me.snoty.backend.config.Config
+import me.snoty.backend.config.ConfigLoader
+import me.snoty.backend.config.ConfigLoaderImpl
+import me.snoty.backend.server.KtorServer
+import me.snoty.backend.utils.getKoinInstance
+import org.koin.core.context.startKoin
+import org.koin.dsl.module
+import org.koin.logger.slf4jLogger
 
 fun main() {
-	embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
-		.start(wait = true)
-}
+	val appModule = module {
+		single<ConfigLoader> { ConfigLoaderImpl() }
+		single<Config> { getKoinInstance<ConfigLoader>().loadConfig() }
+		single<BuildInfo> { getKoinInstance<ConfigLoader>().loadBuildInfo() }
+	}
 
-fun Application.module() {
-	configureMonitoring()
-	configureHTTP()
-	configureSecurity()
-	configureSerialization()
-	configureDatabases()
-	configureRouting()
+	startKoin {
+		modules(appModule)
+		slf4jLogger()
+
+		KtorServer()
+			.start(wait = true)
+	}
 }

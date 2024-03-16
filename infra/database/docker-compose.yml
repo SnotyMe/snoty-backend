@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    user: ${UID:-1000}:${GID:-1000}
+    restart: unless-stopped
+    env_file:
+      - path: .env.default
+        required: true
+      # overrides the .env file
+      - path: .env
+        required: false
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    ports:
+      - ${POSTGRES_PORT:-5432}:5432
