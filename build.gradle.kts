@@ -1,5 +1,9 @@
 import io.github.simulatan.gradle.plugin.buildinfo.configuration.BuildInfoExtension
 import io.github.simulatan.gradle.plugin.buildinfo.configuration.PropertiesOutputLocation
+import org.jetbrains.gradle.ext.Application
+import org.jetbrains.gradle.ext.GradleTask
+import org.jetbrains.gradle.ext.runConfigurations
+import org.jetbrains.gradle.ext.settings
 
 val ktor_version: String by project
 val kotlin_version: String by project
@@ -22,6 +26,8 @@ plugins {
     application
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.23"
     id("io.github.simulatan.gradle-buildinfo-plugin") version "2.1.0"
+
+    id("org.jetbrains.gradle.plugin.idea-ext") version "1.1.8"
 }
 
 group = "me.snoty"
@@ -118,4 +124,67 @@ tasks.withType(JavaExec::class) {
 
 tasks.jar {
     from("build/info")
+}
+
+/**
+ * This task downloads all dependencies (with transitive dependencies) and puts them into the
+ * libraries folder. Used instead of shadowJar to hopefully optimize build times. Run the
+ * application jar with the downloaded library files in the classpath.
+ */
+tasks.register("downloadDependencies") {
+    description = "Downloads all dependencies and puts them into the libraries folder."
+    group = "build"
+
+    doLast {
+        logger.lifecycle("Downloading dependencies...")
+        val dependencies =
+            configurations["runtimeClasspath"].resolvedConfiguration.resolvedArtifacts
+        val librariesFolder = File("build/libraries")
+        librariesFolder.mkdirs()
+        dependencies.forEach { artifact ->
+            logger.lifecycle("Downloading ${artifact.file.name}...")
+            val file = artifact.file
+            val targetFile = File(librariesFolder, file.name)
+            if (!targetFile.exists()) {
+                file.copyTo(targetFile)
+            }
+        }
+
+        logger.lifecycle("Done downloading dependencies.")
+    }
+}
+
+// intellij setup
+idea {
+    module {
+        // long import times but worth it as, without it, functions may not have proper documentation
+        isDownloadJavadoc = true
+        isDownloadSources = true
+        // add the output of the buildinfo plugin to the classpath
+        resourceDirs.plusAssign(file("build/info"))
+    }
+
+    project {
+        settings {
+            runConfigurations {
+                // this run configuration emulates the `run` task, but without gradle
+                // this *should* give better hot swap and performance
+                create("Application [dev]", Application::class.java).apply {
+                    mainClass = "me.snoty.backend.ApplicationKt"
+                    moduleName = "snoty-backend.main"
+                    jvmArgs = "-Dio.ktor.development=true"
+                    beforeRun {
+                        create("createBuildInfo", GradleTask::class.java).apply {
+                            task = tasks.buildInfo.get()
+                        }
+                    }
+
+                    envs = mutableMapOf(
+                        "LOG_LEVEL" to "TRACE",
+                        "SERVER_LOG_LEVEL" to "INFO"
+                    )
+                }
+            }
+        }
+    }
 }

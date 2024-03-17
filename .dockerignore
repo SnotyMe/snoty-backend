@@ -1,0 +1,8 @@
+*
+
+!build.gradle.kts
+!settings.gradle.kts
+!gradle.properties
+!src/main
+# needed for the buildinfo plugin to read git data
+!.git
