@@ -49,8 +49,6 @@ object HttpStatusExceptionSerializer : KSerializer<IHttpStatusException> {
 	}
 }
 
-const val UNKNOWN_ERROR = "Unknown error"
-
 // 4xx
 class BadRequestException(message: String) : HttpStatusException(HttpStatusCode.BadRequest, message)
 class UnauthorizedException(message: String) : HttpStatusException(HttpStatusCode.Unauthorized, message)

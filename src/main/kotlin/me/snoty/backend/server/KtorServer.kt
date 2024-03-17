@@ -3,14 +3,12 @@ package me.snoty.backend.server
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import me.snoty.backend.build.BuildInfo
 import me.snoty.backend.config.Config
 import me.snoty.backend.server.plugins.*
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import org.slf4j.LoggerFactory
 
-class KtorServer : KoinComponent {
-	private val config by inject<Config>()
+class KtorServer(val config: Config, val buildInfo: BuildInfo) {
 	private val logger = LoggerFactory.getLogger(KtorServer::class.java)
 
 	fun start(wait: Boolean) {
@@ -36,6 +34,7 @@ class KtorServer : KoinComponent {
 		configureSecurity()
 		configureSerialization()
 		configureDatabases(config.database.value)
-		configureRouting()
+		configureRouting(config)
+		addResources(buildInfo)
 	}
 }

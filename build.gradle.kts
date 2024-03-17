@@ -43,12 +43,6 @@ repositories {
 }
 
 dependencies {
-    // dependency injection
-    implementation(platform("io.insert-koin:koin-bom:$koin_version"))
-    implementation("io.insert-koin:koin-core")
-    implementation("io.insert-koin:koin-ktor")
-    implementation("io.insert-koin:koin-logger-slf4j")
-
     // configuration
     implementation("com.sksamuel.hoplite:hoplite-core:$hoplite_version")
     implementation("com.sksamuel.hoplite:hoplite-yaml:$hoplite_version")
@@ -99,8 +93,6 @@ dependencies {
     testImplementation("io.mockk:mockk:${mockk_version}")
     testImplementation("org.assertj:assertj-core:${assertj_version}")
     testImplementation("org.json:json:${json_version}")
-    testImplementation("io.insert-koin:koin-test")
-    testImplementation("io.insert-koin:koin-test-junit5")
 }
 
 buildInfo {

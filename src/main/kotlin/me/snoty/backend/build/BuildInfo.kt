@@ -1,6 +1,7 @@
 package me.snoty.backend.build
 
 import com.sksamuel.hoplite.ConfigAlias
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
@@ -18,4 +19,13 @@ data class BuildInfo(
 	val version: String,
 	@ConfigAlias("Application")
 	val application: String
+)
+
+val DevBuildInfo = BuildInfo(
+	gitBranch = "dev",
+	gitCommit = "dev",
+	gitCommitDate = Clock.System.now(),
+	buildDate = Clock.System.now(),
+	version = "dev",
+	application = "dev"
 )

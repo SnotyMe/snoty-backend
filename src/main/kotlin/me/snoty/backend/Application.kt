@@ -1,27 +1,27 @@
 package me.snoty.backend
 
-import me.snoty.backend.build.BuildInfo
-import me.snoty.backend.config.Config
-import me.snoty.backend.config.ConfigLoader
+import me.snoty.backend.build.DevBuildInfo
 import me.snoty.backend.config.ConfigLoaderImpl
 import me.snoty.backend.server.KtorServer
-import me.snoty.backend.utils.getKoinInstance
-import org.koin.core.context.startKoin
-import org.koin.dsl.module
-import org.koin.logger.slf4jLogger
 
 fun main() {
-	val appModule = module {
-		single<ConfigLoader> { ConfigLoaderImpl() }
-		single<Config> { getKoinInstance<ConfigLoader>().loadConfig() }
-		single<BuildInfo> { getKoinInstance<ConfigLoader>().loadBuildInfo() }
+	val configLoader = ConfigLoaderImpl()
+	val config = configLoader.loadConfig()
+
+	val buildInfo = try {
+		configLoader.loadBuildInfo()
+	} catch (e: Exception) {
+		// when ran without gradle, the build info is not available
+		// it'll just default to dev build info in this case
+		if (config.environment.isDev()) {
+			println("Failed to load build info: ${e.message}")
+			DevBuildInfo
+		} else {
+			throw e
+		}
 	}
 
-	startKoin {
-		modules(appModule)
-		slf4jLogger()
 
-		KtorServer()
-			.start(wait = true)
-	}
+	KtorServer(config, buildInfo)
+		.start(wait = true)
 }
