@@ -27,5 +27,5 @@ val DevBuildInfo = BuildInfo(
 	gitCommitDate = Clock.System.now(),
 	buildDate = Clock.System.now(),
 	version = "dev",
-	application = "dev"
+	application = "snoty-backend"
 )

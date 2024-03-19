@@ -1,5 +1,8 @@
 import io.github.simulatan.gradle.plugin.buildinfo.configuration.BuildInfoExtension
 import io.github.simulatan.gradle.plugin.buildinfo.configuration.PropertiesOutputLocation
+import org.jetbrains.gradle.ext.Application
+import org.jetbrains.gradle.ext.runConfigurations
+import org.jetbrains.gradle.ext.settings
 
 val ktor_version: String by project
 val kotlin_version: String by project
@@ -22,6 +25,9 @@ plugins {
     application
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.23"
     id("io.github.simulatan.gradle-buildinfo-plugin") version "2.1.0"
+    id("com.google.cloud.tools.jib") version "3.4.1"
+
+    id("org.jetbrains.gradle.plugin.idea-ext") version "1.1.8"
 }
 
 group = "me.snoty"
@@ -108,14 +114,62 @@ buildInfo {
     extraAttribute("Application", rootProject.name)
 }
 
-tasks.classes.configure {
+tasks.buildInfo {
+    // prevent circular dependency
+    dependsOn.clear()
+}
+
+tasks.processResources {
     dependsOn(tasks.buildInfo)
-}
-
-tasks.withType(JavaExec::class) {
-    this.classpath += files("build/info")
-}
-
-tasks.jar {
     from("build/info")
+}
+
+jib {
+    from {
+        image = "eclipse-temurin:21-jre-alpine"
+    }
+    to {
+        val allTags = project.properties["snoty.docker.tags"]?.toString()?.split(" ")?.toSet()
+            ?: setOf(version.toString())
+        image = "ghcr.io/snotyme/snoty-backend:${allTags.first()}"
+        // workaround for the TERRIBLE design decisions of the JIB developers to
+        // still generate the `latest` tag even when tags are specified...
+        if (allTags.size > 1) {
+            tags = allTags.drop(1).toSet()
+        }
+    }
+    container {
+        jvmFlags = listOf("-Dio.ktor.development=false")
+        creationTime = "USE_CURRENT_TIMESTAMP"
+        appRoot = "/app"
+        workingDirectory = "/app"
+    }
+}
+
+// intellij setup
+idea {
+    module {
+        // long import times but worth it as, without it, functions may not have proper documentation
+        isDownloadJavadoc = true
+        isDownloadSources = true
+    }
+
+    project {
+        settings {
+            runConfigurations {
+                // this run configuration emulates the `run` task, but without gradle
+                // this *should* give better hot swap and performance
+                create("Application [dev]", Application::class.java).apply {
+                    mainClass = "me.snoty.backend.ApplicationKt"
+                    moduleName = "snoty-backend.main"
+                    jvmArgs = "-Dio.ktor.development=true"
+
+                    envs = mutableMapOf(
+                        "LOG_LEVEL" to "TRACE",
+                        "SERVER_LOG_LEVEL" to "INFO"
+                    )
+                }
+            }
+        }
+    }
 }
