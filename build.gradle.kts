@@ -1,7 +1,6 @@
 import io.github.simulatan.gradle.plugin.buildinfo.configuration.BuildInfoExtension
 import io.github.simulatan.gradle.plugin.buildinfo.configuration.PropertiesOutputLocation
 import org.jetbrains.gradle.ext.Application
-import org.jetbrains.gradle.ext.GradleTask
 import org.jetbrains.gradle.ext.runConfigurations
 import org.jetbrains.gradle.ext.settings
 
@@ -26,6 +25,7 @@ plugins {
     application
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.23"
     id("io.github.simulatan.gradle-buildinfo-plugin") version "2.1.0"
+    id("com.google.cloud.tools.jib") version "3.4.1"
 
     id("org.jetbrains.gradle.plugin.idea-ext") version "1.1.8"
 }
@@ -114,43 +114,35 @@ buildInfo {
     extraAttribute("Application", rootProject.name)
 }
 
-tasks.classes.configure {
+tasks.buildInfo {
+    // prevent circular dependency
+    dependsOn.clear()
+}
+
+tasks.processResources {
     dependsOn(tasks.buildInfo)
-}
-
-tasks.withType(JavaExec::class) {
-    this.classpath += files("build/info")
-}
-
-tasks.jar {
     from("build/info")
 }
 
-/**
- * This task downloads all dependencies (with transitive dependencies) and puts them into the
- * libraries folder. Used instead of shadowJar to hopefully optimize build times. Run the
- * application jar with the downloaded library files in the classpath.
- */
-tasks.register("downloadDependencies") {
-    description = "Downloads all dependencies and puts them into the libraries folder."
-    group = "build"
-
-    doLast {
-        logger.lifecycle("Downloading dependencies...")
-        val dependencies =
-            configurations["runtimeClasspath"].resolvedConfiguration.resolvedArtifacts
-        val librariesFolder = File("build/libraries")
-        librariesFolder.mkdirs()
-        dependencies.forEach { artifact ->
-            logger.lifecycle("Downloading ${artifact.file.name}...")
-            val file = artifact.file
-            val targetFile = File(librariesFolder, file.name)
-            if (!targetFile.exists()) {
-                file.copyTo(targetFile)
-            }
+jib {
+    from {
+        image = "eclipse-temurin:21-jre-alpine"
+    }
+    to {
+        val allTags = project.properties["snoty.docker.tags"]?.toString()?.split(" ")?.toSet()
+            ?: setOf(version.toString())
+        image = "ghcr.io/snotyme/snoty-backend:${allTags.first()}"
+        // workaround for the TERRIBLE design decisions of the JIB developers to
+        // still generate the `latest` tag even when tags are specified...
+        if (allTags.size > 1) {
+            tags = allTags.drop(1).toSet()
         }
-
-        logger.lifecycle("Done downloading dependencies.")
+    }
+    container {
+        jvmFlags = listOf("-Dio.ktor.development=false")
+        creationTime = "USE_CURRENT_TIMESTAMP"
+        appRoot = "/app"
+        workingDirectory = "/app"
     }
 }
 
@@ -160,8 +152,6 @@ idea {
         // long import times but worth it as, without it, functions may not have proper documentation
         isDownloadJavadoc = true
         isDownloadSources = true
-        // add the output of the buildinfo plugin to the classpath
-        resourceDirs.plusAssign(file("build/info"))
     }
 
     project {
@@ -173,11 +163,6 @@ idea {
                     mainClass = "me.snoty.backend.ApplicationKt"
                     moduleName = "snoty-backend.main"
                     jvmArgs = "-Dio.ktor.development=true"
-                    beforeRun {
-                        create("createBuildInfo", GradleTask::class.java).apply {
-                            task = tasks.buildInfo.get()
-                        }
-                    }
 
                     envs = mutableMapOf(
                         "LOG_LEVEL" to "TRACE",
