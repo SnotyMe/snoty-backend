@@ -4,30 +4,13 @@ import org.jetbrains.gradle.ext.Application
 import org.jetbrains.gradle.ext.runConfigurations
 import org.jetbrains.gradle.ext.settings
 
-val ktor_version: String by project
-val kotlin_version: String by project
-val logback_version: String by project
-val koin_version: String by project
-val hoplite_version: String by project
-
-val prometeus_version: String by project
-val exposed_version: String by project
-val postgres_version: String by project
-val hikari_version: String by project
-val otl_version: String by project
-
-val mockk_version: String by project
-val assertj_version: String by project
-val json_version: String by project
-
 plugins {
-    kotlin("jvm") version "1.9.23"
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.serialization)
     application
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.23"
-    id("io.github.simulatan.gradle-buildinfo-plugin") version "2.1.0"
-    id("com.google.cloud.tools.jib") version "3.4.1"
-
-    id("org.jetbrains.gradle.plugin.idea-ext") version "1.1.8"
+    alias(libs.plugins.buildinfo)
+    alias(libs.plugins.jib)
+    alias(libs.plugins.idea)
 }
 
 group = "me.snoty"
@@ -50,55 +33,55 @@ repositories {
 
 dependencies {
     // configuration
-    implementation("com.sksamuel.hoplite:hoplite-core:$hoplite_version")
-    implementation("com.sksamuel.hoplite:hoplite-yaml:$hoplite_version")
-    implementation("com.sksamuel.hoplite:hoplite-hikaricp:$hoplite_version")
-    implementation("com.sksamuel.hoplite:hoplite-datetime:$hoplite_version")
+    implementation(configuration.hoplite.core)
+    implementation(configuration.hoplite.yaml)
+    implementation(configuration.hoplite.hikaricp)
+    implementation(configuration.hoplite.datetime)
 
     // ktor
-    implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-netty:$ktor_version")
+    implementation(ktor.server.core)
+    implementation(ktor.server.netty)
 
     // ktor plugins
-    implementation("io.ktor:ktor-server-call-logging-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-call-id-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-swagger-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-openapi:$ktor_version")
-    implementation("io.ktor:ktor-server-forwarded-header-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-default-headers-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-host-common-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-status-pages-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-double-receive-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-auth-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktor_version")
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
+    implementation(ktor.server.call.logging)
+    implementation(ktor.server.call.id)
+    implementation(ktor.server.swagger)
+    implementation(ktor.server.openapi)
+    implementation(ktor.server.forwardedHeader)
+    implementation(ktor.server.forwardedHeader)
+    implementation(ktor.server.defaultHeaders)
+    implementation(ktor.server.hostCommon)
+    implementation(ktor.server.statusPages)
+    implementation(ktor.server.doubleReceive)
+    implementation(ktor.server.auth)
+    implementation(ktor.server.auth.jwt)
+    implementation(ktor.serialization.kotlinx.json)
+    implementation(ktor.server.contentNegotiation)
 
-    // ktor client (OAuth2)
-    implementation("io.ktor:ktor-client-core-jvm:$ktor_version")
-    implementation("io.ktor:ktor-client-apache-jvm:$ktor_version")
+    // ktor client (used for OAuth2)
+    implementation(ktor.client.core)
+    implementation(ktor.client.apache)
 
     // monitoring
-    implementation("io.ktor:ktor-server-metrics-micrometer-jvm:$ktor_version")
-    implementation("io.micrometer:micrometer-registry-prometheus:$prometeus_version")
-    implementation("io.opentelemetry.instrumentation:opentelemetry-ktor-2.0:$otl_version")
-    runtimeOnly("io.opentelemetry.instrumentation:opentelemetry-ktor-common:$otl_version")
+    implementation(monitoring.ktor.opentelemetry)
+    implementation(monitoring.ktor.server.metricsMicrometer)
+    implementation(monitoring.micrometer.prometheus)
 
     // database
-    implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
-    implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
-    implementation("org.postgresql:postgresql:$postgres_version")
-    implementation("com.zaxxer:HikariCP:$hikari_version")
+    implementation(database.exposed.core)
+    implementation(database.exposed.jdbc)
+    implementation(database.postgres.driver)
+    implementation(database.hikaricp)
 
     // logging
-    implementation("ch.qos.logback:logback-classic:$logback_version")
+    implementation(log.logback)
 
     // testing
-    testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
-    testImplementation("io.mockk:mockk:${mockk_version}")
-    testImplementation("org.assertj:assertj-core:${assertj_version}")
-    testImplementation("org.json:json:${json_version}")
+    testImplementation(tests.ktor.server.tests)
+    testImplementation(tests.kotlin.test.junit)
+    testImplementation(tests.mockk)
+    testImplementation(tests.assertj.core)
+    testImplementation(tests.json)
 }
 
 buildInfo {
