@@ -38,6 +38,8 @@ dependencies {
     implementation(configuration.hoplite.hikaricp)
     implementation(configuration.hoplite.datetime)
 
+    implementation(ktor.serialization.kotlinx.json)
+
     // ktor
     implementation(ktor.server.core)
     implementation(ktor.server.netty)
@@ -55,12 +57,12 @@ dependencies {
     implementation(ktor.server.doubleReceive)
     implementation(ktor.server.auth)
     implementation(ktor.server.auth.jwt)
-    implementation(ktor.serialization.kotlinx.json)
     implementation(ktor.server.contentNegotiation)
 
     // ktor client (used for OAuth2)
     implementation(ktor.client.core)
     implementation(ktor.client.apache)
+    implementation(ktor.client.contentNegotiation)
 
     // monitoring
     implementation(monitoring.ktor.opentelemetry)

@@ -98,6 +98,7 @@ dependencyResolutionManagement {
 
 			ktorClientPlugin("core")
 			ktorClientPlugin("apache")
+			ktorClientPlugin("content-negotiation")
 		}
 
 		create("database") {
