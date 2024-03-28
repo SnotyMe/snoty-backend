@@ -3,6 +3,7 @@ package me.snoty.backend.integration.untis.param
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonContentPolymorphicSerializer
 import kotlinx.serialization.json.JsonElement
+import me.snoty.backend.integration.untis.model.UntisDate
 
 
 @Serializable(with = UntisParamSerializer::class)
@@ -25,5 +26,14 @@ data class UserDataParams(
 	val elementId: Int = 0,
 	val deviceOs: String = "AND",
 	val deviceOsVersion: String = "",
+	val auth: UntisAuth
+) : UntisParam()
+
+@Serializable
+data class ExamParams(
+	val id: Int,
+	val type: String,
+	val startDate: UntisDate,
+	val endDate: UntisDate,
 	val auth: UntisAuth
 ) : UntisParam()

@@ -10,12 +10,17 @@ import me.snoty.backend.integration.untis.WebUntisSettings
 import me.snoty.backend.integration.untis.helpers.toUserParams
 import me.snoty.backend.integration.untis.model.UntisDate
 import me.snoty.backend.integration.untis.request.TimetableParams
+import me.snoty.backend.integration.untis.request.getExams
 import me.snoty.backend.integration.untis.request.getTimeTable
 import me.snoty.backend.integration.untis.request.getUserData
 
 fun Route.untisResources(untis: WebUntisAPI = WebUntisAPIImpl()) {
 	post("userInfo") {
 		call.respond(untis.getUserData(call.receive()))
+	}
+
+	post("exams") {
+		call.respond(untis.getExams(call.receive()))
 	}
 
 	post("timeTable") {

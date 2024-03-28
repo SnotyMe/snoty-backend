@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UntisUserData(
 	val displayName: String,
-	@SerialName("elemId") val id: Int
+	@SerialName("elemId") val id: Int,
+	@SerialName("elemType") val type: String
 )

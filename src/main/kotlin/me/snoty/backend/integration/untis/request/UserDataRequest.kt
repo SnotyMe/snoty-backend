@@ -6,7 +6,7 @@ import me.snoty.backend.integration.untis.helpers.toUserParams
 import me.snoty.backend.integration.untis.model.UntisUserData
 import me.snoty.backend.integration.untis.UntisRequest
 
-suspend fun WebUntisAPI.getUserData(userSettings: WebUntisSettings): UserDataResponse {
+suspend fun WebUntisAPI.getUserData(userSettings: WebUntisSettings): UntisUserData {
 	val request = UntisRequest(userSettings) {
 		data = UntisPayload {
 			method = UntisApiConstants.Method.GET_USER_DATA
@@ -14,8 +14,8 @@ suspend fun WebUntisAPI.getUserData(userSettings: WebUntisSettings): UserDataRes
 		}
 	}
 
-	return request<UserDataResponse>(request)
-}
+	@Serializable
+	data class UserDataResponse(val userData: UntisUserData)
 
-@Serializable
-data class UserDataResponse(val userData: UntisUserData)
+	return request<UserDataResponse>(request).userData
+}
