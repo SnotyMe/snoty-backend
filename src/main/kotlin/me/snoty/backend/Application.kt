@@ -3,6 +3,7 @@ package me.snoty.backend
 import me.snoty.backend.build.DevBuildInfo
 import me.snoty.backend.config.ConfigLoaderImpl
 import me.snoty.backend.server.KtorServer
+import me.snoty.backend.spi.DevManager
 
 fun main() {
 	val configLoader = ConfigLoaderImpl()
@@ -21,6 +22,7 @@ fun main() {
 		}
 	}
 
+	DevManager.runDevFunctions()
 
 	KtorServer(config, buildInfo)
 		.start(wait = true)

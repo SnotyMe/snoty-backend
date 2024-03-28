@@ -16,19 +16,21 @@ plugins {
 group = "me.snoty"
 version = "0.0.1"
 
-application {
-    mainClass.set("me.snoty.backend.ApplicationKt")
-
-    val isDevelopment: Boolean = project.ext.has("development")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
-}
-
-tasks.test {
-    jvmArgs("-Dio.ktor.development=true")
-}
+val isDevelopment: Boolean = project.findProperty("me.snoty.development")?.toString().toBoolean()
 
 repositories {
     mavenCentral()
+}
+
+sourceSets {
+    create("dev") {
+        compileClasspath += sourceSets.main.get().output
+        runtimeClasspath += sourceSets.main.get().output
+    }
+}
+
+val devImplementation: Configuration by configurations.getting {
+    extendsFrom(configurations.implementation.get())
 }
 
 dependencies {
@@ -84,6 +86,21 @@ dependencies {
     testImplementation(tests.mockk)
     testImplementation(tests.assertj.core)
     testImplementation(tests.json)
+}
+
+application {
+    mainClass.set("me.snoty.backend.ApplicationKt")
+
+    if (isDevelopment) {
+        applicationDefaultJvmArgs += "-Dio.ktor.development=$isDevelopment"
+        tasks.run.configure {
+            classpath += sourceSets["dev"].output
+        }
+    }
+}
+
+tasks.test {
+    jvmArgs("-Dio.ktor.development=true")
 }
 
 buildInfo {
@@ -146,7 +163,7 @@ idea {
                 // this *should* give better hot swap and performance
                 create("Application [dev]", Application::class.java).apply {
                     mainClass = "me.snoty.backend.ApplicationKt"
-                    moduleName = "snoty-backend.main"
+                    moduleName = "snoty-backend.dev"
                     jvmArgs = "-Dio.ktor.development=true"
 
                     envs = mutableMapOf(
