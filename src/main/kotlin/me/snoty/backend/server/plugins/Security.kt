@@ -1,68 +1,95 @@
 package me.snoty.backend.server.plugins
 
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
+import com.auth0.jwk.UrlJwkProvider
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
 import io.ktor.http.*
+import io.ktor.http.auth.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.server.sessions.*
+import kotlinx.serialization.Serializable
+import me.snoty.backend.config.Config
+import me.snoty.backend.server.handler.UnauthorizedException
+import me.snoty.backend.utils.respondStatus
+import java.net.URI
 
-fun Application.configureSecurity() {
-	authentication {
-		oauth("auth-oauth-google") {
-			urlProvider = { "http://localhost:8080/callback" }
+fun Application.configureSecurity(config: Config) {
+	val authConfig = config.authentication
+	install(Authentication) {
+		oauth("keycloak") {
+			client = HttpClient(Apache)
 			providerLookup = {
 				OAuthServerSettings.OAuth2ServerSettings(
-					name = "google",
-					authorizeUrl = "https://accounts.google.com/o/oauth2/auth",
-					accessTokenUrl = "https://accounts.google.com/o/oauth2/token",
+					name = "keycloak",
+					authorizeUrl = "${authConfig.oidcUrl}/auth",
+					accessTokenUrl = "${authConfig.oidcUrl}/token",
+					clientId = authConfig.clientId,
+					clientSecret = authConfig.clientSecret,
+					accessTokenRequiresBasicAuth = false,
 					requestMethod = HttpMethod.Post,
-					clientId = System.getenv("GOOGLE_CLIENT_ID"),
-					clientSecret = System.getenv("GOOGLE_CLIENT_SECRET"),
-					defaultScopes = listOf("https://www.googleapis.com/auth/userinfo.profile")
+					defaultScopes = listOf("openid")
 				)
 			}
-			client = HttpClient(Apache)
+			urlProvider = {
+				"${config.publicHost}/callback"
+			}
 		}
-	}
-	// Please read the jwt property from the config file if you are using EngineMain
-	val jwtAudience = "jwt-audience"
-	val jwtDomain = "https://jwt-provider-domain/"
-	val jwtRealm = "ktor sample app"
-	val jwtSecret = "secret"
-	authentication {
-		jwt {
-			realm = jwtRealm
+		jwt("jwt-auth") {
+			authHeader { call ->
+				call.request.parseAuthorizationHeader()
+					// optionally load from cookies
+					?: parseAuthorizationHeader("Bearer ${call.request.cookies["access_token"]}")
+			}
 			verifier(
-				JWT
-					.require(Algorithm.HMAC256(jwtSecret))
-					.withAudience(jwtAudience)
-					.withIssuer(jwtDomain)
-					.build()
+				UrlJwkProvider(URI("${authConfig.oidcUrl}/certs").toURL()),
+				authConfig.issuerUrl
 			)
+			challenge { _, _ ->
+				call.respondStatus(UnauthorizedException("JWT is invalid"))
+			}
 			validate { credential ->
-				if (credential.payload.audience.contains(jwtAudience)) JWTPrincipal(credential.payload) else null
+				JWTPrincipal(credential.payload)
 			}
 		}
 	}
 	routing {
-		authenticate("auth-oauth-google") {
-			get("login") {
-				call.respondRedirect("/callback")
-			}
-
+		authenticate("keycloak") {
+			get("/login") {}
 			get("/callback") {
-				val principal: OAuthAccessTokenResponse.OAuth2? = call.authentication.principal()
-				call.sessions.set(UserSession(principal?.accessToken.toString()))
-				call.respondRedirect("/hello")
+				val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>()
+					?: return@get call.respondRedirect("/login")
+
+				call.response.cookies.append("access_token", principal.accessToken)
+				call.respondText(principal.accessToken)
+			}
+		}
+		authenticate("jwt-auth") {
+			get("/userInfo") {
+				call.respond(call.getUser())
 			}
 		}
 	}
 }
 
-class UserSession(accessToken: String)
+fun ApplicationCall.getUser(): User =
+	getUserOrNull() ?: throw UnauthorizedException("User not authenticated")
+
+fun ApplicationCall.getUserOrNull(): User? {
+	val principal = authentication.principal<JWTPrincipal>() ?: return null
+	val claims = principal.payload.claims
+	return User(
+		id = claims["sub"]?.asString() ?: "unknown",
+		name = claims["name"]?.asString() ?: "unknown",
+		email = claims["email"]?.asString() ?: "unknown"
+	)
+}
+
+@Serializable
+data class User(
+	val id: String,
+	val name: String,
+	val email: String,
+)

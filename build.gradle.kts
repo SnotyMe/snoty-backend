@@ -86,6 +86,9 @@ dependencies {
     testImplementation(tests.mockk)
     testImplementation(tests.assertj.core)
     testImplementation(tests.json)
+
+    // dev
+    devImplementation(dev.keycloak.adminClient)
 }
 
 application {

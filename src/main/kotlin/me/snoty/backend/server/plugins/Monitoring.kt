@@ -27,6 +27,8 @@ fun Application.configureMonitoring() {
 		verify { callId: String ->
 			callId.isNotEmpty()
 		}
+		// generate if not set already
+		generate(10)
 	}
 	routing {
 		get("/metrics") {

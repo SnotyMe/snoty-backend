@@ -1,0 +1,14 @@
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    user: ${UID:-1000}:${GID:-1000}
+    env_file:
+      - path: .env.default
+        required: true
+      # overrides the .env file
+      - path: .env
+        required: false
+    ports:
+      - ${KEYCLOAK_PORT:-8081}:8080
+    command:
+      - start-dev

@@ -1,3 +1,3 @@
 package me.snoty.backend.spi
 
-interface DevRunnable : Runnable
+fun interface DevRunnable : Runnable

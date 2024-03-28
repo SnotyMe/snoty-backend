@@ -141,5 +141,10 @@ dependencyResolutionManagement {
 			library("json", "org.json", "json")
 				.version("20240303")
 		}
+
+		create("dev") {
+			library("keycloak-adminClient", "org.keycloak", "keycloak-admin-client")
+				.version("24.0.2")
+		}
 	}
 }

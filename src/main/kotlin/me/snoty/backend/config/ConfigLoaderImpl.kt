@@ -16,6 +16,7 @@ class ConfigLoaderImpl : ConfigLoader {
 
 		return ConfigLoaderBuilder.default()
 			.withResolveTypesCaseInsensitive()
+			.addDefaultPreprocessors()
 			.addSource(PropsPropertySource(pgContainerConfig.getOrElse { Properties() }))
 			.addFileSource("application.local.yml", optional = true)
 			.addFileSource("application.yml", optional = true)

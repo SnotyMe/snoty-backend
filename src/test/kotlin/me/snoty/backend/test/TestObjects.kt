@@ -11,7 +11,9 @@ import me.snoty.backend.config.Environment
 val TestConfig = Config(
 	port = 8080,
 	environment = Environment.TEST,
-	database = DatabaseConfig(mockk<HikariDataSource>())
+	publicHost = "http://localhost:8080",
+	database = DatabaseConfig(mockk<HikariDataSource>()),
+	authentication = mockk()
 )
 
 val TestBuildInfo = BuildInfo(

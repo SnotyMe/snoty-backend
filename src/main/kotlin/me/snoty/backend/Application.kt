@@ -6,6 +6,9 @@ import me.snoty.backend.server.KtorServer
 import me.snoty.backend.spi.DevManager
 
 fun main() {
+	// ran pre-config load to allow dev functions to configure the environment
+	DevManager.runDevFunctions()
+
 	val configLoader = ConfigLoaderImpl()
 	val config = configLoader.loadConfig()
 
@@ -21,8 +24,6 @@ fun main() {
 			throw e
 		}
 	}
-
-	DevManager.runDevFunctions()
 
 	KtorServer(config, buildInfo)
 		.start(wait = true)

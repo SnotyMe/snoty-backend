@@ -1,1 +1,2 @@
 me.snoty.backend.dev.DevNotifier
+me.snoty.backend.dev.auth.KeycloakSetup

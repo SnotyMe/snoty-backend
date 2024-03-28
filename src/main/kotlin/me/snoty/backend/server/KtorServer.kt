@@ -31,7 +31,7 @@ class KtorServer(val config: Config, val buildInfo: BuildInfo) {
 	private fun Application.module() {
 		configureMonitoring()
 		configureHTTP()
-		configureSecurity()
+		configureSecurity(config)
 		configureSerialization()
 		configureDatabases(config.database.value)
 		configureRouting(config)
