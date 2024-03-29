@@ -29,6 +29,8 @@ class UntisDateTest {
 		assertEquals(untisDate.toLocalDate(), date)
 		assertEquals(makeJson(dateStr), Json.encodeToString(DateWrapper(untisDate)))
 
+		assertEquals(1, 0)
+
 		dateStr = "2023-12-31"
 		date = LocalDate.parse(dateStr)
 		untisDate = UntisDate(date)
