@@ -39,18 +39,18 @@ abstract class EntityStateTable<ID>(
 		val entityChecksum = entity.checksum
 		// if the checksum matches, we don't want to query the JSON for performance reasons
 		val stateQuery = When(checksum neq entityChecksum, state, null, state.columnType)
-		val state = select(checksum, stateQuery)
-			.where(identifier(instanceId, entity)).singleOrNull()?.let {
-				// nothing has changed
-				if (it[checksum] == entityChecksum) {
-					return DiffResult.NoChange
-				}
-				// in this case, the JSON should be non-null
-				return@let it[stateQuery]
-			} ?: return DiffResult.Created(entityChecksum, entity.fields)
+		val result = select(checksum, stateQuery)
+			.where(identifier(instanceId, entity)).singleOrNull()
+				// not found in DB => newly created entity
+				?: return DiffResult.Created(entityChecksum, entity.fields)
+
+		// nothing has changed
+		if (result[checksum] == entityChecksum) {
+			return DiffResult.NoChange
+		}
 
 		// something changed, delegate to entity to determine what
-		return entity.diff(state)
+		return entity.diff(result[stateQuery])
 	}
 
 	fun compareAndUpdateState(instanceId: InstanceId, entity: IUpdatableEntity<ID>): DiffResult {
