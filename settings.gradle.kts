@@ -102,15 +102,16 @@ dependencyResolutionManagement {
 		}
 
 		create("database") {
-			val exposed = version("exposed", "0.48.0")
+			val exposed = version("exposed", "0.49.0")
 
-			fun exposedDependency(name: String) {
+			fun exposedModule(name: String) {
 				library("exposed-$name", "org.jetbrains.exposed", "exposed-$name")
 					.versionRef(exposed)
 			}
 
-			exposedDependency("core")
-			exposedDependency("jdbc")
+			exposedModule("core")
+			exposedModule("jdbc")
+			exposedModule("json")
 			library("postgres-driver", "org.postgresql", "postgresql")
 				.version("42.7.3")
 			library("hikaricp", "com.zaxxer", "HikariCP")

@@ -6,6 +6,7 @@ import io.ktor.server.netty.*
 import me.snoty.backend.build.BuildInfo
 import me.snoty.backend.config.Config
 import me.snoty.backend.server.plugins.*
+import org.jetbrains.exposed.sql.Database
 import org.slf4j.LoggerFactory
 
 class KtorServer(val config: Config, val buildInfo: BuildInfo) {
@@ -29,12 +30,12 @@ class KtorServer(val config: Config, val buildInfo: BuildInfo) {
 	}
 
 	private fun Application.module() {
+		val database = Database.connect(config.database.value)
 		configureMonitoring()
 		configureHTTP()
 		configureSecurity(config)
 		configureSerialization()
-		configureDatabases(config.database.value)
 		configureRouting(config)
-		addResources(buildInfo)
+		addResources(buildInfo, database)
 	}
 }

@@ -75,6 +75,7 @@ dependencies {
     // database
     implementation(database.exposed.core)
     implementation(database.exposed.jdbc)
+    implementation(database.exposed.json)
     implementation(database.postgres.driver)
     implementation(database.hikaricp)
 

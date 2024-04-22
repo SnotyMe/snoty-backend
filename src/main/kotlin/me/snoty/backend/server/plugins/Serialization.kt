@@ -10,6 +10,7 @@ fun Application.configureSerialization() {
 	install(ContentNegotiation) {
 		json(Json {
 			serializersModule = httpStatusExceptionModule
+			ignoreUnknownKeys = true
 		})
 	}
 }

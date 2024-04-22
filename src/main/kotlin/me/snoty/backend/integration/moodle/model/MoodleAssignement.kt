@@ -2,18 +2,32 @@ package me.snoty.backend.integration.moodle.model
 
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import me.snoty.backend.integration.common.diff.UpdatableEntity
+import me.snoty.backend.integration.common.diff.Fields
 import me.snoty.backend.integration.moodle.model.raw.MoodleEvent
 import java.time.Instant
 import java.time.ZoneId
 
 @Serializable
 data class MoodleAssignment(
-	val id: Long,
+	override val id: Long,
 	val name: String,
 	val due: LocalDateTime,
 	val state: MoodleAssignmentState
-)
+) : UpdatableEntity<Long>() {
+	override val type: String = "assignment"
+
+	@Contextual
+	override val fields: Fields = buildJsonObject {
+		put("name", name)
+		put("due", due.toString())
+		put("state", state.name)
+	}
+}
 
 enum class MoodleAssignmentState {
 	/**
