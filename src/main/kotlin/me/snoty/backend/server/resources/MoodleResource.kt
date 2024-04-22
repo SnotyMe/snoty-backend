@@ -3,10 +3,7 @@ package me.snoty.backend.server.resources
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import me.snoty.backend.integration.moodle.MoodleAPI
-import me.snoty.backend.integration.moodle.MoodleAPIImpl
-import me.snoty.backend.integration.moodle.MoodleEntityStateTable
-import me.snoty.backend.integration.moodle.MoodleSettings
+import me.snoty.backend.integration.moodle.*
 import me.snoty.backend.integration.moodle.request.getCalendarUpcoming
 import me.snoty.backend.integration.moodle.request.getUser
 import me.snoty.backend.server.handler.NotFoundException
@@ -26,7 +23,8 @@ fun Route.moodleResources(database: Database, moodle: MoodleAPI = MoodleAPIImpl(
 		val assignments = moodle.getCalendarUpcoming(settings)
 		assignments.forEach {
 			transaction(database) {
-				MoodleEntityStateTable.compareAndUpdateState(settings.baseUrl.hashCode(), it)
+				val result = MoodleEntityStateTable.compareAndUpdateState(settings.baseUrl.hashCode(), it)
+				moodleDiffMetrics.process(result)
 			}
 		}
 		call.respond(assignments)

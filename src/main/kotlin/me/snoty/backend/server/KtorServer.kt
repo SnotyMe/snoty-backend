@@ -3,13 +3,19 @@ package me.snoty.backend.server
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.micrometer.core.instrument.MeterRegistry
 import me.snoty.backend.build.BuildInfo
 import me.snoty.backend.config.Config
 import me.snoty.backend.server.plugins.*
 import org.jetbrains.exposed.sql.Database
 import org.slf4j.LoggerFactory
 
-class KtorServer(val config: Config, val buildInfo: BuildInfo) {
+class KtorServer(
+	private val config: Config,
+	private val buildInfo: BuildInfo,
+	private val database: Database,
+	private val metricsRegistry: MeterRegistry
+) {
 	private val logger = LoggerFactory.getLogger(KtorServer::class.java)
 
 	fun start(wait: Boolean) {
@@ -30,8 +36,7 @@ class KtorServer(val config: Config, val buildInfo: BuildInfo) {
 	}
 
 	private fun Application.module() {
-		val database = Database.connect(config.database.value)
-		configureMonitoring()
+		configureMonitoring(metricsRegistry)
 		configureHTTP()
 		configureSecurity(config)
 		configureSerialization()

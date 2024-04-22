@@ -26,7 +26,7 @@ abstract class UpdatableEntity<ID> : IUpdatableEntity<ID> {
 			.associate { (key, value) -> (key to OldNew(other[key] as Any, value)) }
 
 		return when {
-			diff.isEmpty() -> DiffResult.NoChange
+			diff.isEmpty() -> DiffResult.Unchanged
 			else -> DiffResult.Updated(checksum, diff)
 		}
 	}

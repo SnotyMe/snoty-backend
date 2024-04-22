@@ -46,7 +46,7 @@ abstract class EntityStateTable<ID>(
 
 		// nothing has changed
 		if (result[checksum] == entityChecksum) {
-			return DiffResult.NoChange
+			return DiffResult.Unchanged
 		}
 
 		// something changed, delegate to entity to determine what

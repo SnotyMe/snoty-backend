@@ -1,9 +1,13 @@
 package me.snoty.backend
 
+import io.micrometer.prometheus.PrometheusConfig
+import io.micrometer.prometheus.PrometheusMeterRegistry
 import me.snoty.backend.build.DevBuildInfo
 import me.snoty.backend.config.ConfigLoaderImpl
+import me.snoty.backend.integration.IntegrationManager
 import me.snoty.backend.server.KtorServer
 import me.snoty.backend.spi.DevManager
+import org.jetbrains.exposed.sql.Database
 
 fun main() {
 	// ran pre-config load to allow dev functions to configure the environment
@@ -25,6 +29,11 @@ fun main() {
 		}
 	}
 
-	KtorServer(config, buildInfo)
+	val database = Database.connect(config.database.value)
+	val meterRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
+
+	IntegrationManager(database, meterRegistry).startup()
+
+	KtorServer(config, buildInfo, database, meterRegistry)
 		.start(wait = true)
 }

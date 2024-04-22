@@ -8,14 +8,13 @@ import io.ktor.server.plugins.callloging.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.micrometer.prometheus.*
-import org.slf4j.event.*
+import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.prometheus.PrometheusMeterRegistry
+import org.slf4j.event.Level
 
-fun Application.configureMonitoring() {
-	val appMicrometerRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
-
+fun Application.configureMonitoring(meterRegistry: MeterRegistry) {
 	install(MicrometerMetrics) {
-		registry = appMicrometerRegistry
+		registry = meterRegistry
 	}
 	install(CallLogging) {
 		level = Level.INFO
@@ -30,9 +29,11 @@ fun Application.configureMonitoring() {
 		// generate if not set already
 		generate(10)
 	}
-	routing {
-		get("/metrics") {
-			call.respond(appMicrometerRegistry.scrape())
+	if (meterRegistry is PrometheusMeterRegistry) {
+		routing {
+			get("/metrics") {
+				call.respond(meterRegistry.scrape())
+			}
 		}
 	}
 }
