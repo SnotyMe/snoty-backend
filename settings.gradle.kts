@@ -141,6 +141,8 @@ dependencyResolutionManagement {
 				.version("3.25.3")
 			library("json", "org.json", "json")
 				.version("20240303")
+			library("h2", "com.h2database", "h2")
+				.version("2.2.224")
 		}
 
 		create("dev") {
