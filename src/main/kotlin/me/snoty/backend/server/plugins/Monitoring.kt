@@ -2,7 +2,9 @@ package me.snoty.backend.server.plugins
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.engine.*
 import io.ktor.server.metrics.micrometer.*
+import io.ktor.server.netty.*
 import io.ktor.server.plugins.callid.*
 import io.ktor.server.plugins.callloging.*
 import io.ktor.server.request.*
@@ -10,9 +12,10 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.prometheus.PrometheusMeterRegistry
+import me.snoty.backend.config.Config
 import org.slf4j.event.Level
 
-fun Application.configureMonitoring(meterRegistry: MeterRegistry) {
+fun Application.configureMonitoring(config: Config, meterRegistry: MeterRegistry) {
 	install(MicrometerMetrics) {
 		registry = meterRegistry
 	}
@@ -30,10 +33,12 @@ fun Application.configureMonitoring(meterRegistry: MeterRegistry) {
 		generate(10)
 	}
 	if (meterRegistry is PrometheusMeterRegistry) {
-		routing {
-			get("/metrics") {
-				call.respond(meterRegistry.scrape())
+		embeddedServer(Netty, port = config.prometheusPort.toInt()) {
+			routing {
+				get("/metrics") {
+					call.respond(meterRegistry.scrape())
+				}
 			}
-		}
+		}.start(wait = false)
 	}
 }
