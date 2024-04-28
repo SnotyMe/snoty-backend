@@ -30,7 +30,7 @@ fun Application.configureMonitoring(config: Config, meterRegistry: MeterRegistry
 			callId.isNotEmpty()
 		}
 		// generate if not set already
-		generate(10)
+		generate(10, dictionary = "abcdefghijklmnopqrstuvwxyz0123456789")
 	}
 	embeddedServer(Netty, port = config.monitoringPort.toInt()) {
 		routing {
