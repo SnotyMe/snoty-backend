@@ -32,13 +32,16 @@ fun Application.configureMonitoring(config: Config, meterRegistry: MeterRegistry
 		// generate if not set already
 		generate(10)
 	}
-	if (meterRegistry is PrometheusMeterRegistry) {
-		embeddedServer(Netty, port = config.prometheusPort.toInt()) {
-			routing {
+	embeddedServer(Netty, port = config.monitoringPort.toInt()) {
+		routing {
+			get("/hello") {
+				call.respond(HttpStatusCode.NoContent)
+			}
+			if (meterRegistry is PrometheusMeterRegistry) {
 				get("/metrics") {
 					call.respond(meterRegistry.scrape())
 				}
 			}
-		}.start(wait = false)
-	}
+		}
+	}.start(wait = false)
 }
