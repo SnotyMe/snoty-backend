@@ -5,6 +5,7 @@ import io.micrometer.prometheus.PrometheusMeterRegistry
 import me.snoty.backend.build.DevBuildInfo
 import me.snoty.backend.config.ConfigLoaderImpl
 import me.snoty.backend.integration.IntegrationManager
+import me.snoty.backend.scheduling.JobRunrConfigurer
 import me.snoty.backend.server.KtorServer
 import me.snoty.backend.spi.DevManager
 import org.jetbrains.exposed.sql.Database
@@ -28,12 +29,14 @@ fun main() {
 			throw e
 		}
 	}
-
-	val database = Database.connect(config.database.value)
+	val dataSource = config.database.value
+	val database = Database.connect(dataSource)
 	val meterRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 
-	IntegrationManager(database, meterRegistry).startup()
+	val integrationManager = IntegrationManager(database, meterRegistry)
+	JobRunrConfigurer.configure(dataSource, integrationManager, meterRegistry)
+	integrationManager.startup()
 
-	KtorServer(config, buildInfo, database, meterRegistry)
+	KtorServer(config, buildInfo, database, meterRegistry, integrationManager)
 		.start(wait = true)
 }

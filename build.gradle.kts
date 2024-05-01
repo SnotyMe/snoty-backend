@@ -82,6 +82,14 @@ dependencies {
     // logging
     implementation(log.logback)
 
+    // serialization
+    implementation(libraries.jackson.core)
+    implementation(libraries.jackson.databind)
+    implementation(libraries.jackson.kotlin)
+
+    // task scheduling
+    implementation(libraries.jobrunr)
+
     // testing
     testImplementation(tests.ktor.server.tests)
     testImplementation(tests.kotlin.test.junit)

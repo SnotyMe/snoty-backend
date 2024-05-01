@@ -131,6 +131,14 @@ dependencyResolutionManagement {
 				.version("1.4.14")
 		}
 
+		create("libraries") {
+			library("jobrunr", "org.jobrunr", "jobrunr").version("7.1.0")
+			val jackson = version("jackson", "2.17.0")
+			library("jackson-core", "com.fasterxml.jackson.core", "jackson-core").versionRef(jackson)
+			library("jackson-databind", "com.fasterxml.jackson.core", "jackson-databind").versionRef(jackson)
+			library("jackson-kotlin", "com.fasterxml.jackson.module", "jackson-module-kotlin").versionRef(jackson)
+		}
+
 		create("tests") {
 			ktorServerPlugin("tests", prefix = "ktor")
 			library("kotlin-test-junit", "org.jetbrains.kotlin", "kotlin-test-junit")
