@@ -1,15 +1,31 @@
 package me.snoty.backend.integration
 
 import io.micrometer.core.instrument.MeterRegistry
-import me.snoty.backend.integration.moodle.startMoodleIntegration
+import me.snoty.backend.integration.common.Integration
+import me.snoty.backend.integration.common.IntegrationContext
+import me.snoty.backend.integration.moodle.MoodleIntegration
 import org.jetbrains.exposed.sql.Database
 import java.util.concurrent.Executors
 
 
-class IntegrationManager(private val database: Database, private val metricsRegistry: MeterRegistry) {
+class IntegrationManager(database: Database, metricsRegistry: MeterRegistry) {
 	private val metricsPool = Executors.newScheduledThreadPool(1)
+	private val context = IntegrationContext(database, metricsRegistry, metricsPool)
+
+	// TODO: replace with SPI
+	val integrations: List<Integration> = listOf(
+		MoodleIntegration(context)
+	)
 
 	fun startup() {
-		startMoodleIntegration(database, metricsRegistry, metricsPool)
+		integrations.forEach(Integration::start)
+	}
+
+	fun <T> getScheduleHandler(type: Class<T>): T? {
+		@Suppress("UNCHECKED_CAST")
+		return integrations.find {
+			it.scheduler.javaClass == type
+			|| it.scheduler.javaClass == type.enclosingClass
+		}?.scheduler as T
 	}
 }

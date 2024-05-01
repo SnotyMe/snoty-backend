@@ -10,11 +10,13 @@ import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.serialization.Serializable
+import me.snoty.backend.User
 import me.snoty.backend.config.Config
 import me.snoty.backend.server.handler.UnauthorizedException
+import me.snoty.backend.utils.NULL_UUID
 import me.snoty.backend.utils.respondStatus
 import java.net.URI
+import java.util.*
 
 fun Application.configureSecurity(config: Config) {
 	val authConfig = config.authentication
@@ -81,15 +83,8 @@ fun ApplicationCall.getUserOrNull(): User? {
 	val principal = authentication.principal<JWTPrincipal>() ?: return null
 	val claims = principal.payload.claims
 	return User(
-		id = claims["sub"]?.asString() ?: "unknown",
+		id = claims["sub"]?.`as`(UUID::class.java) ?: NULL_UUID,
 		name = claims["name"]?.asString() ?: "unknown",
 		email = claims["email"]?.asString() ?: "unknown"
 	)
 }
-
-@Serializable
-data class User(
-	val id: String,
-	val name: String,
-	val email: String,
-)

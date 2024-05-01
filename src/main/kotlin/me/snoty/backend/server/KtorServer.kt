@@ -6,6 +6,7 @@ import io.ktor.server.netty.*
 import io.micrometer.core.instrument.MeterRegistry
 import me.snoty.backend.build.BuildInfo
 import me.snoty.backend.config.Config
+import me.snoty.backend.integration.IntegrationManager
 import me.snoty.backend.server.plugins.*
 import org.jetbrains.exposed.sql.Database
 import org.slf4j.LoggerFactory
@@ -14,7 +15,8 @@ class KtorServer(
 	private val config: Config,
 	private val buildInfo: BuildInfo,
 	private val database: Database,
-	private val metricsRegistry: MeterRegistry
+	private val metricsRegistry: MeterRegistry,
+	private val integrationManager: IntegrationManager
 ) {
 	private val logger = LoggerFactory.getLogger(KtorServer::class.java)
 
@@ -41,6 +43,6 @@ class KtorServer(
 		configureSecurity(config)
 		configureSerialization()
 		configureRouting(config)
-		addResources(buildInfo, database)
+		addResources(buildInfo, integrationManager)
 	}
 }
