@@ -7,13 +7,18 @@ import me.snoty.backend.build.BuildInfo
 import me.snoty.backend.config.Config
 import me.snoty.backend.config.DatabaseConfig
 import me.snoty.backend.config.Environment
+import me.snoty.backend.config.OidcConfig
 
 val TestConfig = Config(
 	port = 8080,
 	environment = Environment.TEST,
 	publicHost = "http://localhost:8080",
 	database = DatabaseConfig(mockk<HikariDataSource>()),
-	authentication = mockk()
+	authentication = OidcConfig(
+		serverUrl = "http://localhost:8081",
+		clientId = "",
+		clientSecret = ""
+	)
 )
 
 val TestBuildInfo = BuildInfo(
