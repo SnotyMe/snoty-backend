@@ -25,7 +25,7 @@ abstract class AbstractIntegration<S : Any>(
 	schedulerFactory: IntegrationSchedulerFactory<S>,
 	database: Database,
 	meterRegistry: MeterRegistry,
-	metricsPool: ScheduledExecutorService
+	private val metricsPool: ScheduledExecutorService
 ) : Integration {
 	constructor(
 		name: String,
@@ -49,11 +49,10 @@ abstract class AbstractIntegration<S : Any>(
 	override val scheduler: IntegrationScheduler<Any>
 		= schedulerFactory.create(entityDiffMetrics) as IntegrationScheduler<Any>
 
-	init {
+	override fun start() {
 		metricsPool.scheduleAtFixedRate(entityDiffMetrics.Job(), 0, 30, TimeUnit.SECONDS)
+		scheduleAll()
 	}
-
-	override fun start() = scheduleAll()
 
 	private fun scheduleAll() {
 		val allSettings = IntegrationConfigTable.getAllIntegrationConfigs<S>(name)

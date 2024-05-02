@@ -141,8 +141,6 @@ dependencyResolutionManagement {
 
 		create("tests") {
 			ktorServerPlugin("tests", prefix = "ktor")
-			library("kotlin-test-junit", "org.jetbrains.kotlin", "kotlin-test-junit")
-				.version(kotlinVersion)
 			library("mockk", "io.mockk", "mockk")
 				.version("1.13.10")
 			library("assertj-core", "org.assertj", "assertj-core")
@@ -151,6 +149,23 @@ dependencyResolutionManagement {
 				.version("20240303")
 			library("h2", "com.h2database", "h2")
 				.version("2.2.224")
+
+			val testcontainers = version("testcontainers", "1.19.7")
+			library("testcontainers", "org.testcontainers", "testcontainers")
+				.versionRef(testcontainers)
+			library("testcontainers-junit", "org.testcontainers", "junit-jupiter")
+				.versionRef(testcontainers)
+			library("testcontainers-keycloak", "com.github.dasniko", "testcontainers-keycloak")
+				.version("3.3.1")
+
+			val junit = version("junit", "5.10.2")
+			library("junit-api", "org.junit.jupiter", "junit-jupiter")
+				.versionRef(junit)
+			library("junit-engine", "org.junit.jupiter", "junit-jupiter-engine")
+				.versionRef(junit)
+			// required to run tests with IntelliJ
+			library("junit-launcher", "org.junit.platform", "junit-platform-launcher")
+				.version("1.10.2")
 		}
 
 		create("dev") {

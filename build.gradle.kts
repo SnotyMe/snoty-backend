@@ -24,9 +24,18 @@ repositories {
 }
 
 sourceSets {
-    create("dev") {
-        compileClasspath += sourceSets.main.get().output
-        runtimeClasspath += sourceSets.main.get().output
+    val main = main.get()
+    val dev = create("dev") {
+        compileClasspath += main.output
+        runtimeClasspath += main.output
+    }
+    test {
+        compileClasspath += dev.output
+        runtimeClasspath += dev.output
+    }
+    create("testIntegration") {
+        compileClasspath += main.output + test.get().output + dev.output
+        runtimeClasspath += main.output + test.get().output + dev.output
     }
 }
 
@@ -91,12 +100,17 @@ dependencies {
     implementation(libraries.jobrunr)
 
     // testing
+    testImplementation(tests.junit.api)
+    testRuntimeOnly(tests.junit.engine)
+    testRuntimeOnly(tests.junit.launcher)
     testImplementation(tests.ktor.server.tests)
-    testImplementation(tests.kotlin.test.junit)
     testImplementation(tests.mockk)
     testImplementation(tests.assertj.core)
     testImplementation(tests.json)
     testImplementation(tests.h2)
+    testImplementation(tests.testcontainers)
+    testImplementation(tests.testcontainers.junit)
+    testImplementation(tests.testcontainers.keycloak)
 
     // dev
     devImplementation(dev.keycloak.adminClient)
@@ -115,6 +129,29 @@ application {
 
 tasks.test {
     jvmArgs("-Dio.ktor.development=true")
+    useJUnitPlatform()
+}
+
+val integrationTest: SourceSet = sourceSets["testIntegration"]
+
+
+configurations[integrationTest.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
+configurations[integrationTest.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
+
+val integrationTestTask = tasks.register<Test>("integrationTest") {
+    group = "verification"
+    description = "Runs tests against integrations (database, LMS, etc)"
+
+    useJUnitPlatform()
+
+    testClassesDirs = integrationTest.output.classesDirs
+    classpath = integrationTest.runtimeClasspath
+
+    shouldRunAfter("test")
+}
+
+tasks.check {
+    dependsOn(integrationTestTask)
 }
 
 buildInfo {
@@ -192,6 +229,8 @@ idea {
         // long import times but worth it as, without it, functions may not have proper documentation
         isDownloadJavadoc = true
         isDownloadSources = true
+        sourceDirs.minusAssign(file("src/testIntegration"))
+        testSources.from(file("src/testIntegration/kotlin"))
     }
 
     project {

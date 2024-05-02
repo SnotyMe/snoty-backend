@@ -84,7 +84,7 @@ fun ApplicationCall.getUserOrNull(): User? {
 	val claims = principal.payload.claims
 	return User(
 		id = claims["sub"]?.`as`(UUID::class.java) ?: NULL_UUID,
-		name = claims["name"]?.asString() ?: "unknown",
+		name = claims["preferred_username"]?.asString() ?: "unknown",
 		email = claims["email"]?.asString() ?: "unknown"
 	)
 }

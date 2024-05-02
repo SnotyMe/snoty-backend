@@ -5,12 +5,14 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.routing.*
 import me.snoty.backend.config.Environment
+import me.snoty.backend.server.handler.NotFoundException
 import me.snoty.backend.test.TestConfig
+import me.snoty.backend.test.assertErrorResponse
 import me.snoty.backend.test.ktorApplicationTest
 import org.assertj.core.api.Assertions
 import org.json.JSONObject
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class ErrorHandlingTest {
 	@Test
@@ -19,13 +21,12 @@ class ErrorHandlingTest {
 			assertEquals(HttpStatusCode.NotFound, status)
 			Assertions.assertThat(bodyAsText())
 				.isNotEmpty()
-			val body = JSONObject(bodyAsText()).toMap()
+			val body = JSONObject(bodyAsText())
 
-			Assertions.assertThat(body)
-				.containsEntry("code", 404)
-				.containsEntry("message", "Not Found")
+			assertErrorResponse(body, NotFoundException())
 		}
 	}
+
 	@Test
 	fun testInternalServerErrorCatchAll_DevMode() =
 		internalServerErrorCatchAllTest(Environment.DEVELOPMENT, "test", "test")

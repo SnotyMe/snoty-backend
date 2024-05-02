@@ -8,9 +8,9 @@ import me.snoty.backend.integration.untis.UntisDateTimeTest.DateWrapper.Companio
 import me.snoty.backend.integration.untis.model.UntisDateTime
 import me.snoty.backend.test.assertThrows
 import me.snoty.backend.utils.DateTimeParseException
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
-import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class UntisDateTimeTest {
 	@Serializable

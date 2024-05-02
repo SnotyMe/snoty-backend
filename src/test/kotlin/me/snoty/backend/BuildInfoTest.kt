@@ -6,8 +6,8 @@ import io.ktor.http.*
 import me.snoty.backend.test.ktorApplicationTest
 import org.assertj.core.api.Assertions
 import org.json.JSONObject
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class BuildInfoTest {
 	@Test
