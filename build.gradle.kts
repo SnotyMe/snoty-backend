@@ -23,19 +23,48 @@ repositories {
     mavenCentral()
 }
 
-sourceSets {
-    val main = main.get()
-    val dev = create("dev") {
-        compileClasspath += main.output
-        runtimeClasspath += main.output
-    }
-    test {
-        compileClasspath += dev.output
-        runtimeClasspath += dev.output
-    }
-    create("testIntegration") {
-        compileClasspath += main.output + test.get().output + dev.output
-        runtimeClasspath += main.output + test.get().output + dev.output
+val devSourceSet = sourceSets.create("dev") {
+    val main = sourceSets.main.get()
+    compileClasspath += main.output
+    runtimeClasspath += main.output
+}
+
+lateinit var testIntegration: NamedDomainObjectProvider<JvmTestSuite>
+testing {
+    suites {
+        val test by getting(JvmTestSuite::class)
+        testIntegration = register<JvmTestSuite>("testIntegration") {
+            dependencies {
+                implementation(project())
+                implementation(sourceSets.test.get().output)
+            }
+            targets {
+                all {
+                    testTask.configure {
+                        shouldRunAfter(test)
+                    }
+                }
+            }
+        }
+        withType<JvmTestSuite> {
+            useJUnitJupiter()
+
+            dependencies {
+                // testing
+                implementation(tests.junit.api)
+                runtimeOnly(tests.junit.engine)
+                runtimeOnly(tests.junit.launcher)
+                implementation(tests.ktor.server.tests)
+                implementation(tests.mockk)
+                implementation(tests.assertj.core)
+                implementation(tests.json)
+                implementation(tests.h2)
+                implementation(tests.testcontainers)
+                implementation(tests.testcontainers.junit)
+                implementation(tests.testcontainers.keycloak)
+                implementation(devSourceSet.output)
+            }
+        }
     }
 }
 
@@ -99,19 +128,6 @@ dependencies {
     // task scheduling
     implementation(libraries.jobrunr)
 
-    // testing
-    testImplementation(tests.junit.api)
-    testRuntimeOnly(tests.junit.engine)
-    testRuntimeOnly(tests.junit.launcher)
-    testImplementation(tests.ktor.server.tests)
-    testImplementation(tests.mockk)
-    testImplementation(tests.assertj.core)
-    testImplementation(tests.json)
-    testImplementation(tests.h2)
-    testImplementation(tests.testcontainers)
-    testImplementation(tests.testcontainers.junit)
-    testImplementation(tests.testcontainers.keycloak)
-
     // dev
     devImplementation(dev.keycloak.adminClient)
 }
@@ -122,36 +138,17 @@ application {
     if (isDevelopment) {
         applicationDefaultJvmArgs += "-Dio.ktor.development=$isDevelopment"
         tasks.run.configure {
-            classpath += sourceSets["dev"].output
+            classpath += devSourceSet.output
         }
     }
 }
 
 tasks.test {
     jvmArgs("-Dio.ktor.development=true")
-    useJUnitPlatform()
-}
-
-val integrationTest: SourceSet = sourceSets["testIntegration"]
-
-
-configurations[integrationTest.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
-configurations[integrationTest.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
-
-val integrationTestTask = tasks.register<Test>("integrationTest") {
-    group = "verification"
-    description = "Runs tests against integrations (database, LMS, etc)"
-
-    useJUnitPlatform()
-
-    testClassesDirs = integrationTest.output.classesDirs
-    classpath = integrationTest.runtimeClasspath
-
-    shouldRunAfter("test")
 }
 
 tasks.check {
-    dependsOn(integrationTestTask)
+    dependsOn(testIntegration)
 }
 
 buildInfo {
@@ -229,8 +226,6 @@ idea {
         // long import times but worth it as, without it, functions may not have proper documentation
         isDownloadJavadoc = true
         isDownloadSources = true
-        sourceDirs.minusAssign(file("src/testIntegration"))
-        testSources.from(file("src/testIntegration/kotlin"))
     }
 
     project {
