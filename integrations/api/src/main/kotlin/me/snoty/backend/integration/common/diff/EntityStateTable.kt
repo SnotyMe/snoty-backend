@@ -7,6 +7,7 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.neq
 import org.jetbrains.exposed.sql.json.jsonb
+import org.jetbrains.exposed.sql.transactions.transaction
 
 const val ID = "id"
 abstract class EntityStateTable<ID>(
@@ -52,7 +53,7 @@ abstract class EntityStateTable<ID>(
 		return entity.diff(result[stateQuery])
 	}
 
-	fun compareAndUpdateState(instanceId: InstanceId, entity: IUpdatableEntity<ID>): DiffResult {
+	fun compareAndUpdateState(instanceId: InstanceId, entity: IUpdatableEntity<ID>): DiffResult = transaction {
 		val diffResult = compareState(instanceId, entity)
 		when (diffResult) {
 			// entity has changed since last time
@@ -76,8 +77,8 @@ abstract class EntityStateTable<ID>(
 			is DiffResult.Deleted -> {
 				deleteWhere(op=deleteIdentifier(instanceId, entity))
 			}
-			else -> return diffResult
+			else -> return@transaction diffResult
 		}
-		return diffResult
+		return@transaction diffResult
 	}
 }

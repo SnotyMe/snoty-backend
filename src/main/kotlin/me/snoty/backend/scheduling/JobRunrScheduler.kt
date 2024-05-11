@@ -22,7 +22,6 @@ class JobRunrScheduler : Scheduler {
 	}
 
 	override fun scheduleJob(id: String, job: JobRequest) {
-		println(job)
 		BackgroundJobRequest.createRecurrently(
 			aRecurringJob()
 				.withId(id)

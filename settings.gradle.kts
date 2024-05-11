@@ -145,7 +145,9 @@ dependencyResolutionManagement {
 			library("jackson-core", "com.fasterxml.jackson.core", "jackson-core").versionRef(jackson)
 			library("jackson-databind", "com.fasterxml.jackson.core", "jackson-databind").versionRef(jackson)
 			library("jackson-kotlin", "com.fasterxml.jackson.module", "jackson-module-kotlin").versionRef(jackson)
-			library("kotlinx-serialization", "org.jetbrains.kotlinx", "kotlinx-serialization-core").version("1.6.3")
+			val kotlinxSerialization = version("kotlinx-serialization", "1.6.3")
+			library("kotlinx-serialization", "org.jetbrains.kotlinx", "kotlinx-serialization-core").versionRef(kotlinxSerialization)
+			library("kotlinx-serialization-json", "org.jetbrains.kotlinx", "kotlinx-serialization-json").versionRef(kotlinxSerialization)
 			library("kotlinx-datetime", "org.jetbrains.kotlinx", "kotlinx-datetime").version("0.5.0")
 		}
 
@@ -195,3 +197,5 @@ File(rootDir, "integrations")
 include("api")
 include("integrations:moodle")
 findProject(":integrations:moodle")?.name = "moodle"
+include("integrations:webuntis")
+findProject(":integrations:webuntis")?.name = "webuntis"

@@ -7,6 +7,8 @@ import me.snoty.backend.integration.common.diff.EntityStateTable
 import me.snoty.backend.scheduling.JobRequest
 import me.snoty.backend.scheduling.Scheduler
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
@@ -14,7 +16,7 @@ import kotlin.reflect.KClass
 abstract class AbstractIntegration<S : IntegrationSettings, R : JobRequest>(
 	final override val name: String,
 	final override val settingsType: KClass<S>,
-	stateTable: EntityStateTable<*>,
+	private val stateTable: EntityStateTable<*>,
 	fetcherFactory: IntegrationFetcherFactory<R>,
 	database: Database,
 	meterRegistry: MeterRegistry,
@@ -43,6 +45,9 @@ abstract class AbstractIntegration<S : IntegrationSettings, R : JobRequest>(
 	private val scheduler = IntegrationScheduler(name, scheduler)
 
 	override fun start() {
+		transaction {
+			SchemaUtils.createMissingTablesAndColumns(stateTable)
+		}
 		metricsPool.scheduleAtFixedRate(entityDiffMetrics.Job(), 0, 30, TimeUnit.SECONDS)
 		scheduleAll()
 	}

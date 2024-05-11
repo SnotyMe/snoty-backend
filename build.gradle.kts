@@ -137,7 +137,7 @@ dependencies {
     devImplementation(dev.keycloak.adminClient)
 
     implementation(projects.integrations.api)
-    // depend on all integrations by default - runtime only to avoid tight coupling
+    // depend on all integrations by default
     subprojects.filter { it.path.startsWith(":integrations:") }.forEach {
         implementation(it)
     }
