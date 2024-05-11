@@ -4,10 +4,13 @@ import kotlinx.coroutines.runBlocking
 import me.snoty.backend.integration.common.*
 import me.snoty.backend.integration.common.diff.EntityDiffMetrics
 import me.snoty.backend.integration.common.diff.IUpdatableEntity
-import me.snoty.backend.integration.moodle.request.getCalendarUpcoming
+import me.snoty.integration.moodle.request.getCalendarUpcoming
 import org.slf4j.LoggerFactory
 
-open class MoodleFetcher(private val entityDiffMetrics: EntityDiffMetrics, private val moodleAPI: MoodleAPI = MoodleAPIImpl()) : Fetcher<MoodleJobRequest> {
+open class MoodleFetcher(
+	private val entityDiffMetrics: EntityDiffMetrics,
+	private val moodleAPI: MoodleAPI = MoodleAPIImpl()
+) : Fetcher<MoodleJobRequest> {
 	private val logger = LoggerFactory.getLogger(javaClass)
 
 	private fun updateStates(instanceId: InstanceId, elements: List<IUpdatableEntity<Long>>) {
@@ -26,9 +29,7 @@ open class MoodleFetcher(private val entityDiffMetrics: EntityDiffMetrics, priva
 	}
 
 	class Factory(private val moodleAPI: MoodleAPI) : IntegrationFetcherFactory<MoodleJobRequest> {
-		override fun create(entityDiffMetrics: EntityDiffMetrics): Fetcher<MoodleJobRequest> {
-			return MoodleFetcher(entityDiffMetrics, moodleAPI)
-		}
+		override fun create(entityDiffMetrics: EntityDiffMetrics) = MoodleFetcher(entityDiffMetrics, moodleAPI)
 	}
 
 	override fun run(jobRequest: MoodleJobRequest) {

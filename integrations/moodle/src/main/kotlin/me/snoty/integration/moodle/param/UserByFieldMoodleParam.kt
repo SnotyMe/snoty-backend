@@ -1,6 +1,4 @@
-package me.snoty.backend.integration.moodle.param
-
-import me.snoty.integration.moodle.param.MoodleParam
+package me.snoty.integration.moodle.param
 
 data class UserByFieldMoodleParam(
 	val field: String,

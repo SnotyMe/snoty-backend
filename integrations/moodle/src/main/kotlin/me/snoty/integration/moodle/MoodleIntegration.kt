@@ -34,13 +34,11 @@ class MoodleIntegration(
 		const val INTEGRATION_NAME = "moodle"
 	}
 
-	override fun getInstanceId(config: IntegrationConfig<MoodleSettings>): Any {
-		return config.settings.baseUrl.hashCode()
-	}
+	override fun getInstanceId(config: IntegrationConfig<MoodleSettings>) =
+		config.settings.baseUrl.hashCode()
 
-	override fun createRequest(config: IntegrationConfig<MoodleSettings>): JobRequest {
-		return MoodleJobRequest(config.user, config.settings)
-	}
+	override fun createRequest(config: IntegrationConfig<MoodleSettings>): JobRequest =
+		MoodleJobRequest(config.user, config.settings)
 
 	class Factory : IntegrationFactory {
 		override fun create(context: IntegrationContext): Integration {

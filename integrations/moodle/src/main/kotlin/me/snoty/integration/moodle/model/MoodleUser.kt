@@ -1,4 +1,4 @@
-package me.snoty.backend.integration.moodle.model
+package me.snoty.integration.moodle.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

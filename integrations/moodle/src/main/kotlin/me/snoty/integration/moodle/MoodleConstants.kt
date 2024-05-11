@@ -1,4 +1,4 @@
-package me.snoty.backend.integration.moodle
+package me.snoty.integration.moodle
 
 object MoodleApiConstants {
 	object Function {
