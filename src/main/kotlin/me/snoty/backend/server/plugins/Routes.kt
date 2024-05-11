@@ -15,6 +15,9 @@ fun Application.addResources(buildInfo: BuildInfo, integrationManager: Integrati
 	aboutResource(buildInfo)
 	route("integration") {
 		route("untis") { untisResources() }
+		get("list") {
+			call.respond(HttpStatusCode.OK, integrationManager.integrations.map { it.name })
+		}
 		integrationManager.integrations.forEach { integration ->
 			route(integration.name) {
 				authenticate("jwt-auth") {

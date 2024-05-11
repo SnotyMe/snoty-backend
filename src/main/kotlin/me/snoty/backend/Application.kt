@@ -6,6 +6,7 @@ import me.snoty.backend.build.DevBuildInfo
 import me.snoty.backend.config.ConfigLoaderImpl
 import me.snoty.backend.integration.IntegrationManager
 import me.snoty.backend.scheduling.JobRunrConfigurer
+import me.snoty.backend.scheduling.JobRunrScheduler
 import me.snoty.backend.server.KtorServer
 import me.snoty.backend.spi.DevManager
 import org.jetbrains.exposed.sql.Database
@@ -32,8 +33,9 @@ fun main() {
 	val dataSource = config.database.value
 	val database = Database.connect(dataSource)
 	val meterRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
+	val scheduler = JobRunrScheduler()
 
-	val integrationManager = IntegrationManager(database, meterRegistry)
+	val integrationManager = IntegrationManager(database, meterRegistry, scheduler)
 	JobRunrConfigurer.configure(dataSource, integrationManager, meterRegistry)
 	integrationManager.startup()
 
