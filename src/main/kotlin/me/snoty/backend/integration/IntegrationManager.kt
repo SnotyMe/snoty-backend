@@ -24,8 +24,8 @@ class IntegrationManager(database: Database, metricsRegistry: MeterRegistry, sch
 	fun <T> getScheduleHandler(type: Class<T>): T? {
 		@Suppress("UNCHECKED_CAST")
 		return integrations.find {
-			it.fetchScheduler.javaClass == type
-			|| it.fetchScheduler.javaClass == type.enclosingClass
-		}?.fetchScheduler as T
+			it.fetcher.javaClass == type
+			|| it.fetcher.javaClass == type.enclosingClass
+		}?.fetcher as T
 	}
 }
