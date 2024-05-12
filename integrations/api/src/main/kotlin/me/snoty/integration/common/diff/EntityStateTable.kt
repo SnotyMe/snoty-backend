@@ -8,13 +8,14 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.neq
 import org.jetbrains.exposed.sql.json.jsonb
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.UUID
 
 const val ID = "id"
 abstract class EntityStateTable<ID>(
 	json: Json = Json
 ) : Table() {
 	abstract val id: Column<ID>
-	private val instanceId = integer("instance_id")
+	val instanceId = integer("instance_id")
 
 	/**
 	 * Override this with `buildPrimaryKey()` to define the primary key
@@ -23,9 +24,10 @@ abstract class EntityStateTable<ID>(
 	abstract override val primaryKey: PrimaryKey
 	fun buildPrimaryKey() = PrimaryKey(id, instanceId)
 
-	private val type = varchar("type", 255)
-	private val state = jsonb<Fields>("state", json)
+	val type = varchar("type", 255)
+	val state = jsonb<Fields>("state", json)
 	private val checksum = long("checksum")
+	val userId = uuid("user_id").nullable()
 
 	private fun deleteIdentifier(instanceId: InstanceId, entity: IUpdatableEntity<ID>): EntityStateTable<ID>.(ISqlExpressionBuilder) -> Op<Boolean> = {
 		(id eq entity.id) and (type eq entity.type) and (this.instanceId eq instanceId)
@@ -53,7 +55,7 @@ abstract class EntityStateTable<ID>(
 		return entity.diff(result[stateQuery])
 	}
 
-	fun compareAndUpdateState(instanceId: InstanceId, entity: IUpdatableEntity<ID>): DiffResult = transaction {
+	fun compareAndUpdateState(entity: IUpdatableEntity<ID>, instanceId: InstanceId, userId: UUID): DiffResult = transaction {
 		val diffResult = compareState(instanceId, entity)
 		when (diffResult) {
 			// entity has changed since last time
@@ -67,6 +69,7 @@ abstract class EntityStateTable<ID>(
 			is DiffResult.Created -> {
 				insert {
 					it[id] = entity.id
+					it[this.userId] = userId
 					it[this.instanceId] = instanceId
 					it[type] = entity.type
 					it[state] = entity.fields

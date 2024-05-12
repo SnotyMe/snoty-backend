@@ -103,7 +103,7 @@ dependencyResolutionManagement {
 		}
 
 		create("database") {
-			val exposed = version("exposed", "0.49.0")
+			val exposed = version("exposed", "0.50.0")
 
 			fun exposedModule(name: String) {
 				library("exposed-$name", "org.jetbrains.exposed", "exposed-$name")

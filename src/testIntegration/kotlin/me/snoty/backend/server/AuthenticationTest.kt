@@ -8,7 +8,7 @@ import me.snoty.backend.config.Config
 import me.snoty.backend.config.OidcConfig
 import me.snoty.backend.dev.auth.KeycloakConfigurer
 import me.snoty.backend.dev.auth.REALM_NAME
-import me.snoty.backend.server.handler.UnauthorizedException
+import me.snoty.backend.utils.UnauthorizedException
 import me.snoty.backend.test.assertErrorResponse
 import me.snoty.backend.test.buildTestConfig
 import me.snoty.backend.test.createAndLoginUser

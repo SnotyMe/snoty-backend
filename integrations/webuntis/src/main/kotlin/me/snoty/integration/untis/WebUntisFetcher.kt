@@ -8,6 +8,7 @@ import me.snoty.integration.common.IntegrationFetcherFactory
 import me.snoty.integration.common.diff.EntityDiffMetrics
 import me.snoty.integration.common.diff.IUpdatableEntity
 import me.snoty.integration.untis.request.getExams
+import java.util.UUID
 
 class WebUntisFetcher(
 	private val entityDiffMetrics: EntityDiffMetrics,
@@ -15,17 +16,17 @@ class WebUntisFetcher(
 ) : IntegrationFetcher<WebUntisJobRequest> {
 	private val logger = KotlinLogging.logger {}
 
-	private fun updateStates(instanceId: InstanceId, elements: List<IUpdatableEntity<Int>>) {
+	private fun updateStates(instanceId: InstanceId, elements: List<IUpdatableEntity<Int>>, userId: UUID) {
 		elements.forEach {
-			val result = WebUntisEntityStateTable.compareAndUpdateState(instanceId, it)
+			val result = WebUntisEntityStateTable.compareAndUpdateState(it, instanceId, userId)
 			entityDiffMetrics.process(result)
 		}
 	}
 
-	private suspend fun fetchExams(untisSettings: WebUntisSettings) {
+	private suspend fun fetchExams(untisSettings: WebUntisSettings, userId: UUID) {
 		val instanceId = untisSettings.baseUrl.hashCode()
 		val exams = untis.getExams(untisSettings)
-		updateStates(instanceId, exams)
+		updateStates(instanceId, exams, userId)
 		logger.info { "Fetched ${exams.size} exams for ${untisSettings.username}" }
 	}
 
@@ -34,6 +35,6 @@ class WebUntisFetcher(
 	}
 
 	override fun run(jobRequest: WebUntisJobRequest) = runBlocking {
-		fetchExams(jobRequest.settings)
+		fetchExams(jobRequest.settings, jobRequest.userId)
 	}
 }

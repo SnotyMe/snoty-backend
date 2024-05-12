@@ -19,6 +19,10 @@ dependencies {
     api(ktor.client.contentNegotiation)
     api(ktor.serialization.kotlinx.json)
     api(projects.api)
+    api(ktor.server.core)
+    api(ktor.server.auth)
+    api(libraries.jackson.core)
+    api(libraries.jackson.kotlin)
     testImplementation(kotlin("test"))
 }
 

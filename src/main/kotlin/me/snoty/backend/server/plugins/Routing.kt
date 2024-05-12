@@ -6,10 +6,7 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.doublereceive.*
 import io.ktor.server.plugins.statuspages.*
 import me.snoty.backend.config.Config
-import me.snoty.backend.server.handler.*
-import me.snoty.backend.utils.ifDev
-import me.snoty.backend.utils.otherwise
-import me.snoty.backend.utils.respondStatus
+import me.snoty.backend.utils.*
 
 fun Application.configureRouting(config: Config) {
 	val logger = KotlinLogging.logger {}

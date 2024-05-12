@@ -1,6 +1,6 @@
 package me.snoty.backend.test
 
-import me.snoty.backend.server.handler.HttpStatusException
+import me.snoty.backend.utils.HttpStatusException
 import org.json.JSONObject
 import org.junit.jupiter.api.Assertions.assertEquals
 

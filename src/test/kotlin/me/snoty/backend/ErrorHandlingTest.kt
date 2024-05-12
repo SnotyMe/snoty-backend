@@ -5,7 +5,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.routing.*
 import me.snoty.backend.config.Environment
-import me.snoty.backend.server.handler.NotFoundException
+import me.snoty.backend.utils.NotFoundException
 import me.snoty.backend.test.TestConfig
 import me.snoty.backend.test.assertErrorResponse
 import me.snoty.backend.test.ktorApplicationTest

@@ -2,12 +2,8 @@ package me.snoty.integration.untis.model
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.add
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
-import me.snoty.integration.common.diff.Fields
-import me.snoty.integration.common.diff.UpdatableEntity
+import kotlinx.serialization.json.*
+import me.snoty.integration.common.diff.*
 
 @Serializable
 data class UntisExam(
@@ -23,7 +19,27 @@ data class UntisExam(
 	val name: String,
 	val text: String
 ) : UpdatableEntity<Int>() {
-	override val type: String = "exam"
+	override val type: String = TYPE
+
+	companion object {
+		const val TYPE = "exam"
+
+		fun fromFields(id: Int, fields: Fields): UntisExam {
+			return UntisExam(
+				id = id,
+				examType = fields.getString("examType"),
+				startDateTime = UntisDateTime.fromString(fields.getString("startDateTime")),
+				endDateTime = UntisDateTime.fromString(fields.getString("endDateTime")),
+				departmentId = fields.getInt("departmentId"),
+				subjectId = fields.getInt("subjectId"),
+				klasseIds = fields.getJsonArray("klasseIds").map { it.jsonPrimitive.int },
+				roomIds = fields.getJsonArray("roomIds").map { it.jsonPrimitive.int },
+				teacherIds = fields.getJsonArray("teacherIds").map { it.jsonPrimitive.int },
+				name = fields.getString("name"),
+				text = fields.getString("text")
+			)
+		}
+	}
 
 	@Contextual
 	override val fields: Fields = buildJsonObject {

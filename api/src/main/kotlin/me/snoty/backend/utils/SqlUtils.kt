@@ -11,11 +11,11 @@ import org.jetbrains.exposed.sql.Function
  * 3. The value to return if the condition is false
  * 4. The Type of the results
  */
-class When<T>(
+class When<T : Any>(
 	private val condition: Expression<*>,
 	private val ifTrue: Expression<T>,
 	private val ifFalse: Expression<T>?,
-	columnType: IColumnType
+	columnType: IColumnType<T>
 ) : Function<T>(columnType) {
 	override fun toQueryBuilder(queryBuilder: QueryBuilder) {
 		queryBuilder {

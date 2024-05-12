@@ -14,4 +14,7 @@ dependencies {
     implementation(database.exposed.core)
     api(libraries.jobrunr)
     api(log.kotlinLogging)
+    implementation(ktor.server.core)
+    implementation(ktor.server.auth)
+    implementation(ktor.server.auth.jwt)
 }

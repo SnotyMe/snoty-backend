@@ -25,6 +25,10 @@ data class UntisDateTime(
 			val dateTime = DateTimeUtils.parseIsoDateTime(decoder.decodeString())
 			return UntisDateTime(dateTime)
 		}
+
+		fun fromString(dateTime: String): UntisDateTime {
+			return UntisDateTime(DateTimeUtils.parseIsoDateTime(dateTime))
+		}
 	}
 
 	override fun toString(): String {

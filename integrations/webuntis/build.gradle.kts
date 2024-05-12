@@ -9,6 +9,7 @@ repositories {
 
 dependencies {
     compileOnly(projects.integrations.api)
+    implementation("org.mnode.ical4j:ical4j:4.0.0-rc6")
 
     testImplementation(tests.junit.api)
     testImplementation(libraries.kotlinx.serialization)

@@ -1,4 +1,4 @@
-package me.snoty.backend.server.handler
+package me.snoty.backend.utils
 
 import io.ktor.http.*
 import kotlinx.serialization.KSerializer

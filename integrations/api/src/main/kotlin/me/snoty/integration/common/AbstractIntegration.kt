@@ -2,10 +2,10 @@ package me.snoty.integration.common
 
 import io.micrometer.core.instrument.MeterRegistry
 import me.snoty.backend.User
-import me.snoty.integration.common.diff.EntityDiffMetrics
-import me.snoty.integration.common.diff.EntityStateTable
 import me.snoty.backend.scheduling.JobRequest
 import me.snoty.backend.scheduling.Scheduler
+import me.snoty.integration.common.diff.EntityDiffMetrics
+import me.snoty.integration.common.diff.EntityStateTable
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -52,21 +52,23 @@ abstract class AbstractIntegration<S : IntegrationSettings, R : JobRequest>(
 		scheduleAll()
 	}
 
+	override fun setup(user: User, settings: IntegrationSettings)
+		= IntegrationConfigTable.create(user.id, name, settings)
+
 	private fun scheduleAll() {
 		val allSettings = IntegrationConfigTable.getAllIntegrationConfigs<S>(name)
 		allSettings.forEach(::schedule)
 	}
 
 	abstract fun createRequest(config: IntegrationConfig<S>): JobRequest
-	abstract fun getInstanceId(config: IntegrationConfig<S>): Int
 
-	override fun schedule(user: User, settings: Any) {
+	override fun schedule(user: User, settings: IntegrationSettings) {
 		@Suppress("UNCHECKED_CAST")
 		val integrationConfig = IntegrationConfig(user.id, settings as S)
 		schedule(integrationConfig)
 	}
 
 	private fun schedule(config: IntegrationConfig<S>) {
-		scheduler.scheduleJob(listOf(getInstanceId(config), config.user), createRequest(config))
+		scheduler.scheduleJob(listOf(config.settings.instanceId, config.user), createRequest(config))
 	}
 }

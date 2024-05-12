@@ -13,7 +13,9 @@ data class MoodleSettings(
 	val baseUrl: String,
 	val username: String,
 	val appSecret: String
-) : IntegrationSettings()
+) : IntegrationSettings {
+	override val instanceId: Int = baseUrl.hashCode()
+}
 
 object MoodleEntityStateTable : EntityStateTable<Long>() {
 	override val id: Column<Long> = long(ID)
@@ -33,9 +35,6 @@ class MoodleIntegration(
 	companion object {
 		const val INTEGRATION_NAME = "moodle"
 	}
-
-	override fun getInstanceId(config: IntegrationConfig<MoodleSettings>) =
-		config.settings.baseUrl.hashCode()
 
 	override fun createRequest(config: IntegrationConfig<MoodleSettings>): JobRequest =
 		MoodleJobRequest(config.user, config.settings)

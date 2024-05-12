@@ -1,10 +1,12 @@
 package me.snoty.integration.untis
 
+import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
-import me.snoty.integration.common.diff.EntityStateTable
-import me.snoty.integration.common.diff.ID
 import me.snoty.backend.scheduling.JobRequest
 import me.snoty.integration.common.*
+import me.snoty.integration.common.diff.EntityStateTable
+import me.snoty.integration.common.diff.ID
+import me.snoty.integration.untis.calendar.iCalRoute
 import org.jetbrains.exposed.sql.Column
 import java.util.*
 
@@ -14,7 +16,9 @@ data class WebUntisSettings(
 	val school: String,
 	val username: String,
 	val appSecret: String
-) : IntegrationSettings()
+) : IntegrationSettings {
+	override val instanceId: Int = baseUrl.hashCode()
+}
 
 object WebUntisEntityStateTable : EntityStateTable<Int>() {
 	override val id: Column<Int> = integer(ID)
@@ -35,9 +39,6 @@ class WebUntisIntegration(
 		const val INTEGRATION_NAME = "webuntis"
 	}
 
-	override fun getInstanceId(config: IntegrationConfig<WebUntisSettings>) =
-		config.settings.baseUrl.hashCode()
-
 	override fun createRequest(config: IntegrationConfig<WebUntisSettings>): JobRequest =
 		WebUntisJobRequest(config.user, config.settings)
 
@@ -45,6 +46,10 @@ class WebUntisIntegration(
 		override fun create(context: IntegrationContext): Integration {
 			return WebUntisIntegration(context)
 		}
+	}
+
+	override fun routes(routing: Route) {
+		routing.iCalRoute()
 	}
 }
 

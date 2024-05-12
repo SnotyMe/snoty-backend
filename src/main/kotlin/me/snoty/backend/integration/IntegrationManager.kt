@@ -6,6 +6,8 @@ import me.snoty.integration.common.Integration
 import me.snoty.integration.common.IntegrationContext
 import me.snoty.backend.scheduling.Scheduler
 import me.snoty.backend.spi.IntegrationRegistry
+import me.snoty.integration.common.IntegrationConfigTable
+import me.snoty.integration.common.IntegrationSettings
 import org.jetbrains.exposed.sql.Database
 import java.util.concurrent.Executors
 
@@ -21,7 +23,13 @@ class IntegrationManager(database: Database, metricsRegistry: MeterRegistry, sch
 
 	fun startup() {
 		logger.info { "Starting ${integrations.size} integrations..." }
-		integrations.forEach(Integration::start)
+		integrations.forEach {
+			try {
+				it.start()
+			} catch (e: Exception) {
+				logger.error(e) { "Failed to start integration ${it.name}" }
+			}
+		}
 		logger.info { "Integration startup complete!" }
 	}
 
@@ -35,5 +43,9 @@ class IntegrationManager(database: Database, metricsRegistry: MeterRegistry, sch
 			it.fetcher.javaClass == type
 			|| it.fetcher.javaClass == type.enclosingClass
 		}?.fetcher as T
+	}
+
+	fun getIntegrationConfig(configId: Long, integrationType: String): IntegrationSettings? {
+		return IntegrationConfigTable.get(configId, integrationType)
 	}
 }

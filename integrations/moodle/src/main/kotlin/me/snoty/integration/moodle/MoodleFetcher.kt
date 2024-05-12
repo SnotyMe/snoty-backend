@@ -8,6 +8,7 @@ import me.snoty.integration.common.IntegrationFetcherFactory
 import me.snoty.integration.common.diff.EntityDiffMetrics
 import me.snoty.integration.common.diff.IUpdatableEntity
 import me.snoty.integration.moodle.request.getCalendarUpcoming
+import java.util.UUID
 
 open class MoodleFetcher(
 	private val entityDiffMetrics: EntityDiffMetrics,
@@ -15,17 +16,17 @@ open class MoodleFetcher(
 ) : IntegrationFetcher<MoodleJobRequest> {
 	private val logger = KotlinLogging.logger {}
 
-	private fun updateStates(instanceId: InstanceId, elements: List<IUpdatableEntity<Long>>) {
+	private fun updateStates(elements: List<IUpdatableEntity<Long>>, instanceId: InstanceId, userId: UUID) {
 		elements.forEach {
-			val result = MoodleEntityStateTable.compareAndUpdateState(instanceId, it)
+			val result = MoodleEntityStateTable.compareAndUpdateState(it, instanceId, userId)
 			entityDiffMetrics.process(result)
 		}
 	}
 
-	private suspend fun fetchAssignments(moodleSettings: MoodleSettings) {
+	private suspend fun fetchAssignments(moodleSettings: MoodleSettings, userId: UUID) {
 		val instanceId = moodleSettings.baseUrl.hashCode()
 		val assignments = moodleAPI.getCalendarUpcoming(moodleSettings)
-		updateStates(instanceId, assignments)
+		updateStates(assignments, instanceId, userId)
 		logger.info { "Fetched ${assignments.size} assignments for ${moodleSettings.username}" }
 		// TODO: send update events
 	}
@@ -35,6 +36,6 @@ open class MoodleFetcher(
 	}
 
 	override fun run(jobRequest: MoodleJobRequest) = runBlocking {
-		fetchAssignments(jobRequest.settings)
+		fetchAssignments(jobRequest.settings, jobRequest.userId)
 	}
 }
