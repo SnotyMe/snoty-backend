@@ -1,6 +1,7 @@
 package me.snoty.backend.config
 
 import com.sksamuel.hoplite.ConfigLoaderBuilder
+import com.sksamuel.hoplite.addEnvironmentSource
 import com.sksamuel.hoplite.addFileSource
 import com.sksamuel.hoplite.addResourceSource
 import com.sksamuel.hoplite.fp.getOrElse
@@ -19,9 +20,10 @@ class ConfigLoaderImpl : ConfigLoader {
 		return ConfigLoaderBuilder.default()
 			.withResolveTypesCaseInsensitive()
 			.addDefaultPreprocessors()
-			.addSource(PropsPropertySource(pgContainerConfig.getOrElse { Properties() }))
+			.addEnvironmentSource(useUnderscoresAsSeparator = false)
 			.addFileSource("application.local.yml", optional = true)
 			.addFileSource("application.yml", optional = true)
+			.addSource(PropsPropertySource(pgContainerConfig.getOrElse { Properties() }))
 			.build()
 			.loadConfigOrThrow<Config>()
 	}
