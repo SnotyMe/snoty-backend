@@ -1,31 +1,39 @@
 package me.snoty.backend.integration
 
 import io.micrometer.core.instrument.MeterRegistry
-import me.snoty.backend.integration.common.Integration
-import me.snoty.backend.integration.common.IntegrationContext
-import me.snoty.backend.integration.moodle.MoodleIntegration
+import me.snoty.integration.common.Integration
+import me.snoty.integration.common.IntegrationContext
+import me.snoty.backend.scheduling.Scheduler
+import me.snoty.backend.spi.IntegrationRegistry
 import org.jetbrains.exposed.sql.Database
+import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
 
 
-class IntegrationManager(database: Database, metricsRegistry: MeterRegistry) {
+class IntegrationManager(database: Database, metricsRegistry: MeterRegistry, scheduler: Scheduler) {
 	private val metricsPool = Executors.newScheduledThreadPool(1)
-	private val context = IntegrationContext(database, metricsRegistry, metricsPool)
+	private val context = IntegrationContext(database, metricsRegistry, metricsPool, scheduler)
+	private val logger = LoggerFactory.getLogger(IntegrationManager::class.java)
 
-	// TODO: replace with SPI
-	val integrations: List<Integration> = listOf(
-		MoodleIntegration(context)
-	)
-
-	fun startup() {
-		integrations.forEach(Integration::start)
+	val integrations: List<Integration> = IntegrationRegistry.getIntegrationFactories().map {
+		it.create(context)
 	}
 
-	fun <T> getScheduleHandler(type: Class<T>): T? {
+	fun startup() {
+		logger.info("Starting ${integrations.size} integrations...")
+		integrations.forEach(Integration::start)
+		logger.info("Integration startup complete!")
+	}
+
+	/**
+	 * Looks up a Fetcher by its type.
+	 * Scheduled tasks will need a fetcher to run on. JobRunr looks up required instance by their type.
+	 */
+	fun <T> getFetchHandler(type: Class<T>): T? {
 		@Suppress("UNCHECKED_CAST")
 		return integrations.find {
-			it.scheduler.javaClass == type
-			|| it.scheduler.javaClass == type.enclosingClass
-		}?.scheduler as T
+			it.fetcher.javaClass == type
+			|| it.fetcher.javaClass == type.enclosingClass
+		}?.fetcher as T
 	}
 }

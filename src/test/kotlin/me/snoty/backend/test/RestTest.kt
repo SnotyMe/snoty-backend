@@ -22,7 +22,7 @@ fun ktorApplicationTest(
 			configureSecurity(config)
 			configureRouting(config)
 			val db = Database.connect("jdbc:h2:mem:app", driver = "org.h2.Driver")
-			addResources(buildInfo, IntegrationManager(db, SimpleMeterRegistry()))
+			addResources(buildInfo, IntegrationManager(db, SimpleMeterRegistry(), TestScheduler()))
 		}
 
 		block()

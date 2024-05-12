@@ -50,7 +50,9 @@ testing {
             useJUnitJupiter()
 
             dependencies {
-                // testing
+                // API (contains things like Config)
+                // for some reason, transitive dependencies aren't included in the test classpath
+                implementation(projects.api)
                 implementation(tests.junit.api)
                 runtimeOnly(tests.junit.engine)
                 runtimeOnly(tests.junit.launcher)
@@ -73,6 +75,9 @@ val devImplementation: Configuration by configurations.getting {
 }
 
 dependencies {
+    implementation(projects.api)
+    testImplementation(projects.api)
+
     // configuration
     implementation(configuration.hoplite.core)
     implementation(configuration.hoplite.yaml)
@@ -130,6 +135,12 @@ dependencies {
 
     // dev
     devImplementation(dev.keycloak.adminClient)
+
+    implementation(projects.integrations.api)
+    // depend on all integrations by default
+    subprojects.filter { it.path.startsWith(":integrations:") }.forEach {
+        implementation(it)
+    }
 }
 
 application {

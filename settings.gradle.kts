@@ -1,3 +1,4 @@
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "snoty-backend"
 
 fun String.kebabCaseToCamelCase(): String {
@@ -122,8 +123,11 @@ dependencyResolutionManagement {
 			library("ktor-opentelemetry", "io.opentelemetry.instrumentation", "opentelemetry-ktor-2.0")
 				.version("2.2.0-alpha")
 			ktorServerPlugin("metrics-micrometer", prefix = "ktor")
+			val micrometer = "1.6.3"
 			library("micrometer-prometheus", "io.micrometer", "micrometer-registry-prometheus")
-				.version("1.6.3")
+				.version(micrometer)
+			library("micrometer", "io.micrometer", "micrometer-core")
+				.version(micrometer)
 		}
 
 		create("log") {
@@ -137,6 +141,10 @@ dependencyResolutionManagement {
 			library("jackson-core", "com.fasterxml.jackson.core", "jackson-core").versionRef(jackson)
 			library("jackson-databind", "com.fasterxml.jackson.core", "jackson-databind").versionRef(jackson)
 			library("jackson-kotlin", "com.fasterxml.jackson.module", "jackson-module-kotlin").versionRef(jackson)
+			val kotlinxSerialization = version("kotlinx-serialization", "1.6.3")
+			library("kotlinx-serialization", "org.jetbrains.kotlinx", "kotlinx-serialization-core").versionRef(kotlinxSerialization)
+			library("kotlinx-serialization-json", "org.jetbrains.kotlinx", "kotlinx-serialization-json").versionRef(kotlinxSerialization)
+			library("kotlinx-datetime", "org.jetbrains.kotlinx", "kotlinx-datetime").version("0.5.0")
 		}
 
 		create("tests") {
@@ -174,3 +182,16 @@ dependencyResolutionManagement {
 		}
 	}
 }
+
+// include all integrations per default
+File(rootDir, "integrations")
+	.listFiles()!!
+	.filter { it.resolve("build.gradle.kts").exists() }
+	.forEach {
+		include(":integrations:${it.name}")
+	}
+include("api")
+include("integrations:moodle")
+findProject(":integrations:moodle")?.name = "moodle"
+include("integrations:webuntis")
+findProject(":integrations:webuntis")?.name = "webuntis"

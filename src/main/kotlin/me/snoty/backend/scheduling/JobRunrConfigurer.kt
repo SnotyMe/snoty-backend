@@ -27,7 +27,7 @@ object JobRunrConfigurer {
 			)
 			.useJobActivator(object : JobActivator {
 				override fun <T : Any> activateJob(type: Class<T>): T? {
-					return integrationManager.getScheduleHandler(type)
+					return integrationManager.getFetchHandler(type)
 				}
 			})
 			.useBackgroundJobServer()
