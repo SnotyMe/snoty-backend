@@ -19,8 +19,10 @@ version = "0.0.1"
 
 val isDevelopment: Boolean = project.findProperty("me.snoty.development")?.toString().toBoolean()
 
-repositories {
-    mavenCentral()
+allprojects {
+    repositories {
+        mavenCentral()
+    }
 }
 
 val devSourceSet = sourceSets.create("dev") {
@@ -48,6 +50,10 @@ testing {
         }
         withType<JvmTestSuite> {
             useJUnitJupiter()
+
+            tasks.withType<Test>().configureEach {
+                maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
+            }
 
             dependencies {
                 // API (contains things like Config)
@@ -139,9 +145,12 @@ dependencies {
 
     implementation(projects.integrations.api)
     // depend on all integrations by default
-    subprojects.filter { it.path.startsWith(":integrations:") }.forEach {
-        implementation(it)
-    }
+    subprojects
+        .filter { it.path.startsWith(":integrations:") }
+        .filter { !it.path.startsWith(":integrations:utils") }
+        .forEach {
+            implementation(it)
+        }
 }
 
 application {

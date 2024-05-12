@@ -5,10 +5,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     api(database.exposed.core)
     api(database.exposed.jdbc)

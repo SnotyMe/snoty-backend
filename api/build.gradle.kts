@@ -3,10 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation(database.hikaricp)
     api(libraries.kotlinx.serialization)

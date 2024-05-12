@@ -203,6 +203,4 @@ findProject(":integrations:moodle")?.name = "moodle"
 include("integrations:webuntis")
 findProject(":integrations:webuntis")?.name = "webuntis"
 include("integrations:utils")
-findProject(":integrations:utils")?.name = "integration-utils"
 include("integrations:utils:calendar")
-findProject(":integrations:utils:calendar")?.name = "calendar"
