@@ -13,13 +13,13 @@ class KeycloakConfigurer(private var realmsResource: RealmsResource, private var
 	/**
 	 * Configures the realm, first validates if the realm exists and if none exists, creates the realm.
 	 */
-	fun configure(): KeycloakConfigurationResult {
+	fun configure(vararg extraRedirectUris: String): KeycloakConfigurationResult {
 		val realms = realmsResource.findAll()
 		if (realms.stream().noneMatch { realm: RealmRepresentation -> realm.id == realmName }) {
 			logger.info { "Realm $realmName does not exist yet, creating..." }
 			createRealm(realmName, realmsResource)
 		}
-		return updateRealm()
+		return updateRealm(*extraRedirectUris)
 	}
 
 	private fun createRealm(realmName: String?, realmsResource: RealmsResource?) {
@@ -33,7 +33,7 @@ class KeycloakConfigurer(private var realmsResource: RealmsResource, private var
 		logger.info { "Created realm '$realmName'" }
 	}
 
-	private fun updateRealm(): KeycloakConfigurationResult {
+	private fun updateRealm(vararg extraRedirectUris: String): KeycloakConfigurationResult {
 		val realmRepresentation = RealmRepresentation().apply {
 			isBruteForceProtected = true
 			isEnabled = true
@@ -56,7 +56,7 @@ class KeycloakConfigurer(private var realmsResource: RealmsResource, private var
 					secret = randomString(64)
 					isDirectAccessGrantsEnabled = true
 					isServiceAccountsEnabled = true
-					redirectUris = listOf("http://localhost:8080/*")
+					redirectUris = listOf("http://localhost:8080/*", *extraRedirectUris)
 					clientsResource.create(this)
 					logger.info { "Created client 'snoty'" }
 				}

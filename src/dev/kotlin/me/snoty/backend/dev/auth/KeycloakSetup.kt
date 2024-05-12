@@ -1,6 +1,7 @@
 package me.snoty.backend.dev.auth
 
 import com.sksamuel.hoplite.ConfigLoaderBuilder
+import com.sksamuel.hoplite.Masked
 import com.sksamuel.hoplite.addFileSource
 import com.sksamuel.hoplite.parsers.PropsParser
 import me.snoty.backend.spi.DevRunnable
@@ -26,20 +27,44 @@ class KeycloakSetup : DevRunnable() {
 			}.getUnsafe()
 		val serverUrl = "http://localhost:${containerConfig.port}"
 
-		val keycloak = KeycloakBuilder.builder()
-			.serverUrl(serverUrl)
-			// the realm of the user we're authenticating with
-			.realm("master")
-			.username(containerConfig.adminUser)
-			.password(containerConfig.adminPassword.value)
-			.clientId(ADMIN_CLI)
-			.build()
-
-		val result = KeycloakConfigurer(keycloak.realms(), REALM_NAME)
-			.configure()
+		val result = setup(serverUrl, containerConfig)
 
 		System.setProperty("config.override.authentication.serverUrl", "$serverUrl/realms/$REALM_NAME")
 		System.setProperty("config.override.authentication.clientId", result.clientId)
 		System.setProperty("config.override.authentication.clientSecret", result.clientSecret)
 	}
+}
+
+fun setup(serverUrl: String, config: KeycloakContainerConfig, vararg extraRedirectUrls: String): KeycloakConfigurationResult {
+	val keycloak = KeycloakBuilder.builder()
+		.serverUrl(serverUrl)
+		// the realm of the user we're authenticating with
+		.realm("master")
+		.username(config.adminUser)
+		.password(config.adminPassword.value)
+		.clientId(ADMIN_CLI)
+		.build()
+
+	val result = KeycloakConfigurer(keycloak.realms(), REALM_NAME)
+		.configure(*extraRedirectUrls)
+
+	return result
+}
+
+fun main() {
+	print("Keycloak URL: ")
+	val keycloakUrl = readln()
+
+	print("Backend URL: ")
+	val backendUrl = readln()
+
+	print("Admin user: ")
+	val adminUser = readln()
+
+	print("Admin password: ")
+	val adminPassword = readln()
+	val config = KeycloakContainerConfig(adminUser, Masked(adminPassword))
+
+	val result = setup(keycloakUrl, config, "$backendUrl/*")
+	println("Result: $result")
 }
