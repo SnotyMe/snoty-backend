@@ -1,11 +1,11 @@
 package me.snoty.integration.untis
 
 import kotlinx.coroutines.runBlocking
-import me.snoty.backend.integration.common.Fetcher
-import me.snoty.backend.integration.common.InstanceId
-import me.snoty.backend.integration.common.IntegrationFetcherFactory
-import me.snoty.backend.integration.common.diff.EntityDiffMetrics
-import me.snoty.backend.integration.common.diff.IUpdatableEntity
+import me.snoty.integration.common.Fetcher
+import me.snoty.integration.common.InstanceId
+import me.snoty.integration.common.IntegrationFetcherFactory
+import me.snoty.integration.common.diff.EntityDiffMetrics
+import me.snoty.integration.common.diff.IUpdatableEntity
 import me.snoty.integration.untis.request.getExams
 import org.slf4j.LoggerFactory
 

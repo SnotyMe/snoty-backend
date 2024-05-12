@@ -1,7 +1,7 @@
-package me.snoty.backend.integration.common.diff
+package me.snoty.integration.common.diff
 
 import kotlinx.serialization.json.Json
-import me.snoty.backend.integration.common.InstanceId
+import me.snoty.integration.common.InstanceId
 import me.snoty.backend.utils.When
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq

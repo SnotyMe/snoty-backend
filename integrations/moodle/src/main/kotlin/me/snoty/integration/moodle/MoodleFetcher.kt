@@ -1,9 +1,11 @@
 package me.snoty.integration.moodle
 
 import kotlinx.coroutines.runBlocking
-import me.snoty.backend.integration.common.*
-import me.snoty.backend.integration.common.diff.EntityDiffMetrics
-import me.snoty.backend.integration.common.diff.IUpdatableEntity
+import me.snoty.integration.common.Fetcher
+import me.snoty.integration.common.InstanceId
+import me.snoty.integration.common.IntegrationFetcherFactory
+import me.snoty.integration.common.diff.EntityDiffMetrics
+import me.snoty.integration.common.diff.IUpdatableEntity
 import me.snoty.integration.moodle.request.getCalendarUpcoming
 import org.slf4j.LoggerFactory
 

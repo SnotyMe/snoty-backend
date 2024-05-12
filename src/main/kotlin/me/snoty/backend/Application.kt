@@ -9,14 +9,11 @@ import me.snoty.backend.scheduling.JobRunrConfigurer
 import me.snoty.backend.scheduling.JobRunrScheduler
 import me.snoty.backend.server.KtorServer
 import me.snoty.backend.spi.DevManager
-import me.snoty.backend.spi.IntegrationRegistry
 import org.jetbrains.exposed.sql.Database
 
 fun main() {
 	// ran pre-config load to allow dev functions to configure the environment
 	DevManager.runDevFunctions()
-
-	println(IntegrationRegistry.getIntegrationFactories())
 
 	val configLoader = ConfigLoaderImpl()
 	val config = configLoader.loadConfig()

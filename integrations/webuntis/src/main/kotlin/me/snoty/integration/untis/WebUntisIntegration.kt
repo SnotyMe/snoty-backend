@@ -1,10 +1,10 @@
 package me.snoty.integration.untis
 
 import kotlinx.serialization.Serializable
-import me.snoty.backend.integration.common.*
-import me.snoty.backend.integration.common.diff.EntityStateTable
-import me.snoty.backend.integration.common.diff.ID
+import me.snoty.integration.common.diff.EntityStateTable
+import me.snoty.integration.common.diff.ID
 import me.snoty.backend.scheduling.JobRequest
+import me.snoty.integration.common.*
 import org.jetbrains.exposed.sql.Column
 import java.util.*
 

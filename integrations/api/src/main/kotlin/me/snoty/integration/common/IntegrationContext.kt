@@ -1,4 +1,4 @@
-package me.snoty.backend.integration.common
+package me.snoty.integration.common
 
 import io.micrometer.core.instrument.MeterRegistry
 import me.snoty.backend.scheduling.Scheduler

@@ -1,4 +1,4 @@
-package me.snoty.backend.integration.common.diff
+package me.snoty.integration.common.diff
 
 import kotlinx.serialization.json.JsonObject
 

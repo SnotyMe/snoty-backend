@@ -1,4 +1,4 @@
-package me.snoty.backend.integration.common
+package me.snoty.integration.common
 
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.dao.id.IdTable
@@ -24,10 +24,10 @@ object IntegrationConfigTable : IdTable<Long>() {
 
 	fun <S> getAllIntegrationConfigs(integrationType: String) = transaction {
 		select(settings, user)
-			.where { this@IntegrationConfigTable.integrationType eq integrationType }
+			.where { IntegrationConfigTable.integrationType eq integrationType }
 			.map { row ->
 				@Suppress("UNCHECKED_CAST")
-				IntegrationConfig(row[user], row[settings] as S)
+				(IntegrationConfig(row[user], row[settings] as S))
 			}
 	}
 }

@@ -1,4 +1,4 @@
-package me.snoty.backend.integration.common
+package me.snoty.integration.common
 
 import me.snoty.backend.User
 import kotlin.reflect.KClass

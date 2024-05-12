@@ -1,6 +1,6 @@
 package me.snoty.backend.spi
 
-import me.snoty.backend.integration.common.IntegrationFactory
+import me.snoty.integration.common.IntegrationFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*

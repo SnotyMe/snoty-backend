@@ -1,9 +1,9 @@
-package me.snoty.backend.integration.common
+package me.snoty.integration.common
 
 import io.micrometer.core.instrument.MeterRegistry
 import me.snoty.backend.User
-import me.snoty.backend.integration.common.diff.EntityDiffMetrics
-import me.snoty.backend.integration.common.diff.EntityStateTable
+import me.snoty.integration.common.diff.EntityDiffMetrics
+import me.snoty.integration.common.diff.EntityStateTable
 import me.snoty.backend.scheduling.JobRequest
 import me.snoty.backend.scheduling.Scheduler
 import org.jetbrains.exposed.sql.Database

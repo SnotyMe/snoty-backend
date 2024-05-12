@@ -1,4 +1,4 @@
-package me.snoty.backend.integration.common.jsonrpc
+package me.snoty.integration.common.jsonrpc
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

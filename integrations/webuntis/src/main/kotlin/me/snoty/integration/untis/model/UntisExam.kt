@@ -6,8 +6,8 @@ import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
-import me.snoty.backend.integration.common.diff.Fields
-import me.snoty.backend.integration.common.diff.UpdatableEntity
+import me.snoty.integration.common.diff.Fields
+import me.snoty.integration.common.diff.UpdatableEntity
 
 @Serializable
 data class UntisExam(

@@ -1,9 +1,9 @@
 package me.snoty.integration.moodle
 
 import kotlinx.serialization.Serializable
-import me.snoty.backend.integration.common.*
-import me.snoty.backend.integration.common.diff.EntityStateTable
-import me.snoty.backend.integration.common.diff.ID
+import me.snoty.integration.common.*
+import me.snoty.integration.common.diff.EntityStateTable
+import me.snoty.integration.common.diff.ID
 import org.jetbrains.exposed.sql.Column
 import org.jobrunr.jobs.lambdas.JobRequest
 import java.util.*

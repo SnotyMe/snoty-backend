@@ -6,8 +6,8 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import me.snoty.backend.integration.common.diff.UpdatableEntity
-import me.snoty.backend.integration.common.diff.Fields
+import me.snoty.integration.common.diff.UpdatableEntity
+import me.snoty.integration.common.diff.Fields
 import me.snoty.integration.moodle.model.raw.MoodleEvent
 import java.time.Instant
 import java.time.ZoneId

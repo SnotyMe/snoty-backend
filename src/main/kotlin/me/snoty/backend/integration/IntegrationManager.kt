@@ -1,8 +1,8 @@
 package me.snoty.backend.integration
 
 import io.micrometer.core.instrument.MeterRegistry
-import me.snoty.backend.integration.common.Integration
-import me.snoty.backend.integration.common.IntegrationContext
+import me.snoty.integration.common.Integration
+import me.snoty.integration.common.IntegrationContext
 import me.snoty.backend.scheduling.Scheduler
 import me.snoty.backend.spi.IntegrationRegistry
 import org.jetbrains.exposed.sql.Database

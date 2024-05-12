@@ -1,4 +1,4 @@
-package me.snoty.backend.integration.common.diff
+package me.snoty.integration.common.diff
 
 /**
  * Represents an entity that can be updated.

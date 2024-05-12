@@ -1,4 +1,4 @@
-package me.snoty.backend.integration.common
+package me.snoty.integration.common
 
 /**
  * Unique ID representing a 3rd party service instance.

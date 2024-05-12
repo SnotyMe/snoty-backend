@@ -1,4 +1,4 @@
-package me.snoty.backend.integration.common.diff
+package me.snoty.integration.common.diff
 
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry

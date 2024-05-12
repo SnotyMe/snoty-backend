@@ -12,8 +12,8 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.reflect.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import me.snoty.backend.integration.common.jsonrpc.JsonRpc
-import me.snoty.backend.integration.common.jsonrpc.JsonRpcResponse
+import me.snoty.integration.common.jsonrpc.JsonRpc
+import me.snoty.integration.common.jsonrpc.JsonRpcResponse
 import me.snoty.integration.untis.param.UntisParam
 import org.apache.http.client.utils.URIBuilder
 import org.slf4j.LoggerFactory
