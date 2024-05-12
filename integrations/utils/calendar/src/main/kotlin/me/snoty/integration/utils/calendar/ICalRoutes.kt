@@ -5,6 +5,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.util.*
 import kotlinx.serialization.Serializable
 import me.snoty.backend.utils.BadRequestException
 import me.snoty.backend.utils.NotFoundException
@@ -22,11 +23,11 @@ fun Route.calendarRoutes(
 	integrationName: String,
 	type: String,
 	calendarBuilder: ICalBuilder<*>
-) = route("/ical") {
+) = route("/ical/$type") {
 	val calendarTable = CalendarTable(integrationName)
 
 	authenticate("jwt-auth") {
-		post("/$type/create") {
+		post {
 			val user = call.getUser()
 			val configId = call.receive<ICalCreateRequest>().configId
 			val settings = IntegrationConfigTable.get<IntegrationSettings>(configId, integrationName)
@@ -37,10 +38,13 @@ fun Route.calendarRoutes(
 				type
 			)
 
+			call.response.header(HttpHeaders.Location, call.url {
+				appendPathSegments("$id.ics")
+			})
 			call.respond(HttpStatusCode.Created, id.toString())
 		}
 	}
-	get("/$type/{calId}.ics") {
+	get("{calId}.ics") {
 		val calId = call.parameters["calId"] ?: throw BadRequestException("Invalid calendar ID")
 		// calendar stored in DB
 		// created by a user before adding to their client to bypass authentication
