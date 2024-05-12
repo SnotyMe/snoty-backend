@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.json.jsonb
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
-data class IntegrationConfig<S>(val user: UUID, val settings: S)
+data class IntegrationConfig<S : IntegrationSettings>(val user: UUID, val settings: S)
 
 val mapper = jacksonObjectMapper()
 
@@ -29,7 +29,7 @@ object IntegrationConfigTable : LongIdTable() {
 		}
 	}
 
-	fun <S> getAllIntegrationConfigs(integrationType: String) = transaction {
+	fun <S : IntegrationSettings> getAllIntegrationConfigs(integrationType: String) = transaction {
 		select(settings, user)
 			.where { IntegrationConfigTable.integrationType eq integrationType }
 			.map { row ->

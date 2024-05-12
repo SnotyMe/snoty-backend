@@ -1,3 +1,6 @@
+plugins {
+	id("org.gradle.toolchains.foojay-resolver-convention") version "0.5.0"
+}
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "snoty-backend"
 
@@ -147,6 +150,8 @@ dependencyResolutionManagement {
 			library("kotlinx-serialization", "org.jetbrains.kotlinx", "kotlinx-serialization-core").versionRef(kotlinxSerialization)
 			library("kotlinx-serialization-json", "org.jetbrains.kotlinx", "kotlinx-serialization-json").versionRef(kotlinxSerialization)
 			library("kotlinx-datetime", "org.jetbrains.kotlinx", "kotlinx-datetime").version("0.5.0")
+
+			library("ical4j", "org.mnode.ical4j", "ical4j").version("4.0.0-rc6")
 		}
 
 		create("tests") {
@@ -197,3 +202,7 @@ include("integrations:moodle")
 findProject(":integrations:moodle")?.name = "moodle"
 include("integrations:webuntis")
 findProject(":integrations:webuntis")?.name = "webuntis"
+include("integrations:utils")
+findProject(":integrations:utils")?.name = "integration-utils"
+include("integrations:utils:calendar")
+findProject(":integrations:utils:calendar")?.name = "calendar"

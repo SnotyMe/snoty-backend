@@ -1,10 +1,9 @@
-package me.snoty.integration.untis.calendar
+package me.snoty.integration.utils.calendar
 
-import me.snoty.integration.untis.WebUntisEntityStateTable
-import me.snoty.integration.untis.model.UntisExam
+import me.snoty.integration.common.diff.EntityStateTable
+import me.snoty.integration.common.diff.Fields
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.component.VEvent
-import net.fortuna.ical4j.model.property.Description
 import net.fortuna.ical4j.model.property.immutable.ImmutableVersion
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
@@ -16,15 +15,18 @@ data class CalendarConfig(
 	val instanceId: Int,
 	val type: String
 )
-object ICalBuilder {
+
+abstract class ICalBuilder<ID>(private val stateTable: EntityStateTable<ID>) {
+	protected abstract fun buildEvent(id: ID, fields: Fields): VEvent
+
 	fun build(calendarConfig: CalendarConfig): Calendar {
 		val userId = calendarConfig.userId
 		val instanceId = calendarConfig.instanceId
 		val type = calendarConfig.type
 		val rows = transaction {
-			WebUntisEntityStateTable.selectAll()
+			stateTable.selectAll()
 				.where {
-					WebUntisEntityStateTable.userId eq userId and (WebUntisEntityStateTable.instanceId eq instanceId) and (WebUntisEntityStateTable.type eq type)
+					stateTable.userId eq userId and (stateTable.instanceId eq instanceId) and (stateTable.type eq type)
 				}
 				.toList()
 		}
@@ -32,12 +34,9 @@ object ICalBuilder {
 		calendar.add<Calendar>(ImmutableVersion.VERSION_2_0)
 
 		rows.forEach { row ->
-			val state = row[WebUntisEntityStateTable.state]
-			val exam = UntisExam.fromFields(row[WebUntisEntityStateTable.id], state)
-			val event = VEvent(exam.startDateTime.dateTime, exam.endDateTime.dateTime, exam.name)
-			event.add<VEvent>(Description(exam.text))
-
-			calendar.add<Calendar>(event)
+			val state = row[stateTable.state]
+			val id = row[stateTable.id]
+			calendar.add<Calendar>(buildEvent(id, state))
 		}
 
 		return calendar

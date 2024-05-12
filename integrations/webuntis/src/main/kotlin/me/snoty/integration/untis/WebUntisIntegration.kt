@@ -6,7 +6,7 @@ import me.snoty.backend.scheduling.JobRequest
 import me.snoty.integration.common.*
 import me.snoty.integration.common.diff.EntityStateTable
 import me.snoty.integration.common.diff.ID
-import me.snoty.integration.untis.calendar.iCalRoute
+import me.snoty.integration.untis.calendar.iCalRoutes
 import org.jetbrains.exposed.sql.Column
 import java.util.*
 
@@ -49,7 +49,7 @@ class WebUntisIntegration(
 	}
 
 	override fun routes(routing: Route) {
-		routing.iCalRoute()
+		routing.iCalRoutes()
 	}
 }
 

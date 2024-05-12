@@ -8,6 +8,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import me.snoty.integration.common.diff.UpdatableEntity
 import me.snoty.integration.common.diff.Fields
+import me.snoty.integration.common.diff.getString
 import me.snoty.integration.moodle.model.raw.MoodleEvent
 import java.time.Instant
 import java.time.ZoneId
@@ -19,13 +20,26 @@ data class MoodleAssignment(
 	val due: LocalDateTime,
 	val state: MoodleAssignmentState
 ) : UpdatableEntity<Long>() {
-	override val type: String = "assignment"
+	override val type: String = TYPE
 
 	@Contextual
 	override val fields: Fields = buildJsonObject {
 		put("name", name)
 		put("due", due.toString())
 		put("state", state.name)
+	}
+
+	companion object {
+		const val TYPE = "assignment"
+
+		fun fromFields(id: Long, fields: Fields): MoodleAssignment {
+			return MoodleAssignment(
+				id = id,
+				name = fields.getString("name"),
+				due = LocalDateTime.parse(fields.getString("due")),
+				state = MoodleAssignmentState.valueOf(fields.getString("state"))
+			)
+		}
 	}
 }
 

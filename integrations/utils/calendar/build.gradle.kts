@@ -9,5 +9,5 @@ repositories {
 
 dependencies {
     compileOnly(projects.integrations.api)
-    implementation(projects.integrations.utils.calendar)
+    api(libraries.ical4j)
 }

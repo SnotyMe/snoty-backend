@@ -1,9 +1,11 @@
 package me.snoty.integration.moodle
 
+import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import me.snoty.integration.common.*
 import me.snoty.integration.common.diff.EntityStateTable
 import me.snoty.integration.common.diff.ID
+import me.snoty.integration.moodle.calendar.iCalRoutes
 import org.jetbrains.exposed.sql.Column
 import org.jobrunr.jobs.lambdas.JobRequest
 import java.util.*
@@ -43,6 +45,10 @@ class MoodleIntegration(
 		override fun create(context: IntegrationContext): Integration {
 			return MoodleIntegration(context)
 		}
+	}
+
+	override fun routes(routing: Route) {
+		routing.iCalRoutes()
 	}
 }
 

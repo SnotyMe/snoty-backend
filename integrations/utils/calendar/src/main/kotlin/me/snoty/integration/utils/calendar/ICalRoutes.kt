@@ -1,4 +1,4 @@
-package me.snoty.integration.untis.calendar
+package me.snoty.integration.utils.calendar
 
 import io.ktor.http.*
 import io.ktor.server.auth.*
@@ -6,12 +6,11 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
+import me.snoty.backend.utils.BadRequestException
 import me.snoty.backend.utils.NotFoundException
 import me.snoty.backend.utils.getUser
 import me.snoty.integration.common.IntegrationConfigTable
-import me.snoty.integration.untis.WebUntisIntegration
-import me.snoty.integration.untis.WebUntisSettings
-import me.snoty.integration.untis.model.UntisExam
+import me.snoty.integration.common.IntegrationSettings
 import net.fortuna.ical4j.data.CalendarOutputter
 import java.nio.charset.StandardCharsets
 import java.util.*
@@ -19,34 +18,37 @@ import java.util.*
 @Serializable
 data class ICalCreateRequest(val configId: Long)
 
-fun Route.iCalRoute() = route("/ical") {
+fun Route.calendarRoutes(
+	integrationName: String,
+	type: String,
+	calendarBuilder: ICalBuilder<*>
+) = route("/ical") {
+	val calendarTable = CalendarTable(integrationName)
+
 	authenticate("jwt-auth") {
-		post("/exams/create") {
+		post("/$type/create") {
 			val user = call.getUser()
 			val configId = call.receive<ICalCreateRequest>().configId
-			val integrationConfig = IntegrationConfigTable.get<WebUntisSettings>(configId, WebUntisIntegration.INTEGRATION_NAME)
+			val settings = IntegrationConfigTable.get<IntegrationSettings>(configId, integrationName)
 				?: throw NotFoundException("Integration config not found")
-
-			val id = WebUntisCalendar.create(
+			val id = calendarTable.create(
 				user.id,
-				integrationConfig.instanceId,
-				UntisExam.TYPE
+				settings.instanceId,
+				type
 			)
 
 			call.respond(HttpStatusCode.Created, id.toString())
 		}
 	}
-	get("/exams/{calId}.ics") {
-		val calId = call.parameters["calId"] ?: return@get call.respondText("Invalid calendar ID", status = HttpStatusCode.BadRequest)
+	get("/$type/{calId}.ics") {
+		val calId = call.parameters["calId"] ?: throw BadRequestException("Invalid calendar ID")
 		// calendar stored in DB
 		// created by a user before adding to their client to bypass authentication
-		val storedCalendar = WebUntisCalendar.get(UUID.fromString(calId), UntisExam.TYPE)
-			?: return@get call.respondText("Calendar not found", status = HttpStatusCode.NotFound)
-		val config = CalendarConfig(storedCalendar[WebUntisCalendar.userId], storedCalendar[WebUntisCalendar.instanceId], UntisExam.TYPE)
-		val calendar = ICalBuilder.build(config)
-
+		val storedCalendar = calendarTable.get(UUID.fromString(calId), type)
+			?: throw NotFoundException("Calendar not found")
+		val config = CalendarConfig(storedCalendar[calendarTable.userId], storedCalendar[calendarTable.instanceId], type)
+		val calendar = calendarBuilder.build(config)
 		val contentType = calendar.getContentType(StandardCharsets.UTF_8)
-
 		val outputter = CalendarOutputter()
 		call.respondOutputStream(ContentType.parse(contentType)) {
 			outputter.output(calendar, this)
