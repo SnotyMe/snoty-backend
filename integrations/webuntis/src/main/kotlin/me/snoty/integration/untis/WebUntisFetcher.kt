@@ -1,7 +1,7 @@
 package me.snoty.integration.untis
 
 import kotlinx.coroutines.runBlocking
-import me.snoty.integration.common.Fetcher
+import me.snoty.integration.common.IntegrationFetcher
 import me.snoty.integration.common.InstanceId
 import me.snoty.integration.common.IntegrationFetcherFactory
 import me.snoty.integration.common.diff.EntityDiffMetrics
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
 class WebUntisFetcher(
 	private val entityDiffMetrics: EntityDiffMetrics,
 	private val untis: WebUntisAPI = WebUntisAPIImpl()
-) : Fetcher<WebUntisJobRequest> {
+) : IntegrationFetcher<WebUntisJobRequest> {
 	private val logger = LoggerFactory.getLogger(javaClass)
 
 	private fun updateStates(instanceId: InstanceId, elements: List<IUpdatableEntity<Int>>) {

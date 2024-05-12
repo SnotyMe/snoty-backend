@@ -1,7 +1,7 @@
 package me.snoty.integration.moodle
 
 import kotlinx.coroutines.runBlocking
-import me.snoty.integration.common.Fetcher
+import me.snoty.integration.common.IntegrationFetcher
 import me.snoty.integration.common.InstanceId
 import me.snoty.integration.common.IntegrationFetcherFactory
 import me.snoty.integration.common.diff.EntityDiffMetrics
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
 open class MoodleFetcher(
 	private val entityDiffMetrics: EntityDiffMetrics,
 	private val moodleAPI: MoodleAPI = MoodleAPIImpl()
-) : Fetcher<MoodleJobRequest> {
+) : IntegrationFetcher<MoodleJobRequest> {
 	private val logger = LoggerFactory.getLogger(javaClass)
 
 	private fun updateStates(instanceId: InstanceId, elements: List<IUpdatableEntity<Long>>) {
@@ -34,9 +34,7 @@ open class MoodleFetcher(
 		override fun create(entityDiffMetrics: EntityDiffMetrics) = MoodleFetcher(entityDiffMetrics, moodleAPI)
 	}
 
-	override fun run(jobRequest: MoodleJobRequest) {
-		runBlocking {
-			fetchAssignments(jobRequest.settings)
-		}
+	override fun run(jobRequest: MoodleJobRequest) = runBlocking {
+		fetchAssignments(jobRequest.settings)
 	}
 }

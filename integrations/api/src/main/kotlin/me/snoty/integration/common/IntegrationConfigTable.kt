@@ -27,7 +27,7 @@ object IntegrationConfigTable : IdTable<Long>() {
 			.where { IntegrationConfigTable.integrationType eq integrationType }
 			.map { row ->
 				@Suppress("UNCHECKED_CAST")
-				(IntegrationConfig(row[user], row[settings] as S))
+				IntegrationConfig(row[user], row[settings] as S)
 			}
 	}
 }

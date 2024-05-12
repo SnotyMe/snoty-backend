@@ -7,7 +7,7 @@ import kotlin.reflect.KClass
 interface Integration {
 	val name: String
 	val settingsType: KClass<out Any>
-	val fetcher: Fetcher<*>
+	val fetcher: IntegrationFetcher<*>
 
 	fun start()
 	fun schedule(user: User, settings: Any)

@@ -12,7 +12,11 @@ object IntegrationRegistry {
 		val loader = ServiceLoader.load(IntegrationFactory::class.java)
 		val integrations = loader.toList()
 
-		logger.debug("Located ${integrations.size} integration factories:\n${integrations.joinToString("\n") { it.javaClass.typeName }}")
+		if (integrations.isEmpty()) {
+			logger.warn("No integration factories found!")
+		} else {
+			logger.debug("Located ${integrations.size} integration factories:\n${integrations.joinToString("\n") { it.javaClass.typeName }}")
+		}
 
 		return integrations
 	}

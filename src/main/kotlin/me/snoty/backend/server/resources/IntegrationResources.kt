@@ -21,7 +21,7 @@ fun Application.integrationResources(integrationManager: IntegrationManager) = r
 						val user = call.getUser()
 						val settings = call.receive(integration.settingsType)
 						integration.schedule(user, settings)
-						call.respond(HttpStatusCode.OK)
+						call.respond(HttpStatusCode.NoContent)
 					}
 				}
 			}

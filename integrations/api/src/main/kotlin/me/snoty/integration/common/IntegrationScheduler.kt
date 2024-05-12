@@ -8,6 +8,6 @@ import me.snoty.backend.scheduling.Scheduler
  */
 class IntegrationScheduler(private val integrationName: String, private val scheduler: Scheduler) {
 	fun scheduleJob(idParts: Collection<Any>, job: JobRequest)
-	// prepend `integrationName` to the `idParts` collection
+		// create a job called "integrationName-instanceId-userId"
 		= scheduler.scheduleJob("$integrationName-${idParts.joinToString("-")}", job)
 }
