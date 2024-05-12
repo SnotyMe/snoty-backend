@@ -15,3 +15,7 @@ dependencies {
     testImplementation(ktor.serialization.kotlinx.json)
     testImplementation(projects.integrations.api)
 }
+
+tasks.test {
+    useJUnitPlatform()
+}
