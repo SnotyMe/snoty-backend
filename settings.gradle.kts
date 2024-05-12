@@ -131,6 +131,8 @@ dependencyResolutionManagement {
 		}
 
 		create("log") {
+			library("kotlinLogging", "io.github.oshai", "kotlin-logging")
+				.version("6.0.9")
 			library("logback", "ch.qos.logback", "logback-classic")
 				.version("1.4.14")
 		}

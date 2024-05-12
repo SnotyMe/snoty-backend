@@ -1,5 +1,6 @@
 package me.snoty.integration.moodle
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.apache.*
@@ -11,7 +12,6 @@ import io.ktor.util.reflect.*
 import kotlinx.serialization.json.Json
 import me.snoty.integration.moodle.param.MoodleParam
 import org.apache.http.client.utils.URIBuilder
-import org.slf4j.LoggerFactory
 import java.net.URI
 
 interface MoodleAPI {
@@ -29,7 +29,7 @@ suspend inline fun <reified T> MoodleAPI.request(request: MoodleRequest): T = re
 const val MOODLE_WS = "/webservice/rest/server.php"
 
 class MoodleAPIImpl : MoodleAPI {
-	private val logger = LoggerFactory.getLogger(MoodleAPIImpl::class.java)
+	private val logger = KotlinLogging.logger {}
 	private val httpClient = HttpClient(Apache) {
 		install(ContentNegotiation) {
 			json(Json {
@@ -42,7 +42,12 @@ class MoodleAPIImpl : MoodleAPI {
 		val response = httpClient.post(request.toUri().toASCIIString()) {
 			header("Content-Type", "application/json; charset=UTF-8")
 		}
-		logger.debug("Fetched Moodle Data: HTTP {} - {}", response.status.value, response.bodyAsText())
+		if (logger.isDebugEnabled()) {
+			val body = response.bodyAsText()
+			logger.debug {
+				"Fetched Moodle Data: HTTP ${response.status.value} - $body"
+			}
+		}
 
 		return response.body(type)
 	}

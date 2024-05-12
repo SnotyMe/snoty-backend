@@ -1,15 +1,14 @@
 package me.snoty.backend.dev.auth
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import me.snoty.backend.dev.randomString
 import org.keycloak.admin.client.resource.RealmsResource
 import org.keycloak.representations.idm.ClientRepresentation
 import org.keycloak.representations.idm.RealmRepresentation
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import kotlin.time.Duration.Companion.days
 
 class KeycloakConfigurer(private var realmsResource: RealmsResource, private var realmName: String) {
-	private val logger: Logger = LoggerFactory.getLogger(javaClass)
+	private val logger = KotlinLogging.logger {}
 
 	/**
 	 * Configures the realm, first validates if the realm exists and if none exists, creates the realm.
@@ -17,7 +16,7 @@ class KeycloakConfigurer(private var realmsResource: RealmsResource, private var
 	fun configure(): KeycloakConfigurationResult {
 		val realms = realmsResource.findAll()
 		if (realms.stream().noneMatch { realm: RealmRepresentation -> realm.id == realmName }) {
-			logger.info("Realm {} does not exist yet, creating...", realmName)
+			logger.info { "Realm $realmName does not exist yet, creating..." }
 			createRealm(realmName, realmsResource)
 		}
 		return updateRealm()
@@ -31,7 +30,7 @@ class KeycloakConfigurer(private var realmsResource: RealmsResource, private var
 		realmRepresentation.isEnabled = false
 
 		realmsResource!!.create(realmRepresentation)
-		logger.info("Created realm '{}'", realmName)
+		logger.info { "Created realm '$realmName'" }
 	}
 
 	private fun updateRealm(): KeycloakConfigurationResult {
@@ -51,7 +50,7 @@ class KeycloakConfigurer(private var realmsResource: RealmsResource, private var
 
 		val clientsResource = realmResource.clients()
 		return (clientsResource.findByClientId("snoty").firstOrNull() ?: let {
-			logger.info("Client 'snoty' does not exist yet, creating...")
+			logger.info { "Client 'snoty' does not exist yet, creating..." }
 				ClientRepresentation().apply {
 					clientId = "snoty"
 					secret = randomString(64)
@@ -59,7 +58,7 @@ class KeycloakConfigurer(private var realmsResource: RealmsResource, private var
 					isServiceAccountsEnabled = true
 					redirectUris = listOf("http://localhost:8080/*")
 					clientsResource.create(this)
-					logger.info("Created client 'snoty'")
+					logger.info { "Created client 'snoty'" }
 				}
 			})
 		.let {

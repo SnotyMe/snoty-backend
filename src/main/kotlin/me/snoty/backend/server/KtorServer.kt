@@ -1,5 +1,6 @@
 package me.snoty.backend.server
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -9,7 +10,6 @@ import me.snoty.backend.config.Config
 import me.snoty.backend.integration.IntegrationManager
 import me.snoty.backend.server.plugins.*
 import org.jetbrains.exposed.sql.Database
-import org.slf4j.LoggerFactory
 
 class KtorServer(
 	private val config: Config,
@@ -18,13 +18,13 @@ class KtorServer(
 	private val metricsRegistry: MeterRegistry,
 	private val integrationManager: IntegrationManager
 ) {
-	private val logger = LoggerFactory.getLogger(KtorServer::class.java)
+	private val logger = KotlinLogging.logger {}
 
 	fun start(wait: Boolean) {
 		val dev = config.environment.isDev()
 
 		if (dev) {
-			logger.debug("Running in development mode")
+			logger.debug { "Running in development mode" }
 			System.setProperty("io.ktor.development", "true")
 		}
 

@@ -1,28 +1,28 @@
 package me.snoty.backend.integration
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.micrometer.core.instrument.MeterRegistry
 import me.snoty.integration.common.Integration
 import me.snoty.integration.common.IntegrationContext
 import me.snoty.backend.scheduling.Scheduler
 import me.snoty.backend.spi.IntegrationRegistry
 import org.jetbrains.exposed.sql.Database
-import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
 
 
 class IntegrationManager(database: Database, metricsRegistry: MeterRegistry, scheduler: Scheduler) {
 	private val metricsPool = Executors.newScheduledThreadPool(1)
 	private val context = IntegrationContext(database, metricsRegistry, metricsPool, scheduler)
-	private val logger = LoggerFactory.getLogger(IntegrationManager::class.java)
+	private val logger = KotlinLogging.logger {}
 
 	val integrations: List<Integration> = IntegrationRegistry.getIntegrationFactories().map {
 		it.create(context)
 	}
 
 	fun startup() {
-		logger.info("Starting ${integrations.size} integrations...")
+		logger.info { "Starting ${integrations.size} integrations..." }
 		integrations.forEach(Integration::start)
-		logger.info("Integration startup complete!")
+		logger.info { "Integration startup complete!" }
 	}
 
 	/**

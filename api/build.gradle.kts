@@ -13,4 +13,5 @@ dependencies {
     api(libraries.kotlinx.datetime)
     implementation(database.exposed.core)
     api(libraries.jobrunr)
+    api(log.kotlinLogging)
 }

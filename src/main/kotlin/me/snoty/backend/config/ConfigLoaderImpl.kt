@@ -6,11 +6,13 @@ import com.sksamuel.hoplite.addResourceSource
 import com.sksamuel.hoplite.fp.getOrElse
 import com.sksamuel.hoplite.parsers.PropsParser
 import com.sksamuel.hoplite.parsers.PropsPropertySource
+import io.github.oshai.kotlinlogging.KotlinLogging
 import me.snoty.backend.build.BuildInfo
-import org.slf4j.LoggerFactory
 import java.util.*
 
 class ConfigLoaderImpl : ConfigLoader {
+	private val logger = KotlinLogging.logger {}
+
 	override fun loadConfig(): Config {
 		val pgContainerConfig = loadContainerConfig()
 
@@ -39,9 +41,9 @@ class ConfigLoaderImpl : ConfigLoader {
 		.addFileSource("infra/database/.env", optional = false, allowEmpty = false)
 		.build()
 		.loadConfig<PGContainerConfig>()
-		.onFailure { LoggerFactory.getLogger(javaClass).warn("Failed to load PGContainerConfig: ${it.description()}") }
+		.onFailure { logger.warn { "Failed to load PGContainerConfig: ${it.description()}" } }
 		.map {
-			LoggerFactory.getLogger(javaClass).info("Loaded PGContainerConfig: $it")
+			logger.info { "Loaded PGContainerConfig: $it" }
 			Properties().apply {
 				setProperty("database.username", it.user)
 				setProperty("database.password", it.password.value)

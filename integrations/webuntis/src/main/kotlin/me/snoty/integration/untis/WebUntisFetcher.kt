@@ -1,19 +1,19 @@
 package me.snoty.integration.untis
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
-import me.snoty.integration.common.IntegrationFetcher
 import me.snoty.integration.common.InstanceId
+import me.snoty.integration.common.IntegrationFetcher
 import me.snoty.integration.common.IntegrationFetcherFactory
 import me.snoty.integration.common.diff.EntityDiffMetrics
 import me.snoty.integration.common.diff.IUpdatableEntity
 import me.snoty.integration.untis.request.getExams
-import org.slf4j.LoggerFactory
 
 class WebUntisFetcher(
 	private val entityDiffMetrics: EntityDiffMetrics,
 	private val untis: WebUntisAPI = WebUntisAPIImpl()
 ) : IntegrationFetcher<WebUntisJobRequest> {
-	private val logger = LoggerFactory.getLogger(javaClass)
+	private val logger = KotlinLogging.logger {}
 
 	private fun updateStates(instanceId: InstanceId, elements: List<IUpdatableEntity<Int>>) {
 		elements.forEach {
@@ -26,7 +26,7 @@ class WebUntisFetcher(
 		val instanceId = untisSettings.baseUrl.hashCode()
 		val exams = untis.getExams(untisSettings)
 		updateStates(instanceId, exams)
-		logger.info("Fetched ${exams.size} exams for ${untisSettings.username}")
+		logger.info { "Fetched ${exams.size} exams for ${untisSettings.username}" }
 	}
 
 	class Factory(private val untis: WebUntisAPI) : IntegrationFetcherFactory<WebUntisJobRequest> {

@@ -1,5 +1,6 @@
 package me.snoty.backend
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import me.snoty.backend.build.DevBuildInfo
@@ -12,6 +13,8 @@ import me.snoty.backend.spi.DevManager
 import org.jetbrains.exposed.sql.Database
 
 fun main() {
+	val logger = KotlinLogging.logger {}
+
 	// ran pre-config load to allow dev functions to configure the environment
 	DevManager.runDevFunctions()
 
@@ -24,7 +27,7 @@ fun main() {
 		// when ran without gradle, the build info is not available
 		// it'll just default to dev build info in this case
 		if (config.environment.isDev()) {
-			println("Failed to load build info: ${e.message}")
+			logger.warn { "Failed to load build info: ${e.message}" }
 			DevBuildInfo
 		} else {
 			throw e

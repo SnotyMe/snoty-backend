@@ -1,7 +1,9 @@
 <configuration>
+    <statusListener class="me.snoty.backend.logging.StatusListener"/>
+    <conversionRule conversionWord="highlight" converterClass="me.snoty.backend.logging.ColorConversion"/>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %X{call-id} %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%cyan(%d{YYYY-MM-dd HH:mm:ss.SSS}) %green({%thread}) [%highlight(%level)] %X{call-id} %blue(%logger{36}:%L) - %msg%n</pattern>
         </encoder>
     </appender>
     <root level="${LOG_LEVEL:-INFO}">

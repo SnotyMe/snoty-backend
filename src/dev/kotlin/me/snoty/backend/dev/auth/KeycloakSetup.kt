@@ -5,12 +5,11 @@ import com.sksamuel.hoplite.addFileSource
 import com.sksamuel.hoplite.parsers.PropsParser
 import me.snoty.backend.spi.DevRunnable
 import org.keycloak.admin.client.KeycloakBuilder
-import org.slf4j.LoggerFactory
 
 const val REALM_NAME = "snoty"
 const val ADMIN_CLI = "admin-cli"
 
-class KeycloakSetup : DevRunnable {
+class KeycloakSetup : DevRunnable() {
 	override fun run() {
 		val containerConfig = ConfigLoaderBuilder.default()
 			.addParser("env", PropsParser())
@@ -21,9 +20,9 @@ class KeycloakSetup : DevRunnable {
 			.addFileSource("infra/keycloak/.env.default", optional = true, allowEmpty = false)
 			.build()
 			.loadConfig<KeycloakContainerConfig>()
-			.onFailure { LoggerFactory.getLogger(javaClass).warn("Failed to load KeycloakContainerConfig: ${it.description()}") }
+			.onFailure { logger.warn { "Failed to load KeycloakContainerConfig: ${it.description()}" } }
 			.also {
-				LoggerFactory.getLogger(javaClass).info("Loaded KeycloakContainerConfig: $it")
+				logger.info { "Loaded KeycloakContainerConfig: $it" }
 			}.getUnsafe()
 		val serverUrl = "http://localhost:${containerConfig.port}"
 

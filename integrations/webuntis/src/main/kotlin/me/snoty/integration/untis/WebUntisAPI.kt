@@ -1,5 +1,6 @@
 package me.snoty.integration.untis
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.apache.*
@@ -16,7 +17,6 @@ import me.snoty.integration.common.jsonrpc.JsonRpc
 import me.snoty.integration.common.jsonrpc.JsonRpcResponse
 import me.snoty.integration.untis.param.UntisParam
 import org.apache.http.client.utils.URIBuilder
-import org.slf4j.LoggerFactory
 import java.net.URI
 
 interface WebUntisAPI {
@@ -32,7 +32,7 @@ interface WebUntisAPI {
 suspend inline fun <reified T> WebUntisAPI.request(request: UntisRequest): T = request<T>(typeInfo<JsonRpcResponse<T>>(), request).result
 
 class WebUntisAPIImpl : WebUntisAPI {
-	private val logger = LoggerFactory.getLogger(WebUntisAPIImpl::class.java)
+	private val logger = KotlinLogging.logger {}
 	private val httpClient = HttpClient(Apache) {
 		install(ContentNegotiation) {
 			json()
@@ -53,7 +53,12 @@ class WebUntisAPIImpl : WebUntisAPI {
 			header("Content-Type", "application/json; charset=UTF-8")
 			setBody(request.data)
 		}
-		logger.debug("Fetched WebUntis Data: HTTP {} - {}", response.status.value, response.bodyAsText())
+		if (logger.isDebugEnabled()) {
+			val body = response.bodyAsText()
+			logger.debug {
+				"Fetched WebUntis Data: HTTP ${response.status.value} - $body"
+			}
+		}
 
 		return response.body(type)
 	}
