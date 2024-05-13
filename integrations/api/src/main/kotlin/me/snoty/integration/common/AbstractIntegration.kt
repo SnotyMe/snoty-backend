@@ -1,5 +1,6 @@
 package me.snoty.integration.common
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.micrometer.core.instrument.MeterRegistry
 import me.snoty.backend.User
 import me.snoty.backend.scheduling.JobRequest
@@ -12,6 +13,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
+import kotlin.reflect.jvm.jvmName
 
 abstract class AbstractIntegration<S : IntegrationSettings, R : JobRequest>(
 	final override val name: String,
@@ -23,6 +25,8 @@ abstract class AbstractIntegration<S : IntegrationSettings, R : JobRequest>(
 	private val metricsPool: ScheduledExecutorService,
 	scheduler: Scheduler
 ) : Integration {
+	protected val logger = KotlinLogging.logger(this::class.jvmName)
+
 	constructor(
 		name: String,
 		settingsType: KClass<S>,
@@ -57,6 +61,9 @@ abstract class AbstractIntegration<S : IntegrationSettings, R : JobRequest>(
 
 	private fun scheduleAll() {
 		val allSettings = IntegrationConfigTable.getAllIntegrationConfigs<S>(name)
+		logger.debug {
+			"Scheduling ${allSettings.size} jobs for $name"
+		}
 		allSettings.forEach(::schedule)
 	}
 

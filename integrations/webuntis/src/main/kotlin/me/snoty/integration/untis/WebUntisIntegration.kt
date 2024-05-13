@@ -17,7 +17,7 @@ data class WebUntisSettings(
 	val username: String,
 	val appSecret: String
 ) : IntegrationSettings {
-	override val instanceId: Int = baseUrl.hashCode()
+	override val instanceId = baseUrl.instanceId
 }
 
 object WebUntisEntityStateTable : EntityStateTable<Int>() {

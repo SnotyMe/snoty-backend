@@ -16,7 +16,7 @@ data class MoodleSettings(
 	val username: String,
 	val appSecret: String
 ) : IntegrationSettings {
-	override val instanceId: Int = baseUrl.hashCode()
+	override val instanceId = baseUrl.instanceId
 }
 
 object MoodleEntityStateTable : EntityStateTable<Long>() {

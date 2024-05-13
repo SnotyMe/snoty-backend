@@ -24,7 +24,7 @@ class WebUntisFetcher(
 	}
 
 	private suspend fun fetchExams(untisSettings: WebUntisSettings, userId: UUID) {
-		val instanceId = untisSettings.baseUrl.hashCode()
+		val instanceId = untisSettings.instanceId
 		val exams = untis.getExams(untisSettings)
 		updateStates(instanceId, exams, userId)
 		logger.info { "Fetched ${exams.size} exams for ${untisSettings.username}" }

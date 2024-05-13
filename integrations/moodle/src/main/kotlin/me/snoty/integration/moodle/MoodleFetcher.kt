@@ -24,7 +24,7 @@ open class MoodleFetcher(
 	}
 
 	private suspend fun fetchAssignments(moodleSettings: MoodleSettings, userId: UUID) {
-		val instanceId = moodleSettings.baseUrl.hashCode()
+		val instanceId = moodleSettings.instanceId
 		val assignments = moodleAPI.getCalendarUpcoming(moodleSettings)
 		updateStates(assignments, instanceId, userId)
 		logger.info { "Fetched ${assignments.size} assignments for ${moodleSettings.username}" }

@@ -27,7 +27,7 @@ abstract class EntityStateTable<ID>(
 	val type = varchar("type", 255)
 	val state = jsonb<Fields>("state", json)
 	private val checksum = long("checksum")
-	val userId = uuid("user_id").nullable()
+	val userId = uuid("user_id")
 
 	private fun deleteIdentifier(entity: IUpdatableEntity<ID>, instanceId: InstanceId, userId: UUID): EntityStateTable<ID>.(ISqlExpressionBuilder) -> Op<Boolean> = {
 		(id eq entity.id) and (type eq entity.type) and (this.instanceId eq instanceId) and (this.userId eq userId)
