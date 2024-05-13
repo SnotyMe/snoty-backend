@@ -22,27 +22,27 @@ abstract class EntityStateTable<ID>(
 	 * This is required to build the primary key at a point where `id` is already initialized.
 	 */
 	abstract override val primaryKey: PrimaryKey
-	fun buildPrimaryKey() = PrimaryKey(id, instanceId)
+	fun buildPrimaryKey() = PrimaryKey(id, instanceId, userId)
 
 	val type = varchar("type", 255)
 	val state = jsonb<Fields>("state", json)
 	private val checksum = long("checksum")
 	val userId = uuid("user_id").nullable()
 
-	private fun deleteIdentifier(instanceId: InstanceId, entity: IUpdatableEntity<ID>): EntityStateTable<ID>.(ISqlExpressionBuilder) -> Op<Boolean> = {
-		(id eq entity.id) and (type eq entity.type) and (this.instanceId eq instanceId)
+	private fun deleteIdentifier(entity: IUpdatableEntity<ID>, instanceId: InstanceId, userId: UUID): EntityStateTable<ID>.(ISqlExpressionBuilder) -> Op<Boolean> = {
+		(id eq entity.id) and (type eq entity.type) and (this.instanceId eq instanceId) and (this.userId eq userId)
 	}
 
-	private fun identifier(instanceId: InstanceId, entity: IUpdatableEntity<ID>): ISqlExpressionBuilder.() -> Op<Boolean> = {
-		(id eq entity.id) and (type eq entity.type) and (this@EntityStateTable.instanceId eq instanceId)
+	private fun identifier(entity: IUpdatableEntity<ID>, instanceId: InstanceId, userId: UUID): ISqlExpressionBuilder.() -> Op<Boolean> = {
+		(id eq entity.id) and (type eq entity.type) and (this@EntityStateTable.instanceId eq instanceId) and (this@EntityStateTable.userId eq userId)
 	}
 
-	fun compareState(instanceId: InstanceId, entity: IUpdatableEntity<ID>): DiffResult {
+	fun compareState(entity: IUpdatableEntity<ID>, instanceId: InstanceId, userId: UUID): DiffResult {
 		val entityChecksum = entity.checksum
 		// if the checksum matches, we don't want to query the JSON for performance reasons
 		val stateQuery = When(checksum neq entityChecksum, state, null, state.columnType)
 		val result = select(checksum, stateQuery)
-			.where(identifier(instanceId, entity)).singleOrNull()
+			.where(identifier(entity, instanceId, userId)).singleOrNull()
 				// not found in DB => newly created entity
 				?: return DiffResult.Created(entityChecksum, entity.fields)
 
@@ -56,11 +56,11 @@ abstract class EntityStateTable<ID>(
 	}
 
 	fun compareAndUpdateState(entity: IUpdatableEntity<ID>, instanceId: InstanceId, userId: UUID): DiffResult = transaction {
-		val diffResult = compareState(instanceId, entity)
+		val diffResult = compareState(entity, instanceId, userId)
 		when (diffResult) {
 			// entity has changed since last time
 			is DiffResult.Updated -> {
-				update(identifier(instanceId, entity)) {
+				update(identifier(entity, instanceId, userId)) {
 					it[state] = entity.fields
 					it[checksum] = entity.checksum
 				}
@@ -78,7 +78,7 @@ abstract class EntityStateTable<ID>(
 			}
 			// entity has been deleted
 			is DiffResult.Deleted -> {
-				deleteWhere(op=deleteIdentifier(instanceId, entity))
+				deleteWhere(op=deleteIdentifier(entity, instanceId, userId))
 			}
 			else -> return@transaction diffResult
 		}
