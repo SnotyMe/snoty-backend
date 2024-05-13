@@ -16,7 +16,8 @@ It can be used to test the [Moodle REST API](https://docs.moodle.org/dev/Web_ser
    enable `moodle/webservice:createmobiletoken` and `webservice/rest:use`
 6. Create a new token\
    => `curl 'http://localhost:21080/login/token.php?username=<username>&password=<password>&service=moodle_mobile_app'`\
-   Use the credentials of the student user
+   Use the credentials of the student user. \
+   The `token` field of the response is the `appSecret` required in the integration setup.
 
 ## Create a course
 1. Create a course\
