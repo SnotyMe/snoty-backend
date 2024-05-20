@@ -5,6 +5,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import me.snoty.backend.test.ktorApplicationTest
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.InstanceOfAssertFactories
 import org.json.JSONObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -19,6 +20,8 @@ class BuildInfoTest {
 			val body = JSONObject(bodyAsText()).toMap()
 
 			Assertions.assertThat(body)
+				.containsKeys("hostname", "serverTime", "buildInfo")
+				.extractingByKey("buildInfo", InstanceOfAssertFactories.map(String::class.java, String::class.java))
 				.containsKeys("gitBranch", "gitCommit", "buildDate", "version", "application")
 		}
 	}
