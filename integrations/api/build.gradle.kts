@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
-
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
@@ -22,10 +20,10 @@ dependencies {
     testImplementation(kotlin("test"))
 }
 
-archivesName = "integration-api"
+base.archivesName = "integration-api"
 
 subprojects {
-    archivesName = "integration-${this.name}"
+    base.archivesName = "integration-${this.name}"
 }
 
 tasks.test {
