@@ -49,7 +49,7 @@ dependencyResolutionManagement {
 		fun VersionCatalogBuilder.ktorClientPlugin(name: String, prefix: String? = null, hierarchy: Boolean = false)
 			= ktorPlugin("client", name, prefix, hierarchy)
 
-		val kotlinVersion = "1.9.23"
+		val kotlinVersion = "2.0.0"
 
 		fun VersionCatalogBuilder.kotlinPlugin(name: String) {
 			plugin("kotlin-$name", "org.jetbrains.kotlin.plugin.$name")
