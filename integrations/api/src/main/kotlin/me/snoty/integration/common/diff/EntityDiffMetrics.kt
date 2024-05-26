@@ -3,19 +3,19 @@ package me.snoty.integration.common.diff
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
+import kotlinx.coroutines.runBlocking
+import me.snoty.backend.observability.METRIC_PREFIX
+import me.snoty.integration.common.diff.state.EntityStateCollection
+import me.snoty.integration.common.diff.state.getStatistics
 import java.util.concurrent.atomic.AtomicLong
 
 
-private const val NAMESPACE = "entity.diff"
+private const val NAMESPACE = "${METRIC_PREFIX}_entity.diff"
 
 class EntityDiffMetrics(
 	private val registry: MeterRegistry,
-	private val database: Database,
 	private val service: String,
-	private val entityStateTable: EntityStateTable<*>
+	private val entityStateCollection: EntityStateCollection
 ) {
 	private val byStatus = DiffResult::class.sealedSubclasses.associateWith {
 		val name = it.simpleName!!.lowercase()
@@ -23,6 +23,10 @@ class EntityDiffMetrics(
 			.description("Number of $name entities")
 			.tag("service", service)
 			.register(registry)
+	}
+
+	fun process(diffResults: Collection<DiffResult>) {
+		diffResults.forEach(::process)
 	}
 
 	fun process(diffResult: DiffResult) {
@@ -34,11 +38,12 @@ class EntityDiffMetrics(
 
 	inner class Job : Runnable {
 		override fun run() {
-			val entityCount = transaction(database) {
-				entityStateTable.selectAll()
-					.count()
+			val stats = entityStateCollection.getStatistics()
+			runBlocking {
+				stats.collect { value ->
+					storedEntities.set(value.totalEntities)
+				}
 			}
-			storedEntities.set(entityCount)
 		}
 	}
 }

@@ -1,41 +1,47 @@
 package me.snoty.integration.utils.calendar
 
-import me.snoty.integration.common.diff.EntityStateTable
+import com.mongodb.client.model.Aggregates
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Projections
+import me.snoty.backend.database.mongo.Aggregations
+import me.snoty.backend.database.mongo.aggregate
+import me.snoty.integration.common.InstanceId
+import me.snoty.integration.common.diff.state.EntityState
+import me.snoty.integration.common.diff.state.EntityStateCollection
 import me.snoty.integration.common.diff.Fields
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.immutable.ImmutableVersion
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 data class CalendarConfig(
 	val userId: UUID,
-	val instanceId: Int,
+	val instanceId: InstanceId,
 	val type: String
 )
 
-abstract class ICalBuilder<ID>(private val stateTable: EntityStateTable<ID>) {
-	protected abstract fun buildEvent(id: ID, fields: Fields): VEvent
+abstract class ICalBuilder<ID>(private val entityStateCollection: EntityStateCollection) {
+	protected abstract fun buildEvent(id: String, fields: Fields): VEvent
 
-	fun build(calendarConfig: CalendarConfig): Calendar {
+	suspend fun build(calendarConfig: CalendarConfig): Calendar {
 		val userId = calendarConfig.userId
 		val instanceId = calendarConfig.instanceId
 		val type = calendarConfig.type
-		val rows = transaction {
-			stateTable.selectAll()
-				.where {
-					stateTable.userId eq userId and (stateTable.instanceId eq instanceId) and (stateTable.type eq type)
-				}
-				.toList()
-		}
+		val rows = entityStateCollection.aggregate<EntityState>(
+			Aggregates.match(Filters.eq("_id", userId)),
+			Aggregations.project(
+				Projections.exclude("_id"),
+				Projections.computed("entity", "\$entities.$instanceId")
+			),
+			Aggregates.unwind("entity"),
+			Aggregates.match(Filters.eq("entity.type", type))
+		)
 		val calendar = Calendar()
 		calendar.add<Calendar>(ImmutableVersion.VERSION_2_0)
 
-		rows.forEach { row ->
-			val state = row[stateTable.state]
-			val id = row[stateTable.id]
+		rows.collect { row ->
+			val state = row.state
+			val id = row.id
 			calendar.add<Calendar>(buildEvent(id, state))
 		}
 

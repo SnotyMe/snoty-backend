@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 import io.github.simulatan.gradle.plugin.buildinfo.configuration.BuildInfoExtension
 import io.github.simulatan.gradle.plugin.buildinfo.configuration.PropertiesOutputLocation
 import org.eclipse.jgit.api.Git
@@ -60,8 +62,6 @@ testing {
                 // for some reason, transitive dependencies aren't included in the test classpath
                 implementation(projects.api)
                 implementation(tests.junit.api)
-                runtimeOnly(tests.junit.engine)
-                runtimeOnly(tests.junit.launcher)
                 implementation(tests.ktor.server.tests)
                 implementation(tests.mockk)
                 implementation(tests.assertj.core)
@@ -71,6 +71,9 @@ testing {
                 implementation(tests.testcontainers.junit)
                 implementation(tests.testcontainers.keycloak)
                 implementation(devSourceSet.output)
+
+                runtimeOnly(tests.junit.engine)
+                runtimeOnly(tests.junit.launcher)
             }
         }
     }
@@ -127,6 +130,8 @@ dependencies {
     implementation(database.exposed.json)
     implementation(database.postgres.driver)
     implementation(database.hikaricp)
+    implementation(database.mongodb)
+    implementation(libraries.bson.kotlinx)
 
     // logging
     implementation(log.logback)

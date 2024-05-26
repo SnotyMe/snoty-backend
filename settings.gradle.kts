@@ -120,6 +120,9 @@ dependencyResolutionManagement {
 				.version("42.7.3")
 			library("hikaricp", "com.zaxxer", "HikariCP")
 				.version("5.1.0")
+
+			library("mongodb", "org.mongodb", "mongodb-driver-kotlin-coroutine")
+				.version("5.1.0")
 		}
 
 		create("monitoring") {
@@ -150,6 +153,7 @@ dependencyResolutionManagement {
 			library("kotlinx-serialization", "org.jetbrains.kotlinx", "kotlinx-serialization-core").versionRef(kotlinxSerialization)
 			library("kotlinx-serialization-json", "org.jetbrains.kotlinx", "kotlinx-serialization-json").versionRef(kotlinxSerialization)
 			library("kotlinx-datetime", "org.jetbrains.kotlinx", "kotlinx-datetime").version("0.5.0")
+			library("bson-kotlinx", "org.mongodb", "bson-kotlinx").version("5.1.0")
 
 			library("ical4j", "org.mnode.ical4j", "ical4j").version("4.0.0-rc6")
 		}

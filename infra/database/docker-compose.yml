@@ -15,3 +15,11 @@ services:
       - ./data:/var/lib/postgresql/data
     ports:
       - ${POSTGRES_PORT:-5432}:5432
+  mongodb:
+    image: mongo:8.0-rc
+    user: ${UID:-1000}:${GID:-1000}
+    restart: unless-stopped
+    volumes:
+      - ./mongo-data:/data/db
+    ports:
+      - ${MONGO_PORT:-27017}:27017

@@ -2,6 +2,7 @@ package me.snoty.integration.common
 
 import io.ktor.server.routing.*
 import me.snoty.backend.User
+import org.bson.codecs.Codec
 import kotlin.reflect.KClass
 
 
@@ -21,4 +22,10 @@ interface Integration {
 
 interface IntegrationFactory {
 	fun create(context: IntegrationContext): Integration
+
+	val mongoDBCodecs: Collection<Codec<*>>
+}
+
+abstract class DefaultIntegrationFactory : IntegrationFactory {
+	override val mongoDBCodecs: Collection<Codec<*>> = emptyList()
 }

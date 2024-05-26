@@ -4,3 +4,5 @@ import com.zaxxer.hikari.HikariDataSource
 
 @JvmInline
 value class DatabaseConfig(val value: HikariDataSource)
+
+data class MongoConfig(val connectionString: String)

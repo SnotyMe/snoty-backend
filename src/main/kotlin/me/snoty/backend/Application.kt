@@ -1,15 +1,21 @@
 package me.snoty.backend
 
+import com.mongodb.kotlin.client.coroutine.MongoClient
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import me.snoty.backend.build.DevBuildInfo
 import me.snoty.backend.config.ConfigLoaderImpl
+import me.snoty.backend.database.mongo.apiCodecModule
 import me.snoty.backend.integration.IntegrationManager
 import me.snoty.backend.scheduling.JobRunrConfigurer
 import me.snoty.backend.scheduling.JobRunrScheduler
 import me.snoty.backend.server.KtorServer
 import me.snoty.backend.spi.DevManager
+import me.snoty.backend.spi.IntegrationRegistry
+import me.snoty.integration.common.IntegrationFactory
+import me.snoty.integration.common.utils.integrationsApiCodecModule
+import org.bson.codecs.configuration.CodecRegistries
 import org.jetbrains.exposed.sql.Database
 
 fun main() {
@@ -35,10 +41,22 @@ fun main() {
 	}
 	val dataSource = config.database.value
 	val database = Database.connect(dataSource)
+
+	val client = MongoClient.create(config.mongodb.connectionString)
+
+	val integrationCodecs = IntegrationRegistry.getIntegrationFactories().flatMap(IntegrationFactory::mongoDBCodecs)
+	val mongoDB = client.getDatabase("snoty").withCodecRegistry(
+		CodecRegistries.fromRegistries(
+			CodecRegistries.fromCodecs(integrationCodecs),
+			integrationsApiCodecModule(),
+			apiCodecModule()
+		)
+	)
+
 	val meterRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 	val scheduler = JobRunrScheduler()
 
-	val integrationManager = IntegrationManager(database, meterRegistry, scheduler)
+	val integrationManager = IntegrationManager(database, mongoDB, meterRegistry, scheduler)
 	JobRunrConfigurer.configure(dataSource, integrationManager, meterRegistry)
 	integrationManager.startup()
 

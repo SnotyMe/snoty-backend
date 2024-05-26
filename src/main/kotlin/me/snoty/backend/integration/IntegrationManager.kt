@@ -1,5 +1,6 @@
 package me.snoty.backend.integration
 
+import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.micrometer.core.instrument.MeterRegistry
 import me.snoty.integration.common.Integration
@@ -12,9 +13,20 @@ import org.jetbrains.exposed.sql.Database
 import java.util.concurrent.Executors
 
 
-class IntegrationManager(database: Database, metricsRegistry: MeterRegistry, scheduler: Scheduler) {
+class IntegrationManager(
+	database: Database,
+	mongoDB: MongoDatabase,
+	metricsRegistry: MeterRegistry,
+	scheduler: Scheduler
+) {
 	private val metricsPool = Executors.newScheduledThreadPool(1)
-	private val context = IntegrationContext(database, metricsRegistry, metricsPool, scheduler)
+	private val context = IntegrationContext(
+		database,
+		mongoDB,
+		metricsRegistry,
+		metricsPool,
+		scheduler
+	)
 	private val logger = KotlinLogging.logger {}
 
 	val integrations: List<Integration> = IntegrationRegistry.getIntegrationFactories().map {

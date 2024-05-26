@@ -7,6 +7,7 @@ dependencies {
     api(database.exposed.core)
     api(database.exposed.jdbc)
     api(database.exposed.json)
+    api(database.mongodb)
     api(monitoring.micrometer)
     api(ktor.client.core)
     api(ktor.client.apache)
@@ -17,7 +18,9 @@ dependencies {
     api(ktor.server.auth)
     api(libraries.jackson.core)
     api(libraries.jackson.kotlin)
+    api(libraries.bson.kotlinx)
     testImplementation(kotlin("test"))
+    testImplementation(tests.mockk)
 }
 
 base.archivesName = "integration-api"

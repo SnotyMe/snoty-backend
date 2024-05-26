@@ -11,6 +11,13 @@ dependencies {
     testImplementation(libraries.kotlinx.serialization)
     testImplementation(ktor.serialization.kotlinx.json)
     testImplementation(projects.integrations.api)
+    testImplementation(tests.mockk)
+}
+
+sourceSets.test.configure {
+    val integrationsApi = projects.integrations.api.dependencyProject.sourceSets.test.get().output
+    compileClasspath += integrationsApi
+    runtimeClasspath += integrationsApi
 }
 
 tasks.test {

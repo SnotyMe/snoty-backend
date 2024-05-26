@@ -1,5 +1,6 @@
 package me.snoty.integration.utils.calendar
 
+import me.snoty.integration.common.InstanceId
 import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.and
@@ -11,7 +12,7 @@ import java.util.*
 class CalendarTable(integrationName: String) : IdTable<UUID>("${integrationName}calendar") {
 	override val id = uuid("id").autoGenerate().entityId()
 
-	val instanceId = integer("instance_id")
+	val instanceId = varchar("instance_id", 255)
 	val userId = uuid("user_id")
 	val type = varchar("type", 255)
 
@@ -21,7 +22,7 @@ class CalendarTable(integrationName: String) : IdTable<UUID>("${integrationName}
 		}
 	}
 
-	fun create(userId: UUID, instanceId: Int, type: String) = transaction {
+	fun create(userId: UUID, instanceId: InstanceId, type: String) = transaction {
 		insertAndGetId {
 			it[this@CalendarTable.userId] = userId
 			it[this@CalendarTable.instanceId] = instanceId

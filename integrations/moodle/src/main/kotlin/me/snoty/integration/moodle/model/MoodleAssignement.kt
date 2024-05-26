@@ -1,32 +1,31 @@
 package me.snoty.integration.moodle.model
 
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.toKotlinLocalDateTime
+import kotlinx.datetime.Instant
+import kotlinx.datetime.toKotlinInstant
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import me.snoty.integration.common.diff.UpdatableEntity
 import me.snoty.integration.common.diff.Fields
-import me.snoty.integration.common.diff.getString
+import me.snoty.integration.common.diff.UpdatableEntity
 import me.snoty.integration.moodle.model.raw.MoodleEvent
-import java.time.Instant
-import java.time.ZoneId
 
 @Serializable
 data class MoodleAssignment(
 	override val id: Long,
 	val name: String,
-	val due: LocalDateTime,
+	val due: Instant,
 	val state: MoodleAssignmentState
 ) : UpdatableEntity<Long>() {
 	override val type: String = TYPE
 
 	@Contextual
-	override val fields: Fields = buildJsonObject {
+	override val fields: Fields = buildDocument {
 		put("name", name)
-		put("due", due.toString())
+		put("due", due)
 		put("state", state.name)
+	}
+
+	override fun prepareFieldsForDiff(fields: Fields) {
+		fields["due"] = fields.getDate("due").toInstant().toKotlinInstant()
 	}
 
 	companion object {
@@ -36,7 +35,7 @@ data class MoodleAssignment(
 			return MoodleAssignment(
 				id = id,
 				name = fields.getString("name"),
-				due = LocalDateTime.parse(fields.getString("due")),
+				due = Instant.parse(fields.getString("due")),
 				state = MoodleAssignmentState.valueOf(fields.getString("state"))
 			)
 		}
@@ -58,7 +57,7 @@ fun MoodleEvent.toMoodleAssignment(): MoodleAssignment {
 	return MoodleAssignment(
 		id = id,
 		name = name,
-		due = Instant.ofEpochSecond(timeStart).atZone(ZoneId.systemDefault()).toLocalDateTime().toKotlinLocalDateTime(),
+		due = Instant.fromEpochSeconds(timeStart),
 		state = when {
 			overdue -> MoodleAssignmentState.OVERDUE
 			action?.actionable == true -> MoodleAssignmentState.DUE

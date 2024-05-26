@@ -1,12 +1,12 @@
 package me.snoty.integration.moodle
 
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import me.snoty.integration.common.*
-import me.snoty.integration.common.diff.EntityStateTable
-import me.snoty.integration.common.diff.ID
+import me.snoty.integration.common.diff.state.UserEntityStates
+import me.snoty.integration.common.diff.UserEntityChanges
 import me.snoty.integration.moodle.calendar.iCalRoutes
-import org.jetbrains.exposed.sql.Column
 import org.jobrunr.jobs.lambdas.JobRequest
 import java.util.*
 
@@ -19,18 +19,15 @@ data class MoodleSettings(
 	override val instanceId = baseUrl.instanceId
 }
 
-object MoodleEntityStateTable : EntityStateTable<Long>() {
-	override val id: Column<Long> = long(ID)
-	override val primaryKey = buildPrimaryKey()
-}
+typealias MoodleStateCollection = MongoCollection<UserEntityStates>
+typealias MoodleChangesCollection = MongoCollection<UserEntityChanges>
 
 class MoodleIntegration(
 	context: IntegrationContext,
 	moodleAPI: MoodleAPI = MoodleAPIImpl()
-) : AbstractIntegration<MoodleSettings, MoodleJobRequest>(
+) : AbstractIntegration<MoodleSettings, MoodleJobRequest, Long>(
 	INTEGRATION_NAME,
 	MoodleSettings::class,
-	MoodleEntityStateTable,
 	MoodleFetcher.Factory(moodleAPI),
 	context
 ) {
@@ -41,14 +38,14 @@ class MoodleIntegration(
 	override fun createRequest(config: IntegrationConfig<MoodleSettings>): JobRequest =
 		MoodleJobRequest(config.user, config.settings)
 
-	class Factory : IntegrationFactory {
+	class Factory : DefaultIntegrationFactory() {
 		override fun create(context: IntegrationContext): Integration {
 			return MoodleIntegration(context)
 		}
 	}
 
 	override fun routes(routing: Route) {
-		routing.iCalRoutes()
+		routing.iCalRoutes(stateCollection)
 	}
 }
 

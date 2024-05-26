@@ -1,5 +1,7 @@
 package me.snoty.integration.common.diff
 
+import org.bson.Document
+
 /**
  * Represents an entity that can be updated.
  * An entity can be an exam, assignment, user, etc.
@@ -11,6 +13,14 @@ interface IUpdatableEntity<ID>{
 	val fields: Fields
 	val checksum: Long
 	fun diff(other: Fields): DiffResult
+
+	/**
+	 * Executed before calculating the diff.
+	 * Can be used to transform Strings to LocalDateTime etc.
+	 */
+	fun prepareFieldsForDiff(fields: Fields) {
+		// NOOP
+	}
 }
 
 /**
@@ -21,13 +31,22 @@ abstract class UpdatableEntity<ID> : IUpdatableEntity<ID> {
 	override val checksum: Long by lazy { fields.checksum() }
 
 	override fun diff(other: Fields): DiffResult {
+		prepareFieldsForDiff(other)
 		val diff: Diff = fields.entries
 			.filter { (key, value) -> value != other[key] }
-			.associate { (key, value) -> (key to OldNew(other[key] as Any, value)) }
+			.associate { (key, value) ->
+				try {
+					(key to Change(value, other[key]!!))
+				} catch (e: ClassCastException) {
+					throw ClassCastException("Mismatch in type! Currently inspecting `${this@UpdatableEntity.type}`. ${e.message}")
+				}
+			}
 
 		return when {
 			diff.isEmpty() -> DiffResult.Unchanged
 			else -> DiffResult.Updated(checksum, diff)
 		}
 	}
+
+	fun buildDocument(block: Document.() -> Unit) = Document().apply(block)
 }
