@@ -1,24 +1,30 @@
 package me.snoty.integration.moodle
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
-import me.snoty.integration.common.IntegrationFetcher
-import me.snoty.integration.common.IntegrationFetcherFactory
 import me.snoty.integration.common.diff.EntityStateService
+import me.snoty.integration.common.fetch.AbstractIntegrationFetcher
+import me.snoty.integration.common.fetch.FetchProgress
+import me.snoty.integration.common.fetch.IntegrationFetcherFactory
+import me.snoty.integration.common.fetch.IntegrationProgressState
 import me.snoty.integration.moodle.request.getCalendarUpcoming
+import org.jobrunr.jobs.context.JobDashboardLogger
 import java.util.*
 
 open class MoodleFetcher(
 	private val entityStateService: EntityStateService,
 	private val moodleAPI: MoodleAPI = MoodleAPIImpl()
-) : IntegrationFetcher<MoodleJobRequest> {
-	private val logger = KotlinLogging.logger {}
-
-	private suspend fun fetchAssignments(moodleSettings: MoodleSettings, userId: UUID) {
+) : AbstractIntegrationFetcher<MoodleJobRequest>() {
+	private suspend fun fetchAssignments(logger: JobDashboardLogger, progress: FetchProgress, moodleSettings: MoodleSettings, userId: UUID) {
 		val instanceId = moodleSettings.instanceId
+
+		progress.advance(IntegrationProgressState.FETCHING)
 		val assignments = moodleAPI.getCalendarUpcoming(moodleSettings)
+
+		progress.advance(IntegrationProgressState.UPDATING_IN_DB)
 		entityStateService.updateStates(userId, instanceId, assignments)
-		logger.info { "Fetched ${assignments.size} assignments for ${moodleSettings.username}" }
+
+		progress.advance(IntegrationProgressState.STAGE_DONE)
+		logger.info("Fetched ${assignments.size} assignments for ${moodleSettings.username}")
 		// TODO: send update events
 	}
 
@@ -28,6 +34,9 @@ open class MoodleFetcher(
 	}
 
 	override fun run(jobRequest: MoodleJobRequest) = runBlocking {
-		fetchAssignments(jobRequest.settings, jobRequest.userId)
+		val context = jobContext()
+		val logger = logger(context)
+		val progress = progress(context, 1)
+		fetchAssignments(logger, progress, jobRequest.settings, jobRequest.userId)
 	}
 }

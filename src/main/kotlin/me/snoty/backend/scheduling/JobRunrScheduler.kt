@@ -12,6 +12,7 @@ class JobRunrScheduler : Scheduler {
 			aRecurringJob()
 				.withId(id)
 				.withDuration(15.minutes.toJavaDuration())
+				.withAmountOfRetries(5)
 				.apply {
 					this.withDetails {
 						job()
@@ -26,6 +27,7 @@ class JobRunrScheduler : Scheduler {
 				.withId(id)
 				.withName(job.name)
 				.withDuration(15.minutes.toJavaDuration())
+				.withAmountOfRetries(5)
 				.withJobRequest(job.request)
 		)
 	}

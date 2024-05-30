@@ -5,6 +5,7 @@ import me.snoty.backend.User
 import me.snoty.backend.scheduling.JobRequest
 import me.snoty.backend.scheduling.Scheduler
 import me.snoty.integration.common.diff.EntityStateService
+import me.snoty.integration.common.fetch.IntegrationFetcherFactory
 import me.snoty.integration.common.utils.createFetcherJob
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmName
