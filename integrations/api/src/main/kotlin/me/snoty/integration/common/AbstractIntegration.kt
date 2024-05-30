@@ -1,53 +1,40 @@
 package me.snoty.integration.common
 
-import com.mongodb.kotlin.client.coroutine.MongoCollection
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.micrometer.core.instrument.MeterRegistry
 import me.snoty.backend.User
 import me.snoty.backend.scheduling.JobRequest
 import me.snoty.backend.scheduling.Scheduler
-import me.snoty.integration.common.diff.EntityDiffMetrics
-import me.snoty.integration.common.diff.UserEntityChanges
-import me.snoty.integration.common.diff.state.UserEntityStates
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.TimeUnit
+import me.snoty.integration.common.diff.EntityStateService
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmName
 
 abstract class AbstractIntegration<S : IntegrationSettings, R : JobRequest, ID : Comparable<ID>>(
-	final override val name: String,
+	final override val descriptor: IntegrationDescriptor,
 	final override val settingsType: KClass<S>,
-	protected val stateCollection: MongoCollection<UserEntityStates>,
-	changesCollection: MongoCollection<UserEntityChanges>,
 	fetcherFactory: IntegrationFetcherFactory<R, ID>,
-	meterRegistry: MeterRegistry,
-	private val metricsPool: ScheduledExecutorService,
+	protected val entityStateService: EntityStateService,
 	scheduler: Scheduler,
 ) : Integration {
 	protected val logger = KotlinLogging.logger(this::class.jvmName)
 
 	constructor(
-		name: String,
+		descriptor: IntegrationDescriptor,
 		settingsType: KClass<S>,
 		fetcherFactory: IntegrationFetcherFactory<R, ID>,
 		context: IntegrationContext
 	) : this(
-		name,
+		descriptor,
 		settingsType,
-		context.mongodb.getCollection<UserEntityStates>("integration.${name}.entityStates"),
-		context.mongodb.getCollection<UserEntityChanges>("integration.${name}.entityChanges"),
 		fetcherFactory,
-		context.meterRegistry,
-		context.metricsPool,
+		context.entityStateService,
 		context.scheduler
 	)
 
-	private val entityDiffMetrics: EntityDiffMetrics = EntityDiffMetrics(meterRegistry, name, stateCollection)
-	override val fetcher = fetcherFactory.create(entityDiffMetrics, stateCollection, changesCollection)
+	override val fetcher = fetcherFactory.create(entityStateService)
 	private val scheduler = IntegrationScheduler(name, scheduler)
 
 	override fun start() {
-		metricsPool.scheduleAtFixedRate(entityDiffMetrics.Job(), 0, 30, TimeUnit.SECONDS)
+		entityStateService.scheduleMetricsTask()
 		scheduleAll()
 	}
 

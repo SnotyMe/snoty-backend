@@ -4,15 +4,15 @@ import io.ktor.server.routing.*
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
+import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.diff.Fields
 import me.snoty.integration.moodle.MoodleIntegration
-import me.snoty.integration.moodle.MoodleStateCollection
 import me.snoty.integration.moodle.model.MoodleAssignment
 import me.snoty.integration.utils.calendar.ICalBuilder
 import me.snoty.integration.utils.calendar.calendarRoutes
 import net.fortuna.ical4j.model.component.VEvent
 
-class MoodleCalendarBuilder(moodleStateCollection: MoodleStateCollection) : ICalBuilder<Long>(moodleStateCollection) {
+class MoodleCalendarBuilder(entityStateService: EntityStateService) : ICalBuilder<Long>(entityStateService) {
 	override fun buildEvent(id: String, fields: Fields): VEvent {
 		val exam = MoodleAssignment.fromFields(id.toLong(), fields)
 		val due = exam.due.toLocalDateTime(TimeZone.UTC).toJavaLocalDateTime()
@@ -20,10 +20,10 @@ class MoodleCalendarBuilder(moodleStateCollection: MoodleStateCollection) : ICal
 	}
 }
 
-fun Route.iCalRoutes(stateCollection: MoodleStateCollection) {
+fun Route.iCalRoutes(entityStateService: EntityStateService) {
 	calendarRoutes(
 		MoodleIntegration.INTEGRATION_NAME,
 		MoodleAssignment.TYPE,
-		MoodleCalendarBuilder(stateCollection)
+		MoodleCalendarBuilder(entityStateService)
 	)
 }

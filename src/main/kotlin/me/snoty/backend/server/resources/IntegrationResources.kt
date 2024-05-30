@@ -10,6 +10,7 @@ import kotlinx.serialization.Serializable
 import me.snoty.backend.integration.IntegrationManager
 import me.snoty.backend.utils.NotFoundException
 import me.snoty.backend.utils.getUser
+import me.snoty.integration.common.name
 
 fun Application.integrationResources(integrationManager: IntegrationManager) = routing {
 	route("integration") {

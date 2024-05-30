@@ -7,7 +7,7 @@ import kotlin.reflect.KClass
 
 
 interface Integration {
-	val name: String
+	val descriptor: IntegrationDescriptor
 	val settingsType: KClass<out IntegrationSettings>
 	val fetcher: IntegrationFetcher<*>
 
@@ -20,12 +20,16 @@ interface Integration {
 	}
 }
 
+val Integration.name
+	get() = descriptor.name
+
 interface IntegrationFactory {
 	fun create(context: IntegrationContext): Integration
 
 	val mongoDBCodecs: Collection<Codec<*>>
+	val descriptor: IntegrationDescriptor
 }
 
-abstract class DefaultIntegrationFactory : IntegrationFactory {
+abstract class DefaultIntegrationFactory(override val descriptor: IntegrationDescriptor) : IntegrationFactory {
 	override val mongoDBCodecs: Collection<Codec<*>> = emptyList()
 }

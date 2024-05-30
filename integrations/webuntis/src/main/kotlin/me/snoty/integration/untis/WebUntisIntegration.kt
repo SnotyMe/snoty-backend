@@ -1,12 +1,9 @@
 package me.snoty.integration.untis
 
-import com.mongodb.kotlin.client.coroutine.MongoCollection
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import me.snoty.backend.scheduling.JobRequest
 import me.snoty.integration.common.*
-import me.snoty.integration.common.diff.UserEntityChanges
-import me.snoty.integration.common.diff.state.UserEntityStates
 import me.snoty.integration.untis.calendar.iCalRoutes
 import me.snoty.integration.untis.model.UntisDateTime
 import java.util.*
@@ -21,20 +18,18 @@ data class WebUntisSettings(
 	override val instanceId = baseUrl.instanceId
 }
 
-typealias WebUntisStateCollection = MongoCollection<UserEntityStates>
-typealias WebUntisChangesCollection = MongoCollection<UserEntityChanges>
-
 class WebUntisIntegration(
 	context: IntegrationContext,
 	untisAPI: WebUntisAPI = WebUntisAPIImpl()
 ) : AbstractIntegration<WebUntisSettings, WebUntisJobRequest, Int>(
-	INTEGRATION_NAME,
+	DESCRIPTOR,
 	WebUntisSettings::class,
 	WebUntisFetcher.Factory(untisAPI),
 	context
 ) {
 	companion object {
 		const val INTEGRATION_NAME = "webuntis"
+		val DESCRIPTOR = IntegrationDescriptor(name = INTEGRATION_NAME)
 
 		val untisCodecModule = listOf(UntisDateTime.Companion)
 	}
@@ -43,11 +38,12 @@ class WebUntisIntegration(
 		WebUntisJobRequest(config.user, config.settings)
 
 	override fun routes(routing: Route) {
-		routing.iCalRoutes(stateCollection)
+		routing.iCalRoutes(entityStateService)
 	}
 
 	class Factory : IntegrationFactory {
 		override val mongoDBCodecs = untisCodecModule
+		override val descriptor = DESCRIPTOR
 
 		override fun create(context: IntegrationContext): Integration {
 			return WebUntisIntegration(context)

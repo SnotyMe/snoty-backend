@@ -1,13 +1,7 @@
 package me.snoty.integration.utils.calendar
 
-import com.mongodb.client.model.Aggregates
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Projections
-import me.snoty.backend.database.mongo.Aggregations
-import me.snoty.backend.database.mongo.aggregate
 import me.snoty.integration.common.InstanceId
-import me.snoty.integration.common.diff.state.EntityState
-import me.snoty.integration.common.diff.state.EntityStateCollection
+import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.diff.Fields
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.component.VEvent
@@ -20,22 +14,14 @@ data class CalendarConfig(
 	val type: String
 )
 
-abstract class ICalBuilder<ID>(private val entityStateCollection: EntityStateCollection) {
+abstract class ICalBuilder<ID>(private val entityStateService: EntityStateService) {
 	protected abstract fun buildEvent(id: String, fields: Fields): VEvent
 
 	suspend fun build(calendarConfig: CalendarConfig): Calendar {
 		val userId = calendarConfig.userId
 		val instanceId = calendarConfig.instanceId
 		val type = calendarConfig.type
-		val rows = entityStateCollection.aggregate<EntityState>(
-			Aggregates.match(Filters.eq("_id", userId)),
-			Aggregations.project(
-				Projections.exclude("_id"),
-				Projections.computed("entity", "\$entities.$instanceId")
-			),
-			Aggregates.unwind("entity"),
-			Aggregates.match(Filters.eq("entity.type", type))
-		)
+		val rows = entityStateService.getEntities(userId, instanceId, type)
 		val calendar = Calendar()
 		calendar.add<Calendar>(ImmutableVersion.VERSION_2_0)
 

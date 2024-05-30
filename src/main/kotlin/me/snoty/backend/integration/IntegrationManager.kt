@@ -1,35 +1,23 @@
 package me.snoty.backend.integration
 
-import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.micrometer.core.instrument.MeterRegistry
-import me.snoty.integration.common.Integration
-import me.snoty.integration.common.IntegrationContext
 import me.snoty.backend.scheduling.Scheduler
 import me.snoty.backend.spi.IntegrationRegistry
-import me.snoty.integration.common.IntegrationConfigTable
-import me.snoty.integration.common.IntegrationSettings
-import org.jetbrains.exposed.sql.Database
-import java.util.concurrent.Executors
+import me.snoty.integration.common.*
+import me.snoty.integration.common.diff.EntityStateService
 
 
 class IntegrationManager(
-	database: Database,
-	mongoDB: MongoDatabase,
-	metricsRegistry: MeterRegistry,
-	scheduler: Scheduler
+	scheduler: Scheduler,
+	entityStateServiceFactory: (IntegrationDescriptor) -> EntityStateService
 ) {
-	private val metricsPool = Executors.newScheduledThreadPool(1)
-	private val context = IntegrationContext(
-		database,
-		mongoDB,
-		metricsRegistry,
-		metricsPool,
-		scheduler
-	)
 	private val logger = KotlinLogging.logger {}
 
 	val integrations: List<Integration> = IntegrationRegistry.getIntegrationFactories().map {
+		val context = IntegrationContext(
+			entityStateServiceFactory(it.descriptor),
+			scheduler
+		)
 		it.create(context)
 	}
 
