@@ -3,11 +3,13 @@ package me.snoty.backend
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
+import kotlinx.coroutines.runBlocking
 import me.snoty.backend.build.DevBuildInfo
 import me.snoty.backend.config.ConfigLoaderImpl
 import me.snoty.backend.database.mongo.createMongoClients
 import me.snoty.backend.integration.IntegrationManager
 import me.snoty.backend.integration.MongoEntityStateService
+import me.snoty.backend.integration.config.MongoIntegrationConfigService
 import me.snoty.backend.scheduling.JobRunrConfigurer
 import me.snoty.backend.scheduling.JobRunrScheduler
 import me.snoty.backend.server.KtorServer
@@ -15,7 +17,7 @@ import me.snoty.backend.spi.DevManager
 import org.jetbrains.exposed.sql.Database
 import java.util.concurrent.Executors
 
-fun main() {
+fun main() = runBlocking {
 	val logger = KotlinLogging.logger {}
 
 	// ran pre-config load to allow dev functions to configure the environment
@@ -45,7 +47,8 @@ fun main() {
 
 	val (mongoDB, syncMongoClient) = createMongoClients(config.mongodb)
 
-	val integrationManager = IntegrationManager(scheduler) { integrationDescriptor ->
+	val integrationConfigService = MongoIntegrationConfigService(mongoDB)
+	val integrationManager = IntegrationManager(scheduler, integrationConfigService) { integrationDescriptor ->
 		MongoEntityStateService(mongoDB, integrationDescriptor, meterRegistry, metricsPool)
 	}
 

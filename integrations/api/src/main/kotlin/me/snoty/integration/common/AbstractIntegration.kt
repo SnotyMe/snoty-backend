@@ -1,9 +1,12 @@
 package me.snoty.integration.common
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.count
 import me.snoty.backend.User
 import me.snoty.backend.scheduling.JobRequest
 import me.snoty.backend.scheduling.Scheduler
+import me.snoty.integration.common.config.IntegrationConfigService
 import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.fetch.IntegrationFetcherFactory
 import me.snoty.integration.common.utils.createFetcherJob
@@ -15,6 +18,7 @@ abstract class AbstractIntegration<S : IntegrationSettings, R : JobRequest, ID :
 	final override val settingsType: KClass<S>,
 	fetcherFactory: IntegrationFetcherFactory<R, ID>,
 	protected val entityStateService: EntityStateService,
+	protected val integrationConfigService: IntegrationConfigService,
 	scheduler: Scheduler,
 ) : Integration {
 	protected val logger = KotlinLogging.logger(this::class.jvmName)
@@ -29,31 +33,35 @@ abstract class AbstractIntegration<S : IntegrationSettings, R : JobRequest, ID :
 		settingsType,
 		fetcherFactory,
 		context.entityStateService,
+		context.integrationConfigService,
 		context.scheduler
 	)
 
 	override val fetcher = fetcherFactory.create(entityStateService)
 	private val scheduler = IntegrationScheduler(name, scheduler)
 
-	override fun start() {
+	override suspend fun start() {
 		entityStateService.scheduleMetricsTask()
 		scheduleAll()
 	}
 
-	override fun setup(user: User, settings: IntegrationSettings)
-		= IntegrationConfigTable.create(user.id, name, settings)
+	override suspend fun setup(user: User, settings: IntegrationSettings)
+		= integrationConfigService.create(user.id, name, settings)
 
-	private fun scheduleAll() {
-		val allSettings = IntegrationConfigTable.getAllIntegrationConfigs<S>(name)
+	private suspend fun scheduleAll() {
+		val allSettings = integrationConfigService.getAll(name, settingsType)
+		val count = allSettings.count()
 		logger.debug {
-			"Scheduling ${allSettings.size} jobs for $name"
+			"Scheduling $count jobs for $name"
 		}
-		allSettings.forEach(::schedule)
+		allSettings.collect {
+			schedule(it)
+		}
 	}
 
 	abstract fun createRequest(config: IntegrationConfig<S>): JobRequest
 
-	override fun schedule(user: User, settings: IntegrationSettings) {
+	override suspend fun schedule(user: User, settings: IntegrationSettings) {
 		@Suppress("UNCHECKED_CAST")
 		val integrationConfig = IntegrationConfig(user.id, settings as S)
 		schedule(integrationConfig)

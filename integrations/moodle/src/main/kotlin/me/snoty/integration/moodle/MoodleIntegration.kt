@@ -1,8 +1,10 @@
 package me.snoty.integration.moodle
 
 import io.ktor.server.routing.*
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import me.snoty.integration.common.*
+import me.snoty.integration.common.config.ConfigId
 import me.snoty.integration.common.utils.RedactInJobName
 import me.snoty.integration.moodle.calendar.iCalRoutes
 import org.jobrunr.jobs.lambdas.JobRequest
@@ -13,7 +15,9 @@ data class MoodleSettings(
 	val baseUrl: String,
 	val username: String,
 	@RedactInJobName
-	val appSecret: String
+	val appSecret: String,
+	@Contextual
+	override val id: ConfigId = ConfigId()
 ) : IntegrationSettings {
 	override val instanceId = baseUrl.instanceId
 }
@@ -42,7 +46,7 @@ class MoodleIntegration(
 	}
 
 	override fun routes(routing: Route) {
-		routing.iCalRoutes(entityStateService)
+		routing.iCalRoutes(integrationConfigService, entityStateService)
 	}
 }
 

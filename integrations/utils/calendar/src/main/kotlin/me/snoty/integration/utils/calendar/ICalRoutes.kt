@@ -10,16 +10,19 @@ import kotlinx.serialization.Serializable
 import me.snoty.backend.utils.BadRequestException
 import me.snoty.backend.utils.NotFoundException
 import me.snoty.backend.utils.getUser
-import me.snoty.integration.common.IntegrationConfigTable
 import me.snoty.integration.common.IntegrationSettings
+import me.snoty.integration.common.config.ConfigId
+import me.snoty.integration.common.config.IntegrationConfigService
+import me.snoty.integration.common.config.get
 import net.fortuna.ical4j.data.CalendarOutputter
 import java.nio.charset.StandardCharsets
 import java.util.*
 
 @Serializable
-data class ICalCreateRequest(val configId: Long)
+data class ICalCreateRequest(val configId: ConfigId)
 
 fun Route.calendarRoutes(
+	integrationConfigService: IntegrationConfigService,
 	integrationName: String,
 	type: String,
 	calendarBuilder: ICalBuilder<*>
@@ -30,7 +33,7 @@ fun Route.calendarRoutes(
 		post {
 			val user = call.getUser()
 			val configId = call.receive<ICalCreateRequest>().configId
-			val settings = IntegrationConfigTable.get<IntegrationSettings>(configId, integrationName)
+			val settings = integrationConfigService.get<IntegrationSettings>(configId, integrationName)
 				?: throw NotFoundException("Integration config not found")
 			val id = calendarTable.create(
 				user.id,

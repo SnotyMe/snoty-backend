@@ -10,6 +10,7 @@ import kotlinx.serialization.Serializable
 import me.snoty.backend.integration.IntegrationManager
 import me.snoty.backend.utils.NotFoundException
 import me.snoty.backend.utils.getUser
+import me.snoty.integration.common.config.ConfigId
 import me.snoty.integration.common.name
 
 fun Application.integrationResources(integrationManager: IntegrationManager) = routing {
@@ -24,12 +25,12 @@ fun Application.integrationResources(integrationManager: IntegrationManager) = r
 						val user = call.getUser()
 						val settings = call.receive(integration.settingsType)
 						val configId = integration.setup(user, settings)
-						call.respond(HttpStatusCode.Created, configId)
+						call.respondText(configId.toHexString(), status = HttpStatusCode.Created)
 					}
 
 					post("schedule") {
 						@Serializable
-						data class ScheduleRequest(val configId: Long)
+						data class ScheduleRequest(val configId: ConfigId)
 						val user = call.getUser()
 						val scheduleRequest = call.receive<ScheduleRequest>()
 						val configId = scheduleRequest.configId

@@ -1,14 +1,22 @@
 package me.snoty.backend.integration
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.supervisorScope
 import me.snoty.backend.scheduling.Scheduler
 import me.snoty.backend.spi.IntegrationRegistry
+import me.snoty.backend.utils.NotFoundException
 import me.snoty.integration.common.*
+import me.snoty.integration.common.config.ConfigId
+import me.snoty.integration.common.config.IntegrationConfigService
 import me.snoty.integration.common.diff.EntityStateService
 
 
 class IntegrationManager(
 	scheduler: Scheduler,
+	private val integrationConfigService: IntegrationConfigService,
 	entityStateServiceFactory: (IntegrationDescriptor) -> EntityStateService
 ) {
 	private val logger = KotlinLogging.logger {}
@@ -16,20 +24,23 @@ class IntegrationManager(
 	val integrations: List<Integration> = IntegrationRegistry.getIntegrationFactories().map {
 		val context = IntegrationContext(
 			entityStateServiceFactory(it.descriptor),
+			integrationConfigService,
 			scheduler
 		)
 		it.create(context)
 	}
 
-	fun startup() {
+	suspend fun startup() = supervisorScope {
 		logger.info { "Starting ${integrations.size} integrations..." }
-		integrations.forEach {
-			try {
-				it.start()
-			} catch (e: Exception) {
-				logger.error(e) { "Failed to start integration ${it.name}" }
+		integrations.map {
+			async {
+				try {
+					it.start()
+				} catch (e: Exception) {
+					logger.error(e) { "Failed to start integration ${it.name}" }
+				}
 			}
-		}
+		}.awaitAll()
 		logger.info { "Integration startup complete!" }
 	}
 
@@ -45,7 +56,14 @@ class IntegrationManager(
 		}?.fetcher as T
 	}
 
-	fun getIntegrationConfig(configId: Long, integrationType: String): IntegrationSettings? {
-		return IntegrationConfigTable.get(configId, integrationType)
+	fun getIntegration(integrationType: String): Integration? {
+		return integrations.find {
+			it.name == integrationType
+		}
+	}
+
+	suspend fun getIntegrationConfig(configId: ConfigId, integrationType: String): IntegrationSettings? {
+		val integration = getIntegration(integrationType) ?: throw NotFoundException("Integration of this type not found")
+		return integrationConfigService.get(configId, integrationType, integration.settingsType)
 	}
 }

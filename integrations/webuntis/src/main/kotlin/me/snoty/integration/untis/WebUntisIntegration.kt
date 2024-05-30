@@ -1,9 +1,11 @@
 package me.snoty.integration.untis
 
 import io.ktor.server.routing.*
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import me.snoty.backend.scheduling.JobRequest
 import me.snoty.integration.common.*
+import me.snoty.integration.common.config.ConfigId
 import me.snoty.integration.common.utils.RedactInJobName
 import me.snoty.integration.untis.calendar.iCalRoutes
 import me.snoty.integration.untis.model.UntisDateTime
@@ -15,7 +17,9 @@ data class WebUntisSettings(
 	val school: String,
 	val username: String,
 	@RedactInJobName
-	val appSecret: String
+	val appSecret: String,
+	@Contextual
+	override val id: ConfigId = ConfigId()
 ) : IntegrationSettings {
 	override val instanceId = baseUrl.instanceId
 }
@@ -40,7 +44,7 @@ class WebUntisIntegration(
 		WebUntisJobRequest(config.user, config.settings)
 
 	override fun routes(routing: Route) {
-		routing.iCalRoutes(entityStateService)
+		routing.iCalRoutes(integrationConfigService, entityStateService)
 	}
 
 	class Factory : IntegrationFactory {

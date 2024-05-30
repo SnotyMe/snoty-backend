@@ -1,6 +1,7 @@
 package me.snoty.integration.untis.calendar
 
 import io.ktor.server.routing.*
+import me.snoty.integration.common.config.IntegrationConfigService
 import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.diff.Fields
 import me.snoty.integration.untis.WebUntisIntegration
@@ -21,8 +22,9 @@ class WebUntisCalendarBuilder(entityStateService: EntityStateService) : ICalBuil
 	}
 }
 
-fun Route.iCalRoutes(entityStateService: EntityStateService) {
+fun Route.iCalRoutes(integrationConfigService: IntegrationConfigService, entityStateService: EntityStateService) {
 	calendarRoutes(
+		integrationConfigService,
 		WebUntisIntegration.INTEGRATION_NAME,
 		UntisExam.TYPE,
 		WebUntisCalendarBuilder(entityStateService)
