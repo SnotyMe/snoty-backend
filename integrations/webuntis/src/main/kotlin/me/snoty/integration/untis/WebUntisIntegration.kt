@@ -4,6 +4,7 @@ import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import me.snoty.backend.scheduling.JobRequest
 import me.snoty.integration.common.*
+import me.snoty.integration.common.utils.RedactInJobName
 import me.snoty.integration.untis.calendar.iCalRoutes
 import me.snoty.integration.untis.model.UntisDateTime
 import java.util.*
@@ -13,6 +14,7 @@ data class WebUntisSettings(
 	val baseUrl: String,
 	val school: String,
 	val username: String,
+	@RedactInJobName
 	val appSecret: String
 ) : IntegrationSettings {
 	override val instanceId = baseUrl.instanceId

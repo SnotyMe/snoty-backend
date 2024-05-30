@@ -131,6 +131,7 @@ dependencies {
     implementation(database.postgres.driver)
     implementation(database.hikaricp)
     implementation(database.mongodb)
+    implementation(database.mongodb.sync)
     implementation(libraries.bson.kotlinx)
 
     // logging

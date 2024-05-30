@@ -5,6 +5,7 @@ import me.snoty.backend.User
 import me.snoty.backend.scheduling.JobRequest
 import me.snoty.backend.scheduling.Scheduler
 import me.snoty.integration.common.diff.EntityStateService
+import me.snoty.integration.common.utils.createFetcherJob
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmName
 
@@ -58,6 +59,9 @@ abstract class AbstractIntegration<S : IntegrationSettings, R : JobRequest, ID :
 	}
 
 	private fun schedule(config: IntegrationConfig<S>) {
-		scheduler.scheduleJob(listOf(config.settings.instanceId, config.user), createRequest(config))
+		val idParts = listOf(config.settings.instanceId, config.user)
+		val request = createRequest(config)
+		val job = createFetcherJob(descriptor, config, request)
+		scheduler.scheduleJob(idParts, job)
 	}
 }

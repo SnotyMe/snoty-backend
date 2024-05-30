@@ -123,6 +123,8 @@ dependencyResolutionManagement {
 
 			library("mongodb", "org.mongodb", "mongodb-driver-kotlin-coroutine")
 				.version("5.1.0")
+			library("mongodb-sync", "org.mongodb", "mongodb-driver-sync")
+				.version("5.1.0")
 		}
 
 		create("monitoring") {

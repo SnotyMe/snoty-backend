@@ -3,6 +3,7 @@ package me.snoty.integration.moodle
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import me.snoty.integration.common.*
+import me.snoty.integration.common.utils.RedactInJobName
 import me.snoty.integration.moodle.calendar.iCalRoutes
 import org.jobrunr.jobs.lambdas.JobRequest
 import java.util.*
@@ -11,6 +12,7 @@ import java.util.*
 data class MoodleSettings(
 	val baseUrl: String,
 	val username: String,
+	@RedactInJobName
 	val appSecret: String
 ) : IntegrationSettings {
 	override val instanceId = baseUrl.instanceId
