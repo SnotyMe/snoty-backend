@@ -6,7 +6,6 @@ import com.mongodb.kotlin.client.coroutine.MongoCollection
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.mockk.mockk
 import kotlinx.coroutines.flow.count
-import kotlinx.coroutines.flow.toCollection
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Instant
@@ -34,7 +33,7 @@ class MongoEntityStateServiceTest {
 		const val ENTITY_TYPE_CONTROL = "notexam"
 	}
 
-	private val mongoDB = MongoTest.getDatabase()
+	private val mongoDB = MongoTest.getMongoDatabase {}
 	private val service = MongoEntityStateService(
 		mongoDB,
 		IntegrationDescriptor(INTEGRATION_NAME),
@@ -104,9 +103,9 @@ class MongoEntityStateServiceTest {
 		val createdEntitiesFlow = assertDoesNotThrow {
 			service.getEntities(USER_ID_2, INSTANCE_ID, ENTITY_TYPE)
 		}
-		val createdEntities = createdEntitiesFlow.toCollection(ArrayList())
+		val createdEntities = createdEntitiesFlow.toList()
 		assertEquals(1, createdEntities.size)
-		val createdEntity = createdEntities.first
+		val createdEntity = createdEntities.first()
 		assertEquals(entity.id, createdEntity.id.toLong())
 		assertEquals(entity.checksum, createdEntity.checksum)
 		// mutates

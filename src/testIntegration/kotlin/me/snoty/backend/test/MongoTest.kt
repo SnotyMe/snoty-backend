@@ -19,8 +19,14 @@ object MongoTest {
 		}
 	}
 
-	@Suppress("NOTHING_TO_INLINE")
-	inline fun getDatabase(): MongoDatabase {
-		return createMongoClients(config.mongodb, "${javaClass.simpleName}_${javaClass.hashCode()}").first
+	fun getMongoDatabase(block: () -> Unit): MongoDatabase {
+		val javaClass = block.javaClass
+		var name = javaClass.name
+		name = when {
+			name.contains("Kt$") -> name.substringBefore("Kt$")
+			name.contains("$") -> name.substringBefore("$")
+			else -> name
+		}.substringAfterLast(".")
+		return createMongoClients(config.mongodb, "${name}_${javaClass.hashCode()}").first
 	}
 }
