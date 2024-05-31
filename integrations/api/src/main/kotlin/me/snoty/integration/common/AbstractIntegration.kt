@@ -1,11 +1,9 @@
 package me.snoty.integration.common
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.count
 import me.snoty.backend.User
 import me.snoty.backend.scheduling.JobRequest
-import me.snoty.backend.scheduling.Scheduler
 import me.snoty.integration.common.config.IntegrationConfigService
 import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.fetch.IntegrationFetcherFactory
@@ -19,7 +17,7 @@ abstract class AbstractIntegration<S : IntegrationSettings, R : JobRequest, ID :
 	fetcherFactory: IntegrationFetcherFactory<R, ID>,
 	protected val entityStateService: EntityStateService,
 	protected val integrationConfigService: IntegrationConfigService,
-	scheduler: Scheduler,
+	val context: IntegrationContext
 ) : Integration {
 	protected val logger = KotlinLogging.logger(this::class.jvmName)
 
@@ -34,11 +32,11 @@ abstract class AbstractIntegration<S : IntegrationSettings, R : JobRequest, ID :
 		fetcherFactory,
 		context.entityStateService,
 		context.integrationConfigService,
-		context.scheduler
+		context
 	)
 
 	override val fetcher = fetcherFactory.create(entityStateService)
-	private val scheduler = IntegrationScheduler(name, scheduler)
+	private val scheduler = IntegrationScheduler(name, context.scheduler)
 
 	override suspend fun start() {
 		entityStateService.scheduleMetricsTask()

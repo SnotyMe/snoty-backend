@@ -12,3 +12,12 @@ interface IntegrationSettings {
 	@get:BsonId
 	val id: ConfigId
 }
+
+/**
+ * Base integration settings type, can be used when only `instanceId` is required
+ */
+data class BaseIntegrationSettings(
+	override val instanceId: InstanceId,
+	@BsonId
+	override val id: ConfigId
+) : IntegrationSettings

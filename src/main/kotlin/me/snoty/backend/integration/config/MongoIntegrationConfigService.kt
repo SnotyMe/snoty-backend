@@ -3,11 +3,12 @@ package me.snoty.backend.integration.config
 import com.mongodb.client.model.*
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import me.snoty.backend.database.mongo.Aggregations
 import me.snoty.backend.database.mongo.aggregate
 import me.snoty.backend.database.mongo.decode
+import me.snoty.backend.database.mongo.getByIdFromArray
+import me.snoty.backend.database.mongo.upsertOne
 import me.snoty.integration.common.IntegrationConfig
 import me.snoty.integration.common.IntegrationSettings
 import me.snoty.integration.common.config.ConfigId
@@ -39,20 +40,14 @@ class MongoIntegrationConfigService(db: MongoDatabase) : IntegrationConfigServic
 	}
 
 	override suspend fun <S : IntegrationSettings> get(id: ConfigId, integrationType: String, clazz: KClass<S>): S? {
-		val configFilter = Filters.eq("configs.$integrationType._id", id)
-		return collection.aggregate(
-			clazz,
-			Aggregates.match(configFilter),
-			Aggregates.unwind("\$configs.$integrationType"),
-			Aggregates.match(configFilter),
-			Aggregates.replaceRoot("\$configs.$integrationType")
-		).firstOrNull()
+		val settings = collection.getByIdFromArray<Document>("configs.$integrationType", id) ?: return null
+		return collection.codecRegistry.decode(clazz, settings)
 	}
 
 	override suspend fun <S : IntegrationSettings> create(userID: UUID, integrationType: String, settings: S): ConfigId {
 		val filter = Filters.eq("_id", userID)
 		val update = Updates.push("configs.$integrationType", settings)
-		collection.updateOne(filter, update, UpdateOptions().upsert(true))
+		collection.upsertOne(filter, update)
 		return settings.id
 	}
 }

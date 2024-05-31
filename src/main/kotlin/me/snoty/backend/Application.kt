@@ -10,6 +10,7 @@ import me.snoty.backend.database.mongo.createMongoClients
 import me.snoty.backend.integration.IntegrationManager
 import me.snoty.backend.integration.MongoEntityStateService
 import me.snoty.backend.integration.config.MongoIntegrationConfigService
+import me.snoty.backend.integration.utils.calendar.MongoCalendarService
 import me.snoty.backend.scheduling.JobRunrConfigurer
 import me.snoty.backend.scheduling.JobRunrScheduler
 import me.snoty.backend.server.KtorServer
@@ -48,7 +49,8 @@ fun main() = runBlocking {
 	val (mongoDB, syncMongoClient) = createMongoClients(config.mongodb)
 
 	val integrationConfigService = MongoIntegrationConfigService(mongoDB)
-	val integrationManager = IntegrationManager(scheduler, integrationConfigService) { integrationDescriptor ->
+	val calendarService = MongoCalendarService(mongoDB)
+	val integrationManager = IntegrationManager(scheduler, integrationConfigService, calendarService) { integrationDescriptor ->
 		MongoEntityStateService(mongoDB, integrationDescriptor, meterRegistry, metricsPool)
 	}
 

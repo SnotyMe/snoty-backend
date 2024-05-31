@@ -3,7 +3,6 @@ package me.snoty.backend.integration
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.supervisorScope
 import me.snoty.backend.scheduling.Scheduler
 import me.snoty.backend.spi.IntegrationRegistry
@@ -12,11 +11,13 @@ import me.snoty.integration.common.*
 import me.snoty.integration.common.config.ConfigId
 import me.snoty.integration.common.config.IntegrationConfigService
 import me.snoty.integration.common.diff.EntityStateService
+import me.snoty.integration.common.utils.calendar.CalendarService
 
 
 class IntegrationManager(
 	scheduler: Scheduler,
 	private val integrationConfigService: IntegrationConfigService,
+	calendarService: CalendarService,
 	entityStateServiceFactory: (IntegrationDescriptor) -> EntityStateService
 ) {
 	private val logger = KotlinLogging.logger {}
@@ -25,6 +26,7 @@ class IntegrationManager(
 		val context = IntegrationContext(
 			entityStateServiceFactory(it.descriptor),
 			integrationConfigService,
+			calendarService,
 			scheduler
 		)
 		it.create(context)

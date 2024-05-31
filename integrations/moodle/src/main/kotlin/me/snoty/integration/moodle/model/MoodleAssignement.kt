@@ -35,7 +35,7 @@ data class MoodleAssignment(
 			return MoodleAssignment(
 				id = id,
 				name = fields.getString("name"),
-				due = Instant.parse(fields.getString("due")),
+				due = fields.getDate("due").toInstant().toKotlinInstant(),
 				state = MoodleAssignmentState.valueOf(fields.getString("state"))
 			)
 		}

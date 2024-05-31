@@ -83,8 +83,9 @@ class MongoEntityStateService(
 				Projections.exclude("_id"),
 				Projections.computed("entity", "\$entities.$instanceId")
 			),
-			Aggregates.unwind("entity"),
-			Aggregates.match(Filters.eq("entity.type", type))
+			Aggregates.unwind("\$entity"),
+			Aggregates.replaceRoot("\$entity"),
+			Aggregates.match(Filters.eq("type", type))
 		)
 	}
 }

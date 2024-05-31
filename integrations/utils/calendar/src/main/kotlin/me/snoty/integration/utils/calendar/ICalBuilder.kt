@@ -1,18 +1,11 @@
 package me.snoty.integration.utils.calendar
 
-import me.snoty.integration.common.InstanceId
 import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.diff.Fields
+import me.snoty.integration.common.utils.calendar.CalendarConfig
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.immutable.ImmutableVersion
-import java.util.*
-
-data class CalendarConfig(
-	val userId: UUID,
-	val instanceId: InstanceId,
-	val type: String
-)
 
 abstract class ICalBuilder<ID>(private val entityStateService: EntityStateService) {
 	protected abstract fun buildEvent(id: String, fields: Fields): VEvent

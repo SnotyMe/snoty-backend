@@ -44,7 +44,7 @@ class WebUntisIntegration(
 		WebUntisJobRequest(config.user, config.settings)
 
 	override fun routes(routing: Route) {
-		routing.iCalRoutes(integrationConfigService, entityStateService)
+		routing.iCalRoutes(integrationConfigService, context.calendarService, entityStateService)
 	}
 
 	class Factory : IntegrationFactory {

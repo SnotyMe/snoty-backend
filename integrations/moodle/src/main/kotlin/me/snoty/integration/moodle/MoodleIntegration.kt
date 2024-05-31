@@ -46,7 +46,7 @@ class MoodleIntegration(
 	}
 
 	override fun routes(routing: Route) {
-		routing.iCalRoutes(integrationConfigService, entityStateService)
+		routing.iCalRoutes(integrationConfigService, context.calendarService, entityStateService)
 	}
 }
 
