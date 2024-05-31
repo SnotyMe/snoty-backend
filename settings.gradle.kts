@@ -60,6 +60,7 @@ dependencyResolutionManagement {
 			plugin("kotlin-jvm", "org.jetbrains.kotlin.jvm")
 				.version(kotlinVersion)
 			kotlinPlugin("serialization")
+			plugin("kotlin-kover", "org.jetbrains.kotlinx.kover").version("0.8.0")
 			plugin("buildinfo", "io.github.simulatan.gradle-buildinfo-plugin")
 				.version("2.1.0")
 			plugin("jib", "com.google.cloud.tools.jib")
@@ -204,9 +205,5 @@ File(rootDir, "integrations")
 		include(":integrations:${it.name}")
 	}
 include("api")
-include("integrations:moodle")
-findProject(":integrations:moodle")?.name = "moodle"
-include("integrations:webuntis")
-findProject(":integrations:webuntis")?.name = "webuntis"
 include("integrations:utils")
 include("integrations:utils:calendar")

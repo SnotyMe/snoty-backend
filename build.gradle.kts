@@ -10,6 +10,7 @@ import org.jetbrains.gradle.ext.settings
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.kover)
     application
     alias(libs.plugins.buildinfo)
     alias(libs.plugins.jib)
@@ -54,7 +55,7 @@ testing {
             useJUnitJupiter()
 
             tasks.withType<Test>().configureEach {
-                maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
+                maxParallelForks = (Runtime.getRuntime().availableProcessors()).coerceAtLeast(1)
             }
 
             dependencies {
@@ -84,7 +85,12 @@ val devImplementation: Configuration by configurations.getting {
 }
 
 dependencies {
-    implementation(projects.api)
+    fun moduleImplementation(dependency: Any) {
+        implementation(dependency)
+        kover(dependency)
+    }
+
+    moduleImplementation(projects.api)
     testImplementation(projects.api)
 
     // configuration
@@ -149,13 +155,13 @@ dependencies {
     // dev
     devImplementation(dev.keycloak.adminClient)
 
-    implementation(projects.integrations.api)
+    moduleImplementation(projects.integrations.api)
     // depend on all integrations by default
     subprojects
         .filter { it.path.startsWith(":integrations:") }
         .filter { !it.path.startsWith(":integrations:utils") }
         .forEach {
-            implementation(it)
+            moduleImplementation(it)
         }
 }
 
