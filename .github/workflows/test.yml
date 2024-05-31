@@ -25,6 +25,11 @@ jobs:
         if: always()
         with:
           report_paths: '**/build/test-results/*/TEST-*.xml'
+      - name: Upload Test Results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
       - name: Upload Coverage Report
         uses: codecov/codecov-action@v4
         with:
