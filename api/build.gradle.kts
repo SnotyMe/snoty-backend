@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.kover)
 }
 
 dependencies {
@@ -13,4 +14,10 @@ dependencies {
     implementation(ktor.server.core)
     implementation(ktor.server.auth)
     implementation(ktor.server.auth.jwt)
+
+    implementation(tests.junit.api)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
