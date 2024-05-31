@@ -179,6 +179,8 @@ dependencyResolutionManagement {
 				.versionRef(testcontainers)
 			library("testcontainers-keycloak", "com.github.dasniko", "testcontainers-keycloak")
 				.version("3.3.1")
+			library("testcontainers-mongodb", "org.testcontainers", "mongodb")
+				.versionRef(testcontainers)
 
 			val junit = version("junit", "5.10.2")
 			library("junit-api", "org.junit.jupiter", "junit-jupiter")

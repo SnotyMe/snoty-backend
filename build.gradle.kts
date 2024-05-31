@@ -43,6 +43,8 @@ testing {
                 implementation(project())
                 implementation(sourceSets.test.get().output)
             }
+            sources.compileClasspath += sourceSets.test.get().compileClasspath
+            sources.runtimeClasspath += sourceSets.test.get().runtimeClasspath
             targets {
                 all {
                     testTask.configure {
@@ -71,6 +73,7 @@ testing {
                 implementation(tests.testcontainers)
                 implementation(tests.testcontainers.junit)
                 implementation(tests.testcontainers.keycloak)
+                implementation(tests.testcontainers.mongodb)
                 implementation(devSourceSet.output)
 
                 runtimeOnly(tests.junit.engine)
@@ -87,11 +90,11 @@ val devImplementation: Configuration by configurations.getting {
 dependencies {
     fun moduleImplementation(dependency: Any) {
         implementation(dependency)
+        testImplementation(dependency)
         kover(dependency)
     }
 
     moduleImplementation(projects.api)
-    testImplementation(projects.api)
 
     // configuration
     implementation(configuration.hoplite.core)

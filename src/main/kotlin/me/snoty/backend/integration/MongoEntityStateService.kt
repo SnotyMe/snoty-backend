@@ -85,7 +85,7 @@ class MongoEntityStateService(
 			),
 			Aggregates.unwind("\$entity"),
 			Aggregates.replaceRoot("\$entity"),
-			Aggregates.match(Filters.eq("type", type))
+			Aggregates.match(Filters.eq(EntityState::type.name, type))
 		)
 	}
 }

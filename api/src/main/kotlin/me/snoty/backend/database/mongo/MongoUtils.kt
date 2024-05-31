@@ -9,13 +9,9 @@ import com.mongodb.kotlin.client.coroutine.MongoCollection
 import kotlinx.coroutines.flow.firstOrNull
 import org.bson.Document
 import org.bson.conversions.Bson
-import kotlin.reflect.KClass
 
 inline fun <reified T : Any> MongoCollection<*>.aggregate(vararg stages: Bson): AggregateFlow<T>
 	= aggregate<T>(stages.toList())
-
-fun <R : Any> MongoCollection<*>.aggregate(resultClass: KClass<R>, vararg stages: Bson)
-	= aggregate(stages.toList(), resultClass.java)
 
 suspend inline fun <reified T : Any> MongoCollection<*>.getByIdFromArray(path: String, id: Any): T? {
 	// computed path that tells mongodb to use that value
