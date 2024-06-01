@@ -28,8 +28,9 @@ jobs:
       - name: Find JUnit test results
         id: junit_files
         run: |
-          files="$(ls **build/test-results/**/TEST-*.xml | tr '\n' ',')"
+          files="$(ls **build/test-results/**/TEST-*.xml | paste -s -d ',' -)"
           echo "files=$files" >> "$GITHUB_OUTPUT"
+          echo "Found files: $files"
       - name: Upload Test Results to Codecov
         if: ${{ !cancelled() }}
         uses: codecov/test-results-action@v1
