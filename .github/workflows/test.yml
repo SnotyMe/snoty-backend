@@ -29,7 +29,7 @@ jobs:
         id: junit_files
         run: |
           shopt -s globstar
-          files="$(ls **build/test-results/**/TEST-*.xml | paste -s -d ',' -)"
+          files="$(ls **/build/test-results/**/TEST-*.xml | paste -s -d ',' -)"
           echo "files=$files" >> "$GITHUB_OUTPUT"
           echo "Found files: $files"
       - name: Upload Test Results to Codecov
