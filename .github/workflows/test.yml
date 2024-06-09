@@ -25,6 +25,19 @@ jobs:
         if: always()
         with:
           report_paths: '**/build/test-results/*/TEST-*.xml'
+      - name: Find JUnit test results
+        id: junit_files
+        run: |
+          shopt -s globstar
+          files="$(ls **/build/test-results/**/TEST-*.xml | paste -s -d ',' -)"
+          echo "files=$files" >> "$GITHUB_OUTPUT"
+          echo "Found files: $files"
+      - name: Upload Test Results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ${{ steps.junit_files.outputs.files }}
       - name: Upload Coverage Report
         uses: codecov/codecov-action@v4
         with:
