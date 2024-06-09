@@ -9,12 +9,10 @@ import me.snoty.backend.build.BuildInfo
 import me.snoty.backend.config.Config
 import me.snoty.backend.integration.IntegrationManager
 import me.snoty.backend.server.plugins.*
-import org.jetbrains.exposed.sql.Database
 
 class KtorServer(
 	private val config: Config,
 	private val buildInfo: BuildInfo,
-	private val database: Database,
 	private val metricsRegistry: MeterRegistry,
 	private val integrationManager: IntegrationManager
 ) {

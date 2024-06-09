@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 import io.github.simulatan.gradle.plugin.buildinfo.configuration.BuildInfoExtension
 import io.github.simulatan.gradle.plugin.buildinfo.configuration.PropertiesOutputLocation
 import org.eclipse.jgit.api.Git
@@ -41,6 +43,8 @@ testing {
                 implementation(project())
                 implementation(sourceSets.test.get().output)
             }
+            sources.compileClasspath += sourceSets.test.get().compileClasspath
+            sources.runtimeClasspath += sourceSets.test.get().runtimeClasspath
             targets {
                 all {
                     testTask.configure {
@@ -61,8 +65,6 @@ testing {
                 // for some reason, transitive dependencies aren't included in the test classpath
                 implementation(projects.api)
                 implementation(tests.junit.api)
-                runtimeOnly(tests.junit.engine)
-                runtimeOnly(tests.junit.launcher)
                 implementation(tests.ktor.server.tests)
                 implementation(tests.mockk)
                 implementation(tests.assertj.core)
@@ -71,7 +73,11 @@ testing {
                 implementation(tests.testcontainers)
                 implementation(tests.testcontainers.junit)
                 implementation(tests.testcontainers.keycloak)
+                implementation(tests.testcontainers.mongodb)
                 implementation(devSourceSet.output)
+
+                runtimeOnly(tests.junit.engine)
+                runtimeOnly(tests.junit.launcher)
             }
         }
     }
@@ -84,16 +90,15 @@ val devImplementation: Configuration by configurations.getting {
 dependencies {
     fun moduleImplementation(dependency: Any) {
         implementation(dependency)
+        testImplementation(dependency)
         kover(dependency)
     }
 
     moduleImplementation(projects.api)
-    testImplementation(projects.api)
 
     // configuration
     implementation(configuration.hoplite.core)
     implementation(configuration.hoplite.yaml)
-    implementation(configuration.hoplite.hikaricp)
     implementation(configuration.hoplite.datetime)
 
     implementation(ktor.serialization.kotlinx.json)
@@ -128,11 +133,9 @@ dependencies {
     implementation(monitoring.micrometer.prometheus)
 
     // database
-    implementation(database.exposed.core)
-    implementation(database.exposed.jdbc)
-    implementation(database.exposed.json)
-    implementation(database.postgres.driver)
-    implementation(database.hikaricp)
+    implementation(database.mongodb)
+    implementation(database.mongodb.sync)
+    implementation(libraries.bson.kotlinx)
 
     // logging
     implementation(log.logback)

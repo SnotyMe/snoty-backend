@@ -1,6 +1,6 @@
 services:
-  postgres:
-    image: postgres:16-alpine
+  mongodb:
+    image: mongo:8.0-rc
     user: ${UID:-1000}:${GID:-1000}
     restart: unless-stopped
     env_file:
@@ -9,9 +9,7 @@ services:
       # overrides the .env file
       - path: .env
         required: false
-    environment:
-      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - ./mongo-data:/data/db
     ports:
-      - ${POSTGRES_PORT:-5432}:5432
+      - ${MONGO_PORT:-27017}:27017

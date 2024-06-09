@@ -3,16 +3,21 @@ package me.snoty.backend
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
+import kotlinx.coroutines.runBlocking
 import me.snoty.backend.build.DevBuildInfo
 import me.snoty.backend.config.ConfigLoaderImpl
+import me.snoty.backend.database.mongo.createMongoClients
 import me.snoty.backend.integration.IntegrationManager
+import me.snoty.backend.integration.MongoEntityStateService
+import me.snoty.backend.integration.config.MongoIntegrationConfigService
+import me.snoty.backend.integration.utils.calendar.MongoCalendarService
 import me.snoty.backend.scheduling.JobRunrConfigurer
 import me.snoty.backend.scheduling.JobRunrScheduler
 import me.snoty.backend.server.KtorServer
 import me.snoty.backend.spi.DevManager
-import org.jetbrains.exposed.sql.Database
+import java.util.concurrent.Executors
 
-fun main() {
+fun main() = runBlocking {
 	val logger = KotlinLogging.logger {}
 
 	// ran pre-config load to allow dev functions to configure the environment
@@ -33,15 +38,22 @@ fun main() {
 			throw e
 		}
 	}
-	val dataSource = config.database.value
-	val database = Database.connect(dataSource)
+
 	val meterRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
+	val metricsPool = Executors.newScheduledThreadPool(1)
 	val scheduler = JobRunrScheduler()
 
-	val integrationManager = IntegrationManager(database, meterRegistry, scheduler)
-	JobRunrConfigurer.configure(dataSource, integrationManager, meterRegistry)
+	val (mongoDB, syncMongoClient) = createMongoClients(config.mongodb)
+
+	val integrationConfigService = MongoIntegrationConfigService(mongoDB)
+	val calendarService = MongoCalendarService(mongoDB)
+	val integrationManager = IntegrationManager(scheduler, integrationConfigService, calendarService) { integrationDescriptor ->
+		MongoEntityStateService(mongoDB, integrationDescriptor, meterRegistry, metricsPool)
+	}
+
+	JobRunrConfigurer.configure(syncMongoClient, integrationManager, meterRegistry)
 	integrationManager.startup()
 
-	KtorServer(config, buildInfo, database, meterRegistry, integrationManager)
+	KtorServer(config, buildInfo, meterRegistry, integrationManager)
 		.start(wait = true)
 }

@@ -1,13 +1,13 @@
 package me.snoty.integration.common
 
-import io.micrometer.core.instrument.MeterRegistry
 import me.snoty.backend.scheduling.Scheduler
-import org.jetbrains.exposed.sql.Database
-import java.util.concurrent.ScheduledExecutorService
+import me.snoty.integration.common.config.IntegrationConfigService
+import me.snoty.integration.common.diff.EntityStateService
+import me.snoty.integration.common.utils.calendar.CalendarService
 
 data class IntegrationContext(
-	val database: Database,
-	val meterRegistry: MeterRegistry,
-	val metricsPool: ScheduledExecutorService,
+	val entityStateService: EntityStateService,
+	val integrationConfigService: IntegrationConfigService,
+	val calendarService: CalendarService,
 	val scheduler: Scheduler
 )

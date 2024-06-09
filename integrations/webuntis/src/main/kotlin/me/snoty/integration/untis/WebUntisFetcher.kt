@@ -1,40 +1,45 @@
 package me.snoty.integration.untis
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
-import me.snoty.integration.common.InstanceId
-import me.snoty.integration.common.IntegrationFetcher
-import me.snoty.integration.common.IntegrationFetcherFactory
-import me.snoty.integration.common.diff.EntityDiffMetrics
-import me.snoty.integration.common.diff.IUpdatableEntity
+import me.snoty.integration.common.diff.EntityStateService
+import me.snoty.integration.common.fetch.*
 import me.snoty.integration.untis.request.getExams
-import java.util.UUID
+import org.jobrunr.jobs.context.JobDashboardLogger
+import java.util.*
 
 class WebUntisFetcher(
-	private val entityDiffMetrics: EntityDiffMetrics,
+	private val entityStateService: EntityStateService,
 	private val untis: WebUntisAPI = WebUntisAPIImpl()
-) : IntegrationFetcher<WebUntisJobRequest> {
-	private val logger = KotlinLogging.logger {}
-
-	private fun updateStates(instanceId: InstanceId, elements: List<IUpdatableEntity<Int>>, userId: UUID) {
-		elements.forEach {
-			val result = WebUntisEntityStateTable.compareAndUpdateState(it, instanceId, userId)
-			entityDiffMetrics.process(result)
-		}
-	}
-
-	private suspend fun fetchExams(untisSettings: WebUntisSettings, userId: UUID) {
+) : AbstractIntegrationFetcher<WebUntisJobRequest>() {
+	private suspend fun FetchContext.fetchExams(
+		logger: JobDashboardLogger,
+		progress: FetchProgress,
+		untisSettings: WebUntisSettings,
+		userId: UUID
+	) {
 		val instanceId = untisSettings.instanceId
-		val exams = untis.getExams(untisSettings)
-		updateStates(instanceId, exams, userId)
-		logger.info { "Fetched ${exams.size} exams for ${untisSettings.username}" }
+
+		val exams = fetch {
+			untis.getExams(untisSettings)
+		}
+
+		updateStates {
+			entityStateService.updateStates(userId, instanceId, exams)
+		}
+
+		progress.advance(IntegrationProgressState.STAGE_DONE)
+		logger.info("Fetched ${exams.size} exams for ${untisSettings.username}")
 	}
 
-	class Factory(private val untis: WebUntisAPI) : IntegrationFetcherFactory<WebUntisJobRequest> {
-		override fun create(entityDiffMetrics: EntityDiffMetrics) = WebUntisFetcher(entityDiffMetrics, untis)
+	class Factory(private val untis: WebUntisAPI) : IntegrationFetcherFactory<WebUntisJobRequest, Int> {
+		override fun create(entityStateService: EntityStateService)
+			= WebUntisFetcher(entityStateService, untis)
 	}
 
 	override fun run(jobRequest: WebUntisJobRequest) = runBlocking {
-		fetchExams(jobRequest.settings, jobRequest.userId)
+		val context = jobContext()
+		val logger = logger(context)
+		val progress = progress(context, 1)
+		progress.fetchExams(logger, progress, jobRequest.settings, jobRequest.userId)
 	}
 }

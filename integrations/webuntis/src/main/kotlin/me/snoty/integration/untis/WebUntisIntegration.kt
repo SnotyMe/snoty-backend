@@ -1,13 +1,14 @@
 package me.snoty.integration.untis
 
 import io.ktor.server.routing.*
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import me.snoty.backend.scheduling.JobRequest
 import me.snoty.integration.common.*
-import me.snoty.integration.common.diff.EntityStateTable
-import me.snoty.integration.common.diff.ID
+import me.snoty.integration.common.config.ConfigId
+import me.snoty.integration.common.utils.RedactInJobName
 import me.snoty.integration.untis.calendar.iCalRoutes
-import org.jetbrains.exposed.sql.Column
+import me.snoty.integration.untis.model.UntisDateTime
 import java.util.*
 
 @Serializable
@@ -15,41 +16,44 @@ data class WebUntisSettings(
 	val baseUrl: String,
 	val school: String,
 	val username: String,
-	val appSecret: String
+	@RedactInJobName
+	val appSecret: String,
+	@Contextual
+	override val id: ConfigId = ConfigId()
 ) : IntegrationSettings {
 	override val instanceId = baseUrl.instanceId
-}
-
-object WebUntisEntityStateTable : EntityStateTable<Int>() {
-	override val id: Column<Int> = integer(ID)
-	override val primaryKey = buildPrimaryKey()
 }
 
 class WebUntisIntegration(
 	context: IntegrationContext,
 	untisAPI: WebUntisAPI = WebUntisAPIImpl()
-) : AbstractIntegration<WebUntisSettings, WebUntisJobRequest>(
-	INTEGRATION_NAME,
+) : AbstractIntegration<WebUntisSettings, WebUntisJobRequest, Int>(
+	DESCRIPTOR,
 	WebUntisSettings::class,
-	WebUntisEntityStateTable,
 	WebUntisFetcher.Factory(untisAPI),
 	context
 ) {
 	companion object {
 		const val INTEGRATION_NAME = "webuntis"
+		val DESCRIPTOR = IntegrationDescriptor(name = INTEGRATION_NAME)
+
+		val UNTIS_CODEC_MODULE = listOf(UntisDateTime.Companion)
 	}
 
 	override fun createRequest(config: IntegrationConfig<WebUntisSettings>): JobRequest =
 		WebUntisJobRequest(config.user, config.settings)
 
+	override fun routes(routing: Route) {
+		routing.iCalRoutes(integrationConfigService, context.calendarService, entityStateService)
+	}
+
 	class Factory : IntegrationFactory {
+		override val mongoDBCodecs = UNTIS_CODEC_MODULE
+		override val descriptor = DESCRIPTOR
+
 		override fun create(context: IntegrationContext): Integration {
 			return WebUntisIntegration(context)
 		}
-	}
-
-	override fun routes(routing: Route) {
-		routing.iCalRoutes()
 	}
 }
 

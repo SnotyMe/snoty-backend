@@ -1,41 +1,41 @@
 package me.snoty.integration.moodle
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
-import me.snoty.integration.common.IntegrationFetcher
-import me.snoty.integration.common.InstanceId
-import me.snoty.integration.common.IntegrationFetcherFactory
-import me.snoty.integration.common.diff.EntityDiffMetrics
-import me.snoty.integration.common.diff.IUpdatableEntity
+import me.snoty.integration.common.diff.EntityStateService
+import me.snoty.integration.common.fetch.*
 import me.snoty.integration.moodle.request.getCalendarUpcoming
-import java.util.UUID
+import org.jobrunr.jobs.context.JobDashboardLogger
+import java.util.*
 
 open class MoodleFetcher(
-	private val entityDiffMetrics: EntityDiffMetrics,
+	private val entityStateService: EntityStateService,
 	private val moodleAPI: MoodleAPI = MoodleAPIImpl()
-) : IntegrationFetcher<MoodleJobRequest> {
-	private val logger = KotlinLogging.logger {}
-
-	private fun updateStates(elements: List<IUpdatableEntity<Long>>, instanceId: InstanceId, userId: UUID) {
-		elements.forEach {
-			val result = MoodleEntityStateTable.compareAndUpdateState(it, instanceId, userId)
-			entityDiffMetrics.process(result)
-		}
-	}
-
-	private suspend fun fetchAssignments(moodleSettings: MoodleSettings, userId: UUID) {
+) : AbstractIntegrationFetcher<MoodleJobRequest>() {
+	private suspend fun FetchContext.fetchAssignments(logger: JobDashboardLogger, progress: FetchProgress, moodleSettings: MoodleSettings, userId: UUID) {
 		val instanceId = moodleSettings.instanceId
-		val assignments = moodleAPI.getCalendarUpcoming(moodleSettings)
-		updateStates(assignments, instanceId, userId)
-		logger.info { "Fetched ${assignments.size} assignments for ${moodleSettings.username}" }
+
+		val assignments = fetch {
+			moodleAPI.getCalendarUpcoming(moodleSettings)
+		}
+
+		updateStates {
+			entityStateService.updateStates(userId, instanceId, assignments)
+		}
+
+		progress.advance(IntegrationProgressState.STAGE_DONE)
+		logger.info("Fetched ${assignments.size} assignments for ${moodleSettings.username}")
 		// TODO: send update events
 	}
 
-	class Factory(private val moodleAPI: MoodleAPI) : IntegrationFetcherFactory<MoodleJobRequest> {
-		override fun create(entityDiffMetrics: EntityDiffMetrics) = MoodleFetcher(entityDiffMetrics, moodleAPI)
+	class Factory(private val moodleAPI: MoodleAPI) : IntegrationFetcherFactory<MoodleJobRequest, Long> {
+		override fun create(entityStateService: EntityStateService)
+			= MoodleFetcher(entityStateService, moodleAPI)
 	}
 
 	override fun run(jobRequest: MoodleJobRequest) = runBlocking {
-		fetchAssignments(jobRequest.settings, jobRequest.userId)
+		val context = jobContext()
+		val logger = logger(context)
+		val progress = progress(context, 1)
+		progress.fetchAssignments(logger, progress, jobRequest.settings, jobRequest.userId)
 	}
 }

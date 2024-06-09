@@ -2,8 +2,8 @@ package me.snoty.integration.untis.model
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.*
-import me.snoty.integration.common.diff.*
+import me.snoty.integration.common.diff.Fields
+import me.snoty.integration.common.diff.UpdatableEntity
 
 @Serializable
 data class UntisExam(
@@ -28,35 +28,34 @@ data class UntisExam(
 			return UntisExam(
 				id = id,
 				examType = fields.getString("examType"),
-				startDateTime = UntisDateTime.fromString(fields.getString("startDateTime")),
-				endDateTime = UntisDateTime.fromString(fields.getString("endDateTime")),
-				departmentId = fields.getInt("departmentId"),
-				subjectId = fields.getInt("subjectId"),
-				klasseIds = fields.getJsonArray("klasseIds").map { it.jsonPrimitive.int },
-				roomIds = fields.getJsonArray("roomIds").map { it.jsonPrimitive.int },
-				teacherIds = fields.getJsonArray("teacherIds").map { it.jsonPrimitive.int },
+				startDateTime = UntisDateTime.fromDate(fields.getDate("startDateTime")),
+				endDateTime = UntisDateTime.fromDate(fields.getDate("endDateTime")),
+				departmentId = fields.getInteger("departmentId"),
+				subjectId = fields.getInteger("subjectId"),
+				klasseIds = fields.getList("klasseIds", Int::class.java),
+				roomIds = fields.getList("roomIds", Int::class.java),
+				teacherIds = fields.getList("teacherIds", Int::class.java),
 				name = fields.getString("name"),
 				text = fields.getString("text")
 			)
 		}
 	}
 
+	override fun prepareFieldsForDiff(fields: Fields) {
+		fields["startDateTime"] = UntisDateTime.fromDate(fields.getDate("startDateTime"))
+		fields["endDateTime"] = UntisDateTime.fromDate(fields.getDate("endDateTime"))
+	}
+
 	@Contextual
-	override val fields: Fields = buildJsonObject {
+	override val fields: Fields = buildDocument {
 		put("examType", examType)
-		put("startDateTime", startDateTime.toString())
-		put("endDateTime", endDateTime.toString())
+		put("startDateTime", startDateTime)
+		put("endDateTime", endDateTime)
 		put("departmentId", departmentId)
 		put("subjectId", subjectId)
-		putJsonArray("roomIds") {
-			roomIds.forEach { add(it) }
-		}
-		putJsonArray("klasseIds") {
-			klasseIds.forEach { add(it) }
-		}
-		putJsonArray("teacherIds") {
-			teacherIds.forEach { add(it) }
-		}
+		put("roomIds", roomIds)
+		put("klasseIds", klasseIds)
+		put("teacherIds", teacherIds)
 		put("name", name)
 		put("text", text)
 	}

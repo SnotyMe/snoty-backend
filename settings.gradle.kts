@@ -79,7 +79,6 @@ dependencyResolutionManagement {
 
 			hopliteDependency("core")
 			hopliteDependency("yaml")
-			hopliteDependency("hikaricp")
 			hopliteDependency("datetime")
 		}
 
@@ -107,19 +106,9 @@ dependencyResolutionManagement {
 		}
 
 		create("database") {
-			val exposed = version("exposed", "0.50.0")
-
-			fun exposedModule(name: String) {
-				library("exposed-$name", "org.jetbrains.exposed", "exposed-$name")
-					.versionRef(exposed)
-			}
-
-			exposedModule("core")
-			exposedModule("jdbc")
-			exposedModule("json")
-			library("postgres-driver", "org.postgresql", "postgresql")
-				.version("42.7.3")
-			library("hikaricp", "com.zaxxer", "HikariCP")
+			library("mongodb", "org.mongodb", "mongodb-driver-kotlin-coroutine")
+				.version("5.1.0")
+			library("mongodb-sync", "org.mongodb", "mongodb-driver-sync")
 				.version("5.1.0")
 		}
 
@@ -151,6 +140,7 @@ dependencyResolutionManagement {
 			library("kotlinx-serialization", "org.jetbrains.kotlinx", "kotlinx-serialization-core").versionRef(kotlinxSerialization)
 			library("kotlinx-serialization-json", "org.jetbrains.kotlinx", "kotlinx-serialization-json").versionRef(kotlinxSerialization)
 			library("kotlinx-datetime", "org.jetbrains.kotlinx", "kotlinx-datetime").version("0.5.0")
+			library("bson-kotlinx", "org.mongodb", "bson-kotlinx").version("5.1.0")
 
 			library("ical4j", "org.mnode.ical4j", "ical4j").version("4.0.0-rc6")
 		}
@@ -173,6 +163,8 @@ dependencyResolutionManagement {
 				.versionRef(testcontainers)
 			library("testcontainers-keycloak", "com.github.dasniko", "testcontainers-keycloak")
 				.version("3.3.1")
+			library("testcontainers-mongodb", "org.testcontainers", "mongodb")
+				.versionRef(testcontainers)
 
 			val junit = version("junit", "5.10.2")
 			library("junit-api", "org.junit.jupiter", "junit-jupiter")

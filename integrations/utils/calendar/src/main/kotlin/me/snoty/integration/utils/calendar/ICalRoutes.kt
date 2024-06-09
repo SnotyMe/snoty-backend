@@ -10,32 +10,35 @@ import kotlinx.serialization.Serializable
 import me.snoty.backend.utils.BadRequestException
 import me.snoty.backend.utils.NotFoundException
 import me.snoty.backend.utils.getUser
-import me.snoty.integration.common.IntegrationConfigTable
-import me.snoty.integration.common.IntegrationSettings
+import me.snoty.integration.common.BaseIntegrationSettings
+import me.snoty.integration.common.config.ConfigId
+import me.snoty.integration.common.config.IntegrationConfigService
+import me.snoty.integration.common.config.get
+import me.snoty.integration.common.utils.calendar.CalendarService
 import net.fortuna.ical4j.data.CalendarOutputter
 import java.nio.charset.StandardCharsets
-import java.util.*
 
 @Serializable
-data class ICalCreateRequest(val configId: Long)
+data class ICalCreateRequest(val configId: ConfigId)
 
 fun Route.calendarRoutes(
-	integrationName: String,
-	type: String,
+	integrationConfigService: IntegrationConfigService,
+	calendarService: CalendarService,
+	integrationType: String,
+	calendarType: String,
 	calendarBuilder: ICalBuilder<*>
-) = route("/ical/$type") {
-	val calendarTable = CalendarTable(integrationName)
-
+) = route("/ical/$calendarType") {
 	authenticate("jwt-auth") {
 		post {
 			val user = call.getUser()
 			val configId = call.receive<ICalCreateRequest>().configId
-			val settings = IntegrationConfigTable.get<IntegrationSettings>(configId, integrationName)
+			val settings = integrationConfigService.get<BaseIntegrationSettings>(configId, integrationType)
 				?: throw NotFoundException("Integration config not found")
-			val id = calendarTable.create(
+			val id = calendarService.create(
 				user.id,
 				settings.instanceId,
-				type
+				integrationType,
+				calendarType
 			)
 
 			call.response.header(HttpHeaders.Location, call.url {
@@ -48,10 +51,9 @@ fun Route.calendarRoutes(
 		val calId = call.parameters["calId"] ?: throw BadRequestException("Invalid calendar ID")
 		// calendar stored in DB
 		// created by a user before adding to their client to bypass authentication
-		val storedCalendar = calendarTable.get(UUID.fromString(calId), type)
+		val storedCalendar = calendarService.get(ConfigId(calId), integrationType)
 			?: throw NotFoundException("Calendar not found")
-		val config = CalendarConfig(storedCalendar[calendarTable.userId], storedCalendar[calendarTable.instanceId], type)
-		val calendar = calendarBuilder.build(config)
+		val calendar = calendarBuilder.build(storedCalendar)
 		val contentType = calendar.getContentType(StandardCharsets.UTF_8)
 		val outputter = CalendarOutputter()
 		call.respondOutputStream(ContentType.parse(contentType)) {

@@ -1,6 +1,5 @@
 package me.snoty.backend.scheduling
 
-import org.jobrunr.jobs.lambdas.JobRequest
 import org.jobrunr.scheduling.BackgroundJob
 import org.jobrunr.scheduling.BackgroundJobRequest
 import org.jobrunr.scheduling.RecurringJobBuilder.aRecurringJob
@@ -13,6 +12,7 @@ class JobRunrScheduler : Scheduler {
 			aRecurringJob()
 				.withId(id)
 				.withDuration(15.minutes.toJavaDuration())
+				.withAmountOfRetries(5)
 				.apply {
 					this.withDetails {
 						job()
@@ -21,12 +21,14 @@ class JobRunrScheduler : Scheduler {
 		)
 	}
 
-	override fun scheduleJob(id: String, job: JobRequest) {
+	override fun scheduleJob(id: String, job: SnotyJob) {
 		BackgroundJobRequest.createRecurrently(
 			aRecurringJob()
 				.withId(id)
+				.withName(job.name)
 				.withDuration(15.minutes.toJavaDuration())
-				.withJobRequest(job)
+				.withAmountOfRetries(5)
+				.withJobRequest(job.request)
 		)
 	}
 }

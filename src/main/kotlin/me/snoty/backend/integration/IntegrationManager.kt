@@ -1,35 +1,48 @@
 package me.snoty.backend.integration
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.micrometer.core.instrument.MeterRegistry
-import me.snoty.integration.common.Integration
-import me.snoty.integration.common.IntegrationContext
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.supervisorScope
 import me.snoty.backend.scheduling.Scheduler
 import me.snoty.backend.spi.IntegrationRegistry
-import me.snoty.integration.common.IntegrationConfigTable
-import me.snoty.integration.common.IntegrationSettings
-import org.jetbrains.exposed.sql.Database
-import java.util.concurrent.Executors
+import me.snoty.backend.utils.NotFoundException
+import me.snoty.integration.common.*
+import me.snoty.integration.common.config.ConfigId
+import me.snoty.integration.common.config.IntegrationConfigService
+import me.snoty.integration.common.diff.EntityStateService
+import me.snoty.integration.common.utils.calendar.CalendarService
 
 
-class IntegrationManager(database: Database, metricsRegistry: MeterRegistry, scheduler: Scheduler) {
-	private val metricsPool = Executors.newScheduledThreadPool(1)
-	private val context = IntegrationContext(database, metricsRegistry, metricsPool, scheduler)
+class IntegrationManager(
+	scheduler: Scheduler,
+	private val integrationConfigService: IntegrationConfigService,
+	calendarService: CalendarService,
+	entityStateServiceFactory: (IntegrationDescriptor) -> EntityStateService
+) {
 	private val logger = KotlinLogging.logger {}
 
 	val integrations: List<Integration> = IntegrationRegistry.getIntegrationFactories().map {
+		val context = IntegrationContext(
+			entityStateServiceFactory(it.descriptor),
+			integrationConfigService,
+			calendarService,
+			scheduler
+		)
 		it.create(context)
 	}
 
-	fun startup() {
+	suspend fun startup() = supervisorScope {
 		logger.info { "Starting ${integrations.size} integrations..." }
-		integrations.forEach {
-			try {
-				it.start()
-			} catch (e: Exception) {
-				logger.error(e) { "Failed to start integration ${it.name}" }
+		integrations.map {
+			async {
+				try {
+					it.start()
+				} catch (e: Exception) {
+					logger.error(e) { "Failed to start integration ${it.name}" }
+				}
 			}
-		}
+		}.awaitAll()
 		logger.info { "Integration startup complete!" }
 	}
 
@@ -45,7 +58,14 @@ class IntegrationManager(database: Database, metricsRegistry: MeterRegistry, sch
 		}?.fetcher as T
 	}
 
-	fun getIntegrationConfig(configId: Long, integrationType: String): IntegrationSettings? {
-		return IntegrationConfigTable.get(configId, integrationType)
+	fun getIntegration(integrationType: String): Integration? {
+		return integrations.find {
+			it.name == integrationType
+		}
+	}
+
+	suspend fun getIntegrationConfig(configId: ConfigId, integrationType: String): IntegrationSettings? {
+		val integration = getIntegration(integrationType) ?: throw NotFoundException("Integration of this type not found")
+		return integrationConfigService.get(configId, integrationType, integration.settingsType)
 	}
 }

@@ -4,7 +4,7 @@ package me.snoty.integration.common
  * Unique ID representing a 3rd party service instance.
  * Used as a namespace to avoid ID conflicts between different service instances, e.g. self-hosted moodle instances.
  */
-typealias InstanceId = Int
+typealias InstanceId = String
 
 /**
  * Creates a somewhat unique instance ID from a string.
@@ -16,5 +16,5 @@ val String.instanceId: InstanceId
 		for (i in this.chars()) {
 			hash = hash * 31 + i
 		}
-		return hash
+		return hash.toString()
 	}

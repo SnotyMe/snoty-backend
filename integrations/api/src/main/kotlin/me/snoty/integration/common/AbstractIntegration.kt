@@ -1,81 +1,74 @@
 package me.snoty.integration.common
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.micrometer.core.instrument.MeterRegistry
+import kotlinx.coroutines.flow.count
 import me.snoty.backend.User
 import me.snoty.backend.scheduling.JobRequest
-import me.snoty.backend.scheduling.Scheduler
-import me.snoty.integration.common.diff.EntityDiffMetrics
-import me.snoty.integration.common.diff.EntityStateTable
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.TimeUnit
+import me.snoty.integration.common.config.IntegrationConfigService
+import me.snoty.integration.common.diff.EntityStateService
+import me.snoty.integration.common.fetch.IntegrationFetcherFactory
+import me.snoty.integration.common.utils.createFetcherJob
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmName
 
-abstract class AbstractIntegration<S : IntegrationSettings, R : JobRequest>(
-	final override val name: String,
+abstract class AbstractIntegration<S : IntegrationSettings, R : JobRequest, ID : Comparable<ID>>(
+	final override val descriptor: IntegrationDescriptor,
 	final override val settingsType: KClass<S>,
-	private val stateTable: EntityStateTable<*>,
-	fetcherFactory: IntegrationFetcherFactory<R>,
-	database: Database,
-	meterRegistry: MeterRegistry,
-	private val metricsPool: ScheduledExecutorService,
-	scheduler: Scheduler
+	fetcherFactory: IntegrationFetcherFactory<R, ID>,
+	protected val entityStateService: EntityStateService,
+	protected val integrationConfigService: IntegrationConfigService,
+	val context: IntegrationContext
 ) : Integration {
 	protected val logger = KotlinLogging.logger(this::class.jvmName)
 
 	constructor(
-		name: String,
+		descriptor: IntegrationDescriptor,
 		settingsType: KClass<S>,
-		stateTable: EntityStateTable<*>,
-		fetcherFactory: IntegrationFetcherFactory<R>,
+		fetcherFactory: IntegrationFetcherFactory<R, ID>,
 		context: IntegrationContext
 	) : this(
-		name,
+		descriptor,
 		settingsType,
-		stateTable,
 		fetcherFactory,
-		context.database,
-		context.meterRegistry,
-		context.metricsPool,
-		context.scheduler
+		context.entityStateService,
+		context.integrationConfigService,
+		context
 	)
 
-	private val entityDiffMetrics: EntityDiffMetrics = EntityDiffMetrics(meterRegistry, database, name, stateTable)
-	override val fetcher = fetcherFactory.create(entityDiffMetrics)
-	private val scheduler = IntegrationScheduler(name, scheduler)
+	override val fetcher = fetcherFactory.create(entityStateService)
+	private val scheduler = IntegrationScheduler(name, context.scheduler)
 
-	override fun start() {
-		transaction {
-			SchemaUtils.createMissingTablesAndColumns(stateTable)
-		}
-		metricsPool.scheduleAtFixedRate(entityDiffMetrics.Job(), 0, 30, TimeUnit.SECONDS)
+	override suspend fun start() {
+		entityStateService.scheduleMetricsTask()
 		scheduleAll()
 	}
 
-	override fun setup(user: User, settings: IntegrationSettings)
-		= IntegrationConfigTable.create(user.id, name, settings)
+	override suspend fun setup(user: User, settings: IntegrationSettings)
+		= integrationConfigService.create(user.id, name, settings)
 
-	private fun scheduleAll() {
-		val allSettings = IntegrationConfigTable.getAllIntegrationConfigs<S>(name)
+	private suspend fun scheduleAll() {
+		val allSettings = integrationConfigService.getAll(name, settingsType)
+		val count = allSettings.count()
 		logger.debug {
-			"Scheduling ${allSettings.size} jobs for $name"
+			"Scheduling $count jobs for $name"
 		}
-		allSettings.forEach(::schedule)
+		allSettings.collect {
+			schedule(it)
+		}
 	}
 
 	abstract fun createRequest(config: IntegrationConfig<S>): JobRequest
 
-	override fun schedule(user: User, settings: IntegrationSettings) {
+	override suspend fun schedule(user: User, settings: IntegrationSettings) {
 		@Suppress("UNCHECKED_CAST")
 		val integrationConfig = IntegrationConfig(user.id, settings as S)
 		schedule(integrationConfig)
 	}
 
 	private fun schedule(config: IntegrationConfig<S>) {
-		scheduler.scheduleJob(listOf(config.settings.instanceId, config.user), createRequest(config))
+		val idParts = listOf(config.settings.instanceId, config.user)
+		val request = createRequest(config)
+		val job = createFetcherJob(descriptor, config, request)
+		scheduler.scheduleJob(idParts, job)
 	}
 }
