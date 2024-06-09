@@ -16,7 +16,7 @@ inline fun <reified T : Any> MongoCollection<*>.aggregate(vararg stages: Bson): 
 suspend inline fun <reified T : Any> MongoCollection<*>.getByIdFromArray(path: String, id: Any): T? {
 	// computed path that tells mongodb to use that value
 	val computedPath = "\$$path"
-	val configFilter = Filters.eq("$path._id", id)
+	val configFilter = Filters.eq("$path.id", id)
 	return aggregate<T>(
 		Aggregates.match(configFilter),
 		Aggregates.unwind(computedPath),
@@ -38,15 +38,11 @@ object Aggregations {
 }
 
 object Stages {
-	fun objectToArray(name: String): Document {
-		return Document("\$objectToArray", name)
-	}
+	fun objectToArray(name: String): Bson
+		= Document("\$objectToArray", name)
 }
 
 object Accumulations {
 	fun mergeObjects(vararg objects: Any): Bson
-		= Document(
-			"\$mergeObjects",
-			objects.toList()
-		)
+		= Document("\$mergeObjects", objects.toList())
 }

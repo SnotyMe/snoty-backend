@@ -22,7 +22,7 @@ object JobRunrConfigurer {
 				MongoDBStorageProvider(
 					mongoClient,
 					MONGO_DB_NAME,
-					"jobrunr_",
+					"jobrunr.",
 					StorageProviderUtils.DatabaseOptions.CREATE
 				)
 			)

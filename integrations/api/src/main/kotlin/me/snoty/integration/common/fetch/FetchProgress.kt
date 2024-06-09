@@ -7,6 +7,18 @@ interface FetchProgress {
 	fun advance(state: IntegrationProgressState)
 }
 
+class FetchContext(private val progress: FetchProgress) : FetchProgress by progress {
+	suspend fun <T> fetch(block: suspend () -> T): T {
+		progress.advance(IntegrationProgressState.FETCHING)
+		return block()
+	}
+
+	suspend fun updateStates(block: suspend () -> Unit) {
+		progress.advance(IntegrationProgressState.UPDATING_IN_DB)
+		block()
+	}
+}
+
 enum class IntegrationProgressState {
 	INIT,
 	FETCHING,

@@ -17,9 +17,5 @@ interface IntegrationConfigService {
 	suspend fun <S : IntegrationSettings> create(userID: UUID, integrationType: String, settings: S): ConfigId
 }
 
-inline fun <reified S : IntegrationSettings> IntegrationConfigService.getAllExt(integrationType: String, clazz: KClass<S>)
-	= getAll(integrationType, clazz)
-
-
 suspend inline fun <reified S : IntegrationSettings> IntegrationConfigService.get(id: ConfigId, integrationType: String)
 	= get(id, integrationType, S::class)

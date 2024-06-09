@@ -2,7 +2,6 @@ package me.snoty.backend.integration
 
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Sorts
-import com.mongodb.kotlin.client.coroutine.MongoCollection
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.mockk.mockk
 import kotlinx.coroutines.flow.count
@@ -116,9 +115,9 @@ class MongoEntityStateServiceTest {
 		val entity2 = entity.copy(date=date2)
 		service.updateStates(USER_ID_2, INSTANCE_ID, listOf(entity2))
 
-		val userEntityChanges = service.getField<MongoCollection<UserEntityChanges>>("userEntityChanges")
+		val userEntityChanges = service.getField<EntityChangesCollection>("userEntityChanges")
 
-		val descriptor = Descriptor(INSTANCE_ID, ENTITY_TYPE, entity.id.toString(), USER_ID_2)
+		val descriptor = EntityDescriptor(INSTANCE_ID, ENTITY_TYPE, entity.id.toString(), USER_ID_2)
 
 		val changes = userEntityChanges
 			.find(Filters.eq("descriptor", descriptor))

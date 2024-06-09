@@ -48,5 +48,5 @@ abstract class UpdatableEntity<ID> : IUpdatableEntity<ID> {
 		}
 	}
 
-	fun buildDocument(block: Document.() -> Unit) = Document().apply(block)
+	protected fun buildDocument(block: Document.() -> Unit) = Document().apply(block)
 }

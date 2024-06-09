@@ -13,6 +13,7 @@ import me.snoty.integration.common.InstanceId
 import me.snoty.integration.common.IntegrationDescriptor
 import me.snoty.integration.common.diff.*
 import me.snoty.integration.common.diff.state.EntityState
+import me.snoty.integration.common.diff.state.EntityStateCollection
 import me.snoty.integration.common.diff.state.UserEntityStates
 import me.snoty.integration.common.diff.state.updateStates
 import java.util.*
@@ -25,10 +26,10 @@ class MongoEntityStateService(
 	meterRegistry: MeterRegistry,
 	private val metricsPool: ScheduledExecutorService
 ) : EntityStateService {
-	private val userEntityStates = mongoDB.getCollection<UserEntityStates>("integration.${integration.name}.entityStates")
-	private val userEntityChanges = mongoDB.getCollection<UserEntityChanges>("integration.${integration.name}.entityChanges")
+	private val userEntityStates: EntityStateCollection = mongoDB.getCollection<UserEntityStates>("integration.${integration.name}.entityStates")
+	private val userEntityChanges: EntityChangesCollection = mongoDB.getCollection<UserEntityChanges>("integration.${integration.name}.entityChanges")
 
-	private val entityDiffMetrics: EntityDiffMetrics = EntityDiffMetrics(meterRegistry, integration.name, userEntityStates)
+	private val entityDiffMetrics = EntityDiffMetrics(meterRegistry, integration.name, userEntityStates)
 
 	override fun scheduleMetricsTask() {
 		metricsPool.scheduleAtFixedRate(entityDiffMetrics.Job(), 0, 30, TimeUnit.SECONDS)
@@ -62,7 +63,7 @@ class MongoEntityStateService(
 		if (changes.isNotEmpty()) {
 			userEntityChanges.insertMany(
 				changes.map {
-					val descriptor = Descriptor(
+					val descriptor = EntityDescriptor(
 						instanceId,
 						it.key.type,
 						it.key.id.toString(),
@@ -77,14 +78,15 @@ class MongoEntityStateService(
 	}
 
 	override fun getEntities(userID: UUID, instanceId: InstanceId, type: String): Flow<EntityState> {
+		val entity = "entity"
 		return userEntityStates.aggregate<EntityState>(
 			Aggregates.match(Filters.eq("_id", userID)),
 			Aggregations.project(
 				Projections.exclude("_id"),
-				Projections.computed("entity", "\$entities.$instanceId")
+				Projections.computed(entity, "\$${UserEntityStates::entities.name}.$instanceId")
 			),
-			Aggregates.unwind("\$entity"),
-			Aggregates.replaceRoot("\$entity"),
+			Aggregates.unwind("\$$entity"),
+			Aggregates.replaceRoot("\$$entity"),
 			Aggregates.match(Filters.eq(EntityState::type.name, type))
 		)
 	}

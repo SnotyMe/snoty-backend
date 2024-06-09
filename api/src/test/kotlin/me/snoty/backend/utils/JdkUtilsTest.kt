@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test
 
 class JdkUtilsTest {
 	@Test
-	fun test() {
+	fun testResolveClassName() {
 		assertEquals("java.lang.Integer", resolveClassName(Int::class))
+		assertEquals("java.lang.String", resolveClassName(String::class))
+		assertEquals("java.lang.Long", resolveClassName(Long::class))
 	}
 }

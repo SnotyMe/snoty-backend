@@ -2,10 +2,7 @@ package me.snoty.integration.untis
 
 import kotlinx.coroutines.runBlocking
 import me.snoty.integration.common.diff.EntityStateService
-import me.snoty.integration.common.fetch.AbstractIntegrationFetcher
-import me.snoty.integration.common.fetch.FetchProgress
-import me.snoty.integration.common.fetch.IntegrationFetcherFactory
-import me.snoty.integration.common.fetch.IntegrationProgressState
+import me.snoty.integration.common.fetch.*
 import me.snoty.integration.untis.request.getExams
 import org.jobrunr.jobs.context.JobDashboardLogger
 import java.util.*
@@ -14,7 +11,7 @@ class WebUntisFetcher(
 	private val entityStateService: EntityStateService,
 	private val untis: WebUntisAPI = WebUntisAPIImpl()
 ) : AbstractIntegrationFetcher<WebUntisJobRequest>() {
-	private suspend fun fetchExams(
+	private suspend fun FetchContext.fetchExams(
 		logger: JobDashboardLogger,
 		progress: FetchProgress,
 		untisSettings: WebUntisSettings,
@@ -22,11 +19,13 @@ class WebUntisFetcher(
 	) {
 		val instanceId = untisSettings.instanceId
 
-		progress.advance(IntegrationProgressState.FETCHING)
-		val exams = untis.getExams(untisSettings)
+		val exams = fetch {
+			untis.getExams(untisSettings)
+		}
 
-		progress.advance(IntegrationProgressState.UPDATING_IN_DB)
-		entityStateService.updateStates(userId, instanceId, exams)
+		updateStates {
+			entityStateService.updateStates(userId, instanceId, exams)
+		}
 
 		progress.advance(IntegrationProgressState.STAGE_DONE)
 		logger.info("Fetched ${exams.size} exams for ${untisSettings.username}")
@@ -41,6 +40,6 @@ class WebUntisFetcher(
 		val context = jobContext()
 		val logger = logger(context)
 		val progress = progress(context, 1)
-		fetchExams(logger, progress, jobRequest.settings, jobRequest.userId)
+		progress.fetchExams(logger, progress, jobRequest.settings, jobRequest.userId)
 	}
 }

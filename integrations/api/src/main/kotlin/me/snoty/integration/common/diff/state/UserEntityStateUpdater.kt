@@ -14,7 +14,7 @@ suspend fun EntityStateCollection.updateStates(userId: UUID, instanceId: Instanc
 }
 
 suspend fun EntityStateCollection.updateStates(userId: UUID, instanceId: InstanceId, entities: Set<EntityState>) {
-	val update = Updates.set("entities.$instanceId", entities)
+	val update = Updates.set("${UserEntityStates::entities.name}.$instanceId", entities)
 	val result = updateOne(Filters.eq("_id", userId), update)
 	if (result.matchedCount == 0L) {
 		insertOne(UserEntityStates(userId, mapOf(instanceId to entities)))

@@ -21,14 +21,14 @@ class MongoCalendarService(mongoDB: MongoDatabase) : CalendarService {
 	override suspend fun create(userID: UUID, instanceId: InstanceId, integrationType: String, calType: String): ConfigId {
 		val filter = Filters.eq("_id", userID)
 		val calendarSetting = CalendarSettings(instanceId = instanceId, type = calType)
-		val update = Updates.push("configs.$integrationType", calendarSetting)
+		val update = Updates.push("${UserCalendarConfig::configs.name}.$integrationType", calendarSetting)
 		collection.upsertOne(filter, update)
 
 		return calendarSetting._id
 	}
 
 	override suspend fun get(calendarID: ConfigId, integrationType: String): CalendarConfig? {
-		val path = "configs.$integrationType"
+		val path = "${UserCalendarConfig::configs.name}.$integrationType"
 		val computedPath = "\$$path"
 		val configFilter = Filters.eq("$path._id", calendarID)
 
@@ -39,7 +39,7 @@ class MongoCalendarService(mongoDB: MongoDatabase) : CalendarService {
 			Aggregates.replaceRoot(
 				Accumulations.mergeObjects(
 					computedPath,
-					Projections.computed("userId", "\$_id")
+					Projections.computed(CalendarConfig::userId.name, "\$_id")
 				)
 			)
 		).firstOrNull()

@@ -45,7 +45,7 @@ class DiffResultCodec(private val codecRegistry: CodecRegistry) : Codec<DiffResu
 	override fun getEncoderClass(): Class<DiffResult> = DiffResult::class.java
 
 	override fun decode(reader: BsonReader, decoderContext: DecoderContext): DiffResult {
-		val document = decoderContext.decodeWithChildContext(DocumentCodec(), reader)
+		val document = decoderContext.decodeWithChildContext(documentCodec, reader)
 		return when (val type = document.getString("type")) {
 			DiffResult.Created::class.simpleName -> DiffResult.Created(
 				document.getLong("checksum"),

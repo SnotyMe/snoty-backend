@@ -4,14 +4,14 @@ import kotlinx.datetime.Clock
 import me.snoty.integration.common.diff.AbstractDiffTest
 import me.snoty.integration.common.diff.Change
 import me.snoty.integration.common.diff.DiffResult
-import me.snoty.integration.untis.WebUntisIntegration.Companion.untisCodecModule
+import me.snoty.integration.untis.WebUntisIntegration.Companion.UNTIS_CODEC_MODULE
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
-class UntisExamTest : AbstractDiffTest(untisCodecModule) {
+class UntisExamTest : AbstractDiffTest(UNTIS_CODEC_MODULE) {
 
 	private val baseExam = UntisExam(
 		id = 20,

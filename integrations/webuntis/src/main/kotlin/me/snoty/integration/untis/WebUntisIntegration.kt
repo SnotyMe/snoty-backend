@@ -37,7 +37,7 @@ class WebUntisIntegration(
 		const val INTEGRATION_NAME = "webuntis"
 		val DESCRIPTOR = IntegrationDescriptor(name = INTEGRATION_NAME)
 
-		val untisCodecModule = listOf(UntisDateTime.Companion)
+		val UNTIS_CODEC_MODULE = listOf(UntisDateTime.Companion)
 	}
 
 	override fun createRequest(config: IntegrationConfig<WebUntisSettings>): JobRequest =
@@ -48,7 +48,7 @@ class WebUntisIntegration(
 	}
 
 	class Factory : IntegrationFactory {
-		override val mongoDBCodecs = untisCodecModule
+		override val mongoDBCodecs = UNTIS_CODEC_MODULE
 		override val descriptor = DESCRIPTOR
 
 		override fun create(context: IntegrationContext): Integration {

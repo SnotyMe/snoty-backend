@@ -39,8 +39,8 @@ class ConfigLoaderImpl : ConfigLoader {
 		// `.env.default` file - WARNING: this assumes all *.default files are .env files
 		.addParser("default", PropsParser())
 		// local configuration takes precedence
-		.addFileSource("infra/database/.env.default", optional = true, allowEmpty = false)
 		.addFileSource("infra/database/.env", optional = false, allowEmpty = false)
+		.addFileSource("infra/database/.env.default", optional = true, allowEmpty = false)
 		.build()
 		.loadConfig<MongoContainerConfig>()
 		.onFailure { logger.warn { "Failed to load MongoContainerConfig: ${it.description()}" } }

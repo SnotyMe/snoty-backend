@@ -42,6 +42,7 @@ class ChangeCodec(private val codecRegistry: CodecRegistry) : Codec<Change<*>> {
 		codecRegistry[value.javaClass].encode(this, value, encoderContext)
 	}
 
+
 	override fun decode(reader: BsonReader, decoderContext: DecoderContext): Change<*> {
 		var type: Class<*>? = null
 		var old: Any? = null
@@ -63,7 +64,6 @@ class ChangeCodec(private val codecRegistry: CodecRegistry) : Codec<Change<*>> {
 		@Suppress("UNCHECKED_CAST")
 		return Change(type?.kotlin as KClass<Any>?, old!!, new!!)
 	}
-
 
 	private fun <T : Any> BsonReader.readValue(type: Class<T>?, decoderContext: DecoderContext): Any {
 		return codecRegistry[type].decode(this, decoderContext)

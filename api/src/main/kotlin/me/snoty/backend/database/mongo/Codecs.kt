@@ -36,7 +36,6 @@ class InstantCodec : Codec<Instant> {
 	override fun decode(reader: BsonReader, decoderContext: DecoderContext): Instant {
 		return Instant.fromEpochMilliseconds(reader.readDateTime())
 	}
-
 }
 
 fun apiCodecModule() =
