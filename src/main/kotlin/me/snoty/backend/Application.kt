@@ -6,7 +6,11 @@ import io.micrometer.prometheus.PrometheusMeterRegistry
 import kotlinx.coroutines.runBlocking
 import me.snoty.backend.build.DevBuildInfo
 import me.snoty.backend.config.ConfigLoaderImpl
+import me.snoty.backend.config.ProviderFeatureFlagConfig
 import me.snoty.backend.database.mongo.createMongoClients
+import me.snoty.backend.featureflags.FeatureFlags
+import me.snoty.backend.featureflags.FeatureFlagsSetup
+import me.snoty.backend.featureflags.provider.FlagdProvider
 import me.snoty.backend.integration.IntegrationManager
 import me.snoty.backend.integration.MongoEntityStateService
 import me.snoty.backend.integration.config.MongoIntegrationConfigService
@@ -25,6 +29,7 @@ fun main() = runBlocking {
 
 	val configLoader = ConfigLoaderImpl()
 	val config = configLoader.loadConfig()
+	logger.info { "Loaded config: $config" }
 
 	val buildInfo = try {
 		configLoader.loadBuildInfo()
@@ -38,6 +43,12 @@ fun main() = runBlocking {
 			throw e
 		}
 	}
+	val featureClient = when (val featureFlagsConfig = config.featureFlags.value) {
+			is ProviderFeatureFlagConfig.Flagd -> FlagdProvider.createClient(featureFlagsConfig)
+			else -> throw IllegalArgumentException("No provider found for ${config.featureFlags.value}")
+		}
+	val featureFlags = FeatureFlags(config, featureClient)
+	FeatureFlagsSetup.setup(featureClient, featureFlags)
 
 	val meterRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 	val metricsPool = Executors.newScheduledThreadPool(1)

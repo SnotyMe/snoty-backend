@@ -149,6 +149,10 @@ dependencies {
     // task scheduling
     implementation(libraries.jobrunr)
 
+    // feature flags
+    implementation(libraries.openfeature)
+    implementation(libraries.openfeature.flagd)
+
     // dev
     devImplementation(dev.keycloak.adminClient)
 

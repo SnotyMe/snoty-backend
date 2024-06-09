@@ -1,0 +1,11 @@
+$schema: https://flagd.dev/schema/v0/flags.json
+flags:
+  log_level:
+    state: ENABLED
+    variants:
+      TRACE: TRACE
+      DEBUG: DEBUG
+      INFO: INFO
+      WARN: WARN
+      ERROR: ERROR
+    defaultVariant: INFO

@@ -1,9 +1,7 @@
 package me.snoty.backend.config
 
-import com.sksamuel.hoplite.ConfigLoaderBuilder
-import com.sksamuel.hoplite.addEnvironmentSource
-import com.sksamuel.hoplite.addFileSource
-import com.sksamuel.hoplite.addResourceSource
+import com.sksamuel.hoplite.*
+import com.sksamuel.hoplite.fp.Validated
 import com.sksamuel.hoplite.fp.getOrElse
 import com.sksamuel.hoplite.parsers.PropsParser
 import com.sksamuel.hoplite.parsers.PropsPropertySource
@@ -15,37 +13,7 @@ class ConfigLoaderImpl : ConfigLoader {
 	private val logger = KotlinLogging.logger {}
 
 	override fun loadConfig(): Config {
-		val mongoContainerConfig = loadContainerConfig()
-
-		return ConfigLoaderBuilder.default()
-			.withResolveTypesCaseInsensitive()
-			.addDefaultPreprocessors()
-			.addEnvironmentSource(useUnderscoresAsSeparator = false)
-			.addFileSource("application.local.yml", optional = true)
-			.addFileSource("application.yml", optional = true)
-			.addSource(PropsPropertySource(mongoContainerConfig.getOrElse { Properties() }))
-			.build()
-			.loadConfigOrThrow<Config>()
-	}
-
-	/**
-	 * Optionally loads the MongoContainerConfig for local container-based development.
-	 * It is a shared configuration between the application and the database container.
-	 * The values from this file are directly passed into the database container.
-	 * Thus, updating the original file will update the database container and application alike.
-	 */
-	private fun loadContainerConfig() = ConfigLoaderBuilder.default()
-		.addParser("env", PropsParser())
-		// `.env.default` file - WARNING: this assumes all *.default files are .env files
-		.addParser("default", PropsParser())
-		// local configuration takes precedence
-		.addFileSource("infra/database/.env", optional = false, allowEmpty = false)
-		.addFileSource("infra/database/.env.default", optional = true, allowEmpty = false)
-		.build()
-		.loadConfig<MongoContainerConfig>()
-		.onFailure { logger.warn { "Failed to load MongoContainerConfig: ${it.description()}" } }
-		.map {
-			logger.info { "Loaded MongoContainerConfig: $it" }
+		val mongoContainerConfig = loadContainerConfig<MongoContainerConfig>("database").map {
 			Properties().apply {
 				var prefix = ""
 				if (it.username != null) {
@@ -59,10 +27,49 @@ class ConfigLoaderImpl : ConfigLoader {
 					prefix += "@"
 				}
 				setProperty("mongodb.connectionString",
-					"mongodb://${prefix}localhost:${it.port}/"
+				            "mongodb://${prefix}localhost:${it.port}/"
 				)
 			}
 		}
+		val flagdContainerConfig = loadContainerConfig<FlagdContainerConfig>("featureflags").map {
+			Properties().apply {
+				setProperty(Config::featureFlags.name + "." + ProviderFeatureFlagConfig.Flagd::host.name, "localhost")
+				setProperty(Config::featureFlags.name + "." + ProviderFeatureFlagConfig.Flagd::port.name, it.port.toString())
+			}
+		}
+
+		return ConfigLoaderBuilder.default()
+			.withResolveTypesCaseInsensitive()
+			.addDefaultPreprocessors()
+			.addEnvironmentSource(useUnderscoresAsSeparator = false)
+			.addFileSource("application.local.yml", optional = true)
+			.addFileSource("application.yml", optional = true)
+			.addSource(PropsPropertySource(mongoContainerConfig.getOrElse { Properties() }))
+			.addSource(PropsPropertySource(flagdContainerConfig.getOrElse { Properties() }))
+			.build()
+			.loadConfigOrThrow<Config>()
+	}
+
+	/**
+	 * Optionally loads the MongoContainerConfig for local container-based development.
+	 * It is a shared configuration between the application and the database container.
+	 * The values from this file are directly passed into the database container.
+	 * Thus, updating the original file will update the database container and application alike.
+	 */
+	private inline fun <reified T : Any> loadContainerConfig(folder: String): Validated<ConfigFailure, T> {
+		val configName = T::class.simpleName
+		return ConfigLoaderBuilder.default()
+			.addParser("env", PropsParser())
+			// `.env.default` file - WARNING: this assumes all *.default files are .env files
+			.addParser("default", PropsParser())
+			// local configuration takes precedence
+			.addFileSource("infra/$folder/.env", optional = false, allowEmpty = false)
+			.addFileSource("infra/$folder/.env.default", optional = true, allowEmpty = false)
+			.build()
+			.loadConfig<T>()
+			.onFailure { logger.warn { "Failed to load $configName: ${it.description()}" } }
+			.map { logger.debug { "Loaded $configName: $it" }; return@map it }
+	}
 
 	override fun loadBuildInfo(): BuildInfo = ConfigLoaderBuilder.default()
 		.addResourceSource("/buildinfo.properties")

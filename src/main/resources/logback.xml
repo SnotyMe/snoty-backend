@@ -9,6 +9,7 @@
     <root level="${LOG_LEVEL:-INFO}">
         <appender-ref ref="STDOUT"/>
     </root>
+    <logger name="me.snoty.backend.featureflags.FeatureFlagsSetup" level="INFO"/>
     <logger name="org.eclipse.jetty" level="${SERVER_LOG_LEVEL:-WARN}"/>
     <logger name="io.netty" level="${SERVER_LOG_LEVEL:-WARN}"/>
 </configuration>

@@ -10,6 +10,7 @@ val TestConfig = Config(
 	environment = Environment.TEST,
 	publicHost = "http://localhost:8080",
 	mongodb = mockk(),
+	featureFlags = FeatureFlagsConfig(ProviderFeatureFlagConfig.NoProvider),
 	authentication = OidcConfig(
 		serverUrl = "http://localhost:8081",
 		clientId = "",
@@ -37,7 +38,8 @@ class TestConfigBuilder(block: TestConfigBuilder.() -> Unit) {
 		environment = environment,
 		publicHost = publicHost,
 		mongodb = mongodb,
-		authentication = authentication
+		authentication = authentication,
+		featureFlags = FeatureFlagsConfig(ProviderFeatureFlagConfig.NoProvider)
 	)
 }
 

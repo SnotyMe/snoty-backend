@@ -143,6 +143,9 @@ dependencyResolutionManagement {
 			library("bson-kotlinx", "org.mongodb", "bson-kotlinx").version("5.1.0")
 
 			library("ical4j", "org.mnode.ical4j", "ical4j").version("4.0.0-rc6")
+
+			library("openfeature", "dev.openfeature", "sdk").version("1.8.0")
+			library("openfeature-flagd", "dev.openfeature.contrib.providers", "flagd").version("0.8.1")
 		}
 
 		create("tests") {

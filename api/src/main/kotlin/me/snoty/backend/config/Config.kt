@@ -6,5 +6,6 @@ data class Config(
 	val monitoringPort: Short = 9090,
 	val publicHost: String,
 	val environment: Environment,
-	val authentication: OidcConfig
+	val authentication: OidcConfig,
+	val featureFlags: FeatureFlagsConfig
 )
