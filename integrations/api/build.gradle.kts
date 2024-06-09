@@ -5,9 +5,6 @@ plugins {
 }
 
 dependencies {
-    api(database.exposed.core)
-    api(database.exposed.jdbc)
-    api(database.exposed.json)
     implementation(database.mongodb)
     api(monitoring.micrometer)
     api(ktor.client.core)

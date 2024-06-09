@@ -1,6 +1,3 @@
 environment: DEVELOPMENT
 port: 8080
 publicHost: http://localhost:{{port}}
-mongodb:
-  # TODO: load dynamically from docker compose
-  connectionString: mongodb://localhost:27017/

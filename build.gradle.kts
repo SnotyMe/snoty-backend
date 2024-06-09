@@ -99,7 +99,6 @@ dependencies {
     // configuration
     implementation(configuration.hoplite.core)
     implementation(configuration.hoplite.yaml)
-    implementation(configuration.hoplite.hikaricp)
     implementation(configuration.hoplite.datetime)
 
     implementation(ktor.serialization.kotlinx.json)
@@ -134,11 +133,6 @@ dependencies {
     implementation(monitoring.micrometer.prometheus)
 
     // database
-    implementation(database.exposed.core)
-    implementation(database.exposed.jdbc)
-    implementation(database.exposed.json)
-    implementation(database.postgres.driver)
-    implementation(database.hikaricp)
     implementation(database.mongodb)
     implementation(database.mongodb.sync)
     implementation(libraries.bson.kotlinx)

@@ -79,7 +79,6 @@ dependencyResolutionManagement {
 
 			hopliteDependency("core")
 			hopliteDependency("yaml")
-			hopliteDependency("hikaricp")
 			hopliteDependency("datetime")
 		}
 
@@ -107,21 +106,6 @@ dependencyResolutionManagement {
 		}
 
 		create("database") {
-			val exposed = version("exposed", "0.50.0")
-
-			fun exposedModule(name: String) {
-				library("exposed-$name", "org.jetbrains.exposed", "exposed-$name")
-					.versionRef(exposed)
-			}
-
-			exposedModule("core")
-			exposedModule("jdbc")
-			exposedModule("json")
-			library("postgres-driver", "org.postgresql", "postgresql")
-				.version("42.7.3")
-			library("hikaricp", "com.zaxxer", "HikariCP")
-				.version("5.1.0")
-
 			library("mongodb", "org.mongodb", "mongodb-driver-kotlin-coroutine")
 				.version("5.1.0")
 			library("mongodb-sync", "org.mongodb", "mongodb-driver-sync")

@@ -15,7 +15,6 @@ import me.snoty.backend.scheduling.JobRunrConfigurer
 import me.snoty.backend.scheduling.JobRunrScheduler
 import me.snoty.backend.server.KtorServer
 import me.snoty.backend.spi.DevManager
-import org.jetbrains.exposed.sql.Database
 import java.util.concurrent.Executors
 
 fun main() = runBlocking {
@@ -39,8 +38,6 @@ fun main() = runBlocking {
 			throw e
 		}
 	}
-	val dataSource = config.database.value
-	val database = Database.connect(dataSource)
 
 	val meterRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 	val metricsPool = Executors.newScheduledThreadPool(1)
@@ -57,6 +54,6 @@ fun main() = runBlocking {
 	JobRunrConfigurer.configure(syncMongoClient, integrationManager, meterRegistry)
 	integrationManager.startup()
 
-	KtorServer(config, buildInfo, database, meterRegistry, integrationManager)
+	KtorServer(config, buildInfo, meterRegistry, integrationManager)
 		.start(wait = true)
 }

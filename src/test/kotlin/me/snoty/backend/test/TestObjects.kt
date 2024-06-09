@@ -1,6 +1,5 @@
 package me.snoty.backend.test
 
-import com.zaxxer.hikari.HikariDataSource
 import io.mockk.mockk
 import kotlinx.datetime.Clock
 import me.snoty.backend.build.BuildInfo
@@ -10,7 +9,6 @@ val TestConfig = Config(
 	port = 8080,
 	environment = Environment.TEST,
 	publicHost = "http://localhost:8080",
-	database = DatabaseConfig(mockk<HikariDataSource>()),
 	mongodb = mockk(),
 	authentication = OidcConfig(
 		serverUrl = "http://localhost:8081",
@@ -23,7 +21,6 @@ class TestConfigBuilder(block: TestConfigBuilder.() -> Unit) {
 	var port: Short = 8080
 	var environment: Environment = Environment.TEST
 	var publicHost: String = "http://localhost:8080"
-	var database: DatabaseConfig = DatabaseConfig(mockk<HikariDataSource>())
 	var mongodb: MongoConfig = mockk()
 	var authentication: OidcConfig = OidcConfig(
 		serverUrl = "http://localhost:8081",
@@ -39,7 +36,6 @@ class TestConfigBuilder(block: TestConfigBuilder.() -> Unit) {
 		port = port,
 		environment = environment,
 		publicHost = publicHost,
-		database = database,
 		mongodb = mongodb,
 		authentication = authentication
 	)
