@@ -110,8 +110,6 @@ dependencies {
     // ktor plugins
     implementation(ktor.server.call.logging)
     implementation(ktor.server.call.id)
-    implementation(ktor.server.swagger)
-    implementation(ktor.server.openapi)
     implementation(ktor.server.forwardedHeader)
     implementation(ktor.server.forwardedHeader)
     implementation(ktor.server.defaultHeaders)

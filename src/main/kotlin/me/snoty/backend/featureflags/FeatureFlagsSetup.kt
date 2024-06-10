@@ -12,14 +12,10 @@ object FeatureFlagsSetup {
 	val logger = KotlinLogging.logger {}
 
 	fun setup(featureClient: Client, featureFlags: FeatureFlags) {
-		val changeListeners = listOf(
-			FeatureFlagChangeListener(featureFlags, featureFlags.logLevel) {
-				logger.info { "Log Level changed to $it" }
-				val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
-				val logger: Logger? = loggerContext.getLogger("root")
-				logger?.level = Level.convertAnSLF4JLevel(it)
-			}
-		)
+
+		val changeListeners = featureFlags.logLevelFlags.map {
+			loggerFeatureFlagListener(featureFlags, it)
+		}
 		featureClient.on(ProviderEvent.PROVIDER_CONFIGURATION_CHANGED) { details ->
 			logger.debug { "Received change event: $details" }
 			changeListeners.forEach { listener ->
@@ -28,8 +24,35 @@ object FeatureFlagsSetup {
 		}
 	}
 
-	class FeatureFlagChangeListener<T>(private val featureFlags: FeatureFlags, private val flag: FeatureFlag<T>, private val onChange: (T) -> Unit) {
+	private fun loggerFeatureFlagListener(featureFlags: FeatureFlags, flag: LogLevelFeatureFlag) =
+		FeatureFlagChangeListener(featureFlags, flag, true) {
+			val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
+			val logger: Logger? =
+				if (flag.loggerName == "root") loggerContext.getLogger(flag.loggerName)
+				else loggerContext.exists(flag.loggerName)
+
+			if (logger == null) {
+				this.logger.warn { "Logger for flag ${flag.name} not found" }
+				return@FeatureFlagChangeListener
+			}
+
+			logger.level = Level.convertAnSLF4JLevel(it)
+			this.logger.info { "Set log level for flag ${flag.name} to $it"}
+		}
+
+	class FeatureFlagChangeListener<T>(
+		private val featureFlags: FeatureFlags,
+		private val flag: FeatureFlag<T>,
+		initialFire: Boolean = false,
+		private val onChange: (T) -> Unit
+	) {
 		private var previous = featureFlags.get(flag)
+
+		init {
+			if (initialFire) {
+				onChange(previous)
+			}
+		}
 
 		fun configChanged() {
 			val new = featureFlags.get(flag)

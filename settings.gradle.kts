@@ -88,8 +88,6 @@ dependencyResolutionManagement {
 
 			ktorServerPlugin("call-logging", hierarchy = true)
 			ktorServerPlugin("call-id", hierarchy = true)
-			ktorServerPlugin("swagger")
-			ktorServerPlugin("openapi")
 			ktorServerPlugin("forwarded-header")
 			ktorServerPlugin("default-headers")
 			ktorServerPlugin("host-common")

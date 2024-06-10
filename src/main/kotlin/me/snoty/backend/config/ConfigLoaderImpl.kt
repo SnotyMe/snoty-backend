@@ -39,6 +39,8 @@ class ConfigLoaderImpl : ConfigLoader {
 		}
 
 		return ConfigLoaderBuilder.default()
+			// don't give a shit
+			.withReportPrintFn {}
 			.withResolveTypesCaseInsensitive()
 			.addDefaultPreprocessors()
 			.addEnvironmentSource(useUnderscoresAsSeparator = false)
@@ -59,6 +61,8 @@ class ConfigLoaderImpl : ConfigLoader {
 	private inline fun <reified T : Any> loadContainerConfig(folder: String): Validated<ConfigFailure, T> {
 		val configName = T::class.simpleName
 		return ConfigLoaderBuilder.default()
+			// don't give a shit
+			.withReportPrintFn {}
 			.addParser("env", PropsParser())
 			// `.env.default` file - WARNING: this assumes all *.default files are .env files
 			.addParser("default", PropsParser())
@@ -72,6 +76,8 @@ class ConfigLoaderImpl : ConfigLoader {
 	}
 
 	override fun loadBuildInfo(): BuildInfo = ConfigLoaderBuilder.default()
+		// don't give a shit
+		.withReportPrintFn {}
 		.addResourceSource("/buildinfo.properties")
 		.build()
 		.loadConfigOrThrow<BuildInfo>()

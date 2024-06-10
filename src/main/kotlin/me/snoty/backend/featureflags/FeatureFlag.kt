@@ -1,6 +1,7 @@
 package me.snoty.backend.featureflags
 
 import dev.openfeature.sdk.Client
+import org.slf4j.event.Level
 import kotlin.reflect.KClass
 
 abstract class FeatureFlag<T>(
@@ -14,7 +15,7 @@ abstract class FeatureFlag<T>(
 	}
 }
 
-class EnumFeatureFlag<E : Enum<E>>(
+open class EnumFeatureFlag<E : Enum<E>>(
 	name: String,
 	defaultValue: E?,
 	enumClass: KClass<E>
@@ -25,3 +26,9 @@ class EnumFeatureFlag<E : Enum<E>>(
 		enumClass.java.enumConstants.first { it.name == value }
 	}
 }
+
+class LogLevelFeatureFlag(
+	name: String,
+	val loggerName: String,
+	defaultValue: Level
+) : EnumFeatureFlag<Level>(name, defaultValue, Level::class)

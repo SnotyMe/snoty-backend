@@ -13,6 +13,8 @@ const val ADMIN_CLI = "admin-cli"
 class KeycloakSetup : DevRunnable() {
 	override fun run() {
 		val containerConfig = ConfigLoaderBuilder.default()
+			// don't give a shit
+			.withReportPrintFn {}
 			.addParser("env", PropsParser())
 			// `.env.default` file - WARNING: this assumes all *.default files are .env files
 			.addParser("default", PropsParser())
