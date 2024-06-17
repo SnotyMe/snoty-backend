@@ -2,7 +2,7 @@ package me.snoty.integration.common
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import me.snoty.integration.common.config.ConfigId
+import me.snoty.backend.integration.config.ConfigId
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 interface IntegrationSettings {

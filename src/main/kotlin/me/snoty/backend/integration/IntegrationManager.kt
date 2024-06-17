@@ -8,7 +8,7 @@ import me.snoty.backend.scheduling.Scheduler
 import me.snoty.backend.spi.IntegrationRegistry
 import me.snoty.backend.utils.NotFoundException
 import me.snoty.integration.common.*
-import me.snoty.integration.common.config.ConfigId
+import me.snoty.backend.integration.config.ConfigId
 import me.snoty.integration.common.config.IntegrationConfigService
 import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.utils.calendar.CalendarService

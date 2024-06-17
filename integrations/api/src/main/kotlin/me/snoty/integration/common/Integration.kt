@@ -2,7 +2,7 @@ package me.snoty.integration.common
 
 import io.ktor.server.routing.*
 import me.snoty.backend.User
-import me.snoty.integration.common.config.ConfigId
+import me.snoty.backend.integration.config.ConfigId
 import me.snoty.integration.common.fetch.IntegrationFetcher
 import org.bson.codecs.Codec
 import kotlin.reflect.KClass

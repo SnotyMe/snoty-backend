@@ -1,6 +1,7 @@
 package me.snoty.integration.common.config
 
 import kotlinx.coroutines.flow.Flow
+import me.snoty.backend.integration.config.ConfigId
 import me.snoty.integration.common.IntegrationConfig
 import me.snoty.integration.common.IntegrationSettings
 import java.util.*
