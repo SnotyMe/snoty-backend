@@ -4,7 +4,7 @@ import io.ktor.server.routing.*
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import me.snoty.integration.common.*
-import me.snoty.integration.common.config.ConfigId
+import me.snoty.backend.integration.config.ConfigId
 import me.snoty.integration.common.utils.RedactInJobName
 import me.snoty.integration.moodle.calendar.iCalRoutes
 import org.jobrunr.jobs.lambdas.JobRequest

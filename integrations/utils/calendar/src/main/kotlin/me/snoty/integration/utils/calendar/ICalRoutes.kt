@@ -11,7 +11,7 @@ import me.snoty.backend.utils.BadRequestException
 import me.snoty.backend.utils.NotFoundException
 import me.snoty.backend.utils.getUser
 import me.snoty.integration.common.BaseIntegrationSettings
-import me.snoty.integration.common.config.ConfigId
+import me.snoty.backend.integration.config.ConfigId
 import me.snoty.integration.common.config.IntegrationConfigService
 import me.snoty.integration.common.config.get
 import me.snoty.integration.common.utils.calendar.CalendarService

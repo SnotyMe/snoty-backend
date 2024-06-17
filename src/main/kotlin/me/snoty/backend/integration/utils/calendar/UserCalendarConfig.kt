@@ -1,7 +1,7 @@
 package me.snoty.backend.integration.utils.calendar
 
 import me.snoty.integration.common.InstanceId
-import me.snoty.integration.common.config.ConfigId
+import me.snoty.backend.integration.config.ConfigId
 import org.bson.codecs.pojo.annotations.BsonId
 import java.util.UUID
 
