@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.map
 import me.snoty.backend.database.mongo.*
 import me.snoty.integration.common.IntegrationConfig
 import me.snoty.integration.common.IntegrationSettings
-import me.snoty.integration.common.config.ConfigId
 import me.snoty.integration.common.config.IntegrationConfigService
 import org.bson.Document
 import java.util.*
@@ -23,13 +22,13 @@ class MongoIntegrationConfigService(db: MongoDatabase) : IntegrationConfigServic
 		data class UntypedIntegrationConfig(val user: UUID, val settings: Document)
 
 		return collection.aggregate<UntypedIntegrationConfig>(
-			Aggregates.unwind("\$${UserIntegrationConfig::configs.name}.$integrationType"),
+			Aggregates.unwind("\$${UserIntegrationConfig::sources.name}.$integrationType"),
 			Aggregations.project(
 				Projections.exclude("_id"),
 				Projections.computed(UntypedIntegrationConfig::user.name, "\$_id"),
 				Projections.computed(
 					UntypedIntegrationConfig::settings.name,
-					"\$${UserIntegrationConfig::configs.name}.$integrationType"
+					"\$${UserIntegrationConfig::sources.name}.$integrationType"
 				)
 			)
 		).map {
@@ -39,13 +38,13 @@ class MongoIntegrationConfigService(db: MongoDatabase) : IntegrationConfigServic
 	}
 
 	override suspend fun <S : IntegrationSettings> get(id: ConfigId, integrationType: String, clazz: KClass<S>): S? {
-		val settings = collection.getByIdFromArray<Document>("${UserIntegrationConfig::configs.name}.$integrationType", id) ?: return null
+		val settings = collection.getByIdFromArray<Document>("${UserIntegrationConfig::sources.name}.$integrationType", id) ?: return null
 		return collection.codecRegistry.decode(clazz, settings)
 	}
 
 	override suspend fun <S : IntegrationSettings> create(userID: UUID, integrationType: String, settings: S): ConfigId {
 		val filter = Filters.eq("_id", userID)
-		val update = Updates.push("${UserIntegrationConfig::configs.name}.$integrationType", settings)
+		val update = Updates.push("${UserIntegrationConfig::sources.name}.$integrationType", settings)
 		collection.upsertOne(filter, update)
 		return settings.id
 	}

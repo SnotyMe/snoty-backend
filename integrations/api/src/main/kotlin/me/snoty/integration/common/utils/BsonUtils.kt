@@ -2,7 +2,7 @@ package me.snoty.integration.common.utils
 
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
-import me.snoty.integration.common.config.ConfigIdSerializer
+import me.snoty.backend.integration.config.ConfigIdSerializer
 import me.snoty.integration.common.diff.Change
 import me.snoty.integration.common.diff.ChangeCodec
 import me.snoty.integration.common.diff.DiffResult

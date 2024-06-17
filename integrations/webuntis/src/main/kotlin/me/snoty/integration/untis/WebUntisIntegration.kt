@@ -5,7 +5,7 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import me.snoty.backend.scheduling.JobRequest
 import me.snoty.integration.common.*
-import me.snoty.integration.common.config.ConfigId
+import me.snoty.backend.integration.config.ConfigId
 import me.snoty.integration.common.utils.RedactInJobName
 import me.snoty.integration.untis.calendar.iCalRoutes
 import me.snoty.integration.untis.model.UntisDateTime
