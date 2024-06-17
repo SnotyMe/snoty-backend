@@ -1,4 +1,4 @@
-package me.snoty.integration.common.config
+package me.snoty.backend.integration.config
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable

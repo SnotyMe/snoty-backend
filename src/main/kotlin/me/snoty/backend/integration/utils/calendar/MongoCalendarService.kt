@@ -10,7 +10,7 @@ import me.snoty.backend.database.mongo.Accumulations
 import me.snoty.backend.database.mongo.aggregate
 import me.snoty.backend.database.mongo.upsertOne
 import me.snoty.integration.common.InstanceId
-import me.snoty.integration.common.config.ConfigId
+import me.snoty.backend.integration.config.ConfigId
 import me.snoty.integration.common.utils.calendar.CalendarConfig
 import me.snoty.integration.common.utils.calendar.CalendarService
 import java.util.*

@@ -1,0 +1,66 @@
+@startuml
+left to right direction
+
+object source.MoodleAssignment {
+    name: string
+    deadline: date
+    url: string
+}
+
+map source.Moodle {
+    url => my.moodle.com
+    username => student
+    MoodleAssignment *-> MoodleAssignment
+}
+
+object target.TodoistTask {
+    title: string
+    description: string
+    deadline: date
+}
+map target.Todolist {
+    username => myuser
+    <<apiKey>> => ...
+    TodoistTask *-> TodoistTask
+}
+
+
+object target.NtfyNotification {
+    urgency: number
+    header: string
+    content: string
+}
+
+map target.Ntfy {
+    url => ntfy.sh
+    topic => mytopic
+    NtfyNotification *-> NtfyNotification
+}
+
+map flow.AssignmentNotification {
+    urgency => normal
+    title => {{name}}
+    description => A new assignment was published.
+}
+
+source.MoodleAssignment --> flow.AssignmentNotification
+flow.AssignmentNotification --> target.NtfyNotification
+
+map flow.AssignmentTask {
+    title => {{name}}
+    description => {{url}}
+    <deadline> => {{deadline}
+}
+
+source.MoodleAssignment --> flow.AssignmentTask
+flow.AssignmentTask --> target.TodoistTask
+
+note right of flow.AssignmentTask : The fields are taken from the target. They are either\nhardcoded or templated from the source entity.
+
+legend
+<field> = hidden by default, shown in advanced mode
+<<field>> = not supposed to be shown to the user
+{{template}} = template (for ex. jekyll)
+end legend
+
+@enduml
