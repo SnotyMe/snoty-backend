@@ -2,6 +2,8 @@ package me.snoty.backend.integration.flow
 
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.model.FlowNode
+import me.snoty.backend.integration.flow.model.NodeDescriptor
+import me.snoty.backend.integration.flow.model.Subsystem
 import me.snoty.backend.integration.flow.model.graph.Graph
 import me.snoty.backend.integration.flow.model.graph.GraphNode
 import org.bson.Document
@@ -24,9 +26,9 @@ class FlowCreateTest : AbstractFlowFetchTest<FlowCreateTest.FlowTestContextImpl>
 	}
 
 	private fun graphNode(name: String, vararg next: GraphNode)
-		= GraphNode(NodeId(), UUID.randomUUID(), name, Document(), next.map { it._id })
+		= GraphNode(NodeId(), UUID.randomUUID(), NodeDescriptor(Subsystem.INTEGRATION, name), Document(), next.map { it._id })
 	private fun graphNode(name: String, id: NodeId, vararg next: NodeId)
-		= GraphNode(id, UUID.randomUUID(), name, Document(), next.toList())
+		= GraphNode(id, UUID.randomUUID(), NodeDescriptor(Subsystem.INTEGRATION, name), Document(), next.toList())
 
 	@Test
 	fun testDirectFlow() = test {

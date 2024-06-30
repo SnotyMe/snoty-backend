@@ -43,6 +43,6 @@ object FlowBuilderImpl : FlowBuilder {
 			?.filter { it !in visitedNodes }
 			?.map { createFlowNode(it, involvedNodes, visitedNodes + it) }
 			?.orNull()
-		return FlowNode(graphNode._id, graphNode.type, graphNode.config, next ?: emptyList())
+		return FlowNode(graphNode._id, graphNode.descriptor, graphNode.config, next ?: emptyList())
 	}
 }
