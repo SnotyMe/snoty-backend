@@ -4,6 +4,8 @@ import kotlinx.coroutines.flow.toCollection
 import kotlinx.coroutines.runBlocking
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.model.FlowNode
+import me.snoty.backend.integration.flow.model.NodeDescriptor
+import me.snoty.backend.integration.flow.model.Subsystem
 import me.snoty.backend.integration.flow.model.graph.GraphNode
 import me.snoty.backend.test.MongoTest
 import org.bson.Document
@@ -20,7 +22,7 @@ class MongoFlowServiceTest : AbstractFlowFetchTest<MongoFlowServiceTest.FlowTest
 	private val service = object : MongoFlowService(mongoDB) {
 		context(FlowTestContext)
 		fun getFlowForNode_test(node: GraphNode) = runBlocking {
-			val flow = getFlowForNode(FlowNode(node._id, node.type, node.config, emptyList())).toCollection(mutableListOf())
+			val flow = getFlowForNode(FlowNode(node._id, node.descriptor, node.config, emptyList())).toCollection(mutableListOf())
 			this@FlowTestContext.flow = flow
 			flow
 		}
@@ -38,7 +40,7 @@ class MongoFlowServiceTest : AbstractFlowFetchTest<MongoFlowServiceTest.FlowTest
 	private fun graphNode(type: String, vararg next: GraphNode): GraphNode
 		= graphNode(type, *next.map { it._id }.toTypedArray())
 	private fun graphNode(type: String, vararg next: NodeId, id: NodeId = NodeId()): GraphNode {
-		val node = GraphNode(id, UUID.randomUUID(), type, Document(), next.toList())
+		val node = GraphNode(id, UUID.randomUUID(), NodeDescriptor(Subsystem.INTEGRATION, type), Document(), next.toList())
 		val result = service.insertNode(node)
 		println(result)
 		return node

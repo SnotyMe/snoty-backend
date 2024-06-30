@@ -8,7 +8,7 @@ import org.bson.Document
  */
 data class FlowNode(
 	val id: NodeId,
-	val type: String,
+	val descriptor: NodeDescriptor,
 	val config: Document,
 	val next: List<FlowNode> = emptyList()
 )
