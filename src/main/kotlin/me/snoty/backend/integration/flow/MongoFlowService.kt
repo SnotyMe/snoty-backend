@@ -13,9 +13,10 @@ import me.snoty.backend.integration.flow.FlowBuilderImpl.createFlowFromGraph
 import me.snoty.backend.integration.flow.model.FlowNode
 import me.snoty.backend.integration.flow.model.graph.Graph
 import me.snoty.backend.integration.flow.model.graph.GraphNode
+import me.snoty.integration.common.flow.FLOW_COLLECTION_NAME
 
 open class MongoFlowService(db: MongoDatabase) : FlowService {
-	protected val collection = db.getCollection<GraphNode>("flow")
+	protected val collection = db.getCollection<GraphNode>(FLOW_COLLECTION_NAME)
 
 	override fun getFlowForNode(node: FlowNode): Flow<FlowNode> {
 		return collection.aggregate<Graph>(
