@@ -12,7 +12,6 @@ object FeatureFlagsSetup {
 	val logger = KotlinLogging.logger {}
 
 	fun setup(featureClient: Client, featureFlags: FeatureFlags) {
-
 		val changeListeners = featureFlags.logLevelFlags.map {
 			loggerFeatureFlagListener(featureFlags, it)
 		}

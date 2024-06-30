@@ -12,6 +12,7 @@ import java.util.*
 class ConfigLoaderImpl : ConfigLoader {
 	private val logger = KotlinLogging.logger {}
 
+	@OptIn(ExperimentalHoplite::class)
 	override fun loadConfig(): Config {
 		val mongoContainerConfig = loadContainerConfig<MongoContainerConfig>("database").map {
 			Properties().apply {
@@ -31,6 +32,7 @@ class ConfigLoaderImpl : ConfigLoader {
 				)
 			}
 		}
+
 		val flagdContainerConfig = loadContainerConfig<FlagdContainerConfig>("featureflags").map {
 			Properties().apply {
 				setProperty(Config::featureFlags.name + "." + ProviderFeatureFlagConfig.Flagd::host.name, "localhost")
@@ -42,6 +44,7 @@ class ConfigLoaderImpl : ConfigLoader {
 			// don't give a shit
 			.withReportPrintFn {}
 			.withResolveTypesCaseInsensitive()
+			.withExplicitSealedTypes("type")
 			.addDefaultPreprocessors()
 			.addEnvironmentSource(useUnderscoresAsSeparator = false)
 			.addFileSource("application.local.yml", optional = true)
