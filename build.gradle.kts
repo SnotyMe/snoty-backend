@@ -6,6 +6,7 @@ import org.eclipse.jgit.api.Git
 import org.jetbrains.gradle.ext.Application
 import org.jetbrains.gradle.ext.runConfigurations
 import org.jetbrains.gradle.ext.settings
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
@@ -25,6 +26,14 @@ val isDevelopment: Boolean = project.findProperty("me.snoty.development")?.toStr
 allprojects {
     repositories {
         mavenCentral()
+    }
+
+    tasks.withType<KotlinCompile>().configureEach {
+        kotlin {
+            compilerOptions {
+                freeCompilerArgs.add("-Xcontext-receivers")
+            }
+        }
     }
 }
 
@@ -58,6 +67,7 @@ testing {
 
             tasks.withType<Test>().configureEach {
                 maxParallelForks = (Runtime.getRuntime().availableProcessors()).coerceAtLeast(1)
+                environment("LOG_LEVEL", "TRACE")
             }
 
             dependencies {
