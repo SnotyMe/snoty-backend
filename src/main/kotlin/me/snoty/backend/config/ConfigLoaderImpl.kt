@@ -35,8 +35,10 @@ class ConfigLoaderImpl : ConfigLoader {
 
 		val flagdContainerConfig = loadContainerConfig<FlagdContainerConfig>("featureflags").map {
 			Properties().apply {
-				setProperty(Config::featureFlags.name + "." + ProviderFeatureFlagConfig.Flagd::host.name, "localhost")
-				setProperty(Config::featureFlags.name + "." + ProviderFeatureFlagConfig.Flagd::port.name, it.port.toString())
+				val prefix = Config::featureFlags.name + "."
+				setProperty(prefix + "type", ProviderFeatureFlagConfig.Flagd::class.simpleName)
+				setProperty(prefix + ProviderFeatureFlagConfig.Flagd::host.name, "localhost")
+				setProperty(prefix + ProviderFeatureFlagConfig.Flagd::port.name, it.port.toString())
 			}
 		}
 

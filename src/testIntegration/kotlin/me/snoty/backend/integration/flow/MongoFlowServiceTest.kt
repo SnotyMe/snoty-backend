@@ -9,6 +9,7 @@ import me.snoty.backend.test.MongoTest
 import org.bson.Document
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.util.*
 
 class MongoFlowServiceTest : AbstractFlowFetchTest<MongoFlowServiceTest.FlowTestContextImpl>(::FlowTestContextImpl) {
 	data class FlowTestContextImpl(
@@ -37,7 +38,7 @@ class MongoFlowServiceTest : AbstractFlowFetchTest<MongoFlowServiceTest.FlowTest
 	private fun graphNode(type: String, vararg next: GraphNode): GraphNode
 		= graphNode(type, *next.map { it._id }.toTypedArray())
 	private fun graphNode(type: String, vararg next: NodeId, id: NodeId = NodeId()): GraphNode {
-		val node = GraphNode(id, type, Document(), next.toList())
+		val node = GraphNode(id, UUID.randomUUID(), type, Document(), next.toList())
 		val result = service.insertNode(node)
 		println(result)
 		return node
