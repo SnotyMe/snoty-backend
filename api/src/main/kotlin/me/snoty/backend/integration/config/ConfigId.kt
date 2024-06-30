@@ -6,9 +6,9 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.serialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import org.bson.types.ObjectId
+import me.snoty.backend.integration.config.flow.NodeId
 
-typealias ConfigId = @Serializable(ConfigIdSerializer::class) ObjectId
+typealias ConfigId = @Serializable(ConfigIdSerializer::class) NodeId
 
 object ConfigIdSerializer : KSerializer<ConfigId> {
 	override val descriptor: SerialDescriptor = serialDescriptor<String>()
