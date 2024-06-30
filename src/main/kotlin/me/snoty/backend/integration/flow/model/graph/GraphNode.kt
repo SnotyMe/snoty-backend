@@ -1,6 +1,7 @@
 package me.snoty.backend.integration.flow.model.graph
 
 import me.snoty.backend.integration.config.flow.NodeId
+import me.snoty.backend.integration.flow.model.NodeDescriptor
 import org.bson.Document
 import org.bson.codecs.pojo.annotations.BsonId
 import java.util.UUID
@@ -13,7 +14,7 @@ data class GraphNode(
 	@BsonId
 	val _id: NodeId = NodeId(),
 	val userId: UUID,
-	val type: String,
+	val descriptor: NodeDescriptor,
 	val config: Document,
 	val next: List<NodeId>?
 )

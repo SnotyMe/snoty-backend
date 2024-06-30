@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import me.snoty.backend.database.mongo.decode
 import me.snoty.backend.database.mongo.encode
+import me.snoty.backend.integration.flow.model.NodeDescriptor
+import me.snoty.backend.integration.flow.model.Subsystem
 import me.snoty.backend.integration.flow.model.graph.GraphNode
 import me.snoty.integration.common.IntegrationConfig
 import me.snoty.integration.common.IntegrationSettings
@@ -26,7 +28,7 @@ class MongoIntegrationConfigService(db: MongoDatabase) : IntegrationConfigServic
 		data class UntypedIntegrationConfig(val userId: UUID, val config: Document)
 
 		return collection.find<UntypedIntegrationConfig>(
-			Filters.eq(GraphNode::type.name, integrationType)
+			NodeDescriptor.filter(Subsystem.INTEGRATION, integrationType)
 		).map {
 			val settings = collection.codecRegistry.decode(clazz, it.config)
 			IntegrationConfig(it.userId, settings)
@@ -37,7 +39,7 @@ class MongoIntegrationConfigService(db: MongoDatabase) : IntegrationConfigServic
 		val settings = collection.find(
 			Filters.and(
 				Filters.eq(GraphNode::_id.name, id),
-				Filters.eq(GraphNode::type.name, integrationType)
+				NodeDescriptor.filter(Subsystem.INTEGRATION, integrationType)
 			)
 		).firstOrNull()?.config ?: return null
 		return collection.codecRegistry.decode(clazz, settings)
@@ -46,7 +48,10 @@ class MongoIntegrationConfigService(db: MongoDatabase) : IntegrationConfigServic
 	override suspend fun <S : IntegrationSettings> create(userID: UUID, integrationType: String, settings: S): ConfigId {
 		val node = GraphNode(
 			userId = userID,
-			type = integrationType,
+			descriptor = NodeDescriptor(
+				subsystem = Subsystem.INTEGRATION,
+				type = integrationType
+			),
 			config = collection.codecRegistry.encode(settings),
 			next = emptyList()
 		)
