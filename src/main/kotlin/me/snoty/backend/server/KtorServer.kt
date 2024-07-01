@@ -7,14 +7,18 @@ import io.ktor.server.netty.*
 import io.micrometer.core.instrument.MeterRegistry
 import me.snoty.backend.build.BuildInfo
 import me.snoty.backend.config.Config
-import me.snoty.backend.integration.IntegrationManager
 import me.snoty.backend.server.plugins.*
+import me.snoty.integration.common.config.NodeService
+import me.snoty.integration.common.wiring.flow.FlowService
+import me.snoty.integration.common.wiring.node.NodeRegistry
 
 class KtorServer(
 	private val config: Config,
 	private val buildInfo: BuildInfo,
 	private val metricsRegistry: MeterRegistry,
-	private val integrationManager: IntegrationManager
+	private val nodeRegistry: NodeRegistry,
+	private val flowService: FlowService,
+	private val nodeService: NodeService
 ) {
 	private val logger = KotlinLogging.logger {}
 
@@ -41,6 +45,6 @@ class KtorServer(
 		configureSecurity(config)
 		configureSerialization()
 		configureRouting(config)
-		addResources(buildInfo, integrationManager)
+		addResources(buildInfo, nodeRegistry, flowService, nodeService)
 	}
 }

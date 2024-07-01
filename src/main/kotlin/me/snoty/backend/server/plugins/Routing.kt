@@ -12,11 +12,12 @@ fun Application.configureRouting(config: Config) {
 	val logger = KotlinLogging.logger {}
 	install(StatusPages) {
 		// catch manually created exceptions
-		// the casts to IHttpStatusException are necessary because of a bug in kotlinx.serialization
+		// the casts to HttpStatusException are necessary because of a bug in kotlinx.serialization
 		// that causes "no serializer found" exceptions when trying to serialize the concrete instance
 		exception<HttpStatusException> { call, cause ->
 			logger.info { "Returning HTTP ${cause.code} with message ${cause.message}" }
-			call.respondStatus(cause as IHttpStatusException)
+			@Suppress("USELESS_CAST")
+			call.respondStatus(cause as HttpStatusException)
 		}
 		// catch-all for exceptions
 		exception<Throwable> { call, cause ->

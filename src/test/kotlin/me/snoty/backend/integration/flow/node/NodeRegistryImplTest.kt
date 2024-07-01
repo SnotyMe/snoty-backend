@@ -1,7 +1,7 @@
 package me.snoty.backend.integration.flow.node
 
-import me.snoty.backend.integration.flow.model.NodeDescriptor
-import me.snoty.backend.integration.flow.model.Subsystem
+import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.Subsystem
 import me.snoty.backend.test.NoOpNodeHandler
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -32,24 +32,6 @@ class NodeRegistryImplTest {
 		var node = registry.lookupHandler(NodeDescriptor(Subsystem.INTEGRATION, "product2"))
 		assertEquals(null, node)
 		node = registry.lookupHandler(NodeDescriptor(Subsystem.PROCESSOR, "product2"))
-		assertEquals(null, node)
-	}
-
-	@Test
-	fun testLookup_subsystem() {
-		val descriptor = NodeDescriptor(Subsystem.INTEGRATION, "product")
-		registry.registerSubsystemHandler(Subsystem.INTEGRATION, NoOpNodeHandler)
-
-		val node = registry.lookupHandler(descriptor)
-		assertEquals(NoOpNodeHandler, node)
-	}
-
-	@Test
-	fun testLookup_subsystem_noMatch() {
-		registry.registerSubsystemHandler(Subsystem.INTEGRATION, NoOpNodeHandler)
-
-		val node = registry.lookupHandler(NodeDescriptor(Subsystem.PROCESSOR, "product2"))
-
 		assertEquals(null, node)
 	}
 }

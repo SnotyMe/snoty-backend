@@ -2,15 +2,14 @@ package me.snoty.integration.common.utils
 
 import me.snoty.backend.scheduling.JobRequest
 import me.snoty.backend.scheduling.SnotyJob
-import me.snoty.integration.common.IntegrationConfig
-import me.snoty.integration.common.IntegrationDescriptor
+import me.snoty.integration.common.wiring.IFlowNode
+import me.snoty.integration.common.wiring.node.NodeDescriptor
 
-fun createFetcherJob(integrationDescriptor: IntegrationDescriptor, config: IntegrationConfig<*>, request: JobRequest): SnotyJob {
-	val user = config.user
-	val settingsString = config.settings.formatProperties()
-	val integrationName = integrationDescriptor.name
+fun createFetcherJob(descriptor: NodeDescriptor, node: IFlowNode, request: JobRequest): SnotyJob {
+	val user = node.userId
+	val integrationName = descriptor.type
 	return SnotyJob(
-		name = "[fetcher] <$integrationName> user=$user settings=($settingsString)",
+		name = "[${node._id}] rootIntegration=$integrationName user=$user",
 		request
 	)
 }
