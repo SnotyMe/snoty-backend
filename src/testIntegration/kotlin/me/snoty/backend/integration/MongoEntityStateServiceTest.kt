@@ -8,12 +8,15 @@ import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Instant
+import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.test.MongoTest
-import me.snoty.backend.test.assertCombinations
 import me.snoty.backend.test.assertInstanceOf
 import me.snoty.backend.test.getField
-import me.snoty.integration.common.IntegrationDescriptor
 import me.snoty.integration.common.diff.*
+import me.snoty.integration.common.wiring.IFlowNode
+import me.snoty.integration.common.wiring.StandaloneFlowNode
+import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.Subsystem
 import org.bson.Document
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -26,24 +29,30 @@ class MongoEntityStateServiceTest {
 		val USER_ID_2 = UUID(2, 0)
 		val USER_ID_CONTROL = UUID(64, 0)
 		const val INTEGRATION_NAME = "moodle"
-		const val INSTANCE_ID = "myinstance"
-		const val INSTANCE_ID_CONTROL = "notmyinstance"
 		const val ENTITY_TYPE = "exam"
 		const val ENTITY_TYPE_CONTROL = "notexam"
 	}
 
 	private val mongoDB = MongoTest.getMongoDatabase {}
+	private val nodeDescriptor = NodeDescriptor(Subsystem.INTEGRATION, INTEGRATION_NAME)
 	private val service = MongoEntityStateService(
 		mongoDB,
-		IntegrationDescriptor(INTEGRATION_NAME),
+		nodeDescriptor,
 		SimpleMeterRegistry(),
 		mockk()
 	)
 
+	private fun flowNode(): IFlowNode = StandaloneFlowNode(
+		NodeId(),
+		USER_ID_1,
+		nodeDescriptor,
+		Document()
+	)
+
 	@Test
-	fun test_nothing() = runBlocking {
+	fun `test nothing`() = runBlocking {
 		val test = assertDoesNotThrow {
-			service.getEntities(UUID.randomUUID(), INSTANCE_ID, ENTITY_TYPE)
+			service.getStates(flowNode())
 		}
 		assertEquals(0, test.count())
 	}
@@ -62,13 +71,14 @@ class MongoEntityStateServiceTest {
 	}
 
 	@Test
-	fun test_updateStates_insert() = runBlocking {
+	fun `test updateStates insert`() = runBlocking {
 		val date = Instant.fromEpochMilliseconds(1000)
 		val entity = MyEntity(10L, date)
-		service.updateStates(USER_ID_1, INSTANCE_ID, listOf(entity))
+		val node = flowNode()
+		service.updateStates(node, listOf(entity))
 
 		val createdEntitiesFlow = assertDoesNotThrow {
-			service.getEntities(USER_ID_1, INSTANCE_ID, ENTITY_TYPE)
+			service.getStates(node)
 		}
 		val createdEntities = createdEntitiesFlow.toList()
 		assertEquals(1, createdEntities.size)
@@ -78,29 +88,17 @@ class MongoEntityStateServiceTest {
 		// mutates
 		entity.prepareFieldsForDiff(createdEntity.state)
 		assertEquals(entity.fields, createdEntity.state)
-
-		assertCombinations(
-			service::getEntities,
-			listOf(USER_ID_1, USER_ID_CONTROL),
-			listOf(INSTANCE_ID, INSTANCE_ID_CONTROL),
-			listOf(ENTITY_TYPE, ENTITY_TYPE_CONTROL),
-			exclude = listOf(USER_ID_1, INSTANCE_ID, ENTITY_TYPE)
-		) { create ->
-			val entitiesFlow = assertDoesNotThrow {
-				create()
-			}
-			assertEquals(0, entitiesFlow.count())
-		}
 	}
 
 	@Test
-	fun test_updateStates_update() = runBlocking {
+	fun `test updateStates update`() = runBlocking {
 		val date = Instant.fromEpochMilliseconds(1000)
 		val entity = MyEntity(10L, date)
-		service.updateStates(USER_ID_2, INSTANCE_ID, listOf(entity))
+		val node = flowNode()
+		service.updateStates(node, listOf(entity))
 
 		val createdEntitiesFlow = assertDoesNotThrow {
-			service.getEntities(USER_ID_2, INSTANCE_ID, ENTITY_TYPE)
+			service.getStates(node)
 		}
 		val createdEntities = createdEntitiesFlow.toList()
 		assertEquals(1, createdEntities.size)
@@ -113,11 +111,11 @@ class MongoEntityStateServiceTest {
 
 		val date2 = Instant.fromEpochMilliseconds(2000)
 		val entity2 = entity.copy(date=date2)
-		service.updateStates(USER_ID_2, INSTANCE_ID, listOf(entity2))
+		service.updateStates(node, listOf(entity2))
 
 		val userEntityChanges = service.getField<EntityChangesCollection>("userEntityChanges")
 
-		val descriptor = EntityDescriptor(INSTANCE_ID, ENTITY_TYPE, entity.id.toString(), USER_ID_2)
+		val descriptor = EntityDescriptor(node._id, ENTITY_TYPE, entity.id.toString())
 
 		val changes = userEntityChanges
 			.find(Filters.eq("descriptor", descriptor))

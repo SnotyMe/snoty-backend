@@ -1,47 +1,33 @@
 package me.snoty.backend.integration.utils.calendar
 
-import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Projections
-import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.flow.firstOrNull
-import me.snoty.backend.database.mongo.Accumulations
-import me.snoty.backend.database.mongo.aggregate
-import me.snoty.backend.database.mongo.upsertOne
-import me.snoty.integration.common.InstanceId
-import me.snoty.backend.integration.config.ConfigId
-import me.snoty.integration.common.utils.calendar.CalendarConfig
+import me.snoty.backend.integration.config.flow.NodeId
+import me.snoty.integration.common.utils.calendar.CalendarId
 import me.snoty.integration.common.utils.calendar.CalendarService
-import java.util.*
 
 class MongoCalendarService(mongoDB: MongoDatabase) : CalendarService {
-	private val collection = mongoDB.getCollection<UserCalendarConfig>("integration_config.calendar")
+	private val collection = mongoDB.getCollection<CalendarSettings>("calendar")
 
-	override suspend fun create(userID: UUID, instanceId: InstanceId, integrationType: String, calType: String): ConfigId {
-		val filter = Filters.eq("_id", userID)
-		val calendarSetting = CalendarSettings(instanceId = instanceId, type = calType)
-		val update = Updates.push("${UserCalendarConfig::configs.name}.$integrationType", calendarSetting)
-		collection.upsertOne(filter, update)
+	override suspend fun create(nodeId: NodeId, calType: String): CalendarId {
+		val filter = Filters.eq(CalendarSettings::nodeId.name, nodeId)
+		val existingResult = collection.find(filter).firstOrNull()
 
-		return calendarSetting._id
+		if (existingResult != null) {
+			return existingResult.id
+		}
+
+		val calendarSetting = CalendarSettings(
+			nodeId = nodeId,
+			type = calType
+		)
+		collection.insertOne(calendarSetting)
+		return calendarSetting.id
 	}
 
-	override suspend fun get(calendarID: ConfigId, integrationType: String): CalendarConfig? {
-		val path = "${UserCalendarConfig::configs.name}.$integrationType"
-		val computedPath = "\$$path"
-		val configFilter = Filters.eq("$path._id", calendarID)
-
-		return collection.aggregate<CalendarConfig>(
-			Aggregates.match(configFilter),
-			Aggregates.unwind(computedPath),
-			Aggregates.match(configFilter),
-			Aggregates.replaceRoot(
-				Accumulations.mergeObjects(
-					computedPath,
-					Projections.computed(CalendarConfig::userId.name, "\$_id")
-				)
-			)
-		).firstOrNull()
+	override suspend fun get(calendarID: CalendarId): NodeId? {
+		val filter = Filters.eq(CalendarSettings::id.name, calendarID)
+		return collection.find(filter).firstOrNull()?.nodeId
 	}
 }

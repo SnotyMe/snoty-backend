@@ -7,15 +7,23 @@ interface FetchProgress {
 	fun advance(state: IntegrationProgressState)
 }
 
-class FetchContext(private val progress: FetchProgress) : FetchProgress by progress {
-	suspend fun <T> fetch(block: suspend () -> T): T {
+class FetchContext(
+	private val progress: FetchProgress
+) : FetchProgress by progress {
+	suspend fun <T> fetchStage(block: suspend () -> T): T {
 		progress.advance(IntegrationProgressState.FETCHING)
 		return block()
 	}
 
-	suspend fun updateStates(block: suspend () -> Unit) {
+	suspend fun updateStage(block: suspend () -> Unit) {
 		progress.advance(IntegrationProgressState.UPDATING_IN_DB)
 		block()
+	}
+
+	suspend fun flowStage(block: suspend () -> Unit) {
+		progress.advance(IntegrationProgressState.FLOWING)
+		block()
+		progress.advance(IntegrationProgressState.STAGE_DONE)
 	}
 }
 
@@ -23,6 +31,7 @@ enum class IntegrationProgressState {
 	INIT,
 	FETCHING,
 	UPDATING_IN_DB,
+	FLOWING,
 	STAGE_DONE;
 
 	companion object {

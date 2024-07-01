@@ -1,17 +1,18 @@
 package me.snoty.backend.integration.flow
 
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.backend.integration.flow.model.FlowNode
-import me.snoty.backend.integration.flow.model.graph.Graph
-import me.snoty.backend.integration.flow.model.graph.GraphNode
+import me.snoty.integration.common.wiring.RelationalFlowNode
+import me.snoty.integration.common.wiring.graph.Graph
+import me.snoty.integration.common.wiring.graph.GraphNode
 import me.snoty.backend.utils.orNull
+import me.snoty.integration.common.wiring.toRelational
 
 interface FlowBuilder {
 	/**
 	 * Creates a flow from a graph node.
 	 * This involves recursively looking up `next` nodes in the graph and creating a flow node for each of them.
 	 */
-	fun createFlowFromGraph(graph: Graph): List<FlowNode>
+	fun createFlowFromGraph(graph: Graph): List<RelationalFlowNode>
 }
 
 object FlowBuilderImpl : FlowBuilder {
@@ -19,7 +20,7 @@ object FlowBuilderImpl : FlowBuilder {
 	 * Creates a flow from a graph node.
 	 * This involves recursively looking up `next` nodes in the graph and creating a flow node for each of them.
 	 */
-	override fun createFlowFromGraph(graph: Graph): List<FlowNode> {
+	override fun createFlowFromGraph(graph: Graph): List<RelationalFlowNode> {
 		val involvedNodes = graph.involvedNodes.associateBy { it._id }
 		val rootNext  = graph.rootNext.mapNotNull { involvedNodes[it] }
 
@@ -37,12 +38,12 @@ object FlowBuilderImpl : FlowBuilder {
 		graphNode: GraphNode,
 		involvedNodes: Map<NodeId, GraphNode>,
 		visitedNodes: List<GraphNode>
-	): FlowNode {
+	): RelationalFlowNode {
 		val next = graphNode.next
 			?.mapNotNull { involvedNodes[it] }
 			?.filter { it !in visitedNodes }
 			?.map { createFlowNode(it, involvedNodes, visitedNodes + it) }
 			?.orNull()
-		return FlowNode(graphNode._id, graphNode.descriptor, graphNode.config, next ?: emptyList())
+		return graphNode.toRelational(next ?: emptyList())
 	}
 }

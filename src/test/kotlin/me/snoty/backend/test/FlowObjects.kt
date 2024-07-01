@@ -1,12 +1,17 @@
 package me.snoty.backend.test
 
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.backend.integration.flow.EdgeVertex
-import me.snoty.backend.integration.flow.model.FlowNode
-import me.snoty.backend.integration.flow.node.NodeHandler
+import me.snoty.integration.common.wiring.EdgeVertex
+import me.snoty.integration.common.wiring.IFlowNode
+import me.snoty.integration.common.wiring.node.NodeHandler
+import me.snoty.integration.common.wiring.node.NodePosition
+import me.snoty.integration.common.wiring.node.NodeSettings
+import kotlin.reflect.KClass
 
 object NoOpNodeHandler : NodeHandler {
-	override fun process(node: FlowNode, input: EdgeVertex): EdgeVertex {
+	override val position = NodePosition.END
+	override val settingsClass: KClass<out NodeSettings> = NodeSettings::class
+	override suspend fun process(node: IFlowNode, input: EdgeVertex): EdgeVertex {
 		return input
 	}
 }
@@ -16,7 +21,9 @@ object NoOpNodeHandler : NodeHandler {
  * `test` -> `'test'`
  */
 object QuoteHandler : NodeHandler {
-	override fun process(node: FlowNode, input: EdgeVertex): EdgeVertex {
+	override val position = NodePosition.MIDDLE
+	override val settingsClass: KClass<out NodeSettings> = NodeSettings::class
+	override suspend fun process(node: IFlowNode, input: EdgeVertex): EdgeVertex {
 		return "'$input'"
 	}
 }
@@ -24,8 +31,10 @@ object QuoteHandler : NodeHandler {
 class GlobalMapHandler(
 	private val map: MutableMap<NodeId, Any> = mutableMapOf()
 ) : NodeHandler, Map<NodeId, Any> by map {
-	override fun process(node: FlowNode, input: EdgeVertex): EdgeVertex {
-		map[node.id] = input
+	override val position = NodePosition.END
+	override val settingsClass: KClass<out NodeSettings> = NodeSettings::class
+	override suspend fun process(node: IFlowNode, input: EdgeVertex): EdgeVertex {
+		map[node._id] = input
 		return input
 	}
 }

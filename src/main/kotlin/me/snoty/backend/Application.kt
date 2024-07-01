@@ -11,15 +11,20 @@ import me.snoty.backend.database.mongo.createMongoClients
 import me.snoty.backend.featureflags.FeatureFlags
 import me.snoty.backend.featureflags.FeatureFlagsSetup
 import me.snoty.backend.featureflags.provider.FlagdProvider
-import me.snoty.backend.integration.IntegrationManager
 import me.snoty.backend.integration.MongoEntityStateService
-import me.snoty.backend.integration.config.MongoIntegrationConfigService
+import me.snoty.backend.integration.config.MongoNodeService
+import me.snoty.backend.integration.flow.FlowRunnerImpl
+import me.snoty.backend.integration.flow.MongoFlowService
+import me.snoty.backend.integration.flow.node.NodeRegistryImpl
 import me.snoty.backend.integration.utils.calendar.MongoCalendarService
 import me.snoty.backend.logging.setupLogbackFilters
 import me.snoty.backend.scheduling.JobRunrConfigurer
 import me.snoty.backend.scheduling.JobRunrScheduler
+import me.snoty.backend.scheduling.node.NodeSchedulerImpl
 import me.snoty.backend.server.KtorServer
 import me.snoty.backend.spi.DevManager
+import me.snoty.backend.wiring.node.NodeHandlerContributorLookup
+import me.snoty.integration.common.NodeContext
 import java.util.concurrent.Executors
 
 fun main() = runBlocking {
@@ -55,18 +60,29 @@ fun main() = runBlocking {
 	val meterRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 	val metricsPool = Executors.newScheduledThreadPool(1)
 	val scheduler = JobRunrScheduler()
+	val nodeScheduler = NodeSchedulerImpl(scheduler)
 
 	val (mongoDB, syncMongoClient) = createMongoClients(config.mongodb)
 
-	val integrationConfigService = MongoIntegrationConfigService(mongoDB)
+	val nodeRegistry = NodeRegistryImpl()
+	val flowService = MongoFlowService(mongoDB, FlowRunnerImpl(nodeRegistry))
+
+	val nodeService = MongoNodeService(mongoDB, nodeRegistry, nodeScheduler)
 	val calendarService = MongoCalendarService(mongoDB)
-	val integrationManager = IntegrationManager(scheduler, integrationConfigService, calendarService) { integrationDescriptor ->
-		MongoEntityStateService(mongoDB, integrationDescriptor, meterRegistry, metricsPool)
+
+	NodeHandlerContributorLookup.executeContributors(nodeRegistry) { descriptor ->
+		NodeContext(
+			entityStateService = MongoEntityStateService(mongoDB, descriptor, meterRegistry, metricsPool),
+			nodeService = nodeService,
+			flowService = flowService,
+			codecRegistry = mongoDB.codecRegistry,
+			calendarService = calendarService,
+			scheduler = scheduler
+		)
 	}
 
-	JobRunrConfigurer.configure(syncMongoClient, integrationManager, meterRegistry)
-	integrationManager.startup()
+	JobRunrConfigurer.configure(syncMongoClient, nodeRegistry, nodeService, flowService, meterRegistry)
 
-	KtorServer(config, buildInfo, meterRegistry, integrationManager)
+	KtorServer(config, buildInfo, meterRegistry, nodeRegistry, flowService, nodeService)
 		.start(wait = true)
 }

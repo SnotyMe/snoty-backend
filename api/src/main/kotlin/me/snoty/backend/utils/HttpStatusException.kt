@@ -1,51 +1,33 @@
 package me.snoty.backend.utils
 
 import io.ktor.http.*
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.descriptors.buildClassSerialDescriptor
-import kotlinx.serialization.descriptors.element
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.encoding.encodeStructure
-import kotlinx.serialization.modules.SerializersModule
 
-interface IHttpStatusException {
-	val code: HttpStatusCode
-	val message: String
-}
-
-/**
- * WARNING: this class is NOT serializable, make sure to cast to IHttpStatusException
- */
+@OptIn(ExperimentalSerializationApi::class)
+@Serializable
 open class HttpStatusException(
-	override val code: HttpStatusCode,
+	val code: @Serializable(with = HttpStatusCodeSerializer::class) HttpStatusCode,
+	@EncodeDefault(EncodeDefault.Mode.ALWAYS)
 	override val message: String = code.description
-) : Exception("$code: $message"), IHttpStatusException
+) : Exception("$code: $message")
 
-val httpStatusExceptionModule = SerializersModule {
-	polymorphicDefaultSerializer(IHttpStatusException::class) {
-		HttpStatusExceptionSerializer
-	}
-	polymorphicDefaultDeserializer(IHttpStatusException::class) {
-		HttpStatusExceptionSerializer
-	}
-}
+object HttpStatusCodeSerializer : KSerializer<HttpStatusCode> {
+	override val descriptor = PrimitiveSerialDescriptor("HttpStatusCode", PrimitiveKind.INT)
 
-object HttpStatusExceptionSerializer : KSerializer<IHttpStatusException> {
-	override val descriptor = buildClassSerialDescriptor("HttpStatusException") {
-		element<Int>("code")
-		element<String>("message")
+	override fun serialize(encoder: Encoder, value: HttpStatusCode) {
+		encoder.encodeInt(value.value)
 	}
 
-	override fun serialize(encoder: Encoder, value: IHttpStatusException) {
-		encoder.encodeStructure(descriptor) {
-			encodeIntElement(descriptor, 0, value.code.value)
-			encodeStringElement(descriptor, 1, value.message)
-		}
-	}
-
-	override fun deserialize(decoder: Decoder): IHttpStatusException {
-		throw NotImplementedError("Deserialization of HttpStatusException is not supported")
+	override fun deserialize(decoder: Decoder): HttpStatusCode {
+		val value = decoder.decodeInt()
+		return HttpStatusCode.fromValue(value)
 	}
 }
 
