@@ -1,9 +1,9 @@
 package me.snoty.backend.integration.flow
 
-import me.snoty.backend.integration.flow.model.FlowNode
+import me.snoty.integration.common.wiring.RelationalFlowNode
 
 interface FlowTestContext {
-	var flow: List<FlowNode>?
+	var flow: List<RelationalFlowNode>?
 }
 
 abstract class AbstractFlowFetchTest<C : FlowTestContext>(

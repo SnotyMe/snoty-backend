@@ -10,6 +10,7 @@ import org.bson.BsonNull
 
 data class UserEntityStatesStats(val totalEntities: Long)
 
+// TODO: rewrite
 fun EntityStateCollection.getStatistics(): AggregateFlow<UserEntityStatesStats> {
 	val entitiesValues = "entitiesValues"
 	val entityArray = "entityArray"
@@ -18,7 +19,7 @@ fun EntityStateCollection.getStatistics(): AggregateFlow<UserEntityStatesStats> 
 		Aggregates.project(
 			Projections.fields(
 				Projections.excludeId(),
-				Projections.computed(entitiesValues, Stages.objectToArray("\$${UserEntityStates::entities.name}"))
+				Projections.computed(entitiesValues, Stages.objectToArray("\$${NodeEntityStates::entities.name}"))
 			)
 		),
 		Aggregates.unwind("\$$entitiesValues"),

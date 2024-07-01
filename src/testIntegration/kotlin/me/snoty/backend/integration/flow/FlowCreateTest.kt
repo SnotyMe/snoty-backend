@@ -1,11 +1,11 @@
 package me.snoty.backend.integration.flow
 
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.backend.integration.flow.model.FlowNode
-import me.snoty.backend.integration.flow.model.NodeDescriptor
-import me.snoty.backend.integration.flow.model.Subsystem
-import me.snoty.backend.integration.flow.model.graph.Graph
-import me.snoty.backend.integration.flow.model.graph.GraphNode
+import me.snoty.integration.common.wiring.RelationalFlowNode
+import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.Subsystem
+import me.snoty.integration.common.wiring.graph.Graph
+import me.snoty.integration.common.wiring.graph.GraphNode
 import org.bson.Document
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -14,7 +14,7 @@ import java.util.*
 class FlowCreateTest : AbstractFlowFetchTest<FlowCreateTest.FlowTestContextImpl>(::FlowTestContextImpl) {
 
 	data class FlowTestContextImpl(
-		override var flow: List<FlowNode>? = null
+		override var flow: List<RelationalFlowNode>? = null
 	) : FlowTestContext {
 		fun createFlowFromGraph(graph: Graph) = FlowBuilderImpl.createFlowFromGraph(graph).toList()
 	}
@@ -35,7 +35,7 @@ class FlowCreateTest : AbstractFlowFetchTest<FlowCreateTest.FlowTestContextImpl>
 		val target = graphNode("target")
 		val result = createFlowFromGraph(Graph(listOf(target._id), listOf(target)))
 		assertEquals(1, result.size)
-		assertEquals(target._id, result[0].id)
+		assertEquals(target._id, result[0]._id)
 		assertEquals(0, result[0].next.size)
 	}
 
@@ -45,8 +45,8 @@ class FlowCreateTest : AbstractFlowFetchTest<FlowCreateTest.FlowTestContextImpl>
 		val target2 = graphNode("target2")
 		val result = createFlowFromGraph(Graph(listOf(target1._id, target2._id), listOf(target1, target2)))
 		assertEquals(2, result.size)
-		assertEquals(target1._id, result[0].id)
-		assertEquals(target2._id, result[1].id)
+		assertEquals(target1._id, result[0]._id)
+		assertEquals(target2._id, result[1]._id)
 		assertEquals(0, result[0].next.size)
 		assertEquals(0, result[1].next.size)
 	}
@@ -57,9 +57,9 @@ class FlowCreateTest : AbstractFlowFetchTest<FlowCreateTest.FlowTestContextImpl>
 		val mapper = graphNode("mapper", target)
 		val result = createFlowFromGraph(Graph(listOf(mapper._id), listOf(mapper, target)))
 		assertEquals(1, result.size)
-		assertEquals(mapper._id, result[0].id)
+		assertEquals(mapper._id, result[0]._id)
 		assertEquals(1, result[0].next.size)
-		assertEquals(target._id, result[0].next[0].id)
+		assertEquals(target._id, result[0].next[0]._id)
 	}
 
 	@Test
@@ -70,10 +70,10 @@ class FlowCreateTest : AbstractFlowFetchTest<FlowCreateTest.FlowTestContextImpl>
 		val result = createFlowFromGraph(Graph(listOf(mapper._id), listOf(mapper, target1, target2)))
 		assertEquals(1, result.size)
 		val mapperResult = result[0]
-		assertEquals(mapper._id, mapperResult.id)
+		assertEquals(mapper._id, mapperResult._id)
 		assertEquals(2, mapperResult.next.size)
-		assertEquals(target1._id, mapperResult.next[0].id)
-		assertEquals(target2._id, mapperResult.next[1].id)
+		assertEquals(target1._id, mapperResult.next[0]._id)
+		assertEquals(target2._id, mapperResult.next[1]._id)
 	}
 
 	@Test
@@ -85,9 +85,9 @@ class FlowCreateTest : AbstractFlowFetchTest<FlowCreateTest.FlowTestContextImpl>
 		val result = createFlowFromGraph(Graph(listOf(mapper1._id), listOf(mapper1, mapper2)))
 		assertEquals(1, result.size)
 		val mapperResult = result[0]
-		assertEquals(mapper1._id, mapperResult.id)
+		assertEquals(mapper1._id, mapperResult._id)
 		assertEquals(1, mapperResult.next.size)
-		assertEquals(mapper2._id, mapperResult.next[0].id)
+		assertEquals(mapper2._id, mapperResult.next[0]._id)
 		assertEquals(0, mapperResult.next[0].next.size)
 	}
 }

@@ -1,45 +1,46 @@
 package me.snoty.integration.untis
 
-import kotlinx.coroutines.runBlocking
-import me.snoty.integration.common.diff.EntityStateService
-import me.snoty.integration.common.fetch.*
+import me.snoty.integration.common.NodeContext
+import me.snoty.integration.common.fetch.AbstractIntegrationFetcher
+import me.snoty.integration.common.fetch.FetchContext
+import me.snoty.integration.common.wiring.EdgeVertex
+import me.snoty.integration.common.wiring.IFlowNode
+import me.snoty.integration.common.wiring.getConfig
+import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.untis.request.getExams
-import org.jobrunr.jobs.context.JobDashboardLogger
-import java.util.*
+import org.jobrunr.jobs.context.JobContext
+import org.jobrunr.jobs.context.JobRunrDashboardLogger
 
-class WebUntisFetcher(
-	private val entityStateService: EntityStateService,
-	private val untis: WebUntisAPI = WebUntisAPIImpl()
-) : AbstractIntegrationFetcher<WebUntisJobRequest>() {
+open class WebUntisFetcher(
+	private val nodeContext: NodeContext,
+	private val untisAPI: WebUntisAPI = WebUntisAPIImpl()
+) : AbstractIntegrationFetcher() {
+	override val position = NodePosition.START
+	override val settingsClass = WebUntisSettings::class
+
 	private suspend fun FetchContext.fetchExams(
-		logger: JobDashboardLogger,
-		progress: FetchProgress,
-		untisSettings: WebUntisSettings,
-		userId: UUID
-	) {
-		val instanceId = untisSettings.instanceId
+		node: IFlowNode,
+		logger: JobRunrDashboardLogger,
+	) = nodeContext.run {
+		val untisSettings = node.getConfig<WebUntisSettings>(codecRegistry)
 
-		val exams = fetch {
-			untis.getExams(untisSettings)
+		val exams = fetchStage {
+			untisAPI.getExams(untisSettings)
 		}
 
-		updateStates {
-			entityStateService.updateStates(userId, instanceId, exams)
+		updateStage {
+			entityStateService.updateStates(node, exams)
 		}
 
-		progress.advance(IntegrationProgressState.STAGE_DONE)
 		logger.info("Fetched ${exams.size} exams for ${untisSettings.username}")
+
+		return@run exams
 	}
 
-	class Factory(private val untis: WebUntisAPI) : IntegrationFetcherFactory<WebUntisJobRequest, Int> {
-		override fun create(entityStateService: EntityStateService)
-			= WebUntisFetcher(entityStateService, untis)
-	}
+	override suspend fun process(node: IFlowNode, input: EdgeVertex): EdgeVertex {
+		val jobContext = input as JobContext
+		val progress = progress(jobContext, 1)
 
-	override fun run(jobRequest: WebUntisJobRequest) = runBlocking {
-		val context = jobContext()
-		val logger = logger(context)
-		val progress = progress(context, 1)
-		progress.fetchExams(logger, progress, jobRequest.settings, jobRequest.userId)
+		return progress.fetchExams(node, logger)
 	}
 }

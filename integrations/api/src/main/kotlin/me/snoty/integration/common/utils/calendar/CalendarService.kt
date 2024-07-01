@@ -1,10 +1,8 @@
 package me.snoty.integration.common.utils.calendar
 
-import me.snoty.integration.common.InstanceId
-import me.snoty.backend.integration.config.ConfigId
-import java.util.*
+import me.snoty.backend.integration.config.flow.NodeId
 
 interface CalendarService {
-	suspend fun create(userID: UUID, instanceId: InstanceId, integrationType: String, calType: String): ConfigId
-	suspend fun get(calendarID: ConfigId, integrationType: String): CalendarConfig?
+	suspend fun create(nodeId: NodeId, calType: String): CalendarId
+	suspend fun get(calendarID: CalendarId): NodeId?
 }

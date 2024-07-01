@@ -4,7 +4,7 @@ import kotlinx.datetime.Clock
 import me.snoty.integration.common.diff.AbstractDiffTest
 import me.snoty.integration.common.diff.Change
 import me.snoty.integration.common.diff.DiffResult
-import me.snoty.integration.untis.WebUntisIntegration.Companion.UNTIS_CODEC_MODULE
+import me.snoty.integration.untis.UNTIS_CODEC_MODULE
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow

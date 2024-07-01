@@ -1,24 +1,18 @@
 package me.snoty.integration.common.fetch
 
-import me.snoty.backend.scheduling.JobRequest
-import me.snoty.backend.scheduling.JobRequestHandler
-import me.snoty.integration.common.diff.EntityStateService
+import me.snoty.integration.common.wiring.node.NodeHandler
 import org.jobrunr.jobs.context.JobContext
+import org.jobrunr.jobs.context.JobRunrDashboardLogger
+import org.slf4j.LoggerFactory
 
-interface IntegrationFetcher<S : JobRequest> : JobRequestHandler<S>
+abstract class AbstractIntegrationFetcher : NodeHandler {
+	protected val logger = JobRunrDashboardLogger(LoggerFactory.getLogger(this::class.java))
 
-abstract class AbstractIntegrationFetcher<R : JobRequest> : IntegrationFetcher<R> {
 	fun logger(context: JobContext) = context.logger()
 	fun progress(context: JobContext, stages: Long) = FetchContext(
 		JobRunrFetchProgress(
 			logger(context),
 			context.progressBar(IntegrationProgressState.getStateCount(stages))
-		)
+		),
 	)
-}
-
-fun interface IntegrationFetcherFactory<S : JobRequest, ID : Comparable<ID>> {
-	fun create(
-		entityStateService: EntityStateService
-	): IntegrationFetcher<S>
 }

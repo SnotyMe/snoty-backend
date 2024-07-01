@@ -1,14 +1,12 @@
 package me.snoty.integration.moodle
 
-import io.ktor.server.routing.*
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import me.snoty.integration.common.*
-import me.snoty.backend.integration.config.ConfigId
+import me.snoty.integration.common.NodeContextBuilder
 import me.snoty.integration.common.utils.RedactInJobName
-import me.snoty.integration.moodle.calendar.iCalRoutes
-import org.jobrunr.jobs.lambdas.JobRequest
-import java.util.*
+import me.snoty.integration.common.wiring.node.NodeHandlerContributor
+import me.snoty.integration.common.wiring.node.NodeRegistry
+import me.snoty.integration.common.wiring.node.NodeSettings
+import me.snoty.integration.common.wiring.node.registerIntegrationHandler
 
 @Serializable
 data class MoodleSettings(
@@ -16,43 +14,12 @@ data class MoodleSettings(
 	val username: String,
 	@RedactInJobName
 	val appSecret: String,
-	@Contextual
-	override val id: ConfigId = ConfigId()
-) : IntegrationSettings {
-	override val instanceId = baseUrl.instanceId
-}
+) : NodeSettings
 
-class MoodleIntegration(
-	context: IntegrationContext,
-	moodleAPI: MoodleAPI = MoodleAPIImpl()
-) : AbstractIntegration<MoodleSettings, MoodleJobRequest, Long>(
-	DESCRIPTOR,
-	MoodleSettings::class,
-	MoodleFetcher.Factory(moodleAPI),
-	context
-) {
-	companion object {
-		const val INTEGRATION_NAME = "moodle"
-		val DESCRIPTOR = IntegrationDescriptor(INTEGRATION_NAME)
-	}
-
-	override fun createRequest(config: IntegrationConfig<MoodleSettings>): JobRequest =
-		MoodleJobRequest(config.user, config.settings)
-
-	class Factory : DefaultIntegrationFactory(DESCRIPTOR) {
-		override fun create(context: IntegrationContext): Integration {
-			return MoodleIntegration(context)
+class MoodleNodeHandlerContributor : NodeHandlerContributor {
+	override fun contributeHandlers(registry: NodeRegistry, nodeContextBuilder: NodeContextBuilder) {
+		registry.registerIntegrationHandler("moodle", nodeContextBuilder) { context ->
+			MoodleFetcher(context)
 		}
 	}
-
-	override fun routes(routing: Route) {
-		routing.iCalRoutes(integrationConfigService, context.calendarService, entityStateService)
-	}
-}
-
-data class MoodleJobRequest(
-	val userId: UUID,
-	val settings: MoodleSettings
-) : JobRequest {
-	override fun getJobRequestHandler() = MoodleFetcher::class.java
 }

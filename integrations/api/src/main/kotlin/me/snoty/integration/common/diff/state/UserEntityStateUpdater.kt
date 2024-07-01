@@ -1,22 +1,22 @@
 package me.snoty.integration.common.diff.state
 
 import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
-import me.snoty.integration.common.InstanceId
+import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.integration.common.diff.IUpdatableEntity
+import me.snoty.integration.common.wiring.IFlowNode
 import java.util.*
 
-suspend fun EntityStateCollection.updateStates(userId: UUID, instanceId: InstanceId, entities: List<IUpdatableEntity<out Any>>) {
+suspend fun EntityStateCollection.updateStates(node: IFlowNode, entities: List<IUpdatableEntity<out Any>>) {
 	val mapped = entities.mapTo(HashSet()) {
 		EntityState(it.id.toString(), it.type, it.fields, it.checksum)
 	}
-	updateStates(userId, instanceId, mapped)
+	updateStates(node._id, mapped)
 }
 
-suspend fun EntityStateCollection.updateStates(userId: UUID, instanceId: InstanceId, entities: Set<EntityState>) {
-	val update = Updates.set("${UserEntityStates::entities.name}.$instanceId", entities)
-	val result = updateOne(Filters.eq("_id", userId), update)
+suspend fun EntityStateCollection.updateStates(nodeId: NodeId, entities: Set<EntityState>) {
+	val states = NodeEntityStates(nodeId, entities)
+	val result = replaceOne(Filters.eq(nodeId), states)
 	if (result.matchedCount == 0L) {
-		insertOne(UserEntityStates(userId, mapOf(instanceId to entities)))
+		insertOne(states)
 	}
 }

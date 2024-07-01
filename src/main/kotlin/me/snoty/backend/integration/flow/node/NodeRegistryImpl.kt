@@ -1,6 +1,9 @@
 package me.snoty.backend.integration.flow.node
 
-import me.snoty.backend.integration.flow.model.NodeDescriptor
+import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.NodeHandler
+import me.snoty.integration.common.wiring.node.NodePosition
+import me.snoty.integration.common.wiring.node.NodeRegistry
 
 class NodeRegistryImpl : NodeRegistry {
 	/**
@@ -8,21 +11,20 @@ class NodeRegistryImpl : NodeRegistry {
 	 */
 	private val handlers: MutableMap<NodeDescriptor, NodeHandler> = mutableMapOf()
 
-	/**
-	 * Handlers that can be used for all nodes in a subsystem.
-	 * Useful for chaining, e.g. offloading all integration nodes to the IntegrationRegistry
-	 */
-	private val subsystemHandlers: MutableMap<String, NodeHandler> = mutableMapOf()
-
 	override fun lookupHandler(descriptor: NodeDescriptor): NodeHandler? {
-		return handlers[descriptor] ?: subsystemHandlers[descriptor.subsystem]
+		return handlers[descriptor]
 	}
 
 	override fun registerHandler(descriptor: NodeDescriptor, handler: NodeHandler) {
 		handlers[descriptor] = handler
 	}
 
-	override fun registerSubsystemHandler(subsystem: String, handler: NodeHandler) {
-		subsystemHandlers[subsystem] = handler
+	override fun getHandlers(): Map<NodeDescriptor, NodeHandler> {
+		return handlers
+	}
+
+	override fun lookupDescriptorsByPosition(position: NodePosition): List<NodeDescriptor> {
+		// TODO: consider caching this
+		return handlers.filter { it.value.position == position }.keys.toList()
 	}
 }

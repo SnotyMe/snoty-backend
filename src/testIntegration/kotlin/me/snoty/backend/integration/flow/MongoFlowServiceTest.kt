@@ -1,13 +1,14 @@
 package me.snoty.backend.integration.flow
 
-import kotlinx.coroutines.flow.toCollection
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.backend.integration.flow.model.FlowNode
-import me.snoty.backend.integration.flow.model.NodeDescriptor
-import me.snoty.backend.integration.flow.model.Subsystem
-import me.snoty.backend.integration.flow.model.graph.GraphNode
+import me.snoty.integration.common.wiring.RelationalFlowNode
+import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.Subsystem
+import me.snoty.integration.common.wiring.graph.GraphNode
 import me.snoty.backend.test.MongoTest
+import me.snoty.integration.common.wiring.StandaloneFlowNode
 import org.bson.Document
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -15,14 +16,18 @@ import java.util.*
 
 class MongoFlowServiceTest : AbstractFlowFetchTest<MongoFlowServiceTest.FlowTestContextImpl>(::FlowTestContextImpl) {
 	data class FlowTestContextImpl(
-		override var flow: List<FlowNode>? = null
+		override var flow: List<RelationalFlowNode>? = null
 	) : FlowTestContext
 
+	private val USER_ID = UUID.randomUUID()
+
 	private val mongoDB = MongoTest.getMongoDatabase {}
-	private val service = object : MongoFlowService(mongoDB) {
+	private val service = object : MongoFlowService(mongoDB, { logger, node, vertex ->
+		TODO()
+	}) {
 		context(FlowTestContext)
 		fun getFlowForNode_test(node: GraphNode) = runBlocking {
-			val flow = getFlowForNode(FlowNode(node._id, node.descriptor, node.config, emptyList())).toCollection(mutableListOf())
+			val flow = getFlowForNode(StandaloneFlowNode(node._id, USER_ID, node.descriptor, node.config)).toList()
 			this@FlowTestContext.flow = flow
 			flow
 		}
@@ -40,49 +45,65 @@ class MongoFlowServiceTest : AbstractFlowFetchTest<MongoFlowServiceTest.FlowTest
 	private fun graphNode(type: String, vararg next: GraphNode): GraphNode
 		= graphNode(type, *next.map { it._id }.toTypedArray())
 	private fun graphNode(type: String, vararg next: NodeId, id: NodeId = NodeId()): GraphNode {
-		val node = GraphNode(id, UUID.randomUUID(), NodeDescriptor(Subsystem.INTEGRATION, type), Document(), next.toList())
-		val result = service.insertNode(node)
-		println(result)
+		val node = GraphNode(id, USER_ID, NodeDescriptor(Subsystem.INTEGRATION, type), Document(), next.toList())
+		service.insertNode(node)
 		return node
 	}
 
 	@Test
 	fun testEmptyFlow() = test {
-		val result = service.getFlowForNode_test(sourceNode())
-		assertEquals(0, result.size)
+		val sourceNode = sourceNode()
+		val result = service.getFlowForNode_test(sourceNode)
+		assertEquals(1, result.size)
+		assertEquals(sourceNode._id, result[0]._id)
+		assertEquals(0, result[0].next.size)
 	}
 
 	@Test
 	fun testDirectFlow() = test {
 		val target = graphNode("target")
-		val result = service.getFlowForNode_test(sourceNode(target))
+		val source = sourceNode(target)
+		val result = service.getFlowForNode_test(source)
 		assertEquals(1, result.size)
-		assertEquals(target._id, result[0].id)
-		assertEquals(0, result[0].next.size)
+		val sourceNode = result[0]
+		assertEquals(source._id, sourceNode._id)
+		assertEquals(1, sourceNode.next.size)
+		val targetNode = sourceNode.next[0]
+		assertEquals(target._id, targetNode._id)
+		assertEquals(0, targetNode.next.size)
 	}
 
 	@Test
 	fun testDirectFlow_twoTargets() = test {
 		val target1 = graphNode("target1")
 		val target2 = graphNode("target2")
-		val result = service.getFlowForNode_test(sourceNode(target1, target2))
-		assertEquals(2, result.size)
-		assertEquals(target1._id, result[0].id)
-		assertEquals(target2._id, result[1].id)
-		assertEquals(0, result[0].next.size)
-		assertEquals(0, result[1].next.size)
+		val source = sourceNode(target1, target2)
+		val result = service.getFlowForNode_test(source)
+		assertEquals(1, result.size)
+		val sourceNode = result[0].next
+		assertEquals(2, sourceNode.size)
+		val targetNode1 = sourceNode[0]
+		assertEquals(target1._id, targetNode1._id)
+		val targetNode2 = sourceNode[1]
+		assertEquals(target2._id, targetNode2._id)
+		assertEquals(0, targetNode1.next.size)
+		assertEquals(0, targetNode2.next.size)
 	}
 
 	@Test
 	fun testIndirectFlow() = test {
 		val target = graphNode("target")
 		val mapper = graphNode("mapper", target)
-		val result = service.getFlowForNode_test(sourceNode(mapper))
+		val source = sourceNode(mapper)
+		val result = service.getFlowForNode_test(source)
 		assertEquals(1, result.size)
-		val mapperResult = result[0]
-		assertEquals(mapper._id, mapperResult.id)
+		val sourceResult = result[0]
+		assertEquals(source._id, sourceResult._id)
+		assertEquals(1, sourceResult.next.size)
+		val mapperResult = sourceResult.next[0]
+		assertEquals(mapper._id, mapperResult._id)
 		assertEquals(1, mapperResult.next.size)
-		assertEquals(target._id, mapperResult.next[0].id)
+		assertEquals(target._id, mapperResult.next[0]._id)
 	}
 
 	@Test
@@ -90,13 +111,17 @@ class MongoFlowServiceTest : AbstractFlowFetchTest<MongoFlowServiceTest.FlowTest
 		val target1 = graphNode("target1")
 		val target2 = graphNode("target2")
 		val mapper = graphNode("mapper", target1, target2)
-		val result = service.getFlowForNode_test(sourceNode(mapper))
+		val source = sourceNode(mapper)
+		val result = service.getFlowForNode_test(source)
 		assertEquals(1, result.size)
-		val mapperResult = result[0]
-		assertEquals(mapper._id, mapperResult.id)
+		val sourceNode = result[0]
+		assertEquals(source._id, sourceNode._id)
+		assertEquals(1, sourceNode.next.size)
+		val mapperResult = sourceNode.next[0]
+		assertEquals(mapper._id, mapperResult._id)
 		assertEquals(2, mapperResult.next.size)
-		assertEquals(target1._id, mapperResult.next[0].id)
-		assertEquals(target2._id, mapperResult.next[1].id)
+		assertEquals(target1._id, mapperResult.next[0]._id)
+		assertEquals(target2._id, mapperResult.next[1]._id)
 	}
 
 	@Test
@@ -105,12 +130,16 @@ class MongoFlowServiceTest : AbstractFlowFetchTest<MongoFlowServiceTest.FlowTest
 		val mapper2_id = NodeId()
 		val mapper1 = graphNode("mapper1", mapper2_id, id = mapper1_id)
 		val mapper2 = graphNode("mapper2", mapper1_id, id = mapper2_id)
-		val result = service.getFlowForNode_test(sourceNode(mapper1_id))
+		val source = sourceNode(mapper1_id)
+		val result = service.getFlowForNode_test(source)
 		assertEquals(1, result.size)
-		val mapperResult = result[0]
-		assertEquals(mapper1._id, mapperResult.id)
+		val sourceResult = result[0]
+		assertEquals(source._id, sourceResult._id)
+		assertEquals(1, sourceResult.next.size)
+		val mapperResult = sourceResult.next[0]
+		assertEquals(mapper1._id, mapperResult._id)
 		assertEquals(1, mapperResult.next.size)
-		assertEquals(mapper2._id, mapperResult.next[0].id)
+		assertEquals(mapper2._id, mapperResult.next[0]._id)
 		assertEquals(0, mapperResult.next[0].next.size)
 	}
 }
