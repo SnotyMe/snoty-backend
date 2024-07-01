@@ -1,0 +1,49 @@
+package me.snoty.integration.common.wiring
+
+import me.snoty.backend.database.mongo.decode
+import me.snoty.backend.integration.config.flow.NodeId
+import me.snoty.integration.common.wiring.graph.GraphNode
+import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.NodeSettings
+import org.bson.Document
+import org.bson.codecs.configuration.CodecRegistry
+import java.util.*
+
+interface IFlowNode {
+	val _id: NodeId
+	val userId: UUID
+	val descriptor: NodeDescriptor
+	val config: Document
+}
+
+fun IFlowNode.toRelational(next: List<RelationalFlowNode>): RelationalFlowNode {
+	return when (this) {
+		is RelationalFlowNode -> this
+		is StandaloneFlowNode, is GraphNode -> RelationalFlowNode(_id, userId, descriptor, config, next)
+		else -> throw IllegalArgumentException("Unknown flow node type: $this")
+	}
+}
+
+/**
+ * High-level representation of a flow node.
+ * Contains a list of the next nodes in the flow.
+ */
+data class RelationalFlowNode(
+	override val _id: NodeId,
+	override val userId: UUID,
+	override val descriptor: NodeDescriptor,
+	override val config: Document,
+	val next: List<RelationalFlowNode> = emptyList()
+) : IFlowNode
+
+data class StandaloneFlowNode(
+	override val _id: NodeId,
+	override val userId: UUID,
+	override val descriptor: NodeDescriptor,
+	override val config: Document,
+) : IFlowNode
+
+inline fun <reified T : NodeSettings> IFlowNode.getConfig(codecRegistry: CodecRegistry): T {
+	// TODO: error handling
+	return codecRegistry.decode(T::class, config)
+}

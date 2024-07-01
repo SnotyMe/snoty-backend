@@ -1,4 +1,4 @@
-package me.snoty.backend.integration.flow.model
+package me.snoty.integration.common.wiring.node
 
 import com.mongodb.client.model.Filters
 import org.bson.conversions.Bson

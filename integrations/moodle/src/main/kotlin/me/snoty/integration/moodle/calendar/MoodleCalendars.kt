@@ -4,10 +4,9 @@ import io.ktor.server.routing.*
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
-import me.snoty.integration.common.config.IntegrationConfigService
+import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.diff.Fields
-import me.snoty.integration.moodle.MoodleIntegration
 import me.snoty.integration.moodle.model.MoodleAssignment
 import me.snoty.integration.common.utils.calendar.CalendarService
 import me.snoty.integration.utils.calendar.ICalBuilder
@@ -22,11 +21,10 @@ class MoodleCalendarBuilder(entityStateService: EntityStateService) : ICalBuilde
 	}
 }
 
-fun Route.iCalRoutes(integrationConfigService: IntegrationConfigService, calendarService: CalendarService, entityStateService: EntityStateService) {
+fun Route.iCalRoutes(nodeService: NodeService, calendarService: CalendarService, entityStateService: EntityStateService) {
 	calendarRoutes(
-		integrationConfigService,
+		nodeService,
 		calendarService,
-		MoodleIntegration.INTEGRATION_NAME,
 		MoodleAssignment.TYPE,
 		MoodleCalendarBuilder(entityStateService)
 	)

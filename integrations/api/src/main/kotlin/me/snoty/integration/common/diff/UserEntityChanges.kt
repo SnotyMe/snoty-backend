@@ -3,16 +3,14 @@ package me.snoty.integration.common.diff
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import me.snoty.integration.common.InstanceId
+import me.snoty.backend.integration.config.flow.NodeId
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
-import java.util.*
 
 data class EntityDescriptor(
-	val instanceId: InstanceId,
+	val nodeId: NodeId,
 	val entityType: String,
 	val entityId: String,
-	val userId: UUID
 )
 
 data class UserEntityChanges(

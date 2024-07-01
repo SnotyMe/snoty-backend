@@ -8,16 +8,17 @@ import org.bson.BsonDocument
 import org.bson.BsonDocumentReader
 import org.bson.BsonDocumentWriter
 import org.bson.codecs.configuration.CodecRegistries
+import org.bson.codecs.configuration.CodecRegistry
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class ChangeCodecTest {
-	val codecs = CodecRegistries.fromRegistries(
+	private val codecs: CodecRegistry = CodecRegistries.fromRegistries(
 		integrationsApiCodecModule(),
 		apiCodecModule()
 	)
 
-	fun <T : Any> serializeChange(change: Change<T>): BsonDocument {
+	private fun <T : Any> serializeChange(change: Change<T>): BsonDocument {
 		val document = BsonDocument()
 		val changeCodec = codecs.get(Change::class.java)
 		changeCodec.encode(
@@ -28,7 +29,7 @@ class ChangeCodecTest {
 		return document
 	}
 
-	fun deserializeChange(document: BsonDocument): Change<*> {
+	private fun deserializeChange(document: BsonDocument): Change<*> {
 		val changeCodec = codecs.get(Change::class.java)
 		return changeCodec.decode(
 			BsonDocumentReader(document),
@@ -37,7 +38,7 @@ class ChangeCodecTest {
 	}
 
 	@Test
-	fun testEncode_LocalDateTime() {
+	fun `test encode LocalDateTime`() {
 		val old = LocalDateTime.parse("2020-12-31T23:59:59")
 		val new = LocalDateTime.parse("2021-01-01T00:00:00")
 		val change = Change(LocalDateTime::class, old, new)
@@ -52,7 +53,7 @@ class ChangeCodecTest {
 	}
 
 	@Test
-	fun testEncode_String() {
+	fun `test encode String`() {
 		val old = "old"
 		val new = "new"
 		val change = Change(String::class, old, new)
@@ -67,7 +68,7 @@ class ChangeCodecTest {
 	}
 
 	@Test
-	fun testEncode_Int() {
+	fun `test encode Int`() {
 		val old = 1
 		val new = 2
 		val change = Change(Int::class, old, new)
@@ -82,7 +83,7 @@ class ChangeCodecTest {
 	}
 
 	@Test
-	fun testEncode_Long() {
+	fun `test encode Long`() {
 		val old = 1L
 		val new = 2L
 		val change = Change(Long::class, old, new)
@@ -97,7 +98,7 @@ class ChangeCodecTest {
 	}
 
 	@Test
-	fun testEncode_Double() {
+	fun `test encode Double`() {
 		val old = 1.0
 		val new = 2.0
 		val change = Change(Double::class, old, new)

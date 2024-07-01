@@ -1,4 +1,4 @@
-package me.snoty.backend.integration.flow.model.graph
+package me.snoty.integration.common.wiring.graph
 
 import me.snoty.backend.integration.config.flow.NodeId
 

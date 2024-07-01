@@ -1,10 +1,9 @@
 package me.snoty.integration.common.diff.state
 
 import com.mongodb.kotlin.client.coroutine.MongoCollection
-import me.snoty.integration.common.InstanceId
+import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.integration.common.diff.Fields
 import org.bson.codecs.pojo.annotations.BsonId
-import java.util.*
 
 data class EntityState(
 	val id: String,
@@ -13,10 +12,10 @@ data class EntityState(
 	val checksum: Long
 )
 
-data class UserEntityStates(
+data class NodeEntityStates(
 	@BsonId
-	val userId: UUID,
-	val entities: Map<InstanceId, Set<EntityState>>
+	val nodeId: NodeId,
+	val entities: Set<EntityState>
 )
 
-typealias EntityStateCollection = MongoCollection<UserEntityStates>
+typealias EntityStateCollection = MongoCollection<NodeEntityStates>

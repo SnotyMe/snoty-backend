@@ -1,15 +1,13 @@
 package me.snoty.integration.untis
 
-import io.ktor.server.routing.*
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import me.snoty.backend.scheduling.JobRequest
-import me.snoty.integration.common.*
-import me.snoty.backend.integration.config.ConfigId
+import me.snoty.integration.common.NodeContext
 import me.snoty.integration.common.utils.RedactInJobName
-import me.snoty.integration.untis.calendar.iCalRoutes
+import me.snoty.integration.common.wiring.node.NodeHandlerContributor
+import me.snoty.integration.common.wiring.node.NodeRegistry
+import me.snoty.integration.common.wiring.node.NodeSettings
+import me.snoty.integration.common.wiring.node.registerIntegrationHandler
 import me.snoty.integration.untis.model.UntisDateTime
-import java.util.*
 
 @Serializable
 data class WebUntisSettings(
@@ -18,48 +16,12 @@ data class WebUntisSettings(
 	val username: String,
 	@RedactInJobName
 	val appSecret: String,
-	@Contextual
-	override val id: ConfigId = ConfigId()
-) : IntegrationSettings {
-	override val instanceId = baseUrl.instanceId
-}
+) : NodeSettings
 
-class WebUntisIntegration(
-	context: IntegrationContext,
-	untisAPI: WebUntisAPI = WebUntisAPIImpl()
-) : AbstractIntegration<WebUntisSettings, WebUntisJobRequest, Int>(
-	DESCRIPTOR,
-	WebUntisSettings::class,
-	WebUntisFetcher.Factory(untisAPI),
-	context
-) {
-	companion object {
-		const val INTEGRATION_NAME = "webuntis"
-		val DESCRIPTOR = IntegrationDescriptor(name = INTEGRATION_NAME)
-
-		val UNTIS_CODEC_MODULE = listOf(UntisDateTime.Companion)
-	}
-
-	override fun createRequest(config: IntegrationConfig<WebUntisSettings>): JobRequest =
-		WebUntisJobRequest(config.user, config.settings)
-
-	override fun routes(routing: Route) {
-		routing.iCalRoutes(integrationConfigService, context.calendarService, entityStateService)
-	}
-
-	class Factory : IntegrationFactory {
-		override val mongoDBCodecs = UNTIS_CODEC_MODULE
-		override val descriptor = DESCRIPTOR
-
-		override fun create(context: IntegrationContext): Integration {
-			return WebUntisIntegration(context)
-		}
+class WebUntisIntegration : NodeHandlerContributor {
+	override fun contributeHandlers(registry: NodeRegistry, context: NodeContext) {
+		registry.registerIntegrationHandler("webuntis", WebUntisFetcher(context))
 	}
 }
 
-data class WebUntisJobRequest(
-	val userId: UUID,
-	val settings: WebUntisSettings
-) : JobRequest {
-	override fun getJobRequestHandler() = WebUntisFetcher::class.java
-}
+val UNTIS_CODEC_MODULE = listOf(UntisDateTime.Companion)

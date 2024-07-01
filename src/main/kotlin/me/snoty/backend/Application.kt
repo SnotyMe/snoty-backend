@@ -11,16 +11,14 @@ import me.snoty.backend.database.mongo.createMongoClients
 import me.snoty.backend.featureflags.FeatureFlags
 import me.snoty.backend.featureflags.FeatureFlagsSetup
 import me.snoty.backend.featureflags.provider.FlagdProvider
-import me.snoty.backend.integration.IntegrationManager
-import me.snoty.backend.integration.MongoEntityStateService
-import me.snoty.backend.integration.config.MongoIntegrationConfigService
-import me.snoty.backend.integration.utils.calendar.MongoCalendarService
+import me.snoty.backend.integration.config.MongoNodeService
+import me.snoty.backend.integration.flow.FlowRunnerImpl
+import me.snoty.backend.integration.flow.MongoFlowService
+import me.snoty.backend.integration.flow.node.NodeRegistryImpl
 import me.snoty.backend.logging.setupLogbackFilters
 import me.snoty.backend.scheduling.JobRunrConfigurer
-import me.snoty.backend.scheduling.JobRunrScheduler
 import me.snoty.backend.server.KtorServer
 import me.snoty.backend.spi.DevManager
-import java.util.concurrent.Executors
 
 fun main() = runBlocking {
 	setupLogbackFilters()
@@ -53,20 +51,21 @@ fun main() = runBlocking {
 	FeatureFlagsSetup.setup(featureClient, featureFlags)
 
 	val meterRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
-	val metricsPool = Executors.newScheduledThreadPool(1)
-	val scheduler = JobRunrScheduler()
+	// TODO: use again
+	// val metricsPool = Executors.newScheduledThreadPool(1)
+	// val scheduler = JobRunrScheduler()
 
 	val (mongoDB, syncMongoClient) = createMongoClients(config.mongodb)
 
-	val integrationConfigService = MongoIntegrationConfigService(mongoDB)
-	val calendarService = MongoCalendarService(mongoDB)
-	val integrationManager = IntegrationManager(scheduler, integrationConfigService, calendarService) { integrationDescriptor ->
-		MongoEntityStateService(mongoDB, integrationDescriptor, meterRegistry, metricsPool)
-	}
+	val nodeRegistry = NodeRegistryImpl()
+	val flowService = MongoFlowService(mongoDB, FlowRunnerImpl(nodeRegistry))
 
-	JobRunrConfigurer.configure(syncMongoClient, integrationManager, meterRegistry)
-	integrationManager.startup()
+	val nodeService = MongoNodeService(mongoDB, nodeRegistry)
+	// TODO: use
+	// val calendarService = MongoCalendarService(mongoDB)
 
-	KtorServer(config, buildInfo, meterRegistry, integrationManager)
+	JobRunrConfigurer.configure(syncMongoClient, nodeRegistry, nodeService, flowService, meterRegistry)
+
+	KtorServer(config, buildInfo, meterRegistry, nodeRegistry, flowService, nodeService)
 		.start(wait = true)
 }

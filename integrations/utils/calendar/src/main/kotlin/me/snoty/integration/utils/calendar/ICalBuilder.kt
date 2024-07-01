@@ -2,7 +2,7 @@ package me.snoty.integration.utils.calendar
 
 import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.diff.Fields
-import me.snoty.integration.common.utils.calendar.CalendarConfig
+import me.snoty.integration.common.wiring.IFlowNode
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.immutable.ImmutableVersion
@@ -10,11 +10,8 @@ import net.fortuna.ical4j.model.property.immutable.ImmutableVersion
 abstract class ICalBuilder<ID>(private val entityStateService: EntityStateService) {
 	protected abstract fun buildEvent(id: String, fields: Fields): VEvent
 
-	suspend fun build(calendarConfig: CalendarConfig): Calendar {
-		val userId = calendarConfig.userId
-		val instanceId = calendarConfig.instanceId
-		val type = calendarConfig.type
-		val rows = entityStateService.getEntities(userId, instanceId, type)
+	suspend fun build(node: IFlowNode): Calendar {
+		val rows = entityStateService.getStates(node)
 		val calendar = Calendar()
 		calendar.add<Calendar>(ImmutableVersion.VERSION_2_0)
 

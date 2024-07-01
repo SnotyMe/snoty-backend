@@ -1,6 +1,6 @@
 package me.snoty.integration.common.utils
 
-import me.snoty.integration.common.IntegrationSettings
+import me.snoty.integration.common.wiring.node.NodeSettings
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.hasAnnotation
@@ -12,7 +12,7 @@ annotation class ExcludeInJobName
 annotation class RedactInJobName
 
 @Suppress("UNCHECKED_CAST")
-inline fun <reified S : IntegrationSettings> S.formatProperties(): String {
+inline fun <reified S : NodeSettings> S.formatProperties(): String {
 	return this::class.declaredMemberProperties
 		.filterNot { prop -> prop.hasAnnotation<ExcludeInJobName>() }
 		.joinToString(", ") { prop ->

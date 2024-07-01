@@ -5,22 +5,30 @@ import com.mongodb.client.model.Aggregates.match
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Projections
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.flow.*
 import me.snoty.backend.database.mongo.Aggregations.project
 import me.snoty.backend.database.mongo.aggregate
 import me.snoty.backend.integration.flow.FlowBuilderImpl.createFlowFromGraph
-import me.snoty.backend.integration.flow.model.FlowNode
-import me.snoty.backend.integration.flow.model.graph.Graph
-import me.snoty.backend.integration.flow.model.graph.GraphNode
-import me.snoty.integration.common.flow.FLOW_COLLECTION_NAME
+import me.snoty.integration.common.wiring.EdgeVertex
+import me.snoty.integration.common.wiring.IFlowNode
+import me.snoty.integration.common.wiring.RelationalFlowNode
+import me.snoty.integration.common.wiring.flow.FLOW_COLLECTION_NAME
+import me.snoty.integration.common.wiring.flow.FlowOutput
+import me.snoty.integration.common.wiring.flow.FlowRunner
+import me.snoty.integration.common.wiring.flow.FlowService
+import me.snoty.integration.common.wiring.graph.Graph
+import me.snoty.integration.common.wiring.graph.GraphNode
+import me.snoty.integration.common.wiring.toRelational
 
-open class MongoFlowService(db: MongoDatabase) : FlowService {
+open class MongoFlowService(
+	db: MongoDatabase,
+	private val runner: FlowRunner
+) : FlowService {
 	protected val collection = db.getCollection<GraphNode>(FLOW_COLLECTION_NAME)
 
-	override fun getFlowForNode(node: FlowNode): Flow<FlowNode> {
+	override fun getFlowForNode(node: IFlowNode): Flow<RelationalFlowNode> {
 		return collection.aggregate<Graph>(
-			match(Filters.eq(GraphNode::_id.name, node.id)),
+			match(Filters.eq(GraphNode::_id.name, node._id)),
 			graphLookup(
 				/* from = */ collection.namespace.collectionName,
 				/* startWith = */ "\$${GraphNode::_id.name}",
@@ -32,10 +40,16 @@ open class MongoFlowService(db: MongoDatabase) : FlowService {
 				Projections.computed(Graph::rootNext.name, "\$${GraphNode::next.name}"),
 				Projections.include(Graph::involvedNodes.name)
 			)
-		).transform { graph ->
-			createFlowFromGraph(graph).forEach { node ->
-				emit(node)
-			}
+		).map { graph ->
+			val next = createFlowFromGraph(graph)
+			val relationalNode = node.toRelational(next)
+			relationalNode
 		}
 	}
+
+	override fun runFlow(node: IFlowNode, input: EdgeVertex): Flow<FlowOutput>
+		= getFlowForNode(node)
+			.flatMapMerge {
+				runner.execute(it, input)
+			}
 }

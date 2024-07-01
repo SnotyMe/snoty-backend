@@ -1,10 +1,11 @@
-package me.snoty.backend.integration.flow.model.graph
+package me.snoty.integration.common.wiring.graph
 
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.backend.integration.flow.model.NodeDescriptor
+import me.snoty.integration.common.wiring.IFlowNode
+import me.snoty.integration.common.wiring.node.NodeDescriptor
 import org.bson.Document
 import org.bson.codecs.pojo.annotations.BsonId
-import java.util.UUID
+import java.util.*
 
 /**
  * Low-level representation of a flow graph node gotten using `$graphLookup`
@@ -12,9 +13,9 @@ import java.util.UUID
  */
 data class GraphNode(
 	@BsonId
-	val _id: NodeId = NodeId(),
-	val userId: UUID,
-	val descriptor: NodeDescriptor,
-	val config: Document,
+	override val _id: NodeId = NodeId(),
+	override val userId: UUID,
+	override val descriptor: NodeDescriptor,
+	override val config: Document,
 	val next: List<NodeId>?
-)
+) : IFlowNode

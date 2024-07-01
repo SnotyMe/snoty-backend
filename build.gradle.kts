@@ -32,6 +32,7 @@ allprojects {
         kotlin {
             compilerOptions {
                 freeCompilerArgs.add("-Xcontext-receivers")
+                optIn.add("kotlinx.coroutines.ExperimentalCoroutinesApi")
             }
         }
     }

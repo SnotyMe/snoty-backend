@@ -1,31 +1,16 @@
 package me.snoty.backend.integration
-
-import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.supervisorScope
-import me.snoty.backend.scheduling.Scheduler
-import me.snoty.backend.spi.IntegrationRegistry
-import me.snoty.backend.utils.NotFoundException
-import me.snoty.integration.common.*
-import me.snoty.backend.integration.config.ConfigId
-import me.snoty.integration.common.config.IntegrationConfigService
-import me.snoty.integration.common.diff.EntityStateService
-import me.snoty.integration.common.utils.calendar.CalendarService
-
-
+/*
 class IntegrationManager(
 	scheduler: Scheduler,
-	private val integrationConfigService: IntegrationConfigService,
+	private val nodeService: NodeService,
 	calendarService: CalendarService,
-	entityStateServiceFactory: (IntegrationDescriptor) -> EntityStateService
+	entityStateServiceFactory: (NodeDescriptor) -> EntityStateService
 ) {
 	private val logger = KotlinLogging.logger {}
-
 	val integrations: List<Integration> = IntegrationRegistry.getIntegrationFactories().map {
-		val context = IntegrationContext(
+		val context = NodeContext(
 			entityStateServiceFactory(it.descriptor),
-			integrationConfigService,
+			nodeService,
 			calendarService,
 			scheduler
 		)
@@ -63,9 +48,5 @@ class IntegrationManager(
 			it.name == integrationType
 		}
 	}
-
-	suspend fun getIntegrationConfig(configId: ConfigId, integrationType: String): IntegrationSettings? {
-		val integration = getIntegration(integrationType) ?: throw NotFoundException("Integration of this type not found")
-		return integrationConfigService.get(configId, integrationType, integration.settingsType)
-	}
 }
+*/
