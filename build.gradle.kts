@@ -183,6 +183,24 @@ tasks.check {
     dependsOn(testIntegration)
 }
 
+kover {
+    this.merge {
+        this.allProjects()
+    }
+    currentProject {
+        this.sources {
+            // per default, kover only excludes `test`
+            // since we also have `testIntegration`, we have to exclude it
+            testing.suites
+                .filterIsInstance<JvmTestSuite>()
+                .forEach {
+                    this.excludedSourceSets.add(it.sources.name)
+                }
+            this.excludedSourceSets.add(devSourceSet.name)
+        }
+    }
+}
+
 buildInfo {
     val outputLocation = PropertiesOutputLocation { project ->
         listOf(project.layout.buildDirectory.get().file("info/buildinfo.properties").asFile)
