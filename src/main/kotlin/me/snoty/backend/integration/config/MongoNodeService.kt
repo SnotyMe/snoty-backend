@@ -72,7 +72,11 @@ class MongoNodeService(
 			next = emptyList()
 		)
 		collection.insertOne(node)
-		scheduler.schedule(node)
+		// TODO: throw if handler doesn't exist?
+		val handler = nodeRegistry.lookupHandler(descriptor)
+		if (handler?.position == NodePosition.START) {
+			scheduler.schedule(node)
+		}
 		return node._id
 	}
 

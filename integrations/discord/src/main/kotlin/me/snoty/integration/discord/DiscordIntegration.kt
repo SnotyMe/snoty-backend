@@ -1,12 +1,11 @@
 package me.snoty.integration.discord
 
 import io.ktor.client.*
-import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.Serializable
 import me.snoty.integration.common.NodeContextBuilder
+import me.snoty.integration.common.httpClient
 import me.snoty.integration.common.utils.RedactInJobName
 import me.snoty.integration.common.wiring.EdgeVertex
 import me.snoty.integration.common.wiring.EdgeVertices
@@ -22,15 +21,12 @@ data class DiscordSettings(
 	val webhookUrl: String,
 ) : NodeSettings
 
-class DiscordNodeHandler(private val codecRegistry: CodecRegistry) : NodeHandler {
+class DiscordNodeHandler(
+	private val codecRegistry: CodecRegistry,
+	private val client: HttpClient
+) : NodeHandler {
 	override val position: NodePosition = NodePosition.END
 	override val settingsClass: KClass<out NodeSettings> = DiscordSettings::class
-
-	private val client = HttpClient {
-		install(ContentNegotiation) {
-			json()
-		}
-	}
 
 	override suspend fun process(node: IFlowNode, input: EdgeVertex): EdgeVertex {
 		val config: DiscordSettings = node.getConfig(codecRegistry)
@@ -54,7 +50,7 @@ class DiscordNodeHandler(private val codecRegistry: CodecRegistry) : NodeHandler
 class DiscordNodeHandlerContributor : NodeHandlerContributor {
 	override fun contributeHandlers(registry: NodeRegistry, nodeContextBuilder: NodeContextBuilder) {
 		registry.registerIntegrationHandler("discord", nodeContextBuilder) { context ->
-			DiscordNodeHandler(context.codecRegistry)
+			DiscordNodeHandler(context.codecRegistry, context.httpClient())
 		}
 	}
 }

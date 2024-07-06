@@ -50,10 +50,10 @@ open class MongoFlowService(
 		}
 	}
 
-	override fun runFlow(logger: Logger, node: IFlowNode, input: EdgeVertex): Flow<FlowOutput>
+	override fun runFlow(jobId: String, logger: Logger, node: IFlowNode, input: EdgeVertex): Flow<FlowOutput>
 		= getFlowForNode(node)
 			.flatMapMerge {
 				logger.debug("Processing node {} with input {}", visualizeFlow(listOf(it)), input)
-				runner.execute(logger, it, input)
+				runner.execute(jobId, logger, it, input)
 			}
 }

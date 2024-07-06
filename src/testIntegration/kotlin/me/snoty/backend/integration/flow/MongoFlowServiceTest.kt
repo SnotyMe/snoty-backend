@@ -1,5 +1,6 @@
 package me.snoty.backend.integration.flow
 
+import io.mockk.mockk
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import me.snoty.backend.integration.config.flow.NodeId
@@ -22,9 +23,7 @@ class MongoFlowServiceTest : AbstractFlowFetchTest<MongoFlowServiceTest.FlowTest
 	private val USER_ID = UUID.randomUUID()
 
 	private val mongoDB = MongoTest.getMongoDatabase {}
-	private val service = object : MongoFlowService(mongoDB, { logger, node, vertex ->
-		TODO()
-	}) {
+	private val service = object : MongoFlowService(mongoDB, mockk()) {
 		context(FlowTestContext)
 		fun getFlowForNode_test(node: GraphNode) = runBlocking {
 			val flow = getFlowForNode(StandaloneFlowNode(node._id, USER_ID, node.descriptor, node.config)).toList()

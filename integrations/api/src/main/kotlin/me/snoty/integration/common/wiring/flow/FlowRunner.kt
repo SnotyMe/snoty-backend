@@ -6,5 +6,5 @@ import me.snoty.integration.common.wiring.RelationalFlowNode
 import org.slf4j.Logger
 
 fun interface FlowRunner {
-	fun execute(logger: Logger, node: RelationalFlowNode, input: EdgeVertex): Flow<FlowOutput>
+	fun execute(jobId: String, logger: Logger, node: RelationalFlowNode, input: EdgeVertex): Flow<FlowOutput>
 }

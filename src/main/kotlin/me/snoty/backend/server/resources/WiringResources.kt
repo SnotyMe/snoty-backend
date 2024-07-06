@@ -12,9 +12,9 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.serializerOrNull
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.backend.server.plugins.ktorJson
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.respondServiceResult
+import me.snoty.integration.common.SnotyJson
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.node.NodeDescriptor
@@ -39,7 +39,7 @@ fun Application.wiringResources(nodeRegistry: NodeRegistry, flowService: FlowSer
 					val serializer = handler.settingsClass.serializerOrNull()
 						?: return@post call.respond(HttpStatusCode.BadRequest, "No serializer found for ${handler.settingsClass}")
 
-					val settingsObj = ktorJson.decodeFromJsonElement(serializer, settingsJson)
+					val settingsObj = SnotyJson.decodeFromJsonElement(serializer, settingsJson)
 					val id = nodeService.create(user.id, descriptor, settingsObj)
 
 					call.respondText(status=HttpStatusCode.Created, text=id.toString())

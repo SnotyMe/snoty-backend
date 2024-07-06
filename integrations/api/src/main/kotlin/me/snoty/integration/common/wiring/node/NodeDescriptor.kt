@@ -1,6 +1,7 @@
 package me.snoty.integration.common.wiring.node
 
 import com.mongodb.client.model.Filters
+import io.opentelemetry.api.trace.SpanBuilder
 import kotlinx.serialization.Serializable
 import org.bson.conversions.Bson
 
@@ -19,6 +20,11 @@ data class NodeDescriptor(
 			Filters.eq(NodeDescriptor::type.name, type)
 		)
 	}
+}
+
+fun SpanBuilder.setAttribute(key: String, value: NodeDescriptor) {
+	this.setAttribute("$key.subsystem", value.subsystem)
+	this.setAttribute("$key.type", value.type)
 }
 
 object Subsystem {

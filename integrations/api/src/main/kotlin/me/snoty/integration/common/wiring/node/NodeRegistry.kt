@@ -1,6 +1,6 @@
 package me.snoty.integration.common.wiring.node
 
-import me.snoty.integration.common.NodeContext
+import me.snoty.integration.common.NodeHandlerContext
 import me.snoty.integration.common.NodeContextBuilder
 import me.snoty.integration.common.wiring.EdgeVertex
 import me.snoty.integration.common.wiring.IFlowNode
@@ -50,7 +50,7 @@ interface NodeRegistry {
 	fun getHandlers(): Map<NodeDescriptor, NodeHandler>
 }
 
-fun NodeRegistry.registerIntegrationHandler(type: String, nodeContextBuilder: NodeContextBuilder, handlerBuilder: (NodeContext) -> NodeHandler): NodeDescriptor {
+fun NodeRegistry.registerIntegrationHandler(type: String, nodeContextBuilder: NodeContextBuilder, handlerBuilder: (NodeHandlerContext) -> NodeHandler): NodeDescriptor {
 	val descriptor = NodeDescriptor(Subsystem.INTEGRATION, type)
 	val nodeContext = nodeContextBuilder(descriptor)
 	registerHandler(descriptor, handlerBuilder(nodeContext))

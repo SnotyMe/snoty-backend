@@ -6,7 +6,7 @@ import kotlin.reflect.KClass
 
 abstract class FeatureFlag<T>(
 	val name: String,
-	private val defaultValue: T?
+	val defaultValue: T
 ) {
 	abstract val getter: Client.(T?) -> T
 
@@ -15,9 +15,18 @@ abstract class FeatureFlag<T>(
 	}
 }
 
+class FeatureFlagBoolean(
+	name: String,
+	defaultValue: Boolean
+) : FeatureFlag<Boolean>(name, defaultValue) {
+	override val getter: Client.(Boolean?) -> Boolean = { defaultValue ->
+		this.getBooleanValue(name, defaultValue)
+	}
+}
+
 open class EnumFeatureFlag<E : Enum<E>>(
 	name: String,
-	defaultValue: E?,
+	defaultValue: E,
 	enumClass: KClass<E>
 ) : FeatureFlag<E>(name, defaultValue) {
 	override val getter: Client.(E?) -> E = { defaultValue ->

@@ -26,6 +26,7 @@ val isDevelopment: Boolean = project.findProperty("me.snoty.development")?.toStr
 allprojects {
     repositories {
         mavenCentral()
+        maven("https://maven.simulatan.me/releases")
     }
 
     tasks.withType<KotlinCompile>().configureEach {
@@ -85,6 +86,7 @@ testing {
                 implementation(tests.testcontainers.junit)
                 implementation(tests.testcontainers.keycloak)
                 implementation(tests.testcontainers.mongodb)
+                implementation(monitoring.opentelemetry.testing)
                 implementation(devSourceSet.output)
 
                 runtimeOnly(tests.junit.engine)
@@ -140,6 +142,11 @@ dependencies {
     implementation(monitoring.ktor.opentelemetry)
     implementation(monitoring.ktor.server.metricsMicrometer)
     implementation(monitoring.micrometer.prometheus)
+    implementation(monitoring.opentelemetry.api)
+    implementation(monitoring.opentelemetry.context)
+    implementation(monitoring.opentelemetry.semconv)
+    implementation(monitoring.opentelemetry.kotlin)
+    implementation(monitoring.opentelemetry.logback)
 
     // database
     implementation(database.mongodb)
@@ -164,6 +171,8 @@ dependencies {
 
     // dev
     devImplementation(dev.keycloak.adminClient)
+    devImplementation(monitoring.opentelemetry.sdk)
+    devImplementation(monitoring.opentelemetry.exporter.otlp)
 
     moduleImplementation(projects.integrations.api)
     // depend on all integrations by default
