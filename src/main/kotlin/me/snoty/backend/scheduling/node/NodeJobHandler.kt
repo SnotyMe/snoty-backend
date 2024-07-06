@@ -34,7 +34,7 @@ class NodeJobHandler(
 			}
 
 			logger.debug("Processing flow for node {}", node.descriptor)
-			flowService.runFlow(logger, node, jobContext)
+			flowService.runFlow(jobContext.jobId.toString(), logger, node, jobContext)
 				.collect()
 		}
 	}

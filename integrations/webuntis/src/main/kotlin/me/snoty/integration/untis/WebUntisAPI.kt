@@ -3,7 +3,6 @@ package me.snoty.integration.untis
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.engine.apache.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -31,9 +30,9 @@ interface WebUntisAPI {
  */
 suspend inline fun <reified T> WebUntisAPI.request(request: UntisRequest): T = request<T>(typeInfo<JsonRpcResponse<T>>(), request).result
 
-class WebUntisAPIImpl : WebUntisAPI {
+class WebUntisAPIImpl(client: HttpClient) : WebUntisAPI {
 	private val logger = KotlinLogging.logger {}
-	private val httpClient = HttpClient(Apache) {
+	private val httpClient = client.config {
 		install(ContentNegotiation) {
 			json()
 			serialization(ContentType.Application.JsonRpc, Json {

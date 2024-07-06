@@ -1,8 +1,9 @@
 package me.snoty.integration.moodle
 
-import me.snoty.integration.common.NodeContext
+import me.snoty.integration.common.NodeHandlerContext
 import me.snoty.integration.common.fetch.AbstractIntegrationFetcher
 import me.snoty.integration.common.fetch.FetchContext
+import me.snoty.integration.common.httpClient
 import me.snoty.integration.common.wiring.EdgeVertex
 import me.snoty.integration.common.wiring.IFlowNode
 import me.snoty.integration.common.wiring.getConfig
@@ -13,15 +14,15 @@ import org.jobrunr.jobs.context.JobContext
 import kotlin.reflect.KClass
 
 open class MoodleFetcher(
-	private val nodeContext: NodeContext,
-	private val moodleAPI: MoodleAPI = MoodleAPIImpl()
+	private val nodeHandlerContext: NodeHandlerContext,
+	private val moodleAPI: MoodleAPI = MoodleAPIImpl(nodeHandlerContext.httpClient())
 ) : AbstractIntegrationFetcher() {
 	override val position = NodePosition.START
 	override val settingsClass: KClass<out NodeSettings> = MoodleSettings::class
 
 	private suspend fun FetchContext.fetchAssignments(
 		node: IFlowNode,
-	) = nodeContext.run {
+	) = nodeHandlerContext.run {
 		val moodleSettings = node.getConfig<MoodleSettings>(codecRegistry)
 
 		val assignments = fetchStage {

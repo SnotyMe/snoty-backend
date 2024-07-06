@@ -9,7 +9,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.reflect.*
-import kotlinx.serialization.json.Json
+import me.snoty.integration.common.SnotyJson
 import me.snoty.integration.moodle.param.MoodleParam
 import org.apache.http.client.utils.URIBuilder
 import java.net.URI
@@ -28,13 +28,11 @@ suspend inline fun <reified T> MoodleAPI.request(request: MoodleRequest): T = re
 
 const val MOODLE_WS = "/webservice/rest/server.php"
 
-class MoodleAPIImpl : MoodleAPI {
+class MoodleAPIImpl(client: HttpClient? = null) : MoodleAPI {
 	private val logger = KotlinLogging.logger {}
-	private val httpClient = HttpClient(Apache) {
+	private val httpClient = client ?: HttpClient(Apache) {
 		install(ContentNegotiation) {
-			json(Json {
-				ignoreUnknownKeys = true
-			})
+			json(SnotyJson)
 		}
 	}
 

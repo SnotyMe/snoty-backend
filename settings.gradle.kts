@@ -111,14 +111,34 @@ dependencyResolutionManagement {
 		}
 
 		create("monitoring") {
-			library("ktor-opentelemetry", "io.opentelemetry.instrumentation", "opentelemetry-ktor-2.0")
-				.version("2.2.0-alpha")
+			// from SIMULATAN's repo at the moment, see https://github.com/open-telemetry/opentelemetry-java-instrumentation/pull/10873
+			library("ktor-opentelemetry", "io.opentelemetry.instrumentation", "opentelemetry-ktor-3.0")
+				.version("2.5.0-alpha-snoty.1")
 			ktorServerPlugin("metrics-micrometer", prefix = "ktor")
+
 			val micrometer = "1.6.3"
 			library("micrometer-prometheus", "io.micrometer", "micrometer-registry-prometheus")
 				.version(micrometer)
 			library("micrometer", "io.micrometer", "micrometer-core")
 				.version(micrometer)
+			val opentelemetry = version("opentelemetry", "1.39.0")
+			library("opentelemetry-api", "io.opentelemetry", "opentelemetry-api")
+				.versionRef(opentelemetry)
+			library("opentelemetry-context", "io.opentelemetry", "opentelemetry-context")
+				.versionRef(opentelemetry)
+			library("opentelemetry-semconv", "io.opentelemetry.semconv", "opentelemetry-semconv")
+				.version("1.25.0-alpha")
+			library("opentelemetry-kotlin", "io.opentelemetry", "opentelemetry-extension-kotlin")
+				.versionRef(opentelemetry)
+			library("opentelemetry-testing", "io.opentelemetry", "opentelemetry-sdk-testing")
+				.versionRef(opentelemetry)
+			library("opentelemetry-logback", "io.opentelemetry.instrumentation", "opentelemetry-logback-appender-1.0")
+				.version("2.5.0-alpha")
+
+			library("opentelemetry-sdk", "io.opentelemetry", "opentelemetry-sdk")
+				.versionRef(opentelemetry)
+			library("opentelemetry-exporter-otlp", "io.opentelemetry", "opentelemetry-exporter-otlp")
+				.versionRef(opentelemetry)
 		}
 
 		create("log") {

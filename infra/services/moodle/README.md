@@ -11,6 +11,7 @@ It can be used to test the [Moodle REST API](https://docs.moodle.org/dev/Web_ser
    => Site administration -> Users -> Add a new user
 4. Enable [web services](http://localhost:21080/admin/search.php?query=enablewebservices)
    and [REST protocol](http://localhost:21080/admin/settings.php?section=webserviceprotocols)
+   and [Mobile App](http://localhost:21080/admin/webservice/service.php?id=1)
 5. Enable required permissions\
    => Site administration -> Users -> Define roles -> click gear of `Authenticated user` ->
    enable `moodle/webservice:createmobiletoken` and `webservice/rest:use`
