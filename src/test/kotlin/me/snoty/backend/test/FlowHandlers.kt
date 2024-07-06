@@ -28,6 +28,17 @@ object QuoteHandler : NodeHandler {
 	}
 }
 
+object ExceptionHandler : NodeHandler {
+	override val position = NodePosition.END
+	override val settingsClass: KClass<out NodeSettings> = NodeSettings::class
+
+	val exception = IllegalStateException("This is an exception")
+
+	override suspend fun process(node: IFlowNode, input: EdgeVertex): EdgeVertex {
+		throw exception
+	}
+}
+
 class GlobalMapHandler(
 	private val map: MutableMap<NodeId, Any> = mutableMapOf()
 ) : NodeHandler, Map<NodeId, Any> by map {

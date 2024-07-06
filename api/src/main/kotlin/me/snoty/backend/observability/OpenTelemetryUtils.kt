@@ -1,0 +1,37 @@
+package me.snoty.backend.observability
+
+import io.opentelemetry.api.OpenTelemetry
+import io.opentelemetry.api.common.AttributeKey
+import io.opentelemetry.api.trace.Span
+import io.opentelemetry.api.trace.SpanBuilder
+import io.opentelemetry.api.trace.StatusCode
+import io.opentelemetry.api.trace.Tracer
+import io.opentelemetry.api.trace.TracerProvider
+import io.opentelemetry.context.Context
+import org.bson.Document
+import java.util.UUID
+import kotlin.reflect.KClass
+
+fun OpenTelemetry.getTracer(clazz: KClass<*>): Tracer
+	= getTracer(clazz.java.`package`.specificationTitle)
+
+fun TracerProvider.getTracer(clazz: KClass<*>): Tracer
+	= get(clazz.java.`package`.specificationTitle)
+
+context(Tracer)
+fun Span.subspan(name: String, builder: SpanBuilder.() -> Unit): Span
+	= this@Tracer.spanBuilder(name)
+		.also(builder)
+		.apply {
+			setParent(Context.current().with(this@subspan))
+		}
+		.startSpan()
+
+
+fun SpanBuilder.setAttribute(key: String, value: Document) = this.setAttribute(key, value.toJson())
+fun SpanBuilder.setAttribute(key: AttributeKey<String>, value: UUID) = this.setAttribute(key, value.toString())
+
+fun Span.setException(e: Throwable) {
+	this.setStatus(StatusCode.ERROR)
+	this.recordException(e)
+}

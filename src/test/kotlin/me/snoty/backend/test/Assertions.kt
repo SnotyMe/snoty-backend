@@ -3,8 +3,7 @@ package me.snoty.backend.test
 import kotlinx.coroutines.runBlocking
 import me.snoty.backend.utils.HttpStatusException
 import org.json.JSONObject
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertInstanceOf
+import org.junit.jupiter.api.Assertions.*
 import kotlin.reflect.KFunction
 
 fun assertErrorResponse(body: JSONObject, exception: HttpStatusException) {
@@ -14,6 +13,13 @@ fun assertErrorResponse(body: JSONObject, exception: HttpStatusException) {
 
 inline fun <reified T> assertInstanceOf(actualValue: Any): T
 	= assertInstanceOf(T::class.java, actualValue)
+
+inline fun <T> assertAny(list: List<T>, assertion: (T) -> Boolean): T {
+	if (list.isEmpty()) throw AssertionError("List is empty")
+	val matching = list.firstOrNull(assertion)
+	assertNotNull(matching)
+	return matching!!
+}
 
 fun <R> assertCombinations(
 	targetFunction: KFunction<R>,

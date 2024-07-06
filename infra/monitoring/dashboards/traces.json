@@ -1,0 +1,133 @@
+{
+	"annotations": {
+		"list": [
+			{
+				"builtIn": 1,
+				"datasource": {
+					"type": "grafana",
+					"uid": "-- Grafana --"
+				},
+				"enable": true,
+				"hide": true,
+				"iconColor": "rgba(0, 211, 255, 1)",
+				"name": "Annotations & Alerts",
+				"type": "dashboard"
+			}
+		]
+	},
+	"editable": true,
+	"fiscalYearStartMonth": 0,
+	"graphTooltip": 0,
+	"id": 2,
+	"links": [],
+	"liveNow": false,
+	"panels": [
+		{
+			"datasource": {
+				"type": "tempo",
+				"uid": "tempo"
+			},
+			"description": "",
+			"fieldConfig": {
+				"defaults": {
+					"custom": {
+						"align": "auto",
+						"cellOptions": {
+							"type": "auto"
+						},
+						"inspect": false
+					},
+					"links": [
+						{
+							"title": "Show details",
+							"url": "/d/ff8761fe-20ef-4d34-9140-484e6250a328/trace-details?orgId=1&var-traceId=${__data.fields[\"traceID\"]}"
+						}
+					],
+					"mappings": [],
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green",
+								"value": null
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					}
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 21,
+				"w": 24,
+				"x": 0,
+				"y": 0
+			},
+			"id": 1,
+			"options": {
+				"cellHeight": "sm",
+				"footer": {
+					"countRows": false,
+					"fields": "",
+					"reducer": [
+						"sum"
+					],
+					"show": false
+				},
+				"showHeader": true
+			},
+			"pluginVersion": "10.2.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "tempo",
+						"uid": "tempo"
+					},
+					"filters": [
+						{
+							"id": "2de29777",
+							"operator": "=",
+							"scope": "span"
+						},
+						{
+							"id": "span-name",
+							"operator": "!=",
+							"scope": "span",
+							"tag": "name",
+							"value": [
+								"GET /q/metrics"
+							],
+							"valueType": "string"
+						}
+					],
+					"limit": 20,
+					"query": "span",
+					"queryType": "traceqlSearch",
+					"refId": "A",
+					"tableType": "traces"
+				}
+			],
+			"title": "Traces",
+			"type": "table"
+		}
+	],
+	"refresh": "",
+	"schemaVersion": 38,
+	"tags": [],
+	"templating": {
+		"list": []
+	},
+	"time": {
+		"from": "now-6h",
+		"to": "now"
+	},
+	"timepicker": {},
+	"timezone": "",
+	"title": "Traces",
+	"uid": "f112263d-f445-40a8-b033-61ca18db2269",
+	"version": 3,
+	"weekStart": ""
+}

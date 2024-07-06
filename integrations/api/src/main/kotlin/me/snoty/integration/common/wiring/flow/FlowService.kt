@@ -17,5 +17,5 @@ interface FlowService {
 	 *
 	 * this DOES fetch the `next` nodes and runs them
 	 */
-	fun runFlow(logger: Logger, node: IFlowNode, input: EdgeVertex): Flow<FlowOutput>
+	fun runFlow(jobId: String, logger: Logger, node: IFlowNode, input: EdgeVertex): Flow<FlowOutput>
 }

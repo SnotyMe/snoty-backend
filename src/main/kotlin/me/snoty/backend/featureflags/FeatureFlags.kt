@@ -31,5 +31,8 @@ class FeatureFlags(private val config: Config, private val client: Client) {
 	val logLevel_mongo = logLevelFlag("mongo", "org.mongodb.driver")
 	val logLevel_mongo_commands = logLevelFlag("mongo.commands", "org.mongodb.driver.protocol.command")
 
+	val flow_traceConfig = FeatureFlagBoolean("flow.traceConfig", false)
+	val flow_traceEdgeVertex = FeatureFlagBoolean("flow.traceEdgeVertex", false)
+
 	fun <T> get(flag: FeatureFlag<T>): T = flag.getValue(client)
 }
