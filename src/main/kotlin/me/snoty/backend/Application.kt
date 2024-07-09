@@ -26,7 +26,13 @@ import me.snoty.backend.scheduling.node.NodeSchedulerImpl
 import me.snoty.backend.server.KtorServer
 import me.snoty.backend.spi.DevManager
 import me.snoty.backend.wiring.node.NodeHandlerContributorLookup
-import me.snoty.integration.common.NodeHandlerContext
+import me.snoty.integration.common.wiring.NodeHandlerContext
+import me.snoty.integration.common.wiring.data.impl.BsonIntermediateDataMapper
+import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
+import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
+import me.snoty.integration.common.wiring.data.impl.StaticIntermediateData
+import me.snoty.integration.common.wiring.data.impl.StaticIntermediateDataMapper
+import org.bson.Document
 import java.util.concurrent.Executors
 
 fun main() = runBlocking {
@@ -69,6 +75,7 @@ fun main() = runBlocking {
 	logger.info { "Connecting to MongoDB..." }
 	val (mongoDB, syncMongoClient) = createMongoClients(config.mongodb)
 	logger.info { "Connected to MongoDB!" }
+	val codecRegistry = mongoDB.codecRegistry
 
 	val nodeRegistry = NodeRegistryImpl()
 	val flowService = MongoFlowService(
@@ -82,21 +89,25 @@ fun main() = runBlocking {
 
 	val nodeService = MongoNodeService(mongoDB, nodeRegistry, nodeScheduler)
 	val calendarService = MongoCalendarService(mongoDB)
+	val intermediateDataMapperRegistry = IntermediateDataMapperRegistry()
+	intermediateDataMapperRegistry[BsonIntermediateData::class] = BsonIntermediateDataMapper(codecRegistry)
+	intermediateDataMapperRegistry[StaticIntermediateData::class] = StaticIntermediateDataMapper
 
 	NodeHandlerContributorLookup.executeContributors(nodeRegistry) { descriptor ->
 		NodeHandlerContext(
 			entityStateService = MongoEntityStateService(mongoDB, descriptor, meterRegistry, metricsPool),
 			nodeService = nodeService,
 			flowService = flowService,
-			codecRegistry = mongoDB.codecRegistry,
+			codecRegistry = codecRegistry,
 			calendarService = calendarService,
 			scheduler = scheduler,
-			openTelemetry = openTelemetry
+			openTelemetry = openTelemetry,
+			intermediateDataMapperRegistry = intermediateDataMapperRegistry
 		)
 	}
 
 	JobRunrConfigurer.configure(syncMongoClient, nodeRegistry, nodeService, flowService, meterRegistry)
 
-	KtorServer(config, buildInfo, meterRegistry, nodeRegistry, flowService, nodeService)
+	KtorServer(config, featureFlags, buildInfo, meterRegistry, nodeRegistry, flowService, nodeService)
 		.start(wait = true)
 }

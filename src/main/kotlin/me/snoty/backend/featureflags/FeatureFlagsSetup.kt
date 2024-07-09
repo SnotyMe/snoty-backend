@@ -26,17 +26,19 @@ object FeatureFlagsSetup {
 	private fun loggerFeatureFlagListener(featureFlags: FeatureFlags, flag: LogLevelFeatureFlag) =
 		FeatureFlagChangeListener(featureFlags, flag, true) {
 			val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
-			val logger: Logger? =
-				if (flag.loggerName == "root") loggerContext.getLogger(flag.loggerName)
-				else loggerContext.exists(flag.loggerName)
+			flag.loggers.forEach { loggerName ->
+				val logger: Logger? =
+					if (loggerName == "root") loggerContext.getLogger(loggerName)
+					else loggerContext.exists(loggerName)
 
-			if (logger == null) {
-				this.logger.warn { "Logger for flag ${flag.name} not found" }
-				return@FeatureFlagChangeListener
+				if (logger == null) {
+					this.logger.warn { "Logger for flag ${flag.name}, package $loggerName not found" }
+					return@FeatureFlagChangeListener
+				}
+
+				logger.level = Level.convertAnSLF4JLevel(it)
+				this.logger.info { "Set log level for flag ${flag.name}, package $loggerName to $it" }
 			}
-
-			logger.level = Level.convertAnSLF4JLevel(it)
-			this.logger.info { "Set log level for flag ${flag.name} to $it"}
 		}
 
 	class FeatureFlagChangeListener<T>(
