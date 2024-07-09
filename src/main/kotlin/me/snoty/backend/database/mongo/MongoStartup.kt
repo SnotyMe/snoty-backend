@@ -11,10 +11,8 @@ import org.bson.codecs.configuration.CodecRegistries
 import com.mongodb.client.MongoClient as SyncMongoClient
 
 fun createMongoClients(config: MongoConfig, dbName: String = MONGO_DB_NAME): Pair<MongoDatabase, SyncMongoClient> {
-	// val integrationCodecs = IntegrationRegistry.getIntegrationFactories().flatMap(IntegrationFactory::mongoDBCodecs)
 	val mongoCodecRegistry = CodecRegistries.fromRegistries(
 		// TODO: extra codecs from integrations
-		// CodecRegistries.fromCodecs(integrationCodecs),
 		integrationsApiCodecModule(),
 		apiCodecModule()
 	)

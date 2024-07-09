@@ -30,9 +30,8 @@ import me.snoty.integration.common.wiring.NodeHandlerContext
 import me.snoty.integration.common.wiring.data.impl.BsonIntermediateDataMapper
 import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
 import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
-import me.snoty.integration.common.wiring.data.impl.StaticIntermediateData
-import me.snoty.integration.common.wiring.data.impl.StaticIntermediateDataMapper
-import org.bson.Document
+import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
+import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateDataMapper
 import java.util.concurrent.Executors
 
 fun main() = runBlocking {
@@ -91,7 +90,7 @@ fun main() = runBlocking {
 	val calendarService = MongoCalendarService(mongoDB)
 	val intermediateDataMapperRegistry = IntermediateDataMapperRegistry()
 	intermediateDataMapperRegistry[BsonIntermediateData::class] = BsonIntermediateDataMapper(codecRegistry)
-	intermediateDataMapperRegistry[StaticIntermediateData::class] = StaticIntermediateDataMapper
+	intermediateDataMapperRegistry[SimpleIntermediateData::class] = SimpleIntermediateDataMapper
 
 	NodeHandlerContributorLookup.executeContributors(nodeRegistry) { descriptor ->
 		NodeHandlerContext(
