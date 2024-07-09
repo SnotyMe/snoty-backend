@@ -1,10 +1,10 @@
 package me.snoty.backend.integration.flow
 
 import me.snoty.backend.integration.config.flow.NodeId
+import me.snoty.backend.utils.orNull
 import me.snoty.integration.common.wiring.RelationalFlowNode
 import me.snoty.integration.common.wiring.graph.Graph
 import me.snoty.integration.common.wiring.graph.GraphNode
-import me.snoty.backend.utils.orNull
 import me.snoty.integration.common.wiring.toRelational
 
 interface FlowBuilder {
@@ -25,8 +25,7 @@ object FlowBuilderImpl : FlowBuilder {
 		val rootNext  = graph.rootNext.mapNotNull { involvedNodes[it] }
 
 		return rootNext.map {
-			// start with `graph.rootNext` to avoid circling back to `next` of `root`
-			createFlowNode(it, involvedNodes, rootNext)
+			createFlowNode(it, involvedNodes, visitedNodes = listOf(it))
 		}
 	}
 

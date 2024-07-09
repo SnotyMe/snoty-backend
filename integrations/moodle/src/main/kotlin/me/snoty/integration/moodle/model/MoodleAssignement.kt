@@ -2,8 +2,8 @@ package me.snoty.integration.moodle.model
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toKotlinInstant
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import me.snoty.integration.common.diff.Fields
 import me.snoty.integration.common.diff.UpdatableEntity
 import me.snoty.integration.moodle.model.raw.MoodleEvent
@@ -17,7 +17,7 @@ data class MoodleAssignment(
 ) : UpdatableEntity<Long>() {
 	override val type: String = TYPE
 
-	@Contextual
+	@Transient
 	override val fields: Fields = buildDocument {
 		put("name", name)
 		put("due", due)

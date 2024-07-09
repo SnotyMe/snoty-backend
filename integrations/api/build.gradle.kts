@@ -23,7 +23,7 @@ dependencies {
     api(libraries.jackson.kotlin)
     api(libraries.bson.kotlinx)
 
-    testImplementation(kotlin("test"))
+	testImplementation(kotlin("test"))
     testImplementation(tests.mockk)
 }
 

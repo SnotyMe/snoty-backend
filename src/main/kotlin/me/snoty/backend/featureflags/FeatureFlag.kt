@@ -38,6 +38,6 @@ open class EnumFeatureFlag<E : Enum<E>>(
 
 class LogLevelFeatureFlag(
 	name: String,
-	val loggerName: String,
-	defaultValue: Level
+	defaultValue: Level,
+	vararg val loggers: String
 ) : EnumFeatureFlag<Level>(name, defaultValue, Level::class)

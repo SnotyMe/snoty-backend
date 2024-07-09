@@ -16,7 +16,9 @@
     </root>
 
     <logger name="me.snoty.backend.featureflags.FeatureFlagsSetup" level="INFO"/>
-    <logger name="org.eclipse.jetty" level="${SERVER_LOG_LEVEL:-WARN}"/>
+
+    <logger name="io.ktor.client" level="${CLIENT_LOG_LEVEL:-WARN}"/>
+    <logger name="io.ktor.server" level="${SERVER_LOG_LEVEL:-WARN}"/>
     <logger name="io.netty" level="${SERVER_LOG_LEVEL:-WARN}"/>
 
     <logger name="org.jobrunr" level="INFO"/>

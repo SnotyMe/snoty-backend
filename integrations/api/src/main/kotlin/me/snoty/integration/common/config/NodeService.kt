@@ -26,9 +26,12 @@ interface NodeService {
 	 * Connects two nodes together
 	 */
 	suspend fun connect(from: NodeId, to: NodeId): ServiceResult
+
+	suspend fun updateSettings(id: NodeId, settings: NodeSettings): ServiceResult
 }
 
 object NodeServiceResults {
-	class NodeNotFoundError(val id: NodeId) : ServiceResult(HttpStatusCode.NotFound, "Node with ID $id not found")
+	class NodeNotFoundError(id: NodeId) : ServiceResult(HttpStatusCode.NotFound, "Node with ID $id not found")
 	class NodeConnected(from: NodeId, to: NodeId) : ServiceResult(HttpStatusCode.OK, "Connected $from to $to")
+	class NodeSettingsUpdated(id: NodeId) : ServiceResult(HttpStatusCode.OK, "Settings for node $id updated")
 }

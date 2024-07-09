@@ -1,7 +1,7 @@
 package me.snoty.integration.untis.model
 
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import me.snoty.integration.common.diff.Fields
 import me.snoty.integration.common.diff.UpdatableEntity
 
@@ -46,7 +46,7 @@ data class UntisExam(
 		fields["endDateTime"] = UntisDateTime.fromDate(fields.getDate("endDateTime"))
 	}
 
-	@Contextual
+	@Transient
 	override val fields: Fields = buildDocument {
 		put("examType", examType)
 		put("startDateTime", startDateTime)

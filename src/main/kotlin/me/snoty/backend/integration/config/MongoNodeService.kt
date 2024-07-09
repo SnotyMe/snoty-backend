@@ -91,4 +91,15 @@ class MongoNodeService(
 
 		return NodeServiceResults.NodeConnected(from, to)
 	}
+
+	override suspend fun updateSettings(id: NodeId, settings: NodeSettings): ServiceResult {
+		val result = collection.updateOne(
+			Filters.eq(GraphNode::_id.name, id),
+			Updates.set(GraphNode::config.name, collection.codecRegistry.encode(settings))
+		)
+		return when {
+			result.matchedCount == 0L -> NodeServiceResults.NodeNotFoundError(id)
+			else -> NodeServiceResults.NodeSettingsUpdated(id)
+		}
+	}
 }
