@@ -2,7 +2,7 @@ package me.snoty.backend.wiring.node
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import me.snoty.backend.integration.flow.node.NodeRegistryImpl
-import me.snoty.integration.common.NodeContextBuilder
+import me.snoty.integration.common.wiring.NodeContextBuilder
 import me.snoty.integration.common.wiring.node.NodeHandlerContributor
 import java.util.*
 

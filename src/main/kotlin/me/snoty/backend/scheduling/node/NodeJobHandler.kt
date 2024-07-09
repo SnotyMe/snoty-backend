@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 import me.snoty.backend.scheduling.JobRequestHandler
 import me.snoty.integration.common.config.NodeService
+import me.snoty.integration.common.wiring.data.impl.StaticIntermediateData
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import org.jobrunr.jobs.context.JobRunrDashboardLogger
@@ -34,7 +35,7 @@ class NodeJobHandler(
 			}
 
 			logger.debug("Processing flow for node {}", node.descriptor)
-			flowService.runFlow(jobContext.jobId.toString(), logger, node, jobContext)
+			flowService.runFlow(jobContext.jobId.toString(), logger, node, StaticIntermediateData(jobContext))
 				.collect()
 		}
 	}

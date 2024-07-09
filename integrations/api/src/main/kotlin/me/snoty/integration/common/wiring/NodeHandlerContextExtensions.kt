@@ -1,10 +1,11 @@
-package me.snoty.integration.common
+package me.snoty.integration.common.wiring
 
 import io.ktor.client.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.opentelemetry.instrumentation.ktor.v3_0.client.KtorClientTracing
+import me.snoty.integration.common.SnotyJson
 
 /**
  * Provides an opinionated Ktor [HttpClient].
@@ -22,5 +23,7 @@ fun NodeHandlerContext.httpClient(block: HttpClientConfig<*>.() -> Unit = {}) = 
 	install(ContentNegotiation) {
 		json(SnotyJson)
 	}
+	// IMPORTANT: this may be changed by the user if failures are expected and handled explicitly
+	expectSuccess = true
 	block()
 }

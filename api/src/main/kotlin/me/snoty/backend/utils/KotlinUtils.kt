@@ -1,17 +1,29 @@
 package me.snoty.backend.utils
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.transform
 
 fun <T, C : Collection<T>> C.orNull() = ifEmpty { null }
-
-inline fun <T> T.contextual(block: T.() -> Unit) {
-	block()
-}
 
 fun <T, R> Flow<T>.listAsElements(block: suspend (T) -> Collection<R>): Flow<R> = this.transform { item ->
 	val result = block(item)
 	result.forEach {
 		emit(it)
 	}
+}
+
+fun <C, T> flowWith(context: C, block: suspend context(C) FlowCollector<T>.() -> Unit): Flow<T> =
+	flow {
+		block(context, this)
+	}
+
+/**
+ * Executes the given block and returns its result or null if an exception occurred.
+ */
+fun <T, R> T.letOrNull(block: (T) -> R): R? = try {
+	block(this)
+} catch (e: Exception) {
+	null
 }
