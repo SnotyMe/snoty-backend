@@ -4,6 +4,16 @@ import io.mockk.mockk
 import kotlinx.datetime.Clock
 import me.snoty.backend.build.BuildInfo
 import me.snoty.backend.config.*
+import me.snoty.backend.database.mongo.apiCodecModule
+import me.snoty.integration.common.utils.integrationsApiCodecModule
+import me.snoty.integration.common.wiring.NodeHandlerContext
+import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
+import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
+import me.snoty.integration.common.wiring.data.impl.BsonIntermediateDataMapper
+import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
+import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateDataMapper
+import org.bson.codecs.configuration.CodecRegistries
+import org.bson.codecs.configuration.CodecRegistry
 
 val TestConfig = Config(
 	port = 8080,
@@ -53,4 +63,23 @@ val TestBuildInfo = BuildInfo(
 	buildDate = Clock.System.now(),
 	version = "<test>",
 	application = "snoty-backend"
+)
+
+val TestCodecRegistry: CodecRegistry = CodecRegistries.fromRegistries(
+	integrationsApiCodecModule(),
+	apiCodecModule()
+)
+
+val MockNodeHandlerContext = NodeHandlerContext(
+	entityStateService = mockk(),
+	nodeService = mockk(),
+	flowService = mockk(),
+	codecRegistry = mockk(),
+	calendarService = mockk(),
+	intermediateDataMapperRegistry = IntermediateDataMapperRegistry().apply {
+		this[BsonIntermediateData::class] = BsonIntermediateDataMapper(TestCodecRegistry)
+		this[SimpleIntermediateData::class] = SimpleIntermediateDataMapper
+	},
+	scheduler = mockk(),
+	openTelemetry = mockk()
 )

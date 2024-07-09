@@ -11,19 +11,17 @@ import me.snoty.backend.observability.JOB_ID
 import me.snoty.backend.test.*
 import me.snoty.integration.common.wiring.RelationalFlowNode
 import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.data.impl.StaticIntermediateData
+import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
 import me.snoty.integration.common.wiring.flow.FlowLogEntry
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.Subsystem
 import org.bson.Document
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.slf4j.LoggerFactory
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
-@Disabled("mocking failure")
 class FlowRunnerImplTest {
 	private val mapHandler = GlobalMapHandler()
 	private val nodeRegistry = NodeRegistryImpl().apply {
@@ -49,7 +47,7 @@ class FlowRunnerImplTest {
 	}
 
 	private val intermediateDataRaw = "test"
-	private val intermediateData = StaticIntermediateData(intermediateDataRaw)
+	private val intermediateData = SimpleIntermediateData(intermediateDataRaw)
 
 	@Test
 	fun `test basic`(): Unit = runBlocking {
@@ -94,7 +92,7 @@ class FlowRunnerImplTest {
 		suspend fun verifyTrace(flow: RelationalFlowNode, input: IntermediateData, withConfig: Boolean) {
 			val output = runner.execute("traces config attribute", flow, input).toList()
 			assertNoWarnings(output)
-			assertEquals(input, mapHandler[flow._id])
+			assertEquals(input.value, mapHandler[flow._id])
 			val spans = tracerExporter.exporter.finishedSpanItems
 
 			assertEquals(2, spans.size)
