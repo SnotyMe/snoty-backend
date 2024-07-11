@@ -184,14 +184,17 @@ dependencies {
         }
 }
 
+if (isDevelopment) {
+    tasks.run.configure {
+        classpath += devSourceSet.output
+    }
+}
+
 application {
     mainClass.set("me.snoty.backend.ApplicationKt")
 
     if (isDevelopment) {
         applicationDefaultJvmArgs += "-Dio.ktor.development=$isDevelopment"
-        tasks.run.configure {
-            classpath += devSourceSet.output
-        }
     }
 }
 
