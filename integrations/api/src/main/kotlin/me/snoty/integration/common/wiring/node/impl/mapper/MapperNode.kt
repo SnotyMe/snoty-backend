@@ -1,4 +1,4 @@
-package me.snoty.integration.common.wiring.node.impl
+package me.snoty.integration.common.wiring.node.impl.mapper
 
 import kotlinx.serialization.Serializable
 import me.snoty.integration.common.wiring.*
@@ -21,18 +21,12 @@ class MapperNodeHandler(override val nodeHandlerContext: NodeHandlerContext) : N
 
 	context(NodeHandlerContext, EmitNodeOutputContext)
 	override suspend fun process(logger: Logger, node: IFlowNode, input: IntermediateData) {
-		val config: MapperSettings = node.getConfig()
+		val settings: MapperSettings = node.getConfig()
 		val data: Document = input.get()
+		val engine = MapperEngines.get(settings)
+			?: throw IllegalStateException("Engine not found!")
 
-		val mappedData = Document()
-		// TODO: templating engine
-		config.fields.forEach { (key, value) ->
-			var result = value
-			for (field in data) {
-				result = result.replace("%${field.key}%", field.value.toString())
-			}
-			mappedData[key] = result
-		}
+		val mappedData = engine(settings, data)
 
 		structOutput {
 			mappedData
