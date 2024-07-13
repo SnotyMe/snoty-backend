@@ -56,7 +56,7 @@ class KeycloakConfigurer(private var realmsResource: RealmsResource, private var
 					secret = randomString(64)
 					isDirectAccessGrantsEnabled = true
 					isServiceAccountsEnabled = true
-					redirectUris = listOf("http://localhost:8080/*", *extraRedirectUris)
+					redirectUris = listOf("http://localhost:8080/*", "http://localhost:5173/*", *extraRedirectUris)
 					clientsResource.create(this)
 					logger.info { "Created client 'snoty'" }
 				}
