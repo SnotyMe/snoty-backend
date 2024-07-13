@@ -46,7 +46,7 @@ class AuthenticationTest {
 
 	@Test
 	fun `test unauthorized`() = ktorApplicationTest(config = config) {
-		client.get("/userInfo").apply {
+		client.get("/auth/userInfo").apply {
 			assertEquals(HttpStatusCode.Unauthorized, status)
 			assertThat(bodyAsText())
 				.isNotEmpty()
@@ -65,7 +65,7 @@ class AuthenticationTest {
 				email = email
 			)
 
-		client.get("/userInfo") {
+		client.get("/auth/userInfo") {
 			header("Authorization", "Bearer ${user.accessToken}")
 		}.apply {
 			assertEquals(HttpStatusCode.OK, status)
