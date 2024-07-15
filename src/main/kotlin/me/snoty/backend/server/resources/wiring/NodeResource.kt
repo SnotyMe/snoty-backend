@@ -7,30 +7,35 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.serializerOrNull
+import me.snoty.backend.errors.ServiceResult
+import me.snoty.backend.injection.ServicesContainer
+import me.snoty.backend.injection.get
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.server.plugins.void
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.letOrNull
 import me.snoty.backend.utils.respondServiceResult
-import me.snoty.integration.common.SnotyJson
 import me.snoty.integration.common.config.NodeService
-import me.snoty.integration.common.wiring.IFlowNode
+import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.NodeSettings
 
+context(ServicesContainer)
 @OptIn(InternalSerializationApi::class)
-fun Route.nodeResource(nodeRegistry: NodeRegistry, nodeService: NodeService) {
+fun Route.nodeResource(json: Json) {
+	val nodeRegistry = get<NodeRegistry>()
+	val nodeService = get<NodeService>()
 	suspend fun deserializeSettings(call: ApplicationCall, descriptor: NodeDescriptor, settingsJson: JsonElement): NodeSettings? {
 		val handler = nodeRegistry.lookupHandler(descriptor)
 			?: return void { call.noHandlerFound(descriptor) }
 		val serializer = handler.settingsClass.serializerOrNull()
 			?: return void { call.noSerializerFound(handler) }
-		val settingsObj = SnotyJson.decodeFromJsonElement(serializer, settingsJson)
-		return settingsObj
+		return json.decodeFromJsonElement(serializer, settingsJson)
 	}
 
 	get("list") {
@@ -52,13 +57,14 @@ fun Route.nodeResource(nodeRegistry: NodeRegistry, nodeService: NodeService) {
 
 		call.respondText(status = HttpStatusCode.Created, text = id.toString())
 	}
-	put("connect") {
+
+	@Serializable
+	data class ConnectionRequest(val from: NodeId, val to: NodeId)
+
+	fun connectionRoute(name: String, action: suspend NodeService.(from: NodeId, to: NodeId) -> ServiceResult) = put(name) {
 		val user = call.getUser()
 
-		@Serializable
-		data class ConnectRequest(val from: NodeId, val to: NodeId)
-
-		val (from, to) = call.receive<ConnectRequest>()
+		val (from, to) = call.receive<ConnectionRequest>()
 		val fromNode = nodeService.get(from)
 		if (fromNode?.userId != user.id) {
 			return@put call.nodeNotFound(fromNode)
@@ -67,10 +73,14 @@ fun Route.nodeResource(nodeRegistry: NodeRegistry, nodeService: NodeService) {
 		if (toNode?.userId != user.id) {
 			return@put call.nodeNotFound(toNode)
 		}
-		val result = nodeService.connect(from, to)
+		val result = nodeService.action(from, to)
 
 		call.respondServiceResult(result)
 	}
+
+	connectionRoute("connect", NodeService::connect)
+	connectionRoute("disconnect", NodeService::disconnect)
+
 	put("{id}") {
 		val user = call.getUser()
 
@@ -90,13 +100,13 @@ fun Route.nodeResource(nodeRegistry: NodeRegistry, nodeService: NodeService) {
 	}
 }
 
-private suspend fun ApplicationCall.noHandlerFound(descriptor: NodeDescriptor)
+suspend fun ApplicationCall.noHandlerFound(descriptor: NodeDescriptor)
 	= respond(HttpStatusCode.BadRequest, "No handler found for $descriptor")
 
-private suspend fun ApplicationCall.noSerializerFound(handler: NodeHandler)
+suspend fun ApplicationCall.noSerializerFound(handler: NodeHandler)
 	= respond(HttpStatusCode.BadRequest, "No serializer found for ${handler.settingsClass}")
 
-suspend fun ApplicationCall.nodeNotFound(node: IFlowNode?) = nodeNotFound(node?._id)
+suspend fun ApplicationCall.nodeNotFound(node: Node?) = nodeNotFound(node?._id)
 suspend fun ApplicationCall.nodeNotFound(id: NodeId?) {
 	val message = when {
 		id != null -> "Node $id not found"

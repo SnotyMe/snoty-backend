@@ -27,7 +27,7 @@ class DiscordNodeHandler(
 	override val settingsClass: KClass<out NodeSettings> = DiscordSettings::class
 
 	context(NodeHandlerContext, EmitNodeOutputContext)
-	override suspend fun process(logger: Logger, node: IFlowNode, input: IntermediateData) {
+	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
 		val config: DiscordSettings = node.getConfig()
 		val data: DiscordWebhook.Message = input.get()
 

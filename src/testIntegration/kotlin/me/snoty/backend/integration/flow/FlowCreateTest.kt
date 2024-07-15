@@ -6,6 +6,7 @@ import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.Subsystem
 import me.snoty.integration.common.wiring.graph.Graph
 import me.snoty.integration.common.wiring.graph.GraphNode
+import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import org.bson.Document
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -16,7 +17,13 @@ class FlowCreateTest : AbstractFlowFetchTest<FlowCreateTest.FlowTestContextImpl>
 	data class FlowTestContextImpl(
 		override var flow: List<RelationalFlowNode>? = null
 	) : FlowTestContext {
-		fun createFlowFromGraph(graph: Graph) = FlowBuilderImpl.createFlowFromGraph(graph).toList()
+		fun createFlowFromGraph(graph: Graph): List<RelationalFlowNode> {
+			return flowBuilderImpl.createFlowFromGraph(graph).toList()
+		}
+
+		companion object {
+			val flowBuilderImpl = FlowBuilderImpl { EmptyNodeSettings() }
+		}
 	}
 
 	@Test

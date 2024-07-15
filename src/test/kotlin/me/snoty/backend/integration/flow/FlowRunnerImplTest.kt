@@ -6,16 +6,22 @@ import io.opentelemetry.semconv.ExceptionAttributes
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.plus
+import kotlinx.serialization.modules.polymorphic
 import me.snoty.backend.integration.flow.node.NodeRegistryImpl
 import me.snoty.backend.observability.JOB_ID
 import me.snoty.backend.test.*
+import me.snoty.integration.common.snotyJson
 import me.snoty.integration.common.wiring.RelationalFlowNode
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
 import me.snoty.integration.common.wiring.flow.FlowLogEntry
 import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.integration.common.wiring.node.Subsystem
-import org.bson.Document
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -23,6 +29,16 @@ import org.slf4j.LoggerFactory
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class FlowRunnerImplTest {
+	@Serializable
+	data class TestNodeSettings(val test: String) : NodeSettings
+	val json = snotyJson {
+		serializersModule += SerializersModule {
+			polymorphic(NodeSettings::class) {
+				subclass(TestNodeSettings::class, TestNodeSettings.serializer())
+			}
+		}
+	}
+
 	private val mapHandler = GlobalMapHandler()
 	private val nodeRegistry = NodeRegistryImpl().apply {
 		registerHandler(NodeDescriptor(Subsystem.PROCESSOR, TYPE_MAP), mapHandler)
@@ -31,10 +47,11 @@ class FlowRunnerImplTest {
 	}
 	private val tracerExporter = createTestTracer(FlowRunnerImpl::class)
 	private val flagsProvider = testFeatureFlags()
-	private val runner = FlowRunnerImpl(nodeRegistry, flagsProvider.flags, tracerExporter.tracer)
+	private val runner = FlowRunnerImpl(nodeRegistry, flagsProvider.flags, tracerExporter.tracer).apply {
+		json = this@FlowRunnerImplTest.json
+	}
 
-	private fun FlowRunnerImpl.execute(jobId: String, flow: RelationalFlowNode, input: IntermediateData)
-		= execute(jobId, LoggerFactory.getLogger(this::class.java), flow, input)
+	private fun FlowRunnerImpl.execute(jobId: String, flow: RelationalFlowNode, input: IntermediateData) = execute(jobId, LoggerFactory.getLogger(this::class.java), flow, input)
 
 	private fun assertNoWarnings(output: List<FlowLogEntry>) {
 		if (output.isNotEmpty()) {
@@ -86,8 +103,8 @@ class FlowRunnerImplTest {
 
 	@Test
 	fun `test traces config attribute`() = runBlocking {
-		val config = Document("key", "value")
-		val flow = relationalFlow(NodeDescriptor(Subsystem.PROCESSOR, TYPE_MAP), config = config)
+		val config = TestNodeSettings("test")
+		val flow = relationalFlow(NodeDescriptor(Subsystem.PROCESSOR, TYPE_MAP), settings = config)
 
 		suspend fun verifyTrace(flow: RelationalFlowNode, input: IntermediateData, withConfig: Boolean) {
 			val output = runner.execute("traces config attribute", flow, input).toList()
@@ -103,7 +120,7 @@ class FlowRunnerImplTest {
 			val configAttribute = spans[0].attributes.get(AttributeKey.stringKey("config"))
 			if (withConfig) {
 				assertNotNull(configAttribute)
-				assertEquals(configAttribute, flow.config.toJson())
+				assertEquals(configAttribute, json.encodeToString(flow.settings))
 			} else {
 				assertNull(configAttribute)
 			}

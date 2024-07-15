@@ -5,6 +5,8 @@ import io.opentelemetry.api.trace.SpanBuilder
 import io.opentelemetry.api.trace.Tracer
 import io.opentelemetry.extension.kotlin.asContextElement
 import kotlinx.coroutines.flow.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import me.snoty.backend.featureflags.FeatureFlags
 import me.snoty.backend.observability.*
 import me.snoty.backend.utils.flowWith
@@ -19,8 +21,10 @@ import org.slf4j.Logger
 class FlowRunnerImpl(
 	private val nodeRegistry: NodeRegistry,
 	private val featureFlags: FeatureFlags,
-	private val tracer: Tracer
+	private val tracer: Tracer,
 ) : FlowRunner {
+	lateinit var json: Json
+
 	override fun execute(jobId: String, logger: Logger, node: RelationalFlowNode, input: IntermediateData): Flow<FlowLogEntry> {
 		val rootSpan = tracer.spanBuilder("Flow starting with ${traceName(node)}")
 			.setNodeAttributes(node = node, input = null, rootNode = true)
@@ -88,7 +92,7 @@ class FlowRunnerImpl(
 		setAttribute(USER_ID, node.userId)
 		if (!rootNode) {
 			if (featureFlags.get(featureFlags.flow_traceConfig)) {
-				setAttribute("config", node.config)
+				setAttribute("config", json.encodeToString(node.settings))
 			}
 			if (input != null && featureFlags.get(featureFlags.flow_traceInput)) {
 				setAttribute("input", input.toString())

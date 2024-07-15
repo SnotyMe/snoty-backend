@@ -20,7 +20,7 @@ class MapperNodeHandler(override val nodeHandlerContext: NodeHandlerContext) : N
 	override val position: NodePosition = NodePosition.MIDDLE
 
 	context(NodeHandlerContext, EmitNodeOutputContext)
-	override suspend fun process(logger: Logger, node: IFlowNode, input: IntermediateData) {
+	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
 		val settings: MapperSettings = node.getConfig()
 		val data: Document = input.get()
 		val engine = MapperEngines.get(settings)
