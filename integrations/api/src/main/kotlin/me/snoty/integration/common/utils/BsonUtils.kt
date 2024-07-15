@@ -7,6 +7,8 @@ import me.snoty.integration.common.diff.Change
 import me.snoty.integration.common.diff.ChangeCodec
 import me.snoty.integration.common.diff.DiffResult
 import me.snoty.integration.common.diff.DiffResultCodec
+import me.snoty.integration.common.wiring.node.EmptyNodeSettings
+import me.snoty.integration.common.wiring.node.EmptyNodeSettingsCodec
 import org.bson.codecs.Codec
 import org.bson.codecs.configuration.CodecProvider
 import org.bson.codecs.configuration.CodecRegistries
@@ -17,10 +19,11 @@ fun integrationsApiCodecModule(): CodecRegistry =
 	CodecRegistries.fromProviders(object : CodecProvider {
 		override fun <T : Any> get(clazz: Class<T>, registry: CodecRegistry): Codec<T>? {
 			return when (clazz) {
-				Change::class.java -> ChangeCodec(registry) as Codec<T>
-				DiffResult::class.java -> DiffResultCodec(registry) as Codec<T>
+				Change::class.java -> ChangeCodec(registry)
+				DiffResult::class.java -> DiffResultCodec(registry)
+				EmptyNodeSettings::class.java -> EmptyNodeSettingsCodec
 				else -> null
-			}
+			} as? Codec<T>
 		}
 	})
 

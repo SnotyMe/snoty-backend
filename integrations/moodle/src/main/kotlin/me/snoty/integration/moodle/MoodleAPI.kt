@@ -9,7 +9,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.reflect.*
-import me.snoty.integration.common.SnotyJson
+import me.snoty.integration.common.BaseSnotyJson
 import me.snoty.integration.moodle.param.MoodleParam
 import org.apache.http.client.utils.URIBuilder
 import java.net.URI
@@ -32,7 +32,7 @@ class MoodleAPIImpl(client: HttpClient? = null) : MoodleAPI {
 	private val logger = KotlinLogging.logger {}
 	private val httpClient = client ?: HttpClient(Apache) {
 		install(ContentNegotiation) {
-			json(SnotyJson)
+			json(BaseSnotyJson)
 		}
 	}
 

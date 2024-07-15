@@ -9,7 +9,9 @@ import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.Subsystem
 import me.snoty.integration.common.wiring.graph.GraphNode
 import me.snoty.backend.test.MongoTest
-import me.snoty.integration.common.wiring.StandaloneFlowNode
+import me.snoty.backend.test.TestFlowBuilder
+import me.snoty.integration.common.wiring.StandaloneNode
+import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import org.bson.Document
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -23,10 +25,10 @@ class MongoFlowServiceTest : AbstractFlowFetchTest<MongoFlowServiceTest.FlowTest
 	private val USER_ID = UUID.randomUUID()
 
 	private val mongoDB = MongoTest.getMongoDatabase {}
-	private val service = object : MongoFlowService(mongoDB, mockk()) {
+	private val service = object : MongoFlowService(mongoDB, TestFlowBuilder, mockk()) {
 		context(FlowTestContext)
 		fun getFlowForNode_test(node: GraphNode) = runBlocking {
-			val flow = getFlowForNode(StandaloneFlowNode(node._id, USER_ID, node.descriptor, node.config)).toList()
+			val flow = getFlowForNode(StandaloneNode(node._id, USER_ID, node.descriptor, EmptyNodeSettings())).toList()
 			this@FlowTestContext.flow = flow
 			flow
 		}

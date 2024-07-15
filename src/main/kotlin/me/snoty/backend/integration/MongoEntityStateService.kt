@@ -11,7 +11,7 @@ import me.snoty.integration.common.diff.state.EntityState
 import me.snoty.integration.common.diff.state.EntityStateCollection
 import me.snoty.integration.common.diff.state.NodeEntityStates
 import me.snoty.integration.common.diff.state.updateStates
-import me.snoty.integration.common.wiring.IFlowNode
+import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -31,7 +31,7 @@ class MongoEntityStateService(
 	}
 
 	override suspend fun updateStates(
-		node: IFlowNode,
+		node: Node,
 		entities: List<IUpdatableEntity<out Any>>
 	) {
 		if (entities.isEmpty()) return
@@ -67,7 +67,7 @@ class MongoEntityStateService(
 		nodeEntityStates.updateStates(node, entities)
 	}
 
-	override fun getStates(node: IFlowNode): Flow<EntityState>
+	override fun getStates(node: Node): Flow<EntityState>
 		= nodeEntityStates.find<NodeEntityStates>(
 				Filters.eq(node._id)
 			)

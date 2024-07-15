@@ -121,6 +121,7 @@ dependencies {
     implementation(ktor.server.netty)
 
     // ktor plugins
+    implementation(ktor.server.cors)
     implementation(ktor.server.call.logging)
     implementation(ktor.server.call.id)
     implementation(ktor.server.forwardedHeader)

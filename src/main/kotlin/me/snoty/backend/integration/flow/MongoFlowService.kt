@@ -10,9 +10,8 @@ import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.map
 import me.snoty.backend.database.mongo.Aggregations.project
 import me.snoty.backend.database.mongo.aggregate
-import me.snoty.backend.integration.flow.FlowBuilderImpl.createFlowFromGraph
 import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.IFlowNode
+import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.RelationalFlowNode
 import me.snoty.integration.common.wiring.flow.FLOW_COLLECTION_NAME
 import me.snoty.integration.common.wiring.flow.FlowLogEntry
@@ -25,11 +24,12 @@ import org.slf4j.Logger
 
 open class MongoFlowService(
 	db: MongoDatabase,
+	private val builder: FlowBuilder,
 	private val runner: FlowRunner
 ) : FlowService {
 	protected val collection = db.getCollection<GraphNode>(FLOW_COLLECTION_NAME)
 
-	override fun getFlowForNode(node: IFlowNode): Flow<RelationalFlowNode> {
+	override fun getFlowForNode(node: Node): Flow<RelationalFlowNode> {
 		return collection.aggregate<Graph>(
 			match(Filters.eq(GraphNode::_id.name, node._id)),
 			graphLookup(
@@ -44,13 +44,12 @@ open class MongoFlowService(
 				Projections.include(Graph::involvedNodes.name)
 			)
 		).map { graph ->
-			val next = createFlowFromGraph(graph)
-			val relationalNode = node.toRelational(next)
-			relationalNode
+			val next = builder.createFlowFromGraph(graph)
+			node.toRelational(next)
 		}
 	}
 
-	override fun runFlow(jobId: String, logger: Logger, node: IFlowNode, input: IntermediateData): Flow<FlowLogEntry>
+	override fun runFlow(jobId: String, logger: Logger, node: Node, input: IntermediateData): Flow<FlowLogEntry>
 		= getFlowForNode(node)
 			.flatMapMerge {
 				logger.debug("Processing node {} with input {}", visualizeFlow(listOf(it)), input)
