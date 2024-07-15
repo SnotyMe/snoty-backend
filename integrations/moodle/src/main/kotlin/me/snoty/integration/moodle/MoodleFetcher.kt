@@ -22,7 +22,7 @@ open class MoodleFetcher(
 
 	context(NodeHandlerContext, FetchContext)
 	private suspend fun fetchAssignments(
-		node: IFlowNode,
+		node: Node,
 	): List<MoodleAssignment> {
 		val moodleSettings = node.getConfig<MoodleSettings>()
 
@@ -40,7 +40,7 @@ open class MoodleFetcher(
 	}
 
 	context(NodeHandlerContext, EmitNodeOutputContext)
-	override suspend fun process(logger: Logger, node: IFlowNode, input: IntermediateData) {
+	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
 		val jobContext: JobContext = input.get()
 		val fetchContext = progress(jobContext, 1)
 

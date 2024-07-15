@@ -86,6 +86,7 @@ dependencyResolutionManagement {
 			ktorServerPlugin("core")
 			ktorServerPlugin("netty")
 
+			ktorServerPlugin("cors")
 			ktorServerPlugin("call-logging", hierarchy = true)
 			ktorServerPlugin("call-id", hierarchy = true)
 			ktorServerPlugin("forwarded-header")

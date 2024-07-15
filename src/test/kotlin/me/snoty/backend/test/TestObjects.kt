@@ -1,10 +1,13 @@
 package me.snoty.backend.test
 
 import io.mockk.mockk
+import io.mockk.mockkClass
 import kotlinx.datetime.Clock
 import me.snoty.backend.build.BuildInfo
 import me.snoty.backend.config.*
 import me.snoty.backend.database.mongo.apiCodecModule
+import me.snoty.backend.injection.ServicesContainer
+import me.snoty.backend.integration.flow.FlowBuilderImpl
 import me.snoty.integration.common.utils.integrationsApiCodecModule
 import me.snoty.integration.common.wiring.NodeHandlerContext
 import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
@@ -12,8 +15,10 @@ import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
 import me.snoty.integration.common.wiring.data.impl.BsonIntermediateDataMapper
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateDataMapper
+import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.configuration.CodecRegistry
+import kotlin.reflect.KClass
 
 val TestConfig = Config(
 	port = 8080,
@@ -83,3 +88,14 @@ val MockNodeHandlerContext = NodeHandlerContext(
 	scheduler = mockk(),
 	openTelemetry = mockk()
 )
+
+val TestFlowBuilder = FlowBuilderImpl {
+	EmptyNodeSettings()
+}
+
+val MockServicesContainer = object : ServicesContainer {
+	override fun <T : Any> register(clazz: KClass<T>, instance: T) = throw UnsupportedOperationException()
+	override fun <T : Any> register(instance: T) = throw UnsupportedOperationException()
+
+	override fun <T : Any> get(clazz: KClass<T>): T = mockkClass(clazz)
+}

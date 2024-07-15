@@ -1,7 +1,7 @@
 package me.snoty.backend.test
 
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.integration.common.wiring.IFlowNode
+import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandlerContext
 import me.snoty.integration.common.wiring.data.EmitNodeOutputContext
 import me.snoty.integration.common.wiring.data.IntermediateData
@@ -24,7 +24,7 @@ object NoOpNodeHandler : TestNodeHandler() {
 	override val position = NodePosition.END
 
 	context(NodeHandlerContext, EmitNodeOutputContext)
-	override suspend fun process(logger: Logger, node: IFlowNode, input: IntermediateData) {
+	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
 		simpleOutput {
 			input.value
 		}
@@ -39,7 +39,7 @@ object QuoteHandler : TestNodeHandler() {
 	override val position = NodePosition.MIDDLE
 
 	context(NodeHandlerContext, EmitNodeOutputContext)
-	override suspend fun process(logger: Logger, node: IFlowNode, input: IntermediateData) {
+	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
 		simpleOutput {
 			"'${input.value}'"
 		}
@@ -52,7 +52,7 @@ object ExceptionHandler : TestNodeHandler() {
 	val exception = IllegalStateException("This is an exception")
 
 	context(NodeHandlerContext, EmitNodeOutputContext)
-	override suspend fun process(logger: Logger, node: IFlowNode, input: IntermediateData) {
+	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
 		throw exception
 	}
 }
@@ -63,7 +63,7 @@ class GlobalMapHandler(
 	override val position = NodePosition.END
 
 	context(NodeHandlerContext, EmitNodeOutputContext)
-	override suspend fun process(logger: Logger, node: IFlowNode, input: IntermediateData) {
+	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
 		map[node._id] = input.value
 		simpleOutput {
 			input.value

@@ -1,54 +1,67 @@
 package me.snoty.integration.common.wiring
 
-import me.snoty.backend.database.mongo.decode
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.integration.common.wiring.graph.GraphNode
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
-import org.bson.Document
-import org.bson.codecs.configuration.CodecRegistry
 import java.util.*
 
-interface IFlowNode {
+/**
+ * Node interface without any specifics regarding settings.
+ * No relations are guaranteed.
+ */
+interface GenericNode {
 	val _id: NodeId
 	val userId: UUID
 	val descriptor: NodeDescriptor
-	val config: Document
-}
-
-fun IFlowNode.toRelational(next: List<RelationalFlowNode>): RelationalFlowNode {
-	return when (this) {
-		is RelationalFlowNode -> this
-		is StandaloneFlowNode, is GraphNode -> RelationalFlowNode(_id, userId, descriptor, config, next)
-		else -> throw IllegalArgumentException("Unknown flow node type: $this")
-	}
 }
 
 /**
- * High-level representation of a flow node.
+ * Node interface with already serialized NodeSettings
+ */
+interface Node : GenericNode {
+	val settings: NodeSettings
+}
+
+/**
+ * High-level representation of a node in the context of a flow.
  * Contains a list of the next nodes in the flow.
  */
+@Serializable
 data class RelationalFlowNode(
 	override val _id: NodeId,
+	@Contextual
 	override val userId: UUID,
 	override val descriptor: NodeDescriptor,
-	override val config: Document,
+	override val settings: NodeSettings,
 	val next: List<RelationalFlowNode> = emptyList()
-) : IFlowNode
+) : Node
 
-data class StandaloneFlowNode(
+fun Node.toRelational(next: List<RelationalFlowNode>) = RelationalFlowNode(
+	_id = _id,
+	userId = userId,
+	descriptor = descriptor,
+	settings = settings,
+	next = next
+)
+
+@Serializable
+data class StandaloneNode(
 	override val _id: NodeId,
+	@Contextual
 	override val userId: UUID,
 	override val descriptor: NodeDescriptor,
-	override val config: Document,
-) : IFlowNode
+	@Contextual
+	override val settings: NodeSettings,
+) : Node
 
-context(NodeHandler, CodecRegistryContext)
-inline fun <reified T : NodeSettings> IFlowNode.getConfig(): T {
+context(NodeHandler)
+inline fun <reified T : NodeSettings> Node.getConfig(): T {
 	val nodeHandler = this@NodeHandler
 	require(nodeHandler.settingsClass == T::class) {
 		"Expected settings class ${nodeHandler.settingsClass}, got ${T::class}"
 	}
-	return codecRegistry.decode(T::class, config)
+	return settings as T
 }

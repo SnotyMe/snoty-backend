@@ -1,11 +1,12 @@
 package me.snoty.backend.integration.flow
 
 import me.snoty.backend.integration.config.flow.NodeId
+import me.snoty.backend.integration.utils.SettingsLookup
 import me.snoty.backend.utils.orNull
 import me.snoty.integration.common.wiring.RelationalFlowNode
 import me.snoty.integration.common.wiring.graph.Graph
 import me.snoty.integration.common.wiring.graph.GraphNode
-import me.snoty.integration.common.wiring.toRelational
+import me.snoty.integration.common.wiring.graph.toRelational
 
 interface FlowBuilder {
 	/**
@@ -15,7 +16,7 @@ interface FlowBuilder {
 	fun createFlowFromGraph(graph: Graph): List<RelationalFlowNode>
 }
 
-object FlowBuilderImpl : FlowBuilder {
+class FlowBuilderImpl(val settingsLookup: SettingsLookup) : FlowBuilder {
 	/**
 	 * Creates a flow from a graph node.
 	 * This involves recursively looking up `next` nodes in the graph and creating a flow node for each of them.
@@ -43,6 +44,8 @@ object FlowBuilderImpl : FlowBuilder {
 			?.filter { it !in visitedNodes }
 			?.map { createFlowNode(it, involvedNodes, visitedNodes + it) }
 			?.orNull()
-		return graphNode.toRelational(next ?: emptyList())
+
+		val settings = settingsLookup(graphNode)
+		return graphNode.toRelational(settings, next ?: emptyList())
 	}
 }

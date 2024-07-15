@@ -1,6 +1,6 @@
 package me.snoty.integration.common.wiring.node
 
-import me.snoty.integration.common.wiring.IFlowNode
+import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandlerContext
 import me.snoty.integration.common.wiring.data.EmitNodeOutputContext
 import me.snoty.integration.common.wiring.data.IntermediateData
@@ -23,7 +23,7 @@ interface NodeHandler {
 	 * Can emit multiple results
 	 */
 	context(NodeHandlerContext, EmitNodeOutputContext)
-	suspend fun process(logger: Logger, node: IFlowNode, input: IntermediateData)
+	suspend fun process(logger: Logger, node: Node, input: IntermediateData)
 
 	/**
 	 * Where the node is placed.

@@ -4,6 +4,7 @@ import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.test.TYPE_MAP
 import me.snoty.integration.common.wiring.graph.Graph
 import me.snoty.integration.common.wiring.graph.GraphNode
+import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.Subsystem
 import org.bson.Document
@@ -13,6 +14,9 @@ import java.util.*
 
 class FlowBuilderImplTest {
 	private val uuid: UUID = UUID.randomUUID()
+	private val flowBuilder = FlowBuilderImpl {
+		EmptyNodeSettings()
+	}
 
 	private fun graphNode(descriptor: NodeDescriptor, next: List<NodeId>? = null, id: NodeId = NodeId()) = GraphNode(
 		id,
@@ -28,7 +32,7 @@ class FlowBuilderImplTest {
 			involvedNodes = emptyList(),
 			rootNext = emptyList()
 		)
-		val result = FlowBuilderImpl.createFlowFromGraph(graph)
+		val result = flowBuilder.createFlowFromGraph(graph)
 		assertEquals(0, result.size)
 
 		val graphNode2 = graphNode(NodeDescriptor(Subsystem.PROCESSOR, TYPE_MAP))
@@ -40,7 +44,7 @@ class FlowBuilderImplTest {
 				graphNode2._id
 			)
 		)
-		val result2 = FlowBuilderImpl.createFlowFromGraph(graph2)
+		val result2 = flowBuilder.createFlowFromGraph(graph2)
 		assertEquals(1, result2.size)
 		assertEquals(graphNode2._id, result2[0]._id)
 	}
@@ -59,7 +63,7 @@ class FlowBuilderImplTest {
 				graphNode2._id
 			)
 		)
-		val result = FlowBuilderImpl.createFlowFromGraph(graph)
+		val result = flowBuilder.createFlowFromGraph(graph)
 		assertEquals(2, result.size)
 		assertEquals(graphNode1._id, result[0]._id)
 		assertEquals(graphNode2._id, result[1]._id)
@@ -78,7 +82,7 @@ class FlowBuilderImplTest {
 				graphNode2._id
 			)
 		)
-		val result = FlowBuilderImpl.createFlowFromGraph(graph)
+		val result = flowBuilder.createFlowFromGraph(graph)
 		assertEquals(1, result.size)
 		val node1Result = result[0]
 		assertEquals(graphNode2._id, node1Result._id)
@@ -112,7 +116,7 @@ class FlowBuilderImplTest {
 			)
 		)
 
-		val result = FlowBuilderImpl.createFlowFromGraph(graph)
+		val result = flowBuilder.createFlowFromGraph(graph)
 		assertEquals(2, result.size)
 		assertEquals(rootNext1Id, result[0]._id)
 		assertEquals(rootNext2Id, result[1]._id)
@@ -137,7 +141,7 @@ class FlowBuilderImplTest {
 				discordNode
 			)
 		)
-		val result = FlowBuilderImpl.createFlowFromGraph(graph)
+		val result = flowBuilder.createFlowFromGraph(graph)
 		assertEquals(2, result.size)
 		assertEquals(discordNode._id, result[0]._id)
 		assertEquals(mapNode._id, result[1]._id)

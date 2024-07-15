@@ -5,6 +5,7 @@ import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import io.opentelemetry.api.GlobalOpenTelemetry
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.modules.plus
 import me.snoty.backend.build.DevBuildInfo
 import me.snoty.backend.config.ConfigLoaderImpl
 import me.snoty.backend.config.ProviderFeatureFlagConfig
@@ -12,12 +13,15 @@ import me.snoty.backend.database.mongo.createMongoClients
 import me.snoty.backend.featureflags.FeatureFlags
 import me.snoty.backend.featureflags.FeatureFlagsSetup
 import me.snoty.backend.featureflags.provider.FlagdProvider
+import me.snoty.backend.injection.ServicesContainerImpl
 import me.snoty.backend.integration.MongoEntityStateService
 import me.snoty.backend.integration.config.MongoNodeService
+import me.snoty.backend.integration.flow.FlowBuilderImpl
 import me.snoty.backend.integration.flow.FlowRunnerImpl
 import me.snoty.backend.integration.flow.MongoFlowService
 import me.snoty.backend.integration.flow.node.NodeRegistryImpl
 import me.snoty.backend.integration.utils.calendar.MongoCalendarService
+import me.snoty.backend.integration.utils.mongoSettingsLookup
 import me.snoty.backend.logging.setupLogbackFilters
 import me.snoty.backend.observability.getTracer
 import me.snoty.backend.scheduling.JobRunrConfigurer
@@ -26,12 +30,15 @@ import me.snoty.backend.scheduling.node.NodeSchedulerImpl
 import me.snoty.backend.server.KtorServer
 import me.snoty.backend.spi.DevManager
 import me.snoty.backend.wiring.node.NodeHandlerContributorLookup
+import me.snoty.integration.common.snotyJson
 import me.snoty.integration.common.wiring.NodeHandlerContext
-import me.snoty.integration.common.wiring.data.impl.BsonIntermediateDataMapper
 import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
 import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
+import me.snoty.integration.common.wiring.data.impl.BsonIntermediateDataMapper
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateDataMapper
+import me.snoty.integration.common.wiring.node.serializersModule
+import org.bson.codecs.configuration.CodecRegistry
 import java.util.concurrent.Executors
 
 fun main() = runBlocking {
@@ -77,16 +84,20 @@ fun main() = runBlocking {
 	val codecRegistry = mongoDB.codecRegistry
 
 	val nodeRegistry = NodeRegistryImpl()
+	val settingsLookup = mongoSettingsLookup(nodeRegistry, codecRegistry)
+	val flowBuilder = FlowBuilderImpl(settingsLookup)
+	val flowRunner = FlowRunnerImpl(
+		nodeRegistry,
+		featureFlags,
+		openTelemetry.getTracer(FlowRunnerImpl::class)
+	)
 	val flowService = MongoFlowService(
 		mongoDB,
-		FlowRunnerImpl(
-			nodeRegistry,
-			featureFlags,
-			openTelemetry.getTracer(FlowRunnerImpl::class)
-		)
+		flowBuilder,
+		flowRunner
 	)
 
-	val nodeService = MongoNodeService(mongoDB, nodeRegistry, nodeScheduler)
+	val nodeService = MongoNodeService(mongoDB, nodeRegistry, nodeScheduler, settingsLookup)
 	val calendarService = MongoCalendarService(mongoDB)
 	val intermediateDataMapperRegistry = IntermediateDataMapperRegistry()
 	intermediateDataMapperRegistry[BsonIntermediateData::class] = BsonIntermediateDataMapper(codecRegistry)
@@ -104,9 +115,21 @@ fun main() = runBlocking {
 			intermediateDataMapperRegistry = intermediateDataMapperRegistry
 		)
 	}
+	val nodeJson = snotyJson {
+		serializersModule += nodeRegistry.serializersModule()
+	}
+	// TERRIBLE code only required because kotlinx.serialization has arbitrary limitations on open polymorphism
+	flowRunner.json = nodeJson
 
 	JobRunrConfigurer.configure(syncMongoClient, nodeRegistry, nodeService, flowService, meterRegistry)
 
-	KtorServer(config, featureFlags, buildInfo, meterRegistry, nodeRegistry, flowService, nodeService)
+	val services = ServicesContainerImpl {
+		register(nodeRegistry)
+		register(nodeService)
+		register(flowService)
+		register(CodecRegistry::class, codecRegistry)
+	}
+
+	KtorServer(config, featureFlags, buildInfo, meterRegistry, services, nodeJson)
 		.start(wait = true)
 }

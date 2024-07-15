@@ -23,7 +23,7 @@ import me.snoty.backend.utils.BadRequestException
 import me.snoty.backend.utils.UnauthorizedException
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.respondStatus
-import me.snoty.integration.common.SnotyJson
+import me.snoty.integration.common.BaseSnotyJson
 import java.net.URI
 
 @Serializable
@@ -43,7 +43,7 @@ fun Application.configureSecurity(config: Config) {
 	val authConfig = config.authentication
 	val httpClient = HttpClient {
 		install(ContentNegotiation) {
-			json(SnotyJson)
+			json(BaseSnotyJson)
 		}
 	}
 	val keycloakProvider = OAuthServerSettings.OAuth2ServerSettings(

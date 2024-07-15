@@ -10,29 +10,23 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Instant
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.test.MongoTest
+import me.snoty.backend.test.TestIds.ENTITY_TYPE
+import me.snoty.backend.test.TestIds.INTEGRATION_NAME
+import me.snoty.backend.test.TestIds.USER_ID_1
 import me.snoty.backend.test.assertInstanceOf
 import me.snoty.backend.test.getField
 import me.snoty.integration.common.diff.*
-import me.snoty.integration.common.wiring.IFlowNode
-import me.snoty.integration.common.wiring.StandaloneFlowNode
+import me.snoty.integration.common.wiring.Node
+import me.snoty.integration.common.wiring.StandaloneNode
+import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.Subsystem
 import org.bson.Document
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
-import java.util.*
 
 class MongoEntityStateServiceTest {
-	companion object {
-		val USER_ID_1 = UUID(1, 0)
-		val USER_ID_2 = UUID(2, 0)
-		val USER_ID_CONTROL = UUID(64, 0)
-		const val INTEGRATION_NAME = "moodle"
-		const val ENTITY_TYPE = "exam"
-		const val ENTITY_TYPE_CONTROL = "notexam"
-	}
-
 	private val mongoDB = MongoTest.getMongoDatabase {}
 	private val nodeDescriptor = NodeDescriptor(Subsystem.INTEGRATION, INTEGRATION_NAME)
 	private val service = MongoEntityStateService(
@@ -42,11 +36,11 @@ class MongoEntityStateServiceTest {
 		mockk()
 	)
 
-	private fun flowNode(): IFlowNode = StandaloneFlowNode(
+	private fun flowNode(): Node = StandaloneNode(
 		NodeId(),
 		USER_ID_1,
 		nodeDescriptor,
-		Document()
+		EmptyNodeSettings()
 	)
 
 	@Test

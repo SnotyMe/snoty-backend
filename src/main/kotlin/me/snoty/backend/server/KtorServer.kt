@@ -7,13 +7,12 @@ import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.micrometer.core.instrument.MeterRegistry
+import kotlinx.serialization.json.Json
 import me.snoty.backend.build.BuildInfo
 import me.snoty.backend.config.Config
 import me.snoty.backend.featureflags.FeatureFlags
+import me.snoty.backend.injection.ServicesContainer
 import me.snoty.backend.server.plugins.*
-import me.snoty.integration.common.config.NodeService
-import me.snoty.integration.common.wiring.flow.FlowService
-import me.snoty.integration.common.wiring.node.NodeRegistry
 import org.slf4j.LoggerFactory
 
 class KtorServer(
@@ -21,9 +20,8 @@ class KtorServer(
 	private val featureFlags: FeatureFlags,
 	private val buildInfo: BuildInfo,
 	private val metricsRegistry: MeterRegistry,
-	private val nodeRegistry: NodeRegistry,
-	private val flowService: FlowService,
-	private val nodeService: NodeService
+	private val servicesContainer: ServicesContainer,
+	private val json: Json
 ) {
 	private val logger = KotlinLogging.logger {}
 
@@ -53,10 +51,10 @@ class KtorServer(
 
 	private fun Application.module() {
 		configureMonitoring(config, metricsRegistry)
-		configureHTTP()
+		configureHTTP(config.environment)
 		configureSecurity(config)
-		configureSerialization()
+		configureSerialization(json)
 		configureRouting(config)
-		addResources(buildInfo, nodeRegistry, flowService, nodeService)
+		addResources(buildInfo, servicesContainer, json)
 	}
 }

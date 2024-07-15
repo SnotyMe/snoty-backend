@@ -20,7 +20,7 @@ open class WebUntisFetcher(
 
 	context(FetchContext, NodeHandlerContext)
 	private suspend fun fetchExams(
-		node: IFlowNode,
+		node: Node,
 		logger: Logger,
 	): List<UntisExam> {
 		val untisSettings = node.getConfig<WebUntisSettings>()
@@ -39,7 +39,7 @@ open class WebUntisFetcher(
 	}
 
 	context(NodeHandlerContext, EmitNodeOutputContext)
-	override suspend fun process(logger: Logger, node: IFlowNode, input: IntermediateData) {
+	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
 		val jobContext: JobContext = input.get()
 		val fetchContext = progress(jobContext, 1)
 
