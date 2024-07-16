@@ -8,6 +8,8 @@ import me.snoty.backend.config.*
 import me.snoty.backend.database.mongo.apiCodecModule
 import me.snoty.backend.injection.ServicesContainer
 import me.snoty.backend.integration.flow.FlowBuilderImpl
+import me.snoty.integration.common.model.NodeMetadata
+import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.utils.integrationsApiCodecModule
 import me.snoty.integration.common.wiring.NodeHandlerContext
 import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
@@ -99,3 +101,11 @@ val MockServicesContainer = object : ServicesContainer {
 
 	override fun <T : Any> get(clazz: KClass<T>): T = mockkClass(clazz)
 }
+
+val TestNodeMetadata = NodeMetadata(
+	displayName = "Test Node",
+	position = NodePosition.MIDDLE,
+	settings = emptyList(),
+	input = null,
+	output = null
+)

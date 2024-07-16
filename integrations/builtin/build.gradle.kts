@@ -7,7 +7,8 @@ plugins {
 
 dependencies {
 	compileOnly(projects.integrations.api)
-	implementation(projects.integrations.utils.calendar)
-
 	ksp(projects.integrationPlugin)
+
+	// liquid for java
+	implementation("nl.big-o:liqp:0.9.0.3")
 }

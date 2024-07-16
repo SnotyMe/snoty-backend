@@ -19,6 +19,7 @@ import me.snoty.integration.common.wiring.flow.FLOW_COLLECTION_NAME
 import me.snoty.integration.common.wiring.graph.GraphNode
 import me.snoty.integration.common.wiring.graph.toStandalone
 import me.snoty.integration.common.wiring.node.*
+import me.snoty.integration.common.model.NodePosition
 import org.bson.conversions.Bson
 import java.util.*
 
@@ -76,8 +77,7 @@ class MongoNodeService(
 	}
 
 	override suspend fun <S : NodeSettings> create(userID: UUID, descriptor: NodeDescriptor, settings: S): NodeId {
-		val handler = nodeRegistry.lookupHandler(descriptor)
-			?: throw IllegalArgumentException("Handler not found for $descriptor")
+		val metadata = nodeRegistry.getMetadata(descriptor)
 
 		val node = GraphNode(
 			userId = userID,
@@ -87,7 +87,7 @@ class MongoNodeService(
 		)
 		collection.insertOne(node)
 
-		if (handler.position == NodePosition.START) {
+		if (metadata.position == NodePosition.START) {
 			scheduler.schedule(node.toStandalone(settings))
 		}
 		return node._id
