@@ -4,6 +4,8 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
+import me.snoty.integration.common.annotation.RegisterNode
+import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.utils.RedactInJobName
 import me.snoty.integration.common.wiring.*
 import me.snoty.integration.common.wiring.data.EmitNodeOutputContext
@@ -20,11 +22,17 @@ data class DiscordSettings(
 	val emptyIsError: Boolean = true
 ) : NodeSettings
 
+@RegisterNode(
+	displayName = "Discord",
+	type = "discord",
+	position = NodePosition.END,
+	settingsType = DiscordSettings::class,
+	inputType = DiscordWebhook.Message::class
+)
 class DiscordNodeHandler(
 	override val nodeHandlerContext: NodeHandlerContext,
-	private val client: HttpClient
+	private val client: HttpClient = nodeHandlerContext.httpClient()
 ) : NodeHandler {
-	override val position: NodePosition = NodePosition.END
 	override val settingsClass: KClass<out NodeSettings> = DiscordSettings::class
 
 	context(NodeHandlerContext, EmitNodeOutputContext)
@@ -46,14 +54,6 @@ class DiscordNodeHandler(
 		client.post(config.webhookUrl) {
 			contentType(ContentType.Application.Json)
 			setBody(data)
-		}
-	}
-}
-
-class DiscordNodeHandlerContributor : NodeHandlerContributor {
-	override fun contributeHandlers(registry: NodeRegistry, nodeContextBuilder: NodeContextBuilder) {
-		registry.registerIntegrationHandler("discord", nodeContextBuilder) { context ->
-			DiscordNodeHandler(context, context.httpClient())
 		}
 	}
 }

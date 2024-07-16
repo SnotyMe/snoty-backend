@@ -1,6 +1,7 @@
 plugins {
 	id("org.gradle.toolchains.foojay-resolver-convention") version "0.5.0"
 }
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "snoty-backend"
 
@@ -202,6 +203,14 @@ dependencyResolutionManagement {
 			library("keycloak-adminClient", "org.keycloak", "keycloak-admin-client")
 				.version("24.0.2")
 		}
+
+		create("integrationPlugin") {
+			val ksp = version("ksp", "$kotlinVersion-1.0.23")
+			library("ksp-api", "com.google.devtools.ksp", "symbol-processing-api")
+				.versionRef(ksp)
+			plugin("ksp", "com.google.devtools.ksp")
+				.versionRef(ksp)
+		}
 	}
 }
 
@@ -215,5 +224,4 @@ File(rootDir, "integrations")
 include("api")
 include("integrations:utils")
 include("integrations:utils:calendar")
-include("integrations:discord")
-findProject(":integrations:discord")?.name = "discord"
+include("integration-plugin")

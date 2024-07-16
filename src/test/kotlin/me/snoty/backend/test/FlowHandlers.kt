@@ -6,7 +6,6 @@ import me.snoty.integration.common.wiring.NodeHandlerContext
 import me.snoty.integration.common.wiring.data.EmitNodeOutputContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.node.NodeHandler
-import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.integration.common.wiring.simpleOutput
 import org.slf4j.Logger
@@ -21,8 +20,6 @@ abstract class TestNodeHandler : NodeHandler {
 }
 
 object NoOpNodeHandler : TestNodeHandler() {
-	override val position = NodePosition.END
-
 	context(NodeHandlerContext, EmitNodeOutputContext)
 	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
 		simpleOutput {
@@ -36,8 +33,6 @@ object NoOpNodeHandler : TestNodeHandler() {
  * `test` -> `'test'`
  */
 object QuoteHandler : TestNodeHandler() {
-	override val position = NodePosition.MIDDLE
-
 	context(NodeHandlerContext, EmitNodeOutputContext)
 	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
 		simpleOutput {
@@ -47,8 +42,6 @@ object QuoteHandler : TestNodeHandler() {
 }
 
 object ExceptionHandler : TestNodeHandler() {
-	override val position = NodePosition.END
-
 	val exception = IllegalStateException("This is an exception")
 
 	context(NodeHandlerContext, EmitNodeOutputContext)
@@ -60,8 +53,6 @@ object ExceptionHandler : TestNodeHandler() {
 class GlobalMapHandler(
 	private val map: MutableMap<NodeId, Any> = mutableMapOf()
 ) : TestNodeHandler(), Map<NodeId, Any> by map {
-	override val position = NodePosition.END
-
 	context(NodeHandlerContext, EmitNodeOutputContext)
 	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
 		map[node._id] = input.value

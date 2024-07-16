@@ -25,13 +25,5 @@ interface NodeHandler {
 	context(NodeHandlerContext, EmitNodeOutputContext)
 	suspend fun process(logger: Logger, node: Node, input: IntermediateData)
 
-	/**
-	 * Where the node is placed.
-	 * Start nodes cannot have incoming edges.
-	 * End nodes cannot have outgoing edges.
-	 *
-	 * Mostly useful to build a database query for all start nodes.
-	 */
-	val position: NodePosition
 	val settingsClass: KClass<out NodeSettings>
 }

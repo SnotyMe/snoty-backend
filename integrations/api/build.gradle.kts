@@ -2,6 +2,7 @@ plugins {
 	alias(libs.plugins.kotlin.jvm)
 	alias(libs.plugins.kotlin.serialization)
 	alias(libs.plugins.kotlin.kover)
+	alias(integrationPlugin.plugins.ksp)
 }
 
 dependencies {
@@ -22,9 +23,6 @@ dependencies {
 	api(libraries.jackson.core)
 	api(libraries.jackson.kotlin)
 	api(libraries.bson.kotlinx)
-
-	// liquid for java
-	implementation("nl.big-o:liqp:0.9.0.3")
 
 	testImplementation(kotlin("test"))
 	testImplementation(tests.mockk)

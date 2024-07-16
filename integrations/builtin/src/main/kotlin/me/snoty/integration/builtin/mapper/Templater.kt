@@ -1,4 +1,4 @@
-package me.snoty.integration.common.wiring.node.impl.mapper
+package me.snoty.integration.builtin.mapper
 
 import org.bson.Document
 
