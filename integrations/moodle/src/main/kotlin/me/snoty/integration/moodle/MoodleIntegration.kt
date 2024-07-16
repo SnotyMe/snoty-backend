@@ -10,6 +10,7 @@ import me.snoty.integration.common.wiring.node.registerIntegrationHandler
 
 @Serializable
 data class MoodleSettings(
+	override val name: String = "Moodle",
 	val baseUrl: String,
 	val username: String,
 	@RedactInJobName

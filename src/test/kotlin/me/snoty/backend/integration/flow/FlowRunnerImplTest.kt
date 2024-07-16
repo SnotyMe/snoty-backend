@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class FlowRunnerImplTest {
 	@Serializable
-	data class TestNodeSettings(val test: String) : NodeSettings
+	data class TestNodeSettings(override val name: String) : NodeSettings
 	val json = snotyJson {
 		serializersModule += SerializersModule {
 			polymorphic(NodeSettings::class) {
