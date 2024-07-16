@@ -11,6 +11,7 @@ import kotlin.reflect.KClass
 
 @Serializable
 data class MapperSettings(
+	override val name: String = "Mapper",
 	val engine: String,
 	val fields: Map<String, String>
 ) : NodeSettings

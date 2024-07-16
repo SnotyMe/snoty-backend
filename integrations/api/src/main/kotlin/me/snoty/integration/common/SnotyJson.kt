@@ -19,5 +19,6 @@ fun snotyJson(block: JsonBuilder.() -> Unit) = Json {
 		contextual(UUID::class, UUIDSerializer)
 	}
 	ignoreUnknownKeys = true
+	encodeDefaults = true
 	block()
 }
