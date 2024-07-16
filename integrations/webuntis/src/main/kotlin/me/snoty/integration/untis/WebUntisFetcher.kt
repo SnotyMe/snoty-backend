@@ -1,21 +1,27 @@
 package me.snoty.integration.untis
 
+import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.fetch.AbstractIntegrationFetcher
 import me.snoty.integration.common.fetch.FetchContext
+import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.*
 import me.snoty.integration.common.wiring.data.EmitNodeOutputContext
 import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.untis.model.UntisExam
 import me.snoty.integration.untis.request.getExams
 import org.jobrunr.jobs.context.JobContext
 import org.slf4j.Logger
 
+@RegisterNode(
+	displayName = "WebUntis",
+	type = "webuntis",
+	position = NodePosition.START,
+	settingsType = WebUntisSettings::class
+)
 open class WebUntisFetcher(
 	override val nodeHandlerContext: NodeHandlerContext,
 	private val untisAPI: WebUntisAPI = WebUntisAPIImpl(nodeHandlerContext.httpClient())
 ) : AbstractIntegrationFetcher() {
-	override val position = NodePosition.START
 	override val settingsClass = WebUntisSettings::class
 
 	context(FetchContext, NodeHandlerContext)

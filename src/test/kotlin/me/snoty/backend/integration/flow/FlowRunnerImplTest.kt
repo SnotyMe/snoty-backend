@@ -41,9 +41,9 @@ class FlowRunnerImplTest {
 
 	private val mapHandler = GlobalMapHandler()
 	private val nodeRegistry = NodeRegistryImpl().apply {
-		registerHandler(NodeDescriptor(Subsystem.PROCESSOR, TYPE_MAP), mapHandler)
-		registerHandler(NodeDescriptor(Subsystem.PROCESSOR, TYPE_QUOTE), QuoteHandler)
-		registerHandler(NodeDescriptor(Subsystem.PROCESSOR, TYPE_EXCEPTION), ExceptionHandler)
+		registerHandler(NodeDescriptor(Subsystem.PROCESSOR, TYPE_MAP), TestNodeMetadata, mapHandler)
+		registerHandler(NodeDescriptor(Subsystem.PROCESSOR, TYPE_QUOTE), TestNodeMetadata, QuoteHandler)
+		registerHandler(NodeDescriptor(Subsystem.PROCESSOR, TYPE_EXCEPTION), TestNodeMetadata, ExceptionHandler)
 	}
 	private val tracerExporter = createTestTracer(FlowRunnerImpl::class)
 	private val flagsProvider = testFeatureFlags()

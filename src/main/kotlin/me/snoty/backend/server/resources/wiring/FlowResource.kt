@@ -13,8 +13,8 @@ import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.letOrNull
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.wiring.flow.FlowService
-import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeRegistry
+import me.snoty.integration.common.model.NodePosition
 
 context(ServicesContainer)
 fun Route.flowResource() {
@@ -38,8 +38,8 @@ fun Route.flowResource() {
 		if (node?.userId != user.id) {
 			return@get call.nodeNotFound(node)
 		}
-		val handler = nodeRegistry.lookupHandler(node.descriptor) ?: return@get call.noHandlerFound(node.descriptor)
-		if (handler.position != NodePosition.START) {
+		val metadata = nodeRegistry.getMetadata(node.descriptor)
+		if (metadata.position != NodePosition.START) {
 			return@get call.respond(HttpStatusCode.BadRequest, "Node is not a flow start node")
 		}
 

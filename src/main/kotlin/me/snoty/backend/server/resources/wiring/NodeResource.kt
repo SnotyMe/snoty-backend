@@ -19,6 +19,7 @@ import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.letOrNull
 import me.snoty.backend.utils.respondServiceResult
 import me.snoty.integration.common.config.NodeService
+import me.snoty.integration.common.model.NodeMetadata
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeHandler
@@ -39,7 +40,14 @@ fun Route.nodeResource(json: Json) {
 	}
 
 	get("list") {
-		call.respond(HttpStatusCode.OK, nodeRegistry.getHandlers().keys)
+		@Serializable
+		data class NodeDescription(val descriptor: NodeDescriptor, val metadata: NodeMetadata)
+
+		val nodeDescriptions = nodeRegistry.getMetadata().map { (descriptor, metadata) ->
+			NodeDescription(descriptor, metadata)
+		}
+
+		call.respond(nodeDescriptions)
 	}
 	post("create") {
 		val user = call.getUser()

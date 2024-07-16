@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.kover)
+    alias(integrationPlugin.plugins.ksp)
 }
 
 dependencies {
@@ -13,6 +14,8 @@ dependencies {
     testImplementation(ktor.serialization.kotlinx.json)
     testImplementation(projects.integrations.api)
     testImplementation(tests.mockk)
+
+    ksp(projects.integrationPlugin)
 }
 
 sourceSets.test.configure {

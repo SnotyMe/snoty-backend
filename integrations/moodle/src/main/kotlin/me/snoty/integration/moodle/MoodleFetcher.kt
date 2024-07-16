@@ -1,11 +1,12 @@
 package me.snoty.integration.moodle
 
+import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.fetch.AbstractIntegrationFetcher
 import me.snoty.integration.common.fetch.FetchContext
+import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.*
 import me.snoty.integration.common.wiring.data.EmitNodeOutputContext
 import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.integration.moodle.model.MoodleAssignment
 import me.snoty.integration.moodle.request.getCalendarUpcoming
@@ -24,7 +25,6 @@ class MoodleFetcher(
 	override val nodeHandlerContext: NodeHandlerContext,
 	private val moodleAPI: MoodleAPI = MoodleAPIImpl(nodeHandlerContext.httpClient())
 ) : AbstractIntegrationFetcher() {
-	override val position = NodePosition.START
 	override val settingsClass: KClass<out NodeSettings> = MoodleSettings::class
 
 	context(NodeHandlerContext, FetchContext)
