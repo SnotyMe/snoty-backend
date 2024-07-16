@@ -11,6 +11,7 @@ import me.snoty.integration.untis.model.UntisDateTime
 
 @Serializable
 data class WebUntisSettings(
+	override val name: String = "WebUntis",
 	val baseUrl: String,
 	val school: String,
 	val username: String,

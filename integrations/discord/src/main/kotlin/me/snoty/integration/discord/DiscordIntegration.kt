@@ -14,6 +14,7 @@ import kotlin.reflect.KClass
 
 @Serializable
 data class DiscordSettings(
+	override val name: String = "Discord",
 	@RedactInJobName
 	val webhookUrl: String,
 	val emptyIsError: Boolean = true
