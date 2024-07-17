@@ -11,7 +11,7 @@ import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 import com.squareup.kotlinpoet.metadata.specs.toTypeSpec
 import me.snoty.integration.common.annotation.RegisterNode
-import me.snoty.integration.common.model.NodeMetadata
+import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeHandlerContributor
 import me.snoty.integration.plugin.utils.quoted

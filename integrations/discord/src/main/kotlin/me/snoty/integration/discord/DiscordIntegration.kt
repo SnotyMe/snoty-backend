@@ -6,7 +6,9 @@ import io.ktor.http.*
 import kotlinx.serialization.Serializable
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.utils.RedactInJobName
+import me.snoty.integration.common.model.metadata.FieldCensored
+import me.snoty.integration.common.model.metadata.FieldDescription
+import me.snoty.integration.common.model.metadata.FieldName
 import me.snoty.integration.common.wiring.*
 import me.snoty.integration.common.wiring.data.EmitNodeOutputContext
 import me.snoty.integration.common.wiring.data.IntermediateData
@@ -17,8 +19,11 @@ import kotlin.reflect.KClass
 @Serializable
 data class DiscordSettings(
 	override val name: String = "Discord",
-	@RedactInJobName
+	@FieldName("Webhook URL")
+	@FieldCensored
 	val webhookUrl: String,
+	@FieldName("Empty is Error")
+	@FieldDescription("If enabled, no message content will result in an error")
 	val emptyIsError: Boolean = true
 ) : NodeSettings
 

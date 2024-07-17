@@ -1,6 +1,7 @@
-package me.snoty.integration.common.model
+package me.snoty.integration.common.model.metadata
 
 import kotlinx.serialization.Serializable
+import me.snoty.integration.common.model.NodePosition
 
 @Serializable
 data class NodeMetadata(
@@ -11,12 +12,12 @@ data class NodeMetadata(
 	val output: ObjectSchema?
 )
 
-typealias ObjectSchema = List<NodeField>
-
 @Serializable
 data class NodeField(
 	val name: String,
 	val type: String,
+	val displayName: String,
+	val description: String?,
 	val hidden: Boolean,
 	val censored: Boolean
 )

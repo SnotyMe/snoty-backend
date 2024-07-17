@@ -4,18 +4,27 @@ import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
-import me.snoty.integration.common.model.NodeField
-import me.snoty.integration.common.model.ObjectSchema
-import me.snoty.integration.common.model.metadata.FieldCensored
-import me.snoty.integration.common.model.metadata.FieldHidden
+import me.snoty.integration.common.model.metadata.*
 
 fun generateObjectSchema(clazz: KSClassDeclaration): ObjectSchema? {
-	if (clazz.toClassName() == Unit::class.asClassName()) return null
+	when (clazz.toClassName()) {
+		NoSchema::class.asClassName() -> return null
+		EmptySchema::class.asClassName() -> return emptyList()
+	}
 
 	return clazz.getDeclaredProperties().map { prop ->
 		val name = prop.simpleName
 		val hidden = prop.hasAnnotation<FieldHidden>()
 		val censored = prop.hasAnnotation<FieldCensored>()
-		NodeField(name.asString(), prop.type.toString(), hidden, censored)
+		val displayName = prop.getAnnotation<FieldName>()?.value ?: name.asString()
+		val description = prop.getAnnotation<FieldDescription>()?.value
+		NodeField(
+			name = name.asString(),
+			type = prop.type.toString(),
+			displayName = displayName,
+			description = description,
+			hidden = hidden,
+			censored = censored
+		)
 	}.toList()
 }
