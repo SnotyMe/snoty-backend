@@ -19,7 +19,7 @@ import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.letOrNull
 import me.snoty.backend.utils.respondServiceResult
 import me.snoty.integration.common.config.NodeService
-import me.snoty.integration.common.model.NodeMetadata
+import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeHandler

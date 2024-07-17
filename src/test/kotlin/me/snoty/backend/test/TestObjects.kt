@@ -8,7 +8,7 @@ import me.snoty.backend.config.*
 import me.snoty.backend.database.mongo.apiCodecModule
 import me.snoty.backend.injection.ServicesContainer
 import me.snoty.backend.integration.flow.FlowBuilderImpl
-import me.snoty.integration.common.model.NodeMetadata
+import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.utils.integrationsApiCodecModule
 import me.snoty.integration.common.wiring.NodeHandlerContext

@@ -8,7 +8,7 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.ksp.writeTo
 import me.snoty.integration.common.annotation.RegisterNode
-import me.snoty.integration.common.model.NodeMetadata
+import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.plugin.utils.addDataClassInitializer
 import me.snoty.integration.plugin.utils.generateObjectSchema
 import me.snoty.integration.plugin.utils.resolveClassFromAnnotation

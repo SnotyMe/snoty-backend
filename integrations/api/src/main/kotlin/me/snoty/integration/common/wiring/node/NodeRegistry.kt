@@ -1,6 +1,6 @@
 package me.snoty.integration.common.wiring.node
 
-import me.snoty.integration.common.model.NodeMetadata
+import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.model.NodePosition
 
 interface NodeRegistry {
