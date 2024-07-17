@@ -3,6 +3,7 @@
 package me.snoty.integration.plugin.utils
 
 import com.google.devtools.ksp.KspExperimental
+import com.google.devtools.ksp.getAnnotationsByType
 import com.google.devtools.ksp.getKotlinClassByName
 import com.google.devtools.ksp.isAnnotationPresent
 import com.google.devtools.ksp.processing.Resolver
@@ -27,3 +28,4 @@ inline fun <reified T : Any> Resolver.resolveClassFromAnnotation(declaringClass:
 }
 
 inline fun <reified T : Annotation> KSPropertyDeclaration.hasAnnotation() = isAnnotationPresent(T::class)
+inline fun <reified T : Annotation> KSPropertyDeclaration.getAnnotation() = getAnnotationsByType(T::class).firstOrNull()

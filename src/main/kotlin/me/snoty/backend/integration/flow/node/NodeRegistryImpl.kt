@@ -1,6 +1,6 @@
 package me.snoty.backend.integration.flow.node
 
-import me.snoty.integration.common.model.NodeMetadata
+import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeRegistry
