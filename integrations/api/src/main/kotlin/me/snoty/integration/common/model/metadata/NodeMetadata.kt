@@ -19,5 +19,25 @@ data class NodeField(
 	val displayName: String,
 	val description: String?,
 	val hidden: Boolean,
-	val censored: Boolean
+	val censored: Boolean,
+	val details: NodeFieldDetails?
 )
+
+@Serializable
+sealed class NodeFieldDetails {
+	@Serializable
+	data class EnumDetails(
+		val values: List<EnumConstant>
+	) : NodeFieldDetails() {
+		@Serializable
+		data class EnumConstant(
+			val value: String,
+			val displayName: String
+		)
+	}
+
+	@Serializable
+	data class GenericDetails(
+		val genericType: String
+	) : NodeFieldDetails()
+}
