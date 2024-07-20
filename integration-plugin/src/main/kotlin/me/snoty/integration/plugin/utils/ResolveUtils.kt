@@ -7,8 +7,8 @@ import com.google.devtools.ksp.getAnnotationsByType
 import com.google.devtools.ksp.getKotlinClassByName
 import com.google.devtools.ksp.isAnnotationPresent
 import com.google.devtools.ksp.processing.Resolver
+import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.ksp.toClassName
 import kotlin.reflect.KClass
@@ -27,5 +27,5 @@ inline fun <reified T : Any> Resolver.resolveClassFromAnnotation(declaringClass:
 	return getKotlinClassByName(type.canonicalName) ?: throw IllegalStateException("Could not resolve class for $type")
 }
 
-inline fun <reified T : Annotation> KSPropertyDeclaration.hasAnnotation() = isAnnotationPresent(T::class)
-inline fun <reified T : Annotation> KSPropertyDeclaration.getAnnotation() = getAnnotationsByType(T::class).firstOrNull()
+inline fun <reified T : Annotation> KSAnnotated.hasAnnotation() = isAnnotationPresent(T::class)
+inline fun <reified T : Annotation> KSAnnotated.getAnnotation() = getAnnotationsByType(T::class).firstOrNull()
