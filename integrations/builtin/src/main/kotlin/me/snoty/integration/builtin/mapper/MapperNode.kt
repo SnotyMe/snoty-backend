@@ -20,7 +20,7 @@ import kotlin.reflect.KClass
 data class MapperSettings(
 	override val name: String = "Mapper",
 	@FieldName("Engine")
-	val engine: String,
+	val engine: MapperEngine,
 	@FieldName("Fields")
 	@FieldDescription("The fields to map - every key will be part of the output object")
 	val fields: Map<String, String>
@@ -42,9 +42,7 @@ class MapperNodeHandler(override val nodeHandlerContext: NodeHandlerContext) : N
 	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
 		val settings: MapperSettings = node.getConfig()
 		val data: Document = input.get()
-		val engine = MapperEngines.get(settings)
-			?: throw IllegalStateException("Engine not found!")
-		val mappedData = engine(settings, data)
+		val mappedData = settings.engine.templater(settings, data)
 
 		structOutput {
 			mappedData

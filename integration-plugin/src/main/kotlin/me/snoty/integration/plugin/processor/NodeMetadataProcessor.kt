@@ -40,9 +40,9 @@ class NodeMetadataProcessor(private val logger: KSPLogger, private val codeGener
 		val metadata = NodeMetadata(
 			displayName = displayName,
 			position = node.position,
-			settings = generateObjectSchema(settingsClass)!!,
-			input = generateObjectSchema(inputClass),
-			output = generateObjectSchema(outputClass)
+			settings = generateObjectSchema(resolver, settingsClass)!!,
+			input = generateObjectSchema(resolver, inputClass),
+			output = generateObjectSchema(resolver, outputClass)
 		)
 
 		val fileSpec = FileSpec.scriptBuilder("${clazz.simpleName.asString()}Metadata", clazz.packageName.asString())
