@@ -4,15 +4,17 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.asTypeName
 import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.memberProperties
+import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.withNullability
 import kotlin.reflect.typeOf
 
 // TODO: support generics
 fun FileSpec.Builder.addDataClassInitializer(copyFrom: Any, level: Int = 1): FileSpec.Builder = apply {
-	copyFrom::class.memberProperties.forEach { param ->
-		val value = param.call(copyFrom)
+	copyFrom::class.primaryConstructor!!.parameters.forEach { param ->
+		val prop = copyFrom::class.memberProperties.first { it.name == param.name }
+		val value = prop.call(copyFrom)
 		val prefix = "${"\t".repeat(level)}%L = "
-		val type = param.returnType.withNullability(false)
+		val type = param.type.withNullability(false)
 		val isPrimitive = type == typeOf<String>() || type == typeOf<Int>() || type == typeOf<Boolean>()
 		addCode(prefix, param.name)
 		when {
