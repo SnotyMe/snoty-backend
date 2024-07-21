@@ -1,10 +1,12 @@
 package me.snoty.integration.discord
 
 import kotlinx.serialization.Serializable
+import me.snoty.integration.common.model.metadata.Multiline
 
 object DiscordWebhook {
 	@Serializable
 	data class Message(
+		@Multiline
 		val content: String?,
 		val username: String? = null,
 		val avatarUrl: String? = null,
