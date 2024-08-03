@@ -2,16 +2,13 @@ package me.snoty.integration.common.fetch
 
 import me.snoty.integration.common.wiring.node.NodeHandler
 import org.jobrunr.jobs.context.JobContext
-import org.jobrunr.jobs.context.JobRunrDashboardLogger
-import org.slf4j.LoggerFactory
+import org.slf4j.Logger
 
 abstract class AbstractIntegrationFetcher : NodeHandler {
-	protected val logger = JobRunrDashboardLogger(LoggerFactory.getLogger(this::class.java))
-
-	fun logger(context: JobContext) = context.logger()
-	fun progress(context: JobContext, stages: Long) = FetchContext(
+	fun progress(logger: Logger, context: JobContext, stages: Long) = FetchContext(
+		logger,
 		JobRunrFetchProgress(
-			logger(context),
+			logger,
 			context.progressBar(IntegrationProgressState.getStateCount(stages))
 		),
 	)

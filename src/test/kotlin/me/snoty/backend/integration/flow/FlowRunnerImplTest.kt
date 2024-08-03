@@ -1,5 +1,6 @@
 package me.snoty.backend.integration.flow
 
+import ch.qos.logback.classic.Logger
 import io.opentelemetry.api.common.AttributeKey
 import io.opentelemetry.api.trace.SpanId
 import io.opentelemetry.semconv.ExceptionAttributes
@@ -11,14 +12,15 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.plus
 import kotlinx.serialization.modules.polymorphic
+import me.snoty.backend.integration.flow.logging.NodeLogAppender
 import me.snoty.backend.integration.flow.node.NodeRegistryImpl
 import me.snoty.backend.observability.JOB_ID
 import me.snoty.backend.test.*
 import me.snoty.integration.common.snotyJson
+import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.RelationalFlowNode
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
-import me.snoty.integration.common.wiring.flow.FlowLogEntry
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.integration.common.wiring.node.Subsystem
@@ -26,12 +28,14 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.slf4j.LoggerFactory
+import org.slf4j.event.Level
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class FlowRunnerImplTest {
 	@Serializable
 	data class TestNodeSettings(override val name: String) : NodeSettings
-	val json = snotyJson {
+
+	private val json = snotyJson {
 		serializersModule += SerializersModule {
 			polymorphic(NodeSettings::class) {
 				subclass(TestNodeSettings::class, TestNodeSettings.serializer())
@@ -50,10 +54,21 @@ class FlowRunnerImplTest {
 	private val runner = FlowRunnerImpl(nodeRegistry, flagsProvider.flags, tracerExporter.tracer).apply {
 		json = this@FlowRunnerImplTest.json
 	}
+	private val testLogService = TestNodeLogService()
+	private val logger = (LoggerFactory.getLogger(FlowRunnerImplTest::class.java) as Logger).apply {
+		val appender = NodeLogAppender(testLogService)
+		addAppender(appender)
+		appender.start()
+	}
 
-	private fun FlowRunnerImpl.execute(jobId: String, flow: RelationalFlowNode, input: IntermediateData) = execute(jobId, LoggerFactory.getLogger(this::class.java), flow, input)
+	private fun FlowRunnerImpl.execute(jobId: String, flow: RelationalFlowNode, input: IntermediateData) = execute(jobId, logger, flow, input)
 
-	private fun assertNoWarnings(output: List<FlowLogEntry>) {
+	private fun assertNoWarnings(node: Node) = runBlocking {
+		val output = testLogService.retrieve(node._id)
+			.filter {
+				it.level.toInt() >= Level.WARN.toInt()
+			}
+
 		if (output.isNotEmpty()) {
 			println("Warnings:")
 			output.forEach {
@@ -70,8 +85,8 @@ class FlowRunnerImplTest {
 	fun `test basic`(): Unit = runBlocking {
 		val flow = relationalFlow(NodeDescriptor(Subsystem.PROCESSOR, TYPE_MAP))
 		val jobId = "basic"
-		val output = runner.execute(jobId, flow, intermediateData).toList()
-		assertNoWarnings(output)
+		runner.execute(jobId, flow, intermediateData).toList()
+		assertNoWarnings(flow)
 		assertEquals(intermediateDataRaw, mapHandler[flow._id])
 		val spans = tracerExporter.exporter.finishedSpanItems
 
@@ -90,9 +105,8 @@ class FlowRunnerImplTest {
 			NodeDescriptor(Subsystem.PROCESSOR, TYPE_QUOTE),
 			next = listOf(nodeNext)
 		)
-		val output = runner.execute("basic withQuote", flow, intermediateData).toList()
-		// no warnings
-		assertNoWarnings(output)
+		runner.execute("basic withQuote", flow, intermediateData).toList()
+		assertNoWarnings(flow)
 		assertEquals(nodeNext._id, flow.next.first()._id)
 		assertEquals("'test'", mapHandler[nodeNext._id])
 		val spans = tracerExporter.exporter.finishedSpanItems
@@ -107,8 +121,8 @@ class FlowRunnerImplTest {
 		val flow = relationalFlow(NodeDescriptor(Subsystem.PROCESSOR, TYPE_MAP), settings = config)
 
 		suspend fun verifyTrace(flow: RelationalFlowNode, input: IntermediateData, withConfig: Boolean) {
-			val output = runner.execute("traces config attribute", flow, input).toList()
-			assertNoWarnings(output)
+			runner.execute("traces config attribute", flow, input).toList()
+			assertNoWarnings(flow)
 			assertEquals(input.value, mapHandler[flow._id])
 			val spans = tracerExporter.exporter.finishedSpanItems
 

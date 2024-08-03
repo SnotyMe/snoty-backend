@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.toList
 import me.snoty.backend.injection.ServicesContainer
 import me.snoty.backend.injection.get
 import me.snoty.backend.integration.config.flow.NodeId
+import me.snoty.backend.integration.flow.logging.NodeLogService
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.letOrNull
 import me.snoty.integration.common.config.NodeService
@@ -47,5 +48,26 @@ fun Route.flowResource() {
 			.single()
 
 		call.respond(flow)
+	}
+
+	val nodeLogService = get<NodeLogService>()
+	get("{id}/logs") {
+		val user = call.getUser()
+
+		val id = call.parameters["id"]?.letOrNull { NodeId(it) }
+			?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid node id")
+		val node = nodeService.get(id)
+		if (node?.userId != user.id) {
+			return@get call.nodeNotFound(node)
+		}
+
+		val metadata = nodeRegistry.getMetadata(node.descriptor)
+		if (metadata.position != NodePosition.START) {
+			return@get call.respond(HttpStatusCode.BadRequest, "Node is not a flow start node")
+		}
+
+		val logs = nodeLogService.retrieve(rootNode = id)
+
+		call.respond(logs)
 	}
 }
