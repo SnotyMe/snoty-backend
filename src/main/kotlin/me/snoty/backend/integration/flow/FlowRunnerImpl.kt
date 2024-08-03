@@ -5,6 +5,7 @@ import io.opentelemetry.api.trace.SpanBuilder
 import io.opentelemetry.api.trace.Tracer
 import io.opentelemetry.extension.kotlin.asContextElement
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.slf4j.MDCContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import me.snoty.backend.featureflags.FeatureFlags
@@ -12,7 +13,6 @@ import me.snoty.backend.observability.*
 import me.snoty.backend.utils.flowWith
 import me.snoty.integration.common.wiring.RelationalFlowNode
 import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.flow.FlowLogEntry
 import me.snoty.integration.common.wiring.flow.FlowRunner
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.setAttribute
@@ -25,11 +25,20 @@ class FlowRunnerImpl(
 ) : FlowRunner {
 	lateinit var json: Json
 
-	override fun execute(jobId: String, logger: Logger, node: RelationalFlowNode, input: IntermediateData): Flow<FlowLogEntry> {
+	override fun execute(
+		jobId: String,
+		logger: Logger,
+		node: RelationalFlowNode,
+		input: IntermediateData
+	): Flow<Unit> {
 		val rootSpan = tracer.spanBuilder("Flow starting with ${traceName(node)}")
 			.setNodeAttributes(node = node, input = null, rootNode = true)
 			.setAttribute(JOB_ID, jobId)
 			.startSpan()
+		// root node - stays consistent throughout the flow
+		setNode("rootNode", node)
+		// current node - will be overwritten per execution
+		setNode(node = node)
 
 		if (featureFlags.get(featureFlags.flow_logFlow)) {
 			logger.info("Starting flow {}", node)
@@ -40,11 +49,12 @@ class FlowRunnerImpl(
 				setNodeAttributes(node, input)
 			}
 			executeImpl(logger, subspan, node, input)
-				// propagate the span through the flow
-				.flowOn(subspan.asContextElement())
+				// propagate the span and MDC through the flow
+				.flowOn(subspan.asContextElement() + MDCContext())
 				.flowCatching(subspan)
 				.catch { rawException ->
-					// set exception of root to explain the failure of the user
+					logger.error("Exception during flow execution", rawException)
+					// set exception of root to explain the failure to the user
 					val e = FlowExecutionException(rawException)
 					rootSpan.setException(e)
 					throw e
@@ -60,10 +70,14 @@ class FlowRunnerImpl(
 	 * Will end the span when the flow completes.
 	 */
 	context(Tracer)
-	private fun executeImpl(logger: Logger, span: Span, node: RelationalFlowNode, input: IntermediateData, depth: Int = 0): Flow<FlowLogEntry> {
+	private fun executeImpl(logger: Logger, span: Span, node: RelationalFlowNode, input: IntermediateData, depth: Int = 0): Flow<Unit> {
 		val processor = nodeRegistry.lookupHandler(node.descriptor)
-			?: return flowOf(FlowLogEntry("No handler for descriptor ${node.descriptor}", node._id))
+			?: let {
+				logger.error("No handler found for node {}", node.descriptor)
+				return flowOf()
+			}
 		// TODO: test with multiple inputs
+		setNode(node = node)
 		return flowWith(processor.nodeHandlerContext) {
 			processor.process(logger, node, input)
 		}
@@ -75,10 +89,9 @@ class FlowRunnerImpl(
 							setNodeAttributes(nextNode, output)
 						}
 						executeImpl(logger, subspan, nextNode, output, depth + 1)
-							.flowOn(subspan.asContextElement())
 					}
 			}
-			.flowOn(span.asContextElement())
+			.flowOn(span.asContextElement() + MDCContext())
 			.flowCatching(span)
 			.onCompletion {
 				span.end()

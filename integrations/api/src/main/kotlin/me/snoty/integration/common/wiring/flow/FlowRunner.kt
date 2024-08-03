@@ -1,8 +1,8 @@
 package me.snoty.integration.common.wiring.flow
 
 import kotlinx.coroutines.flow.Flow
-import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.RelationalFlowNode
+import me.snoty.integration.common.wiring.data.IntermediateData
 import org.slf4j.Logger
 
 fun interface FlowRunner {
@@ -11,5 +11,5 @@ fun interface FlowRunner {
 		logger: Logger,
 		node: RelationalFlowNode,
 		input: IntermediateData
-	): Flow<FlowLogEntry>
+	): Flow<Unit>
 }

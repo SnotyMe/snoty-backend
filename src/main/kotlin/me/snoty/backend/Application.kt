@@ -19,6 +19,7 @@ import me.snoty.backend.integration.config.MongoNodeService
 import me.snoty.backend.integration.flow.FlowBuilderImpl
 import me.snoty.backend.integration.flow.FlowRunnerImpl
 import me.snoty.backend.integration.flow.MongoFlowService
+import me.snoty.backend.integration.flow.logging.MongoNodeLogService
 import me.snoty.backend.integration.flow.node.NodeRegistryImpl
 import me.snoty.backend.integration.utils.calendar.MongoCalendarService
 import me.snoty.backend.integration.utils.mongoSettingsLookup
@@ -84,6 +85,7 @@ fun main() = runBlocking {
 	val codecRegistry = mongoDB.codecRegistry
 
 	val nodeRegistry = NodeRegistryImpl()
+	val nodeLogService = MongoNodeLogService(mongoDB)
 	val settingsLookup = mongoSettingsLookup(nodeRegistry, codecRegistry)
 	val flowBuilder = FlowBuilderImpl(settingsLookup)
 	val flowRunner = FlowRunnerImpl(
@@ -121,12 +123,13 @@ fun main() = runBlocking {
 	// TERRIBLE code only required because kotlinx.serialization has arbitrary limitations on open polymorphism
 	flowRunner.json = nodeJson
 
-	JobRunrConfigurer.configure(syncMongoClient, nodeRegistry, nodeService, flowService, meterRegistry)
+	JobRunrConfigurer.configure(syncMongoClient, nodeRegistry, nodeService, flowService, nodeLogService, meterRegistry)
 
 	val services = ServicesContainerImpl {
 		register(nodeRegistry)
 		register(nodeService)
 		register(flowService)
+		register(nodeLogService)
 		register(CodecRegistry::class, codecRegistry)
 	}
 

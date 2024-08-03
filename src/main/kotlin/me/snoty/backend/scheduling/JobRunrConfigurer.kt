@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.mongodb.client.MongoClient
 import io.micrometer.core.instrument.MeterRegistry
 import me.snoty.backend.database.mongo.MONGO_DB_NAME
+import me.snoty.backend.integration.flow.logging.NodeLogService
 import me.snoty.backend.scheduling.node.NodeJobHandler
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.wiring.flow.FlowService
@@ -23,9 +24,10 @@ object JobRunrConfigurer {
 		nodeRegistry: NodeRegistry,
 		nodeService: NodeService,
 		flowService: FlowService,
-		meterRegistry: MeterRegistry
+		nodeLogService: NodeLogService,
+		meterRegistry: MeterRegistry,
 	) {
-		val jobHandler = NodeJobHandler(nodeRegistry, nodeService, flowService)
+		val jobHandler = NodeJobHandler(nodeRegistry, nodeService, flowService, nodeLogService)
 		JobRunr.configure()
 			.useJsonMapper(JacksonJsonMapper(ObjectMapper().registerKotlinModule()))
 			.useStorageProvider(

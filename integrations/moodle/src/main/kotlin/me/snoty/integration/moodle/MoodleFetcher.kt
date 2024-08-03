@@ -12,6 +12,7 @@ import me.snoty.integration.moodle.model.MoodleAssignment
 import me.snoty.integration.moodle.request.getCalendarUpcoming
 import org.jobrunr.jobs.context.JobContext
 import org.slf4j.Logger
+import org.slf4j.event.Level
 import kotlin.reflect.KClass
 
 @RegisterNode(
@@ -41,7 +42,10 @@ class MoodleFetcher(
 			entityStateService.updateStates(node, assignments)
 		}
 
-		logger.info("Fetched ${assignments.size} assignments for ${moodleSettings.username}")
+		logger.atLevel(
+			if (assignments.isEmpty()) Level.WARN
+			else Level.INFO
+		).log("Fetched ${assignments.size} assignments for ${moodleSettings.username}")
 
 		return assignments
 	}
@@ -49,7 +53,7 @@ class MoodleFetcher(
 	context(NodeHandlerContext, EmitNodeOutputContext)
 	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
 		val jobContext: JobContext = input.get()
-		val fetchContext = progress(jobContext, 1)
+		val fetchContext = progress(logger, jobContext, 1)
 
 		iterableStructOutput(fetchContext) {
 			return@iterableStructOutput fetchAssignments(node)
