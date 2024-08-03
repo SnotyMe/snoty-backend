@@ -10,6 +10,8 @@ import org.bson.types.ObjectId
 
 typealias NodeId = @Serializable(NodeIdSerializer::class) ObjectId
 
+fun String.toNodeId() = NodeId(this)
+
 object NodeIdSerializer : KSerializer<NodeId> {
 	override val descriptor: SerialDescriptor = serialDescriptor<String>()
 

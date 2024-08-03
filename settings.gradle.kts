@@ -148,6 +148,8 @@ dependencyResolutionManagement {
 				.version("6.0.9")
 			library("logback", "ch.qos.logback", "logback-classic")
 				.version("1.4.14")
+			library("coroutines", "org.jetbrains.kotlinx", "kotlinx-coroutines-slf4j")
+				.version("1.8.1")
 		}
 
 		create("libraries") {

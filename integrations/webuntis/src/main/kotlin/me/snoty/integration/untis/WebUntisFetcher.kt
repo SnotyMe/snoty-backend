@@ -47,7 +47,7 @@ open class WebUntisFetcher(
 	context(NodeHandlerContext, EmitNodeOutputContext)
 	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
 		val jobContext: JobContext = input.get()
-		val fetchContext = progress(jobContext, 1)
+		val fetchContext = progress(logger, jobContext, 1)
 
 		iterableStructOutput(fetchContext) {
 			fetchExams(node, logger)

@@ -157,6 +157,7 @@ dependencies {
     // logging
     implementation(log.logback)
     implementation(log.kotlinLogging)
+    implementation(log.coroutines)
 
     // serialization
     implementation(libraries.jackson.core)

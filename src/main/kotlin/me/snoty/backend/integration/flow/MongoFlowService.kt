@@ -10,11 +10,10 @@ import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.map
 import me.snoty.backend.database.mongo.Aggregations.project
 import me.snoty.backend.database.mongo.aggregate
-import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.RelationalFlowNode
+import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.flow.FLOW_COLLECTION_NAME
-import me.snoty.integration.common.wiring.flow.FlowLogEntry
 import me.snoty.integration.common.wiring.flow.FlowRunner
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.graph.Graph
@@ -49,10 +48,14 @@ open class MongoFlowService(
 		}
 	}
 
-	override fun runFlow(jobId: String, logger: Logger, node: Node, input: IntermediateData): Flow<FlowLogEntry>
-		= getFlowForNode(node)
-			.flatMapMerge {
-				logger.debug("Processing node {} with input {}", visualizeFlow(listOf(it)), input)
-				runner.execute(jobId, logger, it, input)
-			}
+	override fun runFlow(
+		jobId: String,
+		logger: Logger,
+		node: Node,
+		input: IntermediateData
+	): Flow<Unit> = getFlowForNode(node)
+		.flatMapMerge {
+			logger.debug("Processing node {} with input {}", visualizeFlow(listOf(it)), input)
+			runner.execute(jobId, logger, it, input)
+		}
 }
