@@ -23,9 +23,11 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 
 		val available = allElements
 			.filter {
-				logger.warn(resolver.getDeclarationsFromPackage(it.packageName.asString()).toList().map { it::class }.toString())
 				resolver.getDeclarationsFromPackage(it.packageName.asString())
-					.any { declaration -> declaration is KSPropertyDeclaration && declaration.type.toTypeName() == NodeMetadata::class.asTypeName() }
+					.filterIsInstance<KSPropertyDeclaration>()
+					.any { declaration ->
+						declaration.type.toTypeName() == NodeMetadata::class.asTypeName()
+					}
 			}
 
 		available.forEach {
