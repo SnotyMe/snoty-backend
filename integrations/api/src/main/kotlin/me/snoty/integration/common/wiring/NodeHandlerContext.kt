@@ -18,7 +18,7 @@ data class NodeHandlerContext(
 	val calendarService: CalendarService,
 	override val intermediateDataMapperRegistry: IntermediateDataMapperRegistry,
 	val scheduler: Scheduler,
-	val openTelemetry: OpenTelemetry
+	val openTelemetry: OpenTelemetry,
 ) : IntermediateDataMapperRegistryContext, CodecRegistryContext
 
 interface IntermediateDataMapperRegistryContext {

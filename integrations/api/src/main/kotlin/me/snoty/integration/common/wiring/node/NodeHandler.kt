@@ -12,16 +12,10 @@ import kotlin.reflect.KClass
  * Executes whatever logic is needed for ONE specific node type.
  *
  * This can be fetching data from an LMS, mapping data, publishing results, etc.
- *
- * One [NodeHandler] can only handle one type of node.
  */
 interface NodeHandler {
 	val nodeHandlerContext: NodeHandlerContext
 
-	/**
-	 * Process the current node, **not** its children.
-	 * Can emit multiple results
-	 */
 	context(NodeHandlerContext, EmitNodeOutputContext)
 	suspend fun process(logger: Logger, node: Node, input: IntermediateData)
 

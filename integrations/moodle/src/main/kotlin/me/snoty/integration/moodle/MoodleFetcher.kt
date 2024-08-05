@@ -22,7 +22,7 @@ import kotlin.reflect.KClass
 	settingsType = MoodleSettings::class,
 	outputType = MoodleAssignment::class
 )
-open class MoodleFetcher(
+class MoodleFetcher(
 	override val nodeHandlerContext: NodeHandlerContext,
 	private val moodleAPI: MoodleAPI = MoodleAPIImpl(nodeHandlerContext.httpClient())
 ) : AbstractIntegrationFetcher() {

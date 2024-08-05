@@ -32,5 +32,6 @@ private suspend fun <IM : IntermediateData, T : Any> emitSerialized(clazz: KClas
 
 context(IntermediateDataMapperRegistryContext)
 inline fun <reified T : Any> IntermediateData.get()
+
 	= intermediateDataMapperRegistry[this@get::class]
 		.deserializeUnsafe(this@get, T::class)
