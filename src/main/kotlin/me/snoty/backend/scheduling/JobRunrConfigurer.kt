@@ -25,7 +25,7 @@ object JobRunrConfigurer {
 		nodeService: NodeService,
 		flowService: FlowService,
 		nodeLogService: NodeLogService,
-		meterRegistry: MeterRegistry
+		meterRegistry: MeterRegistry,
 	) {
 		val jobHandler = NodeJobHandler(nodeRegistry, nodeService, flowService, nodeLogService)
 		JobRunr.configure()
