@@ -10,9 +10,6 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-/**
- * WARNING: this class is NOT serializable, make sure to cast to IHttpStatusException
- */
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
 open class HttpStatusException(
