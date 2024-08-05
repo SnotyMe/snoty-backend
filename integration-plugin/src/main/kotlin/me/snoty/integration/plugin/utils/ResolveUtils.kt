@@ -18,7 +18,7 @@ inline fun <reified T : Any> Resolver.resolveClassFromAnnotation(declaringClass:
 	val annotation = T::class
 	val type = ((
 		declaringClass.annotations.toList()
-			.first { it.annotationType.resolve().toClassName().canonicalName == annotation.qualifiedName }
+			.single { it.annotationType.resolve().toClassName().canonicalName == annotation.qualifiedName }
 			.arguments
 			.firstOrNull { it.name!!.asString() == argument.name }
 				?: throw IllegalArgumentException("Annotation ${annotation.simpleName} declared on ${declaringClass.qualifiedName!!.asString()} does not have argument $argument")
