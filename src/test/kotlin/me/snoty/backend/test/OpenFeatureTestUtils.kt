@@ -37,10 +37,10 @@ class OpenFeatureTestProvider : FeatureProvider {
 
 	private fun <T> evaluate(key: String, defaultValue: T?): ProviderEvaluation<T> {
 		@Suppress("UNCHECKED_CAST")
-		val value = flagValues[key] as? T?
-		logger.info { "Evaluating flag $key with value $value" }
+		val value = flagValues[key] as? T? ?: defaultValue
+		logger.info { "Evaluated flag $key to $value" }
 		return ProviderEvaluation.builder<T>()
-			.value(value ?: defaultValue)
+			.value(value)
 			.build()
 	}
 }
