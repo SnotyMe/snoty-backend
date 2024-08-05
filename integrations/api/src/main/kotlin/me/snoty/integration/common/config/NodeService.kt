@@ -11,11 +11,11 @@ import me.snoty.integration.common.model.NodePosition
 import java.util.*
 
 interface NodeService {
-	fun getByUser(userID: UUID, position: NodePosition?): Flow<StandaloneNode>
+	suspend fun get(id: NodeId): StandaloneNode?
 
 	fun getAll(integrationType: String): Flow<StandaloneNode>
 
-	suspend fun get(id: NodeId): StandaloneNode?
+	fun getByUser(userID: UUID, position: NodePosition?): Flow<StandaloneNode>
 
 	/**
 	 * @return ID of the newly created entry
