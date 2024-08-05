@@ -7,7 +7,15 @@ import kotlinx.serialization.Serializable
 open class ServiceResult(
 	val httpCode: Int,
 	val message: String,
-	val details: String? = null
+	val details: String? = null,
 ) {
-	constructor(httpCode: HttpStatusCode, message: String, details: String? = null) : this(httpCode.value, message, details)
+	constructor(
+		httpCode: HttpStatusCode,
+		message: String,
+		details: String? = null,
+	) : this(
+		httpCode = httpCode.value,
+		message = message,
+		details = details,
+	)
 }
