@@ -10,10 +10,11 @@ data class SimpleIntermediateData(
 ) : IntermediateData
 
 object SimpleIntermediateDataMapper : IntermediateDataMapper<SimpleIntermediateData> {
+	@Suppress("UNCHECKED_CAST")
 	override fun <R : Any> deserialize(intermediateData: SimpleIntermediateData, clazz: KClass<R>): R {
 		val value = intermediateData.value
 		require(clazz.isInstance(value)) { "Value is not an instance of $clazz" }
-		@Suppress("UNCHECKED_CAST")
+
 		return value as R
 	}
 

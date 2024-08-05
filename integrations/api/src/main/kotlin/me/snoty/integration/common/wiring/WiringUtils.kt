@@ -21,8 +21,10 @@ suspend fun <T : Any> structOutput(producer: suspend () -> T) = emitBson(produce
 context(IntermediateDataMapperRegistryContext, EmitNodeOutputContext)
 private suspend fun emitBson(data: Any) = emitSerialized(BsonIntermediateData::class, data)
 
+
 context(IntermediateDataMapperRegistryContext, EmitNodeOutputContext)
 suspend fun <T : Any> simpleOutput(producer: suspend () -> T) = emitSerialized(SimpleIntermediateData::class, producer())
+
 
 context(IntermediateDataMapperRegistryContext, EmitNodeOutputContext)
 private suspend fun <IM : IntermediateData, T : Any> emitSerialized(clazz: KClass<IM>, data: T) {
@@ -30,8 +32,8 @@ private suspend fun <IM : IntermediateData, T : Any> emitSerialized(clazz: KClas
 	emit(mapper.serialize(data))
 }
 
+
 context(IntermediateDataMapperRegistryContext)
 inline fun <reified T : Any> IntermediateData.get()
-
 	= intermediateDataMapperRegistry[this@get::class]
 		.deserializeUnsafe(this@get, T::class)
