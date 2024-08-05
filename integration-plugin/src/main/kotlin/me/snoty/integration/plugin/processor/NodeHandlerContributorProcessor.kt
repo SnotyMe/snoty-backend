@@ -14,6 +14,7 @@ import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeHandlerContributor
+import me.snoty.integration.plugin.utils.quoted
 
 class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGenerator: CodeGenerator) : SymbolProcessor {
 	@OptIn(KspExperimental::class)
@@ -79,7 +80,12 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 				modifiers -= KModifier.ABSTRACT
 				modifiers += KModifier.OVERRIDE
 			}
-			.addStatement("val descriptor = %T(%L, %L)", NodeDescriptor::class.asTypeName(), "\"${node.subsystem}\"", "\"${node.type}\"")
+			.addStatement(
+				"val descriptor = %T(%L, %L)",
+				NodeDescriptor::class.asTypeName(),
+				node.subsystem.quoted(),
+				node.type.quoted()
+			)
 			.addStatement("val nodeContext = nodeContextBuilder(descriptor)")
 			.addStatement("val handler = %T(nodeContext)", handler.toClassName())
 			.addStatement("registry.registerHandler(descriptor, metadata, handler)")

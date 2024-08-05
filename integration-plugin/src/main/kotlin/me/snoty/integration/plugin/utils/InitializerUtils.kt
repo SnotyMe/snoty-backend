@@ -48,3 +48,5 @@ fun FileSpec.Builder.addDataClassInitializer(copyFrom: Any, level: Int = 1): Fil
 		addCode(",\n")
 	}
 }
+
+fun String.quoted() = "\"$this\""
