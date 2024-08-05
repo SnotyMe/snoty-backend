@@ -14,7 +14,8 @@ import com.squareup.kotlinpoet.ksp.toClassName
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 
-fun <T : Any> Resolver.resolveClassFromAnnotation(declaringClass: KSClassDeclaration, annotation: KClass<out T>, argument: KProperty1<T, KClass<out Any>>): KSClassDeclaration {
+inline fun <reified T : Any> Resolver.resolveClassFromAnnotation(declaringClass: KSClassDeclaration, argument: KProperty1<T, KClass<out Any>>): KSClassDeclaration {
+	val annotation = T::class
 	val type = ((
 		declaringClass.annotations.toList()
 			.first { it.annotationType.resolve().toClassName().canonicalName == annotation.qualifiedName }

@@ -33,9 +33,9 @@ class NodeMetadataProcessor(private val logger: KSPLogger, private val codeGener
 	private fun processClass(resolver: Resolver, clazz: KSClassDeclaration) {
 		val node = clazz.getAnnotationsByType(RegisterNode::class).first()
 		val displayName = node.displayName
-		val settingsClass = resolver.resolveClassFromAnnotation(clazz, RegisterNode::class, RegisterNode::settingsType)
-		val inputClass = resolver.resolveClassFromAnnotation(clazz, RegisterNode::class, RegisterNode::inputType)
-		val outputClass = resolver.resolveClassFromAnnotation(clazz, RegisterNode::class, RegisterNode::outputType)
+		val settingsClass = resolver.resolveClassFromAnnotation(clazz, RegisterNode::settingsType)
+		val inputClass = resolver.resolveClassFromAnnotation(clazz, RegisterNode::inputType)
+		val outputClass = resolver.resolveClassFromAnnotation(clazz, RegisterNode::outputType)
 
 		val metadata = NodeMetadata(
 			displayName = displayName,
