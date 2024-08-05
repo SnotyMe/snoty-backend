@@ -10,7 +10,9 @@ annotation class FieldDescription(val value: String)
 /**
  * @param values The number of lines to display in the editor
  */
-annotation class Multiline(val values: @Range(from = 1, to = Int.MAX_VALUE.toLong()) Int = DEFAULT_MULTILINE_LINES) {
+annotation class Multiline(
+	val values: @Range(from = 1, to = Int.MAX_VALUE.toLong()) Int = DEFAULT_MULTILINE_LINES,
+) {
 	companion object {
 		const val DEFAULT_MULTILINE_LINES = 3
 		const val DEFAULT_LINES = 1

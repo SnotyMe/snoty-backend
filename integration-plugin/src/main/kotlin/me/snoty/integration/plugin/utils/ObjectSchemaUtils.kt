@@ -44,7 +44,9 @@ fun Resolver.getDetails(prop: KSPropertyDeclaration): NodeFieldDetails? {
 		Enum::class.isAssignableFrom(type) ->
 			getEnumDetails(prop)
 		String::class.isAssignableFrom(type) ->
-			NodeFieldDetails.PlaintextDetails(prop.getAnnotation<Multiline>()?.values ?: Multiline.DEFAULT_LINES)
+			NodeFieldDetails.PlaintextDetails(
+				lines = prop.getAnnotation<Multiline>()?.values ?: Multiline.DEFAULT_LINES,
+			)
 		else -> null
 	}
 }
