@@ -22,9 +22,6 @@ interface NodeService {
 	 */
 	suspend fun <S : NodeSettings> create(userID: UUID, descriptor: NodeDescriptor, settings: S): NodeId
 
-	/**
-	 * Connects two nodes together
-	 */
 	suspend fun connect(from: NodeId, to: NodeId): ServiceResult
 	suspend fun disconnect(from: NodeId, to: NodeId): ServiceResult
 

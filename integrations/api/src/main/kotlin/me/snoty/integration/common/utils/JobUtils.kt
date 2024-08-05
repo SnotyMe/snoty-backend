@@ -9,7 +9,7 @@ fun createFetcherJob(descriptor: NodeDescriptor, node: Node, request: JobRequest
 	val user = node.userId
 	val integrationName = descriptor.type
 	return SnotyJob(
-		name = "[fetcher] <$integrationName> user=$user",
+		name = "[${node._id}] rootIntegration=$integrationName user=$user",
 		request
 	)
 }
