@@ -1,12 +1,15 @@
 package me.snoty.backend.test
 
 import dev.openfeature.sdk.*
+import io.github.oshai.kotlinlogging.KotlinLogging
 import me.snoty.backend.config.Config
 import me.snoty.backend.featureflags.FeatureFlag
 import me.snoty.backend.featureflags.FeatureFlags
 import java.util.concurrent.atomic.AtomicInteger
 
 class OpenFeatureTestProvider : FeatureProvider {
+	private val logger = KotlinLogging.logger {}
+
 	override fun getMetadata() = Metadata {
 		"testProvider"
 	}
@@ -35,7 +38,7 @@ class OpenFeatureTestProvider : FeatureProvider {
 	private fun <T> evaluate(key: String, defaultValue: T?): ProviderEvaluation<T> {
 		@Suppress("UNCHECKED_CAST")
 		val value = flagValues[key] as? T?
-		println("Evaluating flag $key with value $value")
+		logger.info { "Evaluating flag $key with value $value" }
 		return ProviderEvaluation.builder<T>()
 			.value(value ?: defaultValue)
 			.build()

@@ -16,8 +16,9 @@ inline fun <reified T> assertInstanceOf(actualValue: Any): T
 
 inline fun <T> assertAny(list: List<T>, assertion: (T) -> Boolean): T {
 	if (list.isEmpty()) throw AssertionError("List is empty")
-	assertTrue(list.any(assertion))
-	return list.first(assertion)
+	val matching = list.firstOrNull(assertion)
+	assertNotNull(matching)
+	return matching!!
 }
 
 fun <R> assertCombinations(
