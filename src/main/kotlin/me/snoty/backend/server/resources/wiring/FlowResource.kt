@@ -4,6 +4,7 @@ import io.ktor.http.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.toList
 import me.snoty.backend.injection.ServicesContainer
 import me.snoty.backend.injection.get
@@ -44,7 +45,7 @@ fun Route.flowResource() {
 		}
 
 		val flow = flowService.getFlowForNode(node)
-			.first()
+			.single()
 
 		call.respond(flow)
 	}

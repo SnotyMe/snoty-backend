@@ -114,7 +114,7 @@ class MongoNodeService(
 			Updates.pull(GraphNode::next.name, toNode._id)
 		)
 
-		return NodeServiceResults.NodeConnected(from, to)
+		return NodeServiceResults.NodeDisconnected(from, to)
 	}
 
 	override suspend fun updateSettings(id: NodeId, settings: NodeSettings): ServiceResult {

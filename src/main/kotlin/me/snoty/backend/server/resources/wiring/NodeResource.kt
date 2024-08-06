@@ -36,8 +36,7 @@ fun Route.nodeResource(json: Json) {
 			?: return void { call.noHandlerFound(descriptor) }
 		val serializer = handler.settingsClass.serializerOrNull()
 			?: return void { call.noSerializerFound(handler) }
-		val settingsObj = json.decodeFromJsonElement(serializer, settingsJson)
-		return settingsObj
+		return json.decodeFromJsonElement(serializer, settingsJson)
 	}
 
 	get("list") {
