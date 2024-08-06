@@ -133,6 +133,6 @@ fun main() = runBlocking {
 		register(CodecRegistry::class, codecRegistry)
 	}
 
-	KtorServer(config, featureFlags, buildInfo, meterRegistry, services, nodeJson)
+	KtorServer(config, buildInfo, meterRegistry, services, nodeJson)
 		.start(wait = true)
 }

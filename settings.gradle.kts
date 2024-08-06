@@ -12,7 +12,7 @@ fun String.kebabCaseToCamelCase(): String {
 
 dependencyResolutionManagement {
 	versionCatalogs {
-		val ktorVersion = "3.0.0-beta-1"
+		val ktorVersion = "3.0.0-beta-2"
 
 		fun buildKtorArtifactAlias(prefix: String? = null, artifact: String, hierarchy: Boolean): String {
 			var result: String = prefix ?: ""
@@ -171,7 +171,7 @@ dependencyResolutionManagement {
 		}
 
 		create("tests") {
-			ktorServerPlugin("tests", prefix = "ktor")
+			ktorServerPlugin("test-host", prefix = "ktor")
 			library("mockk", "io.mockk", "mockk")
 				.version("1.13.10")
 			library("assertj-core", "org.assertj", "assertj-core")

@@ -20,7 +20,7 @@ import java.nio.charset.StandardCharsets
 @Serializable
 data class ICalCreateRequest(val nodeId: NodeId)
 
-fun Route.calendarRoutes(
+fun Routing.calendarRoutes(
 	nodeService: NodeService,
 	calendarService: CalendarService,
 	calendarType: String,
