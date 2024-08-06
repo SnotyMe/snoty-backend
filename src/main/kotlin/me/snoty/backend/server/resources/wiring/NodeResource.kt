@@ -42,9 +42,12 @@ fun Route.nodeResource(json: Json) {
 	get("list") {
 		@Serializable
 		data class NodeDescription(val descriptor: NodeDescriptor, val metadata: NodeMetadata)
-		call.respond(nodeRegistry.getMetadata().map { (descriptor, metadata) ->
+
+		val nodeDescriptions = nodeRegistry.getMetadata().map { (descriptor, metadata) ->
 			NodeDescription(descriptor, metadata)
-		})
+		}
+
+		call.respond(nodeDescriptions)
 	}
 	post("create") {
 		val user = call.getUser()
