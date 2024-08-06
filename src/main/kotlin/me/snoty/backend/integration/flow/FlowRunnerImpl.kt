@@ -32,7 +32,7 @@ class FlowRunnerImpl(
 		input: IntermediateData
 	): Flow<Unit> {
 		val rootSpan = tracer.spanBuilder("Flow starting with ${traceName(node)}")
-			.setNodeAttributes(node, null, rootNode = true)
+			.setNodeAttributes(node = node, input = null, rootNode = true)
 			.setAttribute(JOB_ID, jobId)
 			.startSpan()
 		// root node - stays consistent throughout the flow
