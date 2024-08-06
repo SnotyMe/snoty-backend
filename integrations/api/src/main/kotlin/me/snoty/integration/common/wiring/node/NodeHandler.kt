@@ -19,6 +19,4 @@ interface NodeHandler {
 
 	context(NodeHandlerContext, EmitNodeOutputContext)
 	suspend fun process(logger: Logger, node: Node, input: IntermediateData)
-
-	val settingsClass: KClass<out NodeSettings>
 }
