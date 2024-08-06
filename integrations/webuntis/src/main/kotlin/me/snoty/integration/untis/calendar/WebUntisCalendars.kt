@@ -22,7 +22,7 @@ class WebUntisCalendarBuilder(entityStateService: EntityStateService) : ICalBuil
 	}
 }
 
-fun Route.iCalRoutes(nodeService: NodeService, calendarService: CalendarService, entityStateService: EntityStateService) {
+fun Routing.iCalRoutes(nodeService: NodeService, calendarService: CalendarService, entityStateService: EntityStateService) {
 	calendarRoutes(
 		nodeService,
 		calendarService,

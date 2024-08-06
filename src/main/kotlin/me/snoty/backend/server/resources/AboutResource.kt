@@ -15,7 +15,7 @@ data class AboutResponse(
 	val buildInfo: BuildInfo
 )
 
-fun Route.aboutResource(buildInfo: BuildInfo) {
+fun Routing.aboutResource(buildInfo: BuildInfo) {
 	val hostname = InetAddress.getLocalHost().hostName
 	get("/info") {
 		call.respond(AboutResponse(

@@ -21,7 +21,7 @@ class MoodleCalendarBuilder(entityStateService: EntityStateService) : ICalBuilde
 	}
 }
 
-fun Route.iCalRoutes(nodeService: NodeService, calendarService: CalendarService, entityStateService: EntityStateService) {
+fun Routing.iCalRoutes(nodeService: NodeService, calendarService: CalendarService, entityStateService: EntityStateService) {
 	calendarRoutes(
 		nodeService,
 		calendarService,

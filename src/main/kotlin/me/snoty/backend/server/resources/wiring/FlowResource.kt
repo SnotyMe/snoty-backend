@@ -18,7 +18,7 @@ import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.model.NodePosition
 
 context(ServicesContainer)
-fun Route.flowResource() {
+fun Routing.flowResource() {
 	val nodeRegistry = get<NodeRegistry>()
 	val nodeService = get<NodeService>()
 	val flowService = get<FlowService>()
