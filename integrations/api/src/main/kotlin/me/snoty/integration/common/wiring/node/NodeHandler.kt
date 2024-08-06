@@ -15,6 +15,7 @@ import kotlin.reflect.KClass
  */
 interface NodeHandler {
 	val nodeHandlerContext: NodeHandlerContext
+	val settingsClass: KClass<out NodeSettings>
 
 	context(NodeHandlerContext, EmitNodeOutputContext)
 	suspend fun process(logger: Logger, node: Node, input: IntermediateData)

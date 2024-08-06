@@ -84,7 +84,7 @@ class FlowRunnerImpl(
 			.flatMapConcat { output ->
 				node.next.asFlow()
 					.flatMapConcat { nextNode ->
-						logger.debug("Processing next {} with output {}", nextNode.descriptor, output)
+						logger.debug("Processing next {} with data {}", nextNode.descriptor, output)
 						val subspan = span.subspan(traceName(nextNode)) {
 							setNodeAttributes(nextNode, output)
 						}
