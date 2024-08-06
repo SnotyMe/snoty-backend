@@ -21,7 +21,7 @@ class NodeLogAppender(
 	}
 
 	@OptIn(DelicateCoroutinesApi::class)
-	private val dispatcher = newSingleThreadContext("NodeLogAppender")
+	private val dispatcher = newSingleThreadContext(NAME)
 	private val scope = CoroutineScope(dispatcher)
 
 	override fun append(eventObject: ILoggingEvent) {

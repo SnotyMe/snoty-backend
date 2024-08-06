@@ -54,7 +54,7 @@ class FlowRunnerImpl(
 				.flowCatching(subspan)
 				.catch { rawException ->
 					logger.error("Exception during flow execution", rawException)
-					// set exception of root to explain the failure of the user
+					// set exception of root to explain the failure to the user
 					val e = FlowExecutionException(rawException)
 					rootSpan.setException(e)
 					throw e

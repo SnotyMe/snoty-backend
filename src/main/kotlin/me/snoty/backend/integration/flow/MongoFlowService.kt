@@ -55,7 +55,8 @@ open class MongoFlowService(
 		input: IntermediateData
 	): Flow<Unit> = getFlowForNode(node)
 		.flatMapMerge {
-			logger.debug("Processing node {} with input {}", visualizeFlow(listOf(it)), input)
+			if (logger.isDebugEnabled)
+				logger.debug("Processing node {} with input {}", visualizeFlow(listOf(it)), input)
 			runner.execute(jobId, logger, it, input)
 		}
 }
