@@ -5,6 +5,7 @@ data class Config(
 	val port: Short = 8080,
 	val monitoringPort: Short = 9000,
 	val publicHost: String,
+	val corsHosts: List<String> = emptyList(),
 	val environment: Environment,
 	val authentication: OidcConfig,
 	val featureFlags: FeatureFlagsConfig

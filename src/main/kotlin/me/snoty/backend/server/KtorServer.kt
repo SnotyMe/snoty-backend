@@ -51,7 +51,7 @@ class KtorServer(
 
 	private fun Application.module() {
 		configureMonitoring(config, metricsRegistry)
-		configureHTTP(config.environment)
+		configureHTTP(config)
 		configureSecurity(config)
 		configureSerialization(json)
 		configureRouting(config)
