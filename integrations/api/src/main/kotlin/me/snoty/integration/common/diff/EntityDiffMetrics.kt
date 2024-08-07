@@ -37,12 +37,9 @@ class EntityDiffMetrics(
 		.gauge("$NAMESPACE.total", Tags.of("service", service), AtomicLong(-1))!!
 
 	inner class Job : Runnable {
-		override fun run() {
-			val stats = entityStateCollection.getStatistics()
-			runBlocking {
-				stats.collect { value ->
-					storedEntities.set(value.totalEntities)
-				}
+		override fun run() = runBlocking {
+			entityStateCollection.getStatistics().collect { value ->
+				storedEntities.set(value.totalEntities)
 			}
 		}
 	}
