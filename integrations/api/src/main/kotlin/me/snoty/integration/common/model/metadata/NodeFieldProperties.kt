@@ -18,3 +18,5 @@ annotation class Multiline(
 		const val DEFAULT_LINES = 1
 	}
 }
+
+annotation class DisplayName(val value: String)

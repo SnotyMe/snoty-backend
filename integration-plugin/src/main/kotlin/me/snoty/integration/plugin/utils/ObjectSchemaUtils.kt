@@ -66,7 +66,7 @@ private fun getEnumDetails(prop: KSPropertyDeclaration): NodeFieldDetails.EnumDe
 		.filter { !it.isCompanionObject }
 		.map {
 			val value = it.simpleName.asString()
-			val displayName = it.getAnnotation<FieldName>()?.value
+			val displayName = it.getAnnotation<DisplayName>()?.value
 			NodeFieldDetails.EnumDetails.EnumConstant(value, displayName ?: value)
 		}
 		.toList()

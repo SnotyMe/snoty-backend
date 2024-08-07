@@ -1,24 +1,23 @@
 package me.snoty.integration.builtin.mapper
 
 import liqp.TemplateParser
-import me.snoty.integration.common.model.metadata.FieldName
+import me.snoty.integration.common.model.metadata.DisplayName
 import org.bson.Document
 
 enum class MapperEngine(val templater: Templater) {
-	@FieldName("Replace")
+	@DisplayName("Replace")
 	REPLACE({ settings, data ->
-		val mappedData = Document()
-		settings.fields.forEach { (key, value) ->
-			var result = value
+		val mappedData = settings.fields.mapValues {
+			var result = it.value
 			for (field in data) {
 				result = result.replace("%${field.key}%", field.value.toString())
 			}
-			mappedData[key] = result
+			result
 		}
 
-		mappedData
+		Document(mappedData)
 	}),
-	@FieldName("Liquid")
+	@DisplayName("Liquid")
 	LIQUID({ settings, data ->
 		val mappedData = Document()
 		settings.fields.forEach { (key, value) ->
