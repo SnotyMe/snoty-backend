@@ -33,6 +33,7 @@ class MongoFlowServiceTest : AbstractFlowFetchTest<MongoFlowServiceTest.FlowTest
 			flow
 		}
 
+		// test-only method, you'd usually use a `NodeService` for this
 		fun insertNode(node: GraphNode) = runBlocking {
 			collection.insertOne(node)
 		}

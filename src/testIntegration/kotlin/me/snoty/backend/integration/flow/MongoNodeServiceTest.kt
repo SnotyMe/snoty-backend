@@ -6,20 +6,15 @@ import kotlinx.coroutines.runBlocking
 import me.snoty.backend.integration.config.MongoNodeService
 import me.snoty.backend.integration.flow.node.NodeRegistryImpl
 import me.snoty.backend.test.MongoTest
+import me.snoty.backend.test.NoOpNodeHandler
 import me.snoty.backend.test.TestIds.USER_ID_1
 import me.snoty.backend.test.TestIds.USER_ID_CONTROL
-import me.snoty.backend.test.TestNodeHandler
 import me.snoty.backend.test.TestNodeMetadata
-import me.snoty.integration.common.wiring.Node
-import me.snoty.integration.common.wiring.NodeHandlerContext
-import me.snoty.integration.common.wiring.data.EmitNodeOutputContext
-import me.snoty.integration.common.wiring.data.IntermediateData
+import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
-import me.snoty.integration.common.model.NodePosition
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.slf4j.Logger
 
 class MongoNodeServiceTest {
 	private val descriptor = NodeDescriptor(
@@ -29,10 +24,7 @@ class MongoNodeServiceTest {
 
 	private val db = MongoTest.getMongoDatabase {}
 	private val nodeRegistry = NodeRegistryImpl().apply {
-		registerHandler(descriptor, TestNodeMetadata.copy(position = NodePosition.START), object : TestNodeHandler() {
-			context(NodeHandlerContext, EmitNodeOutputContext)
-			override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {}
-		})
+		registerHandler(descriptor, TestNodeMetadata.copy(position = NodePosition.START), NoOpNodeHandler)
 	}
 	private val service = MongoNodeService(db, nodeRegistry, mockk(relaxed = true)) {
 		EmptyNodeSettings()
