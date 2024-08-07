@@ -1,66 +1,69 @@
 @startuml
 left to right direction
 
-object source.MoodleAssignment {
+namespace execution {
+class MoodleAssignment {
     name: string
     deadline: date
     url: string
 }
 
-map source.Moodle {
+map rootNode.Moodle {
     url => my.moodle.com
     username => student
-    MoodleAssignment *-> MoodleAssignment
 }
+note top of rootNode.Moodle : NodePosition.START
 
-object target.TodoistTask {
-    title: string
-    description: string
-    deadline: date
-}
-map target.Todolist {
-    username => myuser
-    <<apiKey>> => ...
-    TodoistTask *-> TodoistTask
-}
-
-
-object target.NtfyNotification {
+class flow.NtfyNotification {
     urgency: number
     header: string
     content: string
 }
 
-map target.Ntfy {
+map flow.NotificationMapper {
+    urgency => normal
+    header => {{name}}
+    content => A new assignment was published.
+}
+
+map flow.Ntfy {
     url => ntfy.sh
     topic => mytopic
-    NtfyNotification *-> NtfyNotification
 }
 
-map flow.AssignmentNotification {
-    urgency => normal
-    title => {{name}}
-    description => A new assignment was published.
-}
+rootNode.Moodle --> flow.NotificationMapper
+(rootNode.Moodle, flow.NotificationMapper) .. MoodleAssignment
+flow.NotificationMapper --> flow.Ntfy
+(flow.NotificationMapper, flow.Ntfy) .. flow.NtfyNotification
 
-source.MoodleAssignment --> flow.AssignmentNotification
-flow.AssignmentNotification --> target.NtfyNotification
-
-map flow.AssignmentTask {
+map flow.TaskMapper {
     title => {{name}}
     description => {{url}}
     <deadline> => {{deadline}
 }
 
-source.MoodleAssignment --> flow.AssignmentTask
-flow.AssignmentTask --> target.TodoistTask
+class flow.TodoistTask {
+    title: string
+    description: string
+    deadline: date
+}
 
-note right of flow.AssignmentTask : The fields are taken from the target. They are either\nhardcoded or templated from the source entity.
+map flow.Todoist {
+    username => myuser
+    <<apiKey>> => ...
+}
+
+rootNode.Moodle --> flow.TaskMapper
+(rootNode.Moodle, flow.TaskMapper) .. MoodleAssignment
+flow.TaskMapper --> flow.Todoist
+(flow.TaskMapper, flow.Todoist) .. flow.TodoistTask
+
+note right of flow.TaskMapper : The fields are taken from the target. They are either\nhardcoded or templated from the source entity.
+}
 
 legend
 <field> = hidden by default, shown in advanced mode
-<<field>> = not supposed to be shown to the user
-{{template}} = template (for ex. jekyll)
+{{template}} = template (e.g. jekyll)
 end legend
 
 @enduml
