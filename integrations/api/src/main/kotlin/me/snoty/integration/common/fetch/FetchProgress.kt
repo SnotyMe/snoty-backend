@@ -3,25 +3,6 @@ package me.snoty.integration.common.fetch
 import org.jobrunr.jobs.context.JobDashboardProgressBar
 import org.slf4j.Logger
 
-interface FetchProgress {
-	fun advance(state: IntegrationProgressState)
-}
-
-class FetchContext(
-	val logger: Logger,
-	private val progress: FetchProgress,
-) : FetchProgress by progress {
-	suspend fun <T> fetchStage(block: suspend () -> T): T {
-		progress.advance(IntegrationProgressState.FETCHING)
-		return block()
-	}
-
-	suspend fun updateStage(block: suspend () -> Unit) {
-		progress.advance(IntegrationProgressState.UPDATING_IN_DB)
-		block()
-	}
-}
-
 enum class IntegrationProgressState {
 	INIT,
 	FETCHING,
@@ -39,6 +20,10 @@ enum class IntegrationProgressState {
 	}
 
 	val progress = ordinal + 1L
+}
+
+interface FetchProgress {
+	fun advance(state: IntegrationProgressState)
 }
 
 class JobRunrFetchProgress(private val logger: Logger, private val progressBar: JobDashboardProgressBar) : FetchProgress {

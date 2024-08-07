@@ -6,6 +6,11 @@ interface FlowTestContext {
 	var flow: List<RelationalFlowNode>?
 }
 
+/**
+ * Abstract class for testing flow fetching.
+ *
+ * Runs assertions and visualizes the flow in case of an assertion error for easier debugging.
+ */
 abstract class AbstractFlowFetchTest<C : FlowTestContext>(
 	private val buildContext: () -> C
 ) {

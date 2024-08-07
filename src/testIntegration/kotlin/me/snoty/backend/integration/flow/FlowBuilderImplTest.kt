@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.util.*
 
-class FlowCreateTest : AbstractFlowFetchTest<FlowCreateTest.FlowTestContextImpl>(::FlowTestContextImpl) {
+class FlowBuilderImplTest : AbstractFlowFetchTest<FlowBuilderImplTest.FlowTestContextImpl>(::FlowTestContextImpl) {
 
 	data class FlowTestContextImpl(
 		override var flow: List<RelationalFlowNode>? = null
