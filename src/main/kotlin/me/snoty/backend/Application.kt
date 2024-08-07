@@ -27,7 +27,7 @@ import me.snoty.backend.logging.setupLogbackFilters
 import me.snoty.backend.observability.getTracer
 import me.snoty.backend.scheduling.JobRunrConfigurer
 import me.snoty.backend.scheduling.JobRunrScheduler
-import me.snoty.backend.scheduling.node.NodeSchedulerImpl
+import me.snoty.backend.scheduling.node.JobRunrNodeScheduler
 import me.snoty.backend.server.KtorServer
 import me.snoty.backend.spi.DevManager
 import me.snoty.backend.wiring.node.NodeHandlerContributorLookup
@@ -77,7 +77,7 @@ fun main() = runBlocking {
 	val meterRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 	val metricsPool = Executors.newScheduledThreadPool(1)
 	val scheduler = JobRunrScheduler()
-	val nodeScheduler = NodeSchedulerImpl(scheduler)
+	val nodeScheduler = JobRunrNodeScheduler(scheduler)
 
 	logger.info { "Connecting to MongoDB..." }
 	val (mongoDB, syncMongoClient) = createMongoClients(config.mongodb)

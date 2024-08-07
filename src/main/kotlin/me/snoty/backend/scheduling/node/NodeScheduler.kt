@@ -8,7 +8,7 @@ interface NodeScheduler {
 	fun schedule(node: Node)
 }
 
-class NodeSchedulerImpl(private val jobRunrScheduler: JobRunrScheduler) : NodeScheduler {
+class JobRunrNodeScheduler(private val jobRunrScheduler: JobRunrScheduler) : NodeScheduler {
 	override fun schedule(node: Node) {
 		val jobRequest = NodeJobRequest(node._id)
 		val job = createFetcherJob(node.descriptor, node, jobRequest)
