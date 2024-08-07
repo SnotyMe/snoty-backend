@@ -106,8 +106,10 @@ fun main() = runBlocking {
 	intermediateDataMapperRegistry[SimpleIntermediateData::class] = SimpleIntermediateDataMapper
 
 	NodeHandlerContributorLookup.executeContributors(nodeRegistry) { descriptor ->
+		val entityStateService = MongoEntityStateService(mongoDB, descriptor, meterRegistry, metricsPool)
+		entityStateService.scheduleMetricsTask()
 		NodeHandlerContext(
-			entityStateService = MongoEntityStateService(mongoDB, descriptor, meterRegistry, metricsPool),
+			entityStateService = entityStateService,
 			nodeService = nodeService,
 			flowService = flowService,
 			codecRegistry = codecRegistry,
