@@ -1,0 +1,84 @@
+{
+	"annotations": {
+		"list": [
+			{
+				"builtIn": 1,
+				"datasource": {
+					"type": "grafana",
+					"uid": "-- Grafana --"
+				},
+				"enable": true,
+				"hide": true,
+				"iconColor": "rgba(0, 211, 255, 1)",
+				"name": "Annotations & Alerts",
+				"type": "dashboard"
+			}
+		]
+	},
+	"editable": true,
+	"fiscalYearStartMonth": 0,
+	"graphTooltip": 0,
+	"id": 3,
+	"links": [],
+	"liveNow": false,
+	"panels": [
+		{
+			"datasource": {
+				"type": "tempo",
+				"uid": "tempo"
+			},
+			"gridPos": {
+				"h": 22,
+				"w": 24,
+				"x": 0,
+				"y": 0
+			},
+			"id": 1,
+			"targets": [
+				{
+					"datasource": {
+						"type": "tempo",
+						"uid": "tempo"
+					},
+					"limit": 20,
+					"query": "${traceId}",
+					"queryType": "traceql",
+					"refId": "A",
+					"tableType": "traces"
+				}
+			],
+			"title": "Panel Title",
+			"type": "traces"
+		}
+	],
+	"refresh": "",
+	"schemaVersion": 38,
+	"tags": [],
+	"templating": {
+		"list": [
+			{
+				"current": {},
+				"description": "The ID of the trace to display",
+				"hide": 0,
+				"includeAll": false,
+				"label": "Trace ID",
+				"multi": false,
+				"name": "traceId",
+				"options": [],
+				"query": "",
+				"skipUrlSync": false,
+				"type": "custom"
+			}
+		]
+	},
+	"time": {
+		"from": "now-6h",
+		"to": "now"
+	},
+	"timepicker": {},
+	"timezone": "",
+	"title": "Trace details",
+	"uid": "ff8761fe-20ef-4d34-9140-484e6250a328",
+	"version": 3,
+	"weekStart": ""
+}

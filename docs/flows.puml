@@ -1,0 +1,69 @@
+@startuml
+left to right direction
+
+namespace execution {
+class MoodleAssignment {
+    name: string
+    deadline: date
+    url: string
+}
+
+map rootNode.Moodle {
+    url => my.moodle.com
+    username => student
+}
+note top of rootNode.Moodle : NodePosition.START
+
+class flow.NtfyNotification {
+    urgency: number
+    header: string
+    content: string
+}
+
+map flow.NotificationMapper {
+    urgency => normal
+    header => {{name}}
+    content => A new assignment was published.
+}
+
+map flow.Ntfy {
+    url => ntfy.sh
+    topic => mytopic
+}
+
+rootNode.Moodle --> flow.NotificationMapper
+(rootNode.Moodle, flow.NotificationMapper) .. MoodleAssignment
+flow.NotificationMapper --> flow.Ntfy
+(flow.NotificationMapper, flow.Ntfy) .. flow.NtfyNotification
+
+map flow.TaskMapper {
+    title => {{name}}
+    description => {{url}}
+    <deadline> => {{deadline}
+}
+
+class flow.TodoistTask {
+    title: string
+    description: string
+    deadline: date
+}
+
+map flow.Todoist {
+    username => myuser
+    <<apiKey>> => ...
+}
+
+rootNode.Moodle --> flow.TaskMapper
+(rootNode.Moodle, flow.TaskMapper) .. MoodleAssignment
+flow.TaskMapper --> flow.Todoist
+(flow.TaskMapper, flow.Todoist) .. flow.TodoistTask
+
+note right of flow.TaskMapper : The fields are taken from the target. They are either\nhardcoded or templated from the source entity.
+}
+
+legend
+<field> = hidden by default, shown in advanced mode
+{{template}} = template (e.g. jekyll)
+end legend
+
+@enduml

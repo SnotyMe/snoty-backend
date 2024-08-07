@@ -1,65 +1,57 @@
 package me.snoty.integration.untis
 
-import io.ktor.server.routing.*
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.Serializable
-import me.snoty.backend.scheduling.JobRequest
-import me.snoty.integration.common.*
-import me.snoty.integration.common.config.ConfigId
-import me.snoty.integration.common.utils.RedactInJobName
-import me.snoty.integration.untis.calendar.iCalRoutes
-import me.snoty.integration.untis.model.UntisDateTime
-import java.util.*
+import me.snoty.integration.common.annotation.RegisterNode
+import me.snoty.integration.common.fetch.FetchContext
+import me.snoty.integration.common.fetch.fetchContext
+import me.snoty.integration.common.model.NodePosition
+import me.snoty.integration.common.wiring.*
+import me.snoty.integration.common.wiring.data.EmitNodeOutputContext
+import me.snoty.integration.common.wiring.data.IntermediateData
+import me.snoty.integration.common.wiring.node.NodeHandler
+import me.snoty.integration.untis.model.UntisExam
+import me.snoty.integration.untis.request.getExams
+import org.jobrunr.jobs.context.JobContext
+import org.slf4j.Logger
 
-@Serializable
-data class WebUntisSettings(
-	val baseUrl: String,
-	val school: String,
-	val username: String,
-	@RedactInJobName
-	val appSecret: String,
-	@Contextual
-	override val id: ConfigId = ConfigId()
-) : IntegrationSettings {
-	override val instanceId = baseUrl.instanceId
-}
-
+@RegisterNode(
+	displayName = "WebUntis",
+	type = "webuntis",
+	position = NodePosition.START,
+	settingsType = WebUntisSettings::class
+)
 class WebUntisIntegration(
-	context: IntegrationContext,
-	untisAPI: WebUntisAPI = WebUntisAPIImpl()
-) : AbstractIntegration<WebUntisSettings, WebUntisJobRequest, Int>(
-	DESCRIPTOR,
-	WebUntisSettings::class,
-	WebUntisFetcher.Factory(untisAPI),
-	context
-) {
-	companion object {
-		const val INTEGRATION_NAME = "webuntis"
-		val DESCRIPTOR = IntegrationDescriptor(name = INTEGRATION_NAME)
+	override val nodeHandlerContext: NodeHandlerContext,
+	private val untisAPI: WebUntisAPI = WebUntisAPIImpl(nodeHandlerContext.httpClient())
+) : NodeHandler {
+	override val settingsClass = WebUntisSettings::class
 
-		val UNTIS_CODEC_MODULE = listOf(UntisDateTime.Companion)
+	context(FetchContext, NodeHandlerContext)
+	private suspend fun fetchExams(
+		node: Node,
+		logger: Logger,
+	): List<UntisExam> {
+		val untisSettings = node.getConfig<WebUntisSettings>()
+
+		val exams = fetchStage {
+			untisAPI.getExams(untisSettings)
+		}
+
+		updateStage {
+			entityStateService.updateStates(node, exams)
+		}
+
+		logger.info("Fetched ${exams.size} exams for ${untisSettings.username}")
+
+		return exams
 	}
 
-	override fun createRequest(config: IntegrationConfig<WebUntisSettings>): JobRequest =
-		WebUntisJobRequest(config.user, config.settings)
+	context(NodeHandlerContext, EmitNodeOutputContext)
+	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
+		val jobContext: JobContext = input.get()
+		val fetchContext = fetchContext(logger, jobContext, 1)
 
-	override fun routes(routing: Route) {
-		routing.iCalRoutes(integrationConfigService, context.calendarService, entityStateService)
-	}
-
-	class Factory : IntegrationFactory {
-		override val mongoDBCodecs = UNTIS_CODEC_MODULE
-		override val descriptor = DESCRIPTOR
-
-		override fun create(context: IntegrationContext): Integration {
-			return WebUntisIntegration(context)
+		iterableStructOutput(fetchContext) {
+			fetchExams(node, logger)
 		}
 	}
-}
-
-data class WebUntisJobRequest(
-	val userId: UUID,
-	val settings: WebUntisSettings
-) : JobRequest {
-	override fun getJobRequestHandler() = WebUntisFetcher::class.java
 }

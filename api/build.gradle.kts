@@ -15,6 +15,8 @@ dependencies {
     implementation(ktor.server.auth.jwt)
     api(libraries.bson.kotlinx)
     api(database.mongodb)
+    api(monitoring.opentelemetry.api)
+    api(monitoring.opentelemetry.context)
 
     implementation(tests.junit.api)
 }

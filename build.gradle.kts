@@ -6,6 +6,7 @@ import org.eclipse.jgit.api.Git
 import org.jetbrains.gradle.ext.Application
 import org.jetbrains.gradle.ext.runConfigurations
 import org.jetbrains.gradle.ext.settings
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
@@ -25,6 +26,16 @@ val isDevelopment: Boolean = project.findProperty("me.snoty.development")?.toStr
 allprojects {
     repositories {
         mavenCentral()
+        maven("https://maven.simulatan.me/releases")
+    }
+
+    tasks.withType<KotlinCompile>().configureEach {
+        kotlin {
+            compilerOptions {
+                freeCompilerArgs.add("-Xcontext-receivers")
+                optIn.add("kotlinx.coroutines.ExperimentalCoroutinesApi")
+            }
+        }
     }
 }
 
@@ -58,6 +69,7 @@ testing {
 
             tasks.withType<Test>().configureEach {
                 maxParallelForks = (Runtime.getRuntime().availableProcessors()).coerceAtLeast(1)
+                environment("LOG_LEVEL", "TRACE")
             }
 
             dependencies {
@@ -65,7 +77,7 @@ testing {
                 // for some reason, transitive dependencies aren't included in the test classpath
                 implementation(projects.api)
                 implementation(tests.junit.api)
-                implementation(tests.ktor.server.tests)
+                implementation(tests.ktor.server.testHost)
                 implementation(tests.mockk)
                 implementation(tests.assertj.core)
                 implementation(tests.json)
@@ -74,6 +86,7 @@ testing {
                 implementation(tests.testcontainers.junit)
                 implementation(tests.testcontainers.keycloak)
                 implementation(tests.testcontainers.mongodb)
+                implementation(monitoring.opentelemetry.testing)
                 implementation(devSourceSet.output)
 
                 runtimeOnly(tests.junit.engine)
@@ -108,6 +121,7 @@ dependencies {
     implementation(ktor.server.netty)
 
     // ktor plugins
+    implementation(ktor.server.cors)
     implementation(ktor.server.call.logging)
     implementation(ktor.server.call.id)
     implementation(ktor.server.forwardedHeader)
@@ -129,6 +143,11 @@ dependencies {
     implementation(monitoring.ktor.opentelemetry)
     implementation(monitoring.ktor.server.metricsMicrometer)
     implementation(monitoring.micrometer.prometheus)
+    implementation(monitoring.opentelemetry.api)
+    implementation(monitoring.opentelemetry.context)
+    implementation(monitoring.opentelemetry.semconv)
+    implementation(monitoring.opentelemetry.kotlin)
+    implementation(monitoring.opentelemetry.logback)
 
     // database
     implementation(database.mongodb)
@@ -138,6 +157,7 @@ dependencies {
     // logging
     implementation(log.logback)
     implementation(log.kotlinLogging)
+    implementation(log.coroutines)
 
     // serialization
     implementation(libraries.jackson.core)
@@ -153,6 +173,8 @@ dependencies {
 
     // dev
     devImplementation(dev.keycloak.adminClient)
+    devImplementation(monitoring.opentelemetry.sdk)
+    devImplementation(monitoring.opentelemetry.exporter.otlp)
 
     moduleImplementation(projects.integrations.api)
     // depend on all integrations by default
@@ -164,14 +186,17 @@ dependencies {
         }
 }
 
+if (isDevelopment) {
+    tasks.run.configure {
+        classpath += devSourceSet.output
+    }
+}
+
 application {
     mainClass.set("me.snoty.backend.ApplicationKt")
 
     if (isDevelopment) {
         applicationDefaultJvmArgs += "-Dio.ktor.development=$isDevelopment"
-        tasks.run.configure {
-            classpath += devSourceSet.output
-        }
     }
 }
 

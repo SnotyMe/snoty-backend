@@ -45,8 +45,8 @@ class AuthenticationTest {
 	}
 
 	@Test
-	fun testUnauthorized() = ktorApplicationTest(config = config) {
-		client.get("/userInfo").apply {
+	fun `test unauthorized`() = ktorApplicationTest(config = config) {
+		client.get("/auth/userInfo").apply {
 			assertEquals(HttpStatusCode.Unauthorized, status)
 			assertThat(bodyAsText())
 				.isNotEmpty()
@@ -57,7 +57,7 @@ class AuthenticationTest {
 	}
 
 	@Test
-	fun testAuthorized() = ktorApplicationTest(config = config) {
+	fun `test authorized`() = ktorApplicationTest(config = config) {
 		val email = "authenticationtest.testauthorized@test.snoty.me"
 		val user = keycloakContainer.keycloakAdminClient.realm(REALM_NAME)
 			.createAndLoginUser(
@@ -65,7 +65,7 @@ class AuthenticationTest {
 				email = email
 			)
 
-		client.get("/userInfo") {
+		client.get("/auth/userInfo") {
 			header("Authorization", "Bearer ${user.accessToken}")
 		}.apply {
 			assertEquals(HttpStatusCode.OK, status)
