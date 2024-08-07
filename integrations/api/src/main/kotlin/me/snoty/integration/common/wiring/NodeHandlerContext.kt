@@ -10,7 +10,7 @@ import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import org.bson.codecs.configuration.CodecRegistry
 
-data class NodeHandlerContext(
+internal data class NodeHandlerContext(
 	val entityStateService: EntityStateService,
 	val nodeService: NodeService,
 	val flowService: FlowService,
@@ -18,15 +18,19 @@ data class NodeHandlerContext(
 	val calendarService: CalendarService,
 	override val intermediateDataMapperRegistry: IntermediateDataMapperRegistry,
 	val scheduler: Scheduler,
-	val openTelemetry: OpenTelemetry,
-) : IntermediateDataMapperRegistryContext, CodecRegistryContext
+	override val openTelemetry: OpenTelemetry,
+) : BaseNodeHandlerContext,
+    CodecRegistryContext,
+    OpenTelemetryContext
 
-interface IntermediateDataMapperRegistryContext {
+interface CodecRegistryContext : BaseNodeHandlerContext { val codecRegistry: CodecRegistry }
+interface OpenTelemetryContext : BaseNodeHandlerContext { val openTelemetry: OpenTelemetry }
+interface FetcherContext : BaseNodeHandlerContext { val entityStateService: EntityStateService }
+
+interface BaseNodeHandlerContext {
 	val intermediateDataMapperRegistry: IntermediateDataMapperRegistry
 }
 
-interface CodecRegistryContext {
-	val codecRegistry: CodecRegistry
-}
+suspend operator fun <T : BaseNodeHandlerContext> T.invoke(block: suspend T.() -> Unit) = block()
 
-typealias NodeContextBuilder = (NodeDescriptor) -> NodeHandlerContext
+internal typealias NodeContextBuilder<T> = (NodeDescriptor) -> T

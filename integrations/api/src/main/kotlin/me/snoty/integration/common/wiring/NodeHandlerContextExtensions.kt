@@ -15,7 +15,7 @@ import me.snoty.integration.common.BaseSnotyJson
  * Prefer to utilize this function if you need http client functionality as this will guarantee the best compatibility and observability.
  * The client can be further customized in the [block].
  */
-fun NodeHandlerContext.httpClient(block: HttpClientConfig<*>.() -> Unit = {}) = HttpClient {
+fun OpenTelemetryContext.httpClient(block: HttpClientConfig<*>.() -> Unit = {}) = HttpClient {
 	install(KtorClientTracing) {
 		setOpenTelemetry(openTelemetry)
 		setSpanNameExtractor { "HTTP ${it.method.value} ${it.url.hostWithPort}${it.url.encodedPath}" }

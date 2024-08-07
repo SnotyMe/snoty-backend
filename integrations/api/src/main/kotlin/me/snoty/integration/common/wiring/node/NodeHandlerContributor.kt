@@ -2,6 +2,6 @@ package me.snoty.integration.common.wiring.node
 
 import me.snoty.integration.common.wiring.NodeContextBuilder
 
-interface NodeHandlerContributor {
-	fun contributeHandlers(registry: NodeRegistry, nodeContextBuilder: NodeContextBuilder)
+interface NodeHandlerContributor<T> {
+	fun contributeHandlers(registry: NodeRegistry, nodeContextBuilder: NodeContextBuilder<T>)
 }

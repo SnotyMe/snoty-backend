@@ -14,7 +14,6 @@ import kotlin.reflect.KClass
  * This can be fetching data from an LMS, mapping data, publishing results, etc.
  */
 interface NodeHandler {
-	val nodeHandlerContext: NodeHandlerContext
 	val settingsClass: KClass<out NodeSettings>
 
 	context(NodeHandlerContext, EmitNodeOutputContext)

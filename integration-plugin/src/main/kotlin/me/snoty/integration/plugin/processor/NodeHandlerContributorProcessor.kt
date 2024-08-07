@@ -1,6 +1,7 @@
 package me.snoty.integration.plugin.processor
 
-import com.google.devtools.ksp.*
+import com.google.devtools.ksp.KspExperimental
+import com.google.devtools.ksp.getAnnotationsByType
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
@@ -12,16 +13,17 @@ import com.squareup.kotlinpoet.ksp.writeTo
 import com.squareup.kotlinpoet.metadata.specs.toTypeSpec
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.metadata.NodeMetadata
+import me.snoty.integration.common.wiring.BaseNodeHandlerContext
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeHandlerContributor
 import me.snoty.integration.plugin.utils.quoted
+import kotlin.reflect.full.createType
 
 class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGenerator: CodeGenerator) : SymbolProcessor {
 	@OptIn(KspExperimental::class)
 	override fun process(resolver: Resolver): List<KSAnnotated> {
 		val allElements = resolver.getSymbolsWithAnnotation(RegisterNode::class.qualifiedName!!)
 			.filterIsInstance<KSClassDeclaration>()
-
 		val available = allElements
 			.filter {
 				resolver.getDeclarationsFromPackage(it.packageName.asString())
@@ -41,15 +43,19 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 	@OptIn(KspExperimental::class)
 	private fun processClass(clazz: KSClassDeclaration) {
 		val node = clazz.getAnnotationsByType(RegisterNode::class).first()
-
 		val contributorClassName = ClassName(clazz.packageName.asString(), "${clazz.simpleName.asString()}Contributor")
 		val classBuilder = TypeSpec.classBuilder(contributorClassName)
 		val fileSpec = FileSpec.builder(contributorClassName)
 
 		classBuilder
-			.addSuperinterface(NodeHandlerContributor::class)
+			.addSuperinterface(
+				NodeHandlerContributor::class.createType(
+					arguments = clazz.primaryConstructor!!.parameters!!.first {
+						it.type.resolve().isAssignableFrom(BaseNodeHandlerContext::class.createType().asTypeName())
+					})
+					.asTypeName()
+			)
 			.addFunction(createNodeHandlerContributorFun(clazz, node))
-
 		// write SPI file
 		codeGenerator.createNewFileByPath(
 			dependencies = Dependencies(aggregating = false, clazz.containingFile!!),
@@ -58,7 +64,6 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 		).writer().use {
 			it.appendLine(contributorClassName.canonicalName)
 		}
-
 		// write contributor file
 		fileSpec
 			.addType(classBuilder.build())

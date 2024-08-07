@@ -16,6 +16,8 @@ import org.slf4j.Logger
 import org.slf4j.event.Level
 import kotlin.reflect.KClass
 
+interface MoodleContext: FetcherContext, OpenTelemetryContext
+
 @RegisterNode(
 	displayName = "Moodle",
 	type = "moodle",
@@ -24,12 +26,12 @@ import kotlin.reflect.KClass
 	outputType = MoodleAssignment::class
 )
 class MoodleIntegration(
-	override val nodeHandlerContext: NodeHandlerContext,
+	private val nodeHandlerContext: MoodleContext,
 	private val moodleAPI: MoodleAPI = MoodleAPIImpl(nodeHandlerContext.httpClient())
 ) : NodeHandler {
 	override val settingsClass: KClass<out NodeSettings> = MoodleSettings::class
 
-	context(NodeHandlerContext, FetchContext)
+	context(MoodleContext, FetchContext)
 	private suspend fun fetchAssignments(
 		node: Node,
 	): List<MoodleAssignment> {
@@ -50,8 +52,8 @@ class MoodleIntegration(
 		return assignments
 	}
 
-	context(NodeHandlerContext, EmitNodeOutputContext)
-	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
+	context(EmitNodeOutputContext)
+	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) = nodeHandlerContext {
 		val jobContext: JobContext = input.get()
 		val fetchContext = fetchContext(logger, jobContext, 1)
 

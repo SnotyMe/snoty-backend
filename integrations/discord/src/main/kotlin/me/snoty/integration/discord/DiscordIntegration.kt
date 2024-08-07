@@ -12,7 +12,8 @@ import me.snoty.integration.common.model.metadata.FieldName
 import me.snoty.integration.common.wiring.*
 import me.snoty.integration.common.wiring.data.EmitNodeOutputContext
 import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.node.*
+import me.snoty.integration.common.wiring.node.NodeHandler
+import me.snoty.integration.common.wiring.node.NodeSettings
 import org.slf4j.Logger
 import kotlin.reflect.KClass
 
@@ -35,13 +36,13 @@ data class DiscordSettings(
 	inputType = DiscordWebhook.Message::class
 )
 class DiscordNodeHandler(
-	override val nodeHandlerContext: NodeHandlerContext,
+	private val nodeHandlerContext: OpenTelemetryContext,
 	private val client: HttpClient = nodeHandlerContext.httpClient()
 ) : NodeHandler {
 	override val settingsClass: KClass<out NodeSettings> = DiscordSettings::class
 
-	context(NodeHandlerContext, EmitNodeOutputContext)
-	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
+	context(EmitNodeOutputContext)
+	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) = nodeHandlerContext {
 		val config: DiscordSettings = node.getConfig()
 		val data: DiscordWebhook.Message = input.get()
 
@@ -50,7 +51,7 @@ class DiscordNodeHandler(
 				throw IllegalStateException("Discord message content and fields are empty")
 			} else {
 				logger.warn("Discord message content is empty, aborting...")
-				return
+				return@nodeHandlerContext
 			}
 		}
 
