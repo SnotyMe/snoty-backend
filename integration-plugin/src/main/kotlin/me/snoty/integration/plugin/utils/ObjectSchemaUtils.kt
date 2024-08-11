@@ -9,6 +9,7 @@ import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
+import me.snoty.backend.utils.toTitleCase
 import me.snoty.integration.common.model.metadata.*
 import kotlin.reflect.KClass
 
@@ -22,7 +23,7 @@ fun generateObjectSchema(resolver: Resolver, clazz: KSClassDeclaration): ObjectS
 		val name = prop.simpleName
 		val hidden = prop.hasAnnotation<FieldHidden>()
 		val censored = prop.hasAnnotation<FieldCensored>()
-		val displayName = prop.getAnnotation<FieldName>()?.value ?: name.asString()
+		val displayName = prop.getAnnotation<FieldName>()?.value ?: name.asString().toTitleCase()
 		val description = prop.getAnnotation<FieldDescription>()?.value
 
 		val details = resolver.getDetails(prop)
