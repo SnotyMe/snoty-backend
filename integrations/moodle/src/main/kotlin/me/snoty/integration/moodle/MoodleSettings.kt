@@ -10,9 +10,7 @@ data class MoodleSettings(
 	override val name: String = "Moodle",
 	@FieldName("Base URL")
 	val baseUrl: String,
-	@FieldName("Username")
 	val username: String,
 	@FieldCensored
-	@FieldName("App Secret")
 	val appSecret: String,
 ) : NodeSettings
