@@ -6,16 +6,14 @@ import org.eclipse.jgit.api.Git
 import org.jetbrains.gradle.ext.Application
 import org.jetbrains.gradle.ext.runConfigurations
 import org.jetbrains.gradle.ext.settings
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kotlin.kover)
     application
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.buildinfo)
     alias(libs.plugins.jib)
     alias(libs.plugins.idea)
+    id("snoty.kotlin-conventions")
 }
 
 group = "me.snoty"
@@ -23,20 +21,8 @@ version = "0.0.1"
 
 val isDevelopment: Boolean = project.findProperty("me.snoty.development")?.toString().toBoolean()
 
-allprojects {
-    repositories {
-        mavenCentral()
-        maven("https://maven.simulatan.me/releases")
-    }
-
-    tasks.withType<KotlinCompile>().configureEach {
-        kotlin {
-            compilerOptions {
-                freeCompilerArgs.add("-Xcontext-receivers")
-                optIn.add("kotlinx.coroutines.ExperimentalCoroutinesApi")
-            }
-        }
-    }
+subprojects {
+    apply(plugin = "snoty.kotlin-conventions")
 }
 
 val devSourceSet = sourceSets.create("dev") {
@@ -104,7 +90,6 @@ dependencies {
     fun moduleImplementation(dependency: Any) {
         implementation(dependency)
         testImplementation(dependency)
-        kover(dependency)
     }
 
     moduleImplementation(projects.api)
@@ -209,19 +194,9 @@ tasks.check {
 }
 
 kover {
-    this.merge {
-        this.allProjects()
-    }
     currentProject {
-        this.sources {
-            // per default, kover only excludes `test`
-            // since we also have `testIntegration`, we have to exclude it
-            testing.suites
-                .filterIsInstance<JvmTestSuite>()
-                .forEach {
-                    this.excludedSourceSets.add(it.sources.name)
-                }
-            this.excludedSourceSets.add(devSourceSet.name)
+        sources {
+            excludedSourceSets.add(devSourceSet.name)
         }
     }
 }

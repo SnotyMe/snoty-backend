@@ -1,7 +1,3 @@
-plugins {
-	alias(libs.plugins.kotlin.jvm)
-}
-
 dependencies {
 	implementation(integrationPlugin.ksp.api)
 	implementation(projects.integrations.api)
