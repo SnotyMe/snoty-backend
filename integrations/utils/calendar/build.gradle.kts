@@ -4,5 +4,5 @@ plugins {
 
 dependencies {
     compileOnly(projects.integrations.api)
-    api(libraries.ical4j)
+    api(libs.libraries.ical4j)
 }

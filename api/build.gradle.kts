@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-dependencies {
+dependencies { with(libs) {
     api(libraries.kotlinx.serialization)
     api(libraries.kotlinx.datetime)
     api(libraries.jobrunr)
@@ -17,7 +17,7 @@ dependencies {
     api(monitoring.opentelemetry.context)
 
     implementation(tests.junit.api)
-}
+}}
 
 tasks.test {
     useJUnitPlatform()

@@ -54,7 +54,7 @@ testing {
                 environment("LOG_LEVEL", "TRACE")
             }
 
-            dependencies {
+            dependencies { with(libs) {
                 // API (contains things like Config)
                 // for some reason, transitive dependencies aren't included in the test classpath
                 implementation(projects.api)
@@ -73,7 +73,7 @@ testing {
 
                 runtimeOnly(tests.junit.engine)
                 runtimeOnly(tests.junit.launcher)
-            }
+            }}
         }
     }
 }
@@ -82,7 +82,7 @@ val devImplementation: Configuration by configurations.getting {
     extendsFrom(configurations.implementation.get())
 }
 
-dependencies {
+dependencies { with(libs) {
     fun moduleImplementation(dependency: Any) {
         implementation(dependency)
         testImplementation(dependency)
@@ -95,9 +95,9 @@ dependencies {
     implementation(configuration.hoplite.yaml)
     implementation(configuration.hoplite.datetime)
 
+    // ktor
     implementation(ktor.serialization.kotlinx.json)
 
-    // ktor
     implementation(ktor.server.core)
     implementation(ktor.server.netty)
 
@@ -165,7 +165,7 @@ dependencies {
         .forEach {
             moduleImplementation(it)
         }
-}
+}}
 
 if (isDevelopment) {
     tasks.run.configure {

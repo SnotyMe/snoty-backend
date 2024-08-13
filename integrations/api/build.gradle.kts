@@ -2,7 +2,7 @@ plugins {
 	alias(libs.plugins.kotlin.serialization)
 }
 
-dependencies {
+dependencies { with(libs) {
 	api(projects.api)
 
 	implementation(database.mongodb)
@@ -25,7 +25,7 @@ dependencies {
 
 	testImplementation(kotlin("test"))
 	testImplementation(tests.mockk)
-}
+}}
 
 base.archivesName = "integration-api"
 

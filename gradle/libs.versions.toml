@@ -1,0 +1,91 @@
+[versions]
+hoplite = "2.8.0.RC3"
+ksp = "2.0.10-1.0.24"
+jackson = "2.17.0"
+kotlinx-serialization = "1.7.1"
+kotlin = "2.0.10"
+opentelemetry = "1.39.0"
+junit = "5.10.2"
+testcontainers = "1.19.7"
+
+[plugins]
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+buildinfo = { id = "io.github.simulatan.gradle-buildinfo-plugin", version = "2.1.0" }
+idea = { id = "org.jetbrains.gradle.plugin.idea-ext", version = "1.1.8" }
+jib = { id = "com.google.cloud.tools.jib", version = "3.4.1" }
+kotlin-dsl = { id = "org.gradle.kotlin.kotlin-dsl", version = "5.1.0" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-kover = { id = "org.jetbrains.kotlinx.kover", version = "0.8.0" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
+[libraries]
+configuration-hoplite-core = { group = "com.sksamuel.hoplite", name = "hoplite-core", version.ref = "hoplite" }
+configuration-hoplite-datetime = { group = "com.sksamuel.hoplite", name = "hoplite-datetime", version.ref = "hoplite" }
+configuration-hoplite-yaml = { group = "com.sksamuel.hoplite", name = "hoplite-yaml", version.ref = "hoplite" }
+
+database-mongodb = { group = "org.mongodb", name = "mongodb-driver-kotlin-coroutine", version = "5.1.0" }
+database-mongodb-sync = { group = "org.mongodb", name = "mongodb-driver-sync", version = "5.1.0" }
+
+dev-keycloak-adminClient = { group = "org.keycloak", name = "keycloak-admin-client", version = "24.0.2" }
+
+integrationPlugin-ksp-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
+
+ktor-client-apache = { group = "io.ktor", name = "ktor-client-apache-jvm", version = "3.0.0-beta-2" }
+ktor-client-contentNegotiation = { group = "io.ktor", name = "ktor-client-content-negotiation-jvm", version = "3.0.0-beta-2" }
+ktor-client-core = { group = "io.ktor", name = "ktor-client-core-jvm", version = "3.0.0-beta-2" }
+ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json-jvm", version = "3.0.0-beta-2" }
+ktor-server-auth = { group = "io.ktor", name = "ktor-server-auth-jvm", version = "3.0.0-beta-2" }
+ktor-server-auth-jwt = { group = "io.ktor", name = "ktor-server-auth-jwt-jvm", version = "3.0.0-beta-2" }
+ktor-server-call-id = { group = "io.ktor", name = "ktor-server-call-id-jvm", version = "3.0.0-beta-2" }
+ktor-server-call-logging = { group = "io.ktor", name = "ktor-server-call-logging-jvm", version = "3.0.0-beta-2" }
+ktor-server-contentNegotiation = { group = "io.ktor", name = "ktor-server-content-negotiation-jvm", version = "3.0.0-beta-2" }
+ktor-server-core = { group = "io.ktor", name = "ktor-server-core-jvm", version = "3.0.0-beta-2" }
+ktor-server-cors = { group = "io.ktor", name = "ktor-server-cors-jvm", version = "3.0.0-beta-2" }
+ktor-server-defaultHeaders = { group = "io.ktor", name = "ktor-server-default-headers-jvm", version = "3.0.0-beta-2" }
+ktor-server-doubleReceive = { group = "io.ktor", name = "ktor-server-double-receive-jvm", version = "3.0.0-beta-2" }
+ktor-server-forwardedHeader = { group = "io.ktor", name = "ktor-server-forwarded-header-jvm", version = "3.0.0-beta-2" }
+ktor-server-hostCommon = { group = "io.ktor", name = "ktor-server-host-common-jvm", version = "3.0.0-beta-2" }
+ktor-server-netty = { group = "io.ktor", name = "ktor-server-netty-jvm", version = "3.0.0-beta-2" }
+ktor-server-statusPages = { group = "io.ktor", name = "ktor-server-status-pages-jvm", version = "3.0.0-beta-2" }
+
+libraries-bson-kotlinx = { group = "org.mongodb", name = "bson-kotlinx", version = "5.1.0" }
+libraries-ical4j = { group = "org.mnode.ical4j", name = "ical4j", version = "4.0.0-rc6" }
+libraries-jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson" }
+libraries-jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
+libraries-jackson-kotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version.ref = "jackson" }
+libraries-jobrunr = { group = "org.jobrunr", name = "jobrunr", version = "7.1.0" }
+libraries-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.5.0" }
+libraries-kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
+libraries-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+libraries-openfeature = { group = "dev.openfeature", name = "sdk", version = "1.8.0" }
+libraries-openfeature-flagd = { group = "dev.openfeature.contrib.providers", name = "flagd", version = "0.8.1" }
+
+log-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-slf4j", version = "1.8.1" }
+log-kotlinLogging = { group = "io.github.oshai", name = "kotlin-logging", version = "6.0.9" }
+log-logback = { group = "ch.qos.logback", name = "logback-classic", version = "1.4.14" }
+
+monitoring-ktor-opentelemetry = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-ktor-3.0", version = "2.5.0-alpha-snoty.1" }
+monitoring-ktor-server-metricsMicrometer = { group = "io.ktor", name = "ktor-server-metrics-micrometer-jvm", version = "3.0.0-beta-2" }
+monitoring-micrometer = { group = "io.micrometer", name = "micrometer-core", version = "1.6.3" }
+monitoring-micrometer-prometheus = { group = "io.micrometer", name = "micrometer-registry-prometheus", version = "1.6.3" }
+monitoring-opentelemetry-api = { group = "io.opentelemetry", name = "opentelemetry-api", version.ref = "opentelemetry" }
+monitoring-opentelemetry-context = { group = "io.opentelemetry", name = "opentelemetry-context", version.ref = "opentelemetry" }
+monitoring-opentelemetry-exporter-otlp = { group = "io.opentelemetry", name = "opentelemetry-exporter-otlp", version.ref = "opentelemetry" }
+monitoring-opentelemetry-kotlin = { group = "io.opentelemetry", name = "opentelemetry-extension-kotlin", version.ref = "opentelemetry" }
+monitoring-opentelemetry-logback = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-logback-appender-1.0", version = "2.5.0-alpha" }
+monitoring-opentelemetry-sdk = { group = "io.opentelemetry", name = "opentelemetry-sdk", version.ref = "opentelemetry" }
+monitoring-opentelemetry-semconv = { group = "io.opentelemetry.semconv", name = "opentelemetry-semconv", version = "1.25.0-alpha" }
+monitoring-opentelemetry-testing = { group = "io.opentelemetry", name = "opentelemetry-sdk-testing", version.ref = "opentelemetry" }
+
+tests-assertj-core = { group = "org.assertj", name = "assertj-core", version = "3.25.3" }
+tests-h2 = { group = "com.h2database", name = "h2", version = "2.2.224" }
+tests-json = { group = "org.json", name = "json", version = "20240303" }
+tests-junit-api = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit" }
+tests-junit-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit" }
+tests-junit-launcher = { group = "org.junit.platform", name = "junit-platform-launcher", version = "1.10.2" }
+tests-ktor-server-testHost = { group = "io.ktor", name = "ktor-server-test-host-jvm", version = "3.0.0-beta-2" }
+tests-mockk = { group = "io.mockk", name = "mockk", version = "1.13.10" }
+tests-testcontainers = { group = "org.testcontainers", name = "testcontainers", version.ref = "testcontainers" }
+tests-testcontainers-junit = { group = "org.testcontainers", name = "junit-jupiter", version.ref = "testcontainers" }
+tests-testcontainers-keycloak = { group = "com.github.dasniko", name = "testcontainers-keycloak", version = "3.3.1" }
+tests-testcontainers-mongodb = { group = "org.testcontainers", name = "mongodb", version.ref = "testcontainers" }
