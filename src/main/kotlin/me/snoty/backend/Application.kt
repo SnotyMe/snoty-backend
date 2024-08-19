@@ -8,11 +8,10 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.modules.plus
 import me.snoty.backend.build.DevBuildInfo
 import me.snoty.backend.config.ConfigLoaderImpl
-import me.snoty.backend.config.ProviderFeatureFlagConfig
 import me.snoty.backend.database.mongo.createMongoClients
+import me.snoty.backend.featureflags.FeatureFlagClientProvider
 import me.snoty.backend.featureflags.FeatureFlags
 import me.snoty.backend.featureflags.FeatureFlagsSetup
-import me.snoty.backend.featureflags.provider.FlagdProvider
 import me.snoty.backend.injection.ServicesContainerImpl
 import me.snoty.backend.integration.MongoEntityStateService
 import me.snoty.backend.integration.config.MongoNodeService
@@ -65,10 +64,7 @@ fun main() = runBlocking {
 			throw e
 		}
 	}
-	val featureClient = when (val featureFlagsConfig = config.featureFlags.value) {
-			is ProviderFeatureFlagConfig.Flagd -> FlagdProvider.createClient(featureFlagsConfig)
-			else -> throw IllegalArgumentException("No provider found for ${config.featureFlags.value}")
-		}
+	val featureClient = FeatureFlagClientProvider.provideClient(config.featureFlags.value)
 	val featureFlags = FeatureFlags(config, featureClient)
 	FeatureFlagsSetup.setup(featureClient, featureFlags)
 
