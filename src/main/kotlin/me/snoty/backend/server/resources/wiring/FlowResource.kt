@@ -13,6 +13,7 @@ import me.snoty.backend.integration.flow.logging.NodeLogService
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.letOrNull
 import me.snoty.integration.common.config.NodeService
+import me.snoty.integration.common.http.nodeNotFound
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.model.NodePosition

@@ -88,7 +88,9 @@ val MockNodeHandlerContext = NodeHandlerContext(
 		this[SimpleIntermediateData::class] = SimpleIntermediateDataMapper
 	},
 	scheduler = mockk(),
-	openTelemetry = mockk()
+	openTelemetry = mockk(),
+	nodePersistenceServiceFactory = mockk(),
+	hookRegistry = mockk(relaxed = true)
 )
 
 val TestFlowBuilder = FlowBuilderImpl {

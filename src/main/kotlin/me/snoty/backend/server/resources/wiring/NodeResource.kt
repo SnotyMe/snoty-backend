@@ -19,6 +19,7 @@ import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.letOrNull
 import me.snoty.backend.utils.respondServiceResult
 import me.snoty.integration.common.config.NodeService
+import me.snoty.integration.common.http.nodeNotFound
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.node.NodeDescriptor
@@ -113,12 +114,3 @@ suspend fun ApplicationCall.noHandlerFound(descriptor: NodeDescriptor)
 
 suspend fun ApplicationCall.noSerializerFound(handler: NodeHandler)
 	= respond(HttpStatusCode.BadRequest, "No serializer found for ${handler.settingsClass}")
-
-suspend fun ApplicationCall.nodeNotFound(node: Node?) = nodeNotFound(node?._id)
-suspend fun ApplicationCall.nodeNotFound(id: NodeId?) {
-	val message = when {
-		id != null -> "Node $id not found"
-		else -> "Node not found"
-	}
-	respond(HttpStatusCode.NotFound, message)
-}

@@ -4,10 +4,12 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.ktor.server.routing.*
 import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.serialization.json.Json
 import me.snoty.backend.build.BuildInfo
 import me.snoty.backend.config.Config
+import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.injection.ServicesContainer
 import me.snoty.backend.server.plugins.*
 
@@ -16,7 +18,8 @@ class KtorServer(
 	private val buildInfo: BuildInfo,
 	private val metricsRegistry: MeterRegistry,
 	private val servicesContainer: ServicesContainer,
-	private val json: Json
+	private val json: Json,
+	private val hookRegistry: HookRegistry,
 ) {
 	private val logger = KotlinLogging.logger {}
 
@@ -45,6 +48,7 @@ class KtorServer(
 		configureSecurity(config)
 		configureSerialization(json)
 		configureRouting(config)
+		routing { hookRegistry.executeHooks(Routing::class, this) }
 		addResources(buildInfo, servicesContainer, json)
 	}
 }

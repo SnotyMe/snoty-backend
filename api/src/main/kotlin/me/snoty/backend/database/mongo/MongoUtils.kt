@@ -9,6 +9,7 @@ import com.mongodb.kotlin.client.coroutine.MongoCollection
 import kotlinx.coroutines.flow.firstOrNull
 import org.bson.Document
 import org.bson.conversions.Bson
+import kotlin.reflect.KProperty
 
 inline fun <reified T : Any> MongoCollection<*>.aggregate(vararg stages: Bson): AggregateFlow<T>
 	= aggregate<T>(stages.toList())
@@ -35,6 +36,9 @@ object Aggregations {
 				*projections
 			)
 		)
+
+	fun unwind(field: KProperty<*>): Bson
+		= Aggregates.unwind("$${field.name}")
 }
 
 object Stages {

@@ -12,6 +12,7 @@ import me.snoty.backend.database.mongo.createMongoClients
 import me.snoty.backend.featureflags.FeatureFlagClientProvider
 import me.snoty.backend.featureflags.FeatureFlags
 import me.snoty.backend.featureflags.FeatureFlagsSetup
+import me.snoty.backend.hooks.HookRegistryImpl
 import me.snoty.backend.injection.ServicesContainerImpl
 import me.snoty.backend.integration.MongoEntityStateService
 import me.snoty.backend.integration.config.MongoNodeService
@@ -29,6 +30,8 @@ import me.snoty.backend.scheduling.JobRunrScheduler
 import me.snoty.backend.scheduling.node.JobRunrNodeScheduler
 import me.snoty.backend.server.KtorServer
 import me.snoty.backend.spi.DevManager
+import me.snoty.backend.wiring.node.MongoNodePersistenceService
+import me.snoty.backend.wiring.node.MongoNodePersistenceServiceFactory
 import me.snoty.backend.wiring.node.NodeHandlerContributorLookup
 import me.snoty.integration.common.snotyJson
 import me.snoty.integration.common.wiring.NodeHandlerContext
@@ -37,9 +40,12 @@ import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
 import me.snoty.integration.common.wiring.data.impl.BsonIntermediateDataMapper
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateDataMapper
+import me.snoty.integration.common.wiring.node.NodePersistenceService
+import me.snoty.integration.common.wiring.node.NodePersistenceServiceFactory
 import me.snoty.integration.common.wiring.node.serializersModule
 import org.bson.codecs.configuration.CodecRegistry
 import java.util.concurrent.Executors
+import kotlin.reflect.KClass
 
 fun main() = runBlocking {
 	setupLogbackFilters()
@@ -101,6 +107,8 @@ fun main() = runBlocking {
 	intermediateDataMapperRegistry[BsonIntermediateData::class] = BsonIntermediateDataMapper(codecRegistry)
 	intermediateDataMapperRegistry[SimpleIntermediateData::class] = SimpleIntermediateDataMapper
 
+	val hookRegistry = HookRegistryImpl()
+
 	NodeHandlerContributorLookup.executeContributors(nodeRegistry) { descriptor ->
 		val entityStateService = MongoEntityStateService(mongoDB, descriptor, meterRegistry, metricsPool)
 		entityStateService.scheduleMetricsTask()
@@ -112,7 +120,9 @@ fun main() = runBlocking {
 			calendarService = calendarService,
 			scheduler = scheduler,
 			openTelemetry = openTelemetry,
-			intermediateDataMapperRegistry = intermediateDataMapperRegistry
+			intermediateDataMapperRegistry = intermediateDataMapperRegistry,
+			hookRegistry = hookRegistry,
+			nodePersistenceServiceFactory = MongoNodePersistenceServiceFactory(mongoDB)
 		)
 	}
 	val nodeJson = snotyJson {
@@ -131,6 +141,6 @@ fun main() = runBlocking {
 		register(CodecRegistry::class, codecRegistry)
 	}
 
-	KtorServer(config, buildInfo, meterRegistry, services, nodeJson)
+	KtorServer(config, buildInfo, meterRegistry, services, nodeJson, hookRegistry)
 		.start(wait = true)
 }
