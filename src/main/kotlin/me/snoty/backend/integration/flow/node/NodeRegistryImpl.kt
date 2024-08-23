@@ -17,7 +17,8 @@ class NodeRegistryImpl : NodeRegistry {
 		return handlers[descriptor]
 	}
 
-	override fun registerHandler(descriptor: NodeDescriptor, metadata: NodeMetadata, handler: NodeHandler) {
+	override fun registerHandler(metadata: NodeMetadata, handler: NodeHandler) {
+		val descriptor = metadata.descriptor
 		handlers[descriptor] = handler
 		metadatas[descriptor] = metadata
 	}

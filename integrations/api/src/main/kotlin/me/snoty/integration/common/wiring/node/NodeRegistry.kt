@@ -12,7 +12,7 @@ interface NodeRegistry {
 	 */
 	fun lookupDescriptorsByPosition(position: NodePosition): List<NodeDescriptor>
 
-	fun registerHandler(descriptor: NodeDescriptor, metadata: NodeMetadata, handler: NodeHandler)
+	fun registerHandler(metadata: NodeMetadata, handler: NodeHandler)
 
 	fun getHandlers(): Map<NodeDescriptor, NodeHandler>
 	fun getMetadata(): Map<NodeDescriptor, NodeMetadata>

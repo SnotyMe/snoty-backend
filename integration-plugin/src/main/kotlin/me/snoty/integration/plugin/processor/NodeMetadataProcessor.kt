@@ -9,6 +9,7 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.ksp.writeTo
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.metadata.NodeMetadata
+import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.plugin.utils.addDataClassInitializer
 import me.snoty.integration.plugin.utils.generateObjectSchema
 import me.snoty.integration.plugin.utils.resolveClassFromAnnotation
@@ -38,6 +39,7 @@ class NodeMetadataProcessor(private val logger: KSPLogger, private val codeGener
 		val outputClass = resolver.resolveClassFromAnnotation(clazz, RegisterNode::outputType)
 
 		val metadata = NodeMetadata(
+			descriptor = NodeDescriptor(subsystem = node.subsystem, type = node.type),
 			displayName = displayName,
 			position = node.position,
 			settings = generateObjectSchema(resolver, settingsClass)!!,

@@ -17,10 +17,7 @@ interface NodeService {
 
 	fun getByUser(userID: UUID, position: NodePosition?): Flow<StandaloneNode>
 
-	/**
-	 * @return ID of the newly created entry
-	 */
-	suspend fun <S : NodeSettings> create(userID: UUID, descriptor: NodeDescriptor, settings: S): NodeId
+	suspend fun <S : NodeSettings> create(userID: UUID, descriptor: NodeDescriptor, settings: S): StandaloneNode
 
 	suspend fun connect(from: NodeId, to: NodeId): ServiceResult
 	suspend fun disconnect(from: NodeId, to: NodeId): ServiceResult

@@ -9,7 +9,7 @@ import me.snoty.backend.test.MongoTest
 import me.snoty.backend.test.NoOpNodeHandler
 import me.snoty.backend.test.TestIds.USER_ID_1
 import me.snoty.backend.test.TestIds.USER_ID_CONTROL
-import me.snoty.backend.test.TestNodeMetadata
+import me.snoty.backend.test.nodeMetadata
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
@@ -24,7 +24,7 @@ class MongoNodeServiceTest {
 
 	private val db = MongoTest.getMongoDatabase {}
 	private val nodeRegistry = NodeRegistryImpl().apply {
-		registerHandler(descriptor, TestNodeMetadata.copy(position = NodePosition.START), NoOpNodeHandler)
+		registerHandler(nodeMetadata(descriptor = descriptor, position = NodePosition.START), NoOpNodeHandler)
 	}
 	private val service = MongoNodeService(db, nodeRegistry, mockk(relaxed = true)) {
 		EmptyNodeSettings()
@@ -32,11 +32,11 @@ class MongoNodeServiceTest {
 
 	@Test
 	fun `test getByUser`(): Unit = runBlocking {
-		val nodeId = service.create(USER_ID_1, descriptor, EmptyNodeSettings())
+		val createdNode = service.create(USER_ID_1, descriptor, EmptyNodeSettings())
 
 		val byUser = service.getByUser(USER_ID_1, NodePosition.START).toList()
 		assertEquals(1, byUser.size)
-		assertEquals(nodeId, byUser[0]._id)
+		assertEquals(createdNode, byUser[0])
 
 		val byNotStart = service.getByUser(USER_ID_1, NodePosition.MIDDLE).toList()
 		assertEquals(0, byNotStart.size)

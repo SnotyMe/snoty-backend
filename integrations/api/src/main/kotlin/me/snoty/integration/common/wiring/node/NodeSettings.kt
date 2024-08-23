@@ -13,9 +13,9 @@ interface NodeSettings {
 	val name: String
 }
 
-class EmptyNodeSettings : NodeSettings {
+data class EmptyNodeSettings(
 	override val name: String = "Empty"
-}
+) : NodeSettings
 
 object EmptyNodeSettingsCodec : Codec<EmptyNodeSettings> {
 	override fun getEncoderClass(): Class<EmptyNodeSettings> = EmptyNodeSettings::class.java

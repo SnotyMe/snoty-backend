@@ -76,7 +76,7 @@ class MongoNodeService(
 		return graphNode.toStandalone(settings)
 	}
 
-	override suspend fun <S : NodeSettings> create(userID: UUID, descriptor: NodeDescriptor, settings: S): NodeId {
+	override suspend fun <S : NodeSettings> create(userID: UUID, descriptor: NodeDescriptor, settings: S): StandaloneNode {
 		val metadata = nodeRegistry.getMetadata(descriptor)
 
 		val node = GraphNode(
@@ -90,7 +90,8 @@ class MongoNodeService(
 		if (metadata.position == NodePosition.START) {
 			scheduler.schedule(node.toStandalone(settings))
 		}
-		return node._id
+
+		return node.toStandalone(settings)
 	}
 
 	override suspend fun connect(from: NodeId, to: NodeId): ServiceResult {

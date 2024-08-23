@@ -3,10 +3,12 @@ package me.snoty.integration.common.model.metadata
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import me.snoty.integration.common.model.NodePosition
+import me.snoty.integration.common.wiring.node.NodeDescriptor
 
 @Serializable
 data class NodeMetadata(
 	val displayName: String,
+	val descriptor: NodeDescriptor,
 	val position: NodePosition,
 	val settings: ObjectSchema,
 	val input: ObjectSchema?,

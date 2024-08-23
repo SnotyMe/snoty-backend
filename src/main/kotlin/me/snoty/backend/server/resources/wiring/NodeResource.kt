@@ -21,7 +21,6 @@ import me.snoty.backend.utils.respondServiceResult
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.http.nodeNotFound
 import me.snoty.integration.common.model.metadata.NodeMetadata
-import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeRegistry
@@ -62,9 +61,9 @@ fun Routing.nodeResource(json: Json) {
 		val (descriptor, settingsJson) = call.receive<NodeCreateRequest>()
 		val settingsObj = deserializeSettings(call, descriptor, settingsJson) ?: return@post
 
-		val id = nodeService.create(user.id, descriptor, settingsObj)
+		val createdNode = nodeService.create(user.id, descriptor, settingsObj)
 
-		call.respondText(status = HttpStatusCode.Created, text = id.toString())
+		call.respond(status = HttpStatusCode.Created, message = createdNode)
 	}
 
 	@Serializable

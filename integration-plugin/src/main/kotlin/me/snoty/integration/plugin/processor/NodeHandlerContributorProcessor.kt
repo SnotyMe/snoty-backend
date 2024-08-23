@@ -103,15 +103,9 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 				modifiers -= KModifier.ABSTRACT
 				modifiers += KModifier.OVERRIDE
 			}
-			.addStatement(
-				"val descriptor = %T(%L, %L)",
-				NodeDescriptor::class.asTypeName(),
-				node.subsystem.quoted(),
-				node.type.quoted()
-			)
-			.addStatement("val nodeContext = nodeContextBuilder(descriptor)")
+			.addStatement("val nodeContext = nodeContextBuilder(metadata.descriptor)")
 			.addStatement("val handler = %T(nodeContext)", handler.toClassName())
-			.addStatement("registry.registerHandler(descriptor, metadata, handler)")
+			.addStatement("registry.registerHandler(metadata, handler)")
 
 		return funSpec.build()
 	}
