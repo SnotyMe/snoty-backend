@@ -4,7 +4,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import io.ktor.server.routing.*
 import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.serialization.json.Json
 import me.snoty.backend.build.BuildInfo
@@ -48,7 +47,6 @@ class KtorServer(
 		configureSecurity(config)
 		configureSerialization(json)
 		configureRouting(config)
-		routing { hookRegistry.executeHooks(Routing::class, this) }
-		addResources(buildInfo, servicesContainer, json)
+		addResources(buildInfo, servicesContainer, json, hookRegistry)
 	}
 }

@@ -11,8 +11,13 @@ interface NodePersistenceService<T : Any> {
 }
 
 interface NodePersistenceServiceFactory {
-	fun <T : Any> create(name: String, entityClass: KClass<T>): NodePersistenceService<T>
+	fun <T : Any> create(nodeDescriptor: NodeDescriptor, name: String, entityClass: KClass<T>): NodePersistenceService<T>
 }
 
-inline fun <reified T : Any> NodeHandler.persistenceService(name: String) =
-	nodeHandlerContext.nodePersistenceServiceFactory.create<T>(name, T::class)
+inline fun <reified T : Any> NodeHandler.persistenceService(name: String) = with(nodeHandlerContext) {
+	nodePersistenceServiceFactory.create(
+		nodeDescriptor = metadata.descriptor,
+		name = name,
+		entityClass = T::class
+	)
+}

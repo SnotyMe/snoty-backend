@@ -5,6 +5,7 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
+import me.snoty.backend.database.mongo.mongoCollectionPrefix
 import me.snoty.backend.utils.listAsElements
 import me.snoty.integration.common.diff.*
 import me.snoty.integration.common.diff.state.EntityState
@@ -22,8 +23,8 @@ class MongoEntityStateService(
 	meterRegistry: MeterRegistry,
 	private val metricsPool: ScheduledExecutorService
 ) : EntityStateService {
-	private val nodeEntityStates: EntityStateCollection = mongoDB.getCollection<NodeEntityStates>("${integration.subsystem}.${integration.type}.entityStates")
-	private val userEntityChanges: EntityChangesCollection = mongoDB.getCollection<UserEntityChanges>("${integration.subsystem}.${integration.type}.entityChanges")
+	private val nodeEntityStates: EntityStateCollection = mongoDB.getCollection<NodeEntityStates>("${integration.mongoCollectionPrefix}.entityStates")
+	private val userEntityChanges: EntityChangesCollection = mongoDB.getCollection<UserEntityChanges>("${integration.mongoCollectionPrefix}.entityChanges")
 	private val entityDiffMetrics = EntityDiffMetrics(meterRegistry, integration.type, nodeEntityStates)
 
 	override fun scheduleMetricsTask() {

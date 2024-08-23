@@ -11,60 +11,39 @@ import me.snoty.backend.database.mongo.encode
 import me.snoty.backend.errors.ServiceResult
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.utils.SettingsLookup
-import me.snoty.backend.scheduling.node.NodeScheduler
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.config.NodeServiceResults
+import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.StandaloneNode
 import me.snoty.integration.common.wiring.flow.FLOW_COLLECTION_NAME
 import me.snoty.integration.common.wiring.graph.GraphNode
 import me.snoty.integration.common.wiring.graph.toStandalone
-import me.snoty.integration.common.wiring.node.*
-import me.snoty.integration.common.model.NodePosition
+import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.NodeRegistry
+import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.conversions.Bson
 import java.util.*
 
 class MongoNodeService(
 	db: MongoDatabase,
 	private val nodeRegistry: NodeRegistry,
-	private val scheduler: NodeScheduler,
 	private val settingsLookup: SettingsLookup
 ) : NodeService {
 	private val collection = db.getCollection<GraphNode>(FLOW_COLLECTION_NAME)
 
-	override fun getByUser(userID: UUID, position: NodePosition?): Flow<StandaloneNode> {
-		val additionalFilters: Bson = when (position) {
-			null -> Filters.empty()
-			else -> {
-				val filters = nodeRegistry.lookupDescriptorsByPosition(position).map {
-					val prefix = GraphNode::descriptor.name + "."
-					Filters.and(
-						Filters.eq(prefix + NodeDescriptor::type.name, it.type),
-						Filters.eq(prefix + NodeDescriptor::subsystem.name, it.subsystem)
-					)
-				}
-
-				when {
-					// zero nodes with this position => zero results
-					filters.isEmpty() -> return emptyFlow()
-					else -> Filters.or(filters)
-				}
-			}
-		}
-		return collection.find<GraphNode>(
-			Filters.and(
-				Filters.eq(GraphNode::userId.name, userID),
-				additionalFilters
-			)
-		).map { node ->
-			val settings = settingsLookup(node)
-			node.toStandalone(settings)
-		}
-	}
-
-	override fun getAll(integrationType: String): Flow<StandaloneNode> {
-		return collection.find<StandaloneNode>(
-			NodeDescriptor.filter(Subsystem.INTEGRATION, integrationType)
+	override fun query(userID: UUID?, position: NodePosition?): Flow<StandaloneNode> {
+		val filters = listOf(
+			buildUserIDFilter(userID),
+			// pre-filter if no nodes with this position exist
+			buildPositionFilter(nodeRegistry, position) ?: return emptyFlow(),
 		)
+
+		return collection
+			.find<GraphNode>(Filters.and(filters))
+			.map { node ->
+				val settings = settingsLookup(node)
+				node.toStandalone(settings)
+			}
 	}
 
 	override suspend fun get(id: NodeId): StandaloneNode? {
@@ -77,19 +56,14 @@ class MongoNodeService(
 	}
 
 	override suspend fun <S : NodeSettings> create(userID: UUID, descriptor: NodeDescriptor, settings: S): StandaloneNode {
-		val metadata = nodeRegistry.getMetadata(descriptor)
-
 		val node = GraphNode(
 			userId = userID,
 			descriptor = descriptor,
 			settings = collection.codecRegistry.encode(settings),
 			next = emptyList()
 		)
-		collection.insertOne(node)
 
-		if (metadata.position == NodePosition.START) {
-			scheduler.schedule(node.toStandalone(settings))
-		}
+		collection.insertOne(node)
 
 		return node.toStandalone(settings)
 	}

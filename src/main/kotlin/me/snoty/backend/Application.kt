@@ -4,6 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import io.opentelemetry.api.GlobalOpenTelemetry
+import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.modules.plus
 import me.snoty.backend.build.DevBuildInfo
@@ -21,7 +22,6 @@ import me.snoty.backend.integration.flow.FlowRunnerImpl
 import me.snoty.backend.integration.flow.MongoFlowService
 import me.snoty.backend.integration.flow.logging.MongoNodeLogService
 import me.snoty.backend.integration.flow.node.NodeRegistryImpl
-import me.snoty.backend.integration.utils.calendar.MongoCalendarService
 import me.snoty.backend.integration.utils.mongoSettingsLookup
 import me.snoty.backend.logging.setupLogbackFilters
 import me.snoty.backend.observability.getTracer
@@ -30,9 +30,9 @@ import me.snoty.backend.scheduling.JobRunrScheduler
 import me.snoty.backend.scheduling.node.JobRunrNodeScheduler
 import me.snoty.backend.server.KtorServer
 import me.snoty.backend.spi.DevManager
-import me.snoty.backend.wiring.node.MongoNodePersistenceService
 import me.snoty.backend.wiring.node.MongoNodePersistenceServiceFactory
 import me.snoty.backend.wiring.node.NodeHandlerContributorLookup
+import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.snotyJson
 import me.snoty.integration.common.wiring.NodeHandlerContext
 import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
@@ -40,12 +40,9 @@ import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
 import me.snoty.integration.common.wiring.data.impl.BsonIntermediateDataMapper
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateDataMapper
-import me.snoty.integration.common.wiring.node.NodePersistenceService
-import me.snoty.integration.common.wiring.node.NodePersistenceServiceFactory
 import me.snoty.integration.common.wiring.node.serializersModule
 import org.bson.codecs.configuration.CodecRegistry
 import java.util.concurrent.Executors
-import kotlin.reflect.KClass
 
 fun main() = runBlocking {
 	setupLogbackFilters()
@@ -79,7 +76,6 @@ fun main() = runBlocking {
 	val meterRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 	val metricsPool = Executors.newScheduledThreadPool(1)
 	val scheduler = JobRunrScheduler()
-	val nodeScheduler = JobRunrNodeScheduler(scheduler)
 
 	logger.info { "Connecting to MongoDB..." }
 	val (mongoDB, syncMongoClient) = createMongoClients(config.mongodb)
@@ -101,23 +97,23 @@ fun main() = runBlocking {
 		flowRunner
 	)
 
-	val nodeService = MongoNodeService(mongoDB, nodeRegistry, nodeScheduler, settingsLookup)
-	val calendarService = MongoCalendarService(mongoDB)
+	val nodeService = MongoNodeService(mongoDB, nodeRegistry, settingsLookup)
+	val nodeScheduler = JobRunrNodeScheduler(scheduler)
 	val intermediateDataMapperRegistry = IntermediateDataMapperRegistry()
 	intermediateDataMapperRegistry[BsonIntermediateData::class] = BsonIntermediateDataMapper(codecRegistry)
 	intermediateDataMapperRegistry[SimpleIntermediateData::class] = SimpleIntermediateDataMapper
 
 	val hookRegistry = HookRegistryImpl()
 
-	NodeHandlerContributorLookup.executeContributors(nodeRegistry) { descriptor ->
-		val entityStateService = MongoEntityStateService(mongoDB, descriptor, meterRegistry, metricsPool)
+	NodeHandlerContributorLookup.executeContributors(nodeRegistry) { metadata ->
+		val entityStateService = MongoEntityStateService(mongoDB, metadata.descriptor, meterRegistry, metricsPool)
 		entityStateService.scheduleMetricsTask()
 		NodeHandlerContext(
+			metadata = metadata,
 			entityStateService = entityStateService,
 			nodeService = nodeService,
 			flowService = flowService,
 			codecRegistry = codecRegistry,
-			calendarService = calendarService,
 			scheduler = scheduler,
 			openTelemetry = openTelemetry,
 			intermediateDataMapperRegistry = intermediateDataMapperRegistry,
@@ -139,6 +135,11 @@ fun main() = runBlocking {
 		register(flowService)
 		register(nodeLogService)
 		register(CodecRegistry::class, codecRegistry)
+	}
+
+	newSingleThreadContext("NodeScheduler").use {
+		nodeService.query(position = NodePosition.START)
+			.collect(nodeScheduler::schedule)
 	}
 
 	KtorServer(config, buildInfo, meterRegistry, services, nodeJson, hookRegistry)

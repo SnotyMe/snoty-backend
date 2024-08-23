@@ -26,7 +26,7 @@ class MongoNodeServiceTest {
 	private val nodeRegistry = NodeRegistryImpl().apply {
 		registerHandler(nodeMetadata(descriptor = descriptor, position = NodePosition.START), NoOpNodeHandler)
 	}
-	private val service = MongoNodeService(db, nodeRegistry, mockk(relaxed = true)) {
+	private val service = MongoNodeService(db, nodeRegistry) {
 		EmptyNodeSettings()
 	}
 
@@ -34,17 +34,17 @@ class MongoNodeServiceTest {
 	fun `test getByUser`(): Unit = runBlocking {
 		val createdNode = service.create(USER_ID_1, descriptor, EmptyNodeSettings())
 
-		val byUser = service.getByUser(USER_ID_1, NodePosition.START).toList()
+		val byUser = service.query(USER_ID_1, NodePosition.START).toList()
 		assertEquals(1, byUser.size)
 		assertEquals(createdNode, byUser[0])
 
-		val byNotStart = service.getByUser(USER_ID_1, NodePosition.MIDDLE).toList()
+		val byNotStart = service.query(USER_ID_1, NodePosition.MIDDLE).toList()
 		assertEquals(0, byNotStart.size)
 
-		val byWrongUser = service.getByUser(USER_ID_CONTROL, NodePosition.START).toList()
+		val byWrongUser = service.query(USER_ID_CONTROL, NodePosition.START).toList()
 		assertEquals(0, byWrongUser.size)
 
-		val byWrongUserNotStart = service.getByUser(USER_ID_CONTROL, NodePosition.MIDDLE).toList()
+		val byWrongUserNotStart = service.query(USER_ID_CONTROL, NodePosition.MIDDLE).toList()
 		assertEquals(0, byWrongUserNotStart.size)
 	}
 }

@@ -79,11 +79,11 @@ val TestCodecRegistry: CodecRegistry = CodecRegistries.fromRegistries(
 )
 
 val MockNodeHandlerContext = NodeHandlerContext(
+	metadata = mockk(),
 	entityStateService = mockk(),
 	nodeService = mockk(),
 	flowService = mockk(),
 	codecRegistry = mockk(),
-	calendarService = mockk(),
 	intermediateDataMapperRegistry = IntermediateDataMapperRegistry().apply {
 		this[BsonIntermediateData::class] = BsonIntermediateDataMapper(TestCodecRegistry)
 		this[SimpleIntermediateData::class] = SimpleIntermediateDataMapper
@@ -91,7 +91,7 @@ val MockNodeHandlerContext = NodeHandlerContext(
 	scheduler = mockk(),
 	openTelemetry = mockk(),
 	nodePersistenceServiceFactory = mockk(),
-	hookRegistry = mockk(relaxed = true)
+	hookRegistry = mockk(relaxed = true),
 )
 
 val TestFlowBuilder = FlowBuilderImpl {

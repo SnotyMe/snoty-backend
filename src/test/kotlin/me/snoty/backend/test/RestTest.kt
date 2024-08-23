@@ -1,6 +1,7 @@
 package me.snoty.backend.test
 
 import io.ktor.server.testing.*
+import io.mockk.mockk
 import me.snoty.backend.build.BuildInfo
 import me.snoty.backend.config.Config
 import me.snoty.backend.server.plugins.addResources
@@ -19,7 +20,7 @@ fun ktorApplicationTest(
 			configureSerialization(BaseSnotyJson)
 			configureSecurity(config)
 			configureRouting(config)
-			addResources(buildInfo, MockServicesContainer, BaseSnotyJson)
+			addResources(buildInfo, MockServicesContainer, BaseSnotyJson, mockk(relaxed = true))
 		}
 
 		block()

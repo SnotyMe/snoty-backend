@@ -16,7 +16,7 @@ fun EntityStateCollection.getStatistics(): AggregateFlow<UserEntityStateStats> {
 		Aggregates.project(
 			Projections.fields(
 				Projections.excludeId(),
-				Projections.computed(entitiesValues, Stages.objectToArray("\$${NodeEntityStates::entities.name}"))
+				Projections.computed(entitiesValues, Stages.objectToArray(NodeEntityStates::entities.name))
 			)
 		),
 		Aggregates.unwind("\$$entitiesValues"),

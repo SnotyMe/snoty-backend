@@ -103,7 +103,7 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 				modifiers -= KModifier.ABSTRACT
 				modifiers += KModifier.OVERRIDE
 			}
-			.addStatement("val nodeContext = nodeContextBuilder(metadata.descriptor)")
+			.addStatement("val nodeContext = nodeContextBuilder(metadata)")
 			.addStatement("val handler = %T(nodeContext)", handler.toClassName())
 			.addStatement("registry.registerHandler(metadata, handler)")
 

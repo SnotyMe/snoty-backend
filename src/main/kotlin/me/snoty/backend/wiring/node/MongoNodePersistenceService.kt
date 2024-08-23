@@ -1,42 +1,54 @@
 package me.snoty.backend.wiring.node
 
+import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Projections
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.flow.Flow
 import me.snoty.backend.database.mongo.Aggregations
+import me.snoty.backend.database.mongo.Stages
+import me.snoty.backend.database.mongo.mongoCollectionPrefix
 import me.snoty.backend.database.mongo.upsertOne
 import me.snoty.integration.common.wiring.Node
+import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePersistenceService
 import me.snoty.integration.common.wiring.node.NodePersistenceServiceFactory
 import org.bson.codecs.pojo.annotations.BsonId
 import kotlin.reflect.KClass
 
-private data class NodeEntities(
+private data class NodeEntities<T>(
 	@BsonId
 	val _id: String,
-	val entities: List<Any>
+	val entities: Map<String, T>
 )
 
 class MongoNodePersistenceService<T : Any>(
 	mongoDB: MongoDatabase,
+	nodeDescriptor: NodeDescriptor,
 	name: String,
 	private val entityClass: KClass<T>,
 ) : NodePersistenceService<T> {
-	private val collection = mongoDB.getCollection(name, NodeEntities::class.java)
+	private val collection = mongoDB.getCollection("${nodeDescriptor.mongoCollectionPrefix}.$name", NodeEntities::class.java)
 
 	override suspend fun persistEntity(node: Node, entityId: String, entity: T) {
 		collection.upsertOne(
 			Filters.eq(node._id),
-			Updates.push("entities", entity)
+			Updates.set("${NodeEntities<T>::entities.name}.$entityId", entity)
 		)
 	}
 
 	override fun getEntities(node: Node): Flow<T> {
 		return collection.aggregate(
 			listOf(
-				Filters.eq(node._id),
-				Aggregations.unwind(NodeEntities::entities)
+				Aggregates.match(Filters.eq(node._id)),
+				Aggregates.project(
+					Projections.computed(NodeEntities<T>::entities.name,
+						Stages.objectToArray(NodeEntities<T>::entities.name)
+					)
+				),
+				Aggregations.unwind(NodeEntities<T>::entities),
+				Aggregates.replaceRoot("$${NodeEntities<T>::entities.name}.v")
 			),
 			entityClass.java
 		)
@@ -44,7 +56,7 @@ class MongoNodePersistenceService<T : Any>(
 }
 
 class MongoNodePersistenceServiceFactory(private val mongoDB: MongoDatabase) : NodePersistenceServiceFactory {
-	override fun <T : Any> create(name: String, entityClass: KClass<T>): NodePersistenceService<T> {
-		return MongoNodePersistenceService(mongoDB, name, entityClass)
+	override fun <T : Any> create(nodeDescriptor: NodeDescriptor, name: String, entityClass: KClass<T>): NodePersistenceService<T> {
+		return MongoNodePersistenceService(mongoDB, nodeDescriptor, name, entityClass)
 	}
 }

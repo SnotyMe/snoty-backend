@@ -13,9 +13,10 @@ import java.util.*
 interface NodeService {
 	suspend fun get(id: NodeId): StandaloneNode?
 
-	fun getAll(integrationType: String): Flow<StandaloneNode>
-
-	fun getByUser(userID: UUID, position: NodePosition?): Flow<StandaloneNode>
+	fun query(
+		userID: UUID? = null,
+		position: NodePosition? = null,
+	): Flow<StandaloneNode>
 
 	suspend fun <S : NodeSettings> create(userID: UUID, descriptor: NodeDescriptor, settings: S): StandaloneNode
 

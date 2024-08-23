@@ -3,7 +3,6 @@ package me.snoty.backend.server.resources.wiring
 import io.ktor.http.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.toList
 import me.snoty.backend.injection.ServicesContainer
@@ -26,7 +25,7 @@ fun Routing.flowResource() {
 
 	get("list") {
 		val user = call.getUser()
-		val flows = nodeService.getByUser(user.id, NodePosition.START)
+		val flows = nodeService.query(user.id, NodePosition.START)
 		val result = flows.toList()
 		call.respond(result)
 	}
