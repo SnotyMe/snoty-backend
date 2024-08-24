@@ -6,19 +6,15 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.serialization.json.Json
-import me.snoty.backend.build.BuildInfo
 import me.snoty.backend.config.Config
-import me.snoty.backend.hooks.HookRegistry
-import me.snoty.backend.injection.ServicesContainer
 import me.snoty.backend.server.plugins.*
+import org.koin.core.Koin
 
 class KtorServer(
+	private val koin: Koin,
 	private val config: Config,
-	private val buildInfo: BuildInfo,
 	private val metricsRegistry: MeterRegistry,
-	private val servicesContainer: ServicesContainer,
 	private val json: Json,
-	private val hookRegistry: HookRegistry,
 ) {
 	private val logger = KotlinLogging.logger {}
 
@@ -42,11 +38,12 @@ class KtorServer(
 	}
 
 	private fun Application.module() {
+		setKoin(koin)
 		configureMonitoring(config, metricsRegistry)
 		configureHTTP(config)
 		configureSecurity(config)
 		configureSerialization(json)
 		configureRouting(config)
-		addResources(buildInfo, servicesContainer, json, hookRegistry)
+		addResources(koin.getAll())
 	}
 }

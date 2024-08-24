@@ -14,12 +14,15 @@ import me.snoty.integration.common.diff.state.NodeEntityStates
 import me.snoty.integration.common.diff.state.updateStates
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.node.NodeDescriptor
+import org.koin.core.annotation.InjectedParam
+import org.koin.core.annotation.Single
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
+@Single
 class MongoEntityStateService(
 	mongoDB: MongoDatabase,
-	integration: NodeDescriptor,
+	@InjectedParam integration: NodeDescriptor,
 	meterRegistry: MeterRegistry,
 	private val metricsPool: ScheduledExecutorService
 ) : EntityStateService {

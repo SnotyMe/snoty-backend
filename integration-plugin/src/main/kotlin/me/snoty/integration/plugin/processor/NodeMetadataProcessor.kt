@@ -48,9 +48,10 @@ class NodeMetadataProcessor(private val logger: KSPLogger, private val codeGener
 		)
 
 		val fileSpec = FileSpec.scriptBuilder("${clazz.simpleName.asString()}Metadata", clazz.packageName.asString())
-			.addCode("internal val metadata = %T(\n", NodeMetadata::class)
+			.addCode("internal val $NODE_METADATA = %T(\n", NodeMetadata::class)
 			.addDataClassInitializer(metadata)
 			.addCode(")\n")
+			.addSerializersModule(node)
 			.build()
 
 		fileSpec
@@ -59,6 +60,10 @@ class NodeMetadataProcessor(private val logger: KSPLogger, private val codeGener
 				aggregating = false,
 				originatingKSFiles = listOf(clazz.containingFile!!)
 			)
+	}
+
+	companion object {
+		const val NODE_METADATA = "nodeMetadata"
 	}
 
 	class Provider : SymbolProcessorProvider {

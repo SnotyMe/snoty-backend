@@ -2,14 +2,7 @@ package me.snoty.integration.common.wiring.node
 
 import io.ktor.http.*
 import io.ktor.server.routing.*
-import me.snoty.backend.hooks.impl.AddRoutesHook
-import me.snoty.backend.integration.config.flow.toNodeId
-import me.snoty.backend.utils.BadRequestException
-import me.snoty.backend.utils.getUserOrNull
-import me.snoty.backend.utils.respondStatus
-import me.snoty.integration.common.http.nodeNotFound
 import me.snoty.integration.common.wiring.Node
-import me.snoty.integration.common.wiring.addHook
 
 /**
  * @param verifyUser whether to verify that the user is the owner of the node
@@ -19,7 +12,10 @@ fun NodeHandler.nodeRoute(
 	method: HttpMethod,
 	verifyUser: Boolean = true,
 	block: suspend RoutingContext.(Node) -> Unit
-) = nodeHandlerContext.addHook<Routing, AddRoutesHook> { routing ->
+) = {}
+
+/*
+nodeHandlerContext.addHook<Routing, AddRoutesHook> { routing ->
 	routing.route("{nodeId}/$name") {
 		method(method) {
 			handle {
@@ -37,4 +33,4 @@ fun NodeHandler.nodeRoute(
 			}
 		}
 	}
-}
+}*/

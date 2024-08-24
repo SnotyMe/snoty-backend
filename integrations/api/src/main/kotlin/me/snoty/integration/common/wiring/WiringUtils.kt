@@ -7,7 +7,9 @@ import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
 import kotlin.reflect.KClass
 
-context(IntermediateDataMapperRegistryContext, EmitNodeOutputContext)
+interface NodeHandleContext : IntermediateDataMapperRegistryContext, EmitNodeOutputContext
+
+context(NodeHandleContext)
 suspend fun <T : Any> iterableStructOutput(
 	context: FetchContext,
 	producer: suspend FetchContext.() -> Iterable<T>
@@ -15,18 +17,18 @@ suspend fun <T : Any> iterableStructOutput(
 	// serialize arbitrary object into BsonIntermediateData
 	.forEach { emitBson(it) }
 
-context(IntermediateDataMapperRegistryContext, EmitNodeOutputContext)
+context(NodeHandleContext)
 suspend fun <T : Any> structOutput(producer: suspend () -> T) = emitBson(producer())
 
-context(IntermediateDataMapperRegistryContext, EmitNodeOutputContext)
+context(NodeHandleContext)
 private suspend fun emitBson(data: Any) = emitSerialized(BsonIntermediateData::class, data)
 
 
-context(IntermediateDataMapperRegistryContext, EmitNodeOutputContext)
+context(NodeHandleContext)
 suspend fun <T : Any> simpleOutput(producer: suspend () -> T) = emitSerialized(SimpleIntermediateData::class, producer())
 
 
-context(IntermediateDataMapperRegistryContext, EmitNodeOutputContext)
+context(NodeHandleContext)
 private suspend fun <IM : IntermediateData, T : Any> emitSerialized(clazz: KClass<IM>, data: T) {
 	val mapper = intermediateDataMapperRegistry[clazz]
 	emit(mapper.serialize(data))

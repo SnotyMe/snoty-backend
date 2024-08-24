@@ -12,8 +12,11 @@ import kotlinx.serialization.json.Json
 import me.snoty.backend.featureflags.FeatureFlags
 import me.snoty.backend.observability.*
 import me.snoty.backend.utils.flowWith
+import me.snoty.integration.common.wiring.IntermediateDataMapperRegistryContext
+import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.RelationalFlowNode
 import me.snoty.integration.common.wiring.data.IntermediateData
+import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
 import me.snoty.integration.common.wiring.flow.FlowRunner
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.setAttribute
@@ -24,6 +27,7 @@ import org.slf4j.Logger
 class FlowRunnerImpl(
 	private val nodeRegistry: NodeRegistry,
 	private val featureFlags: FeatureFlags,
+	private val intermediateDataMapperRegistry: IntermediateDataMapperRegistry,
 	openTelemetry: OpenTelemetry,
 ) : FlowRunner {
 	private val tracer = openTelemetry.getTracer(FlowRunnerImpl::class)
@@ -82,8 +86,10 @@ class FlowRunnerImpl(
 			}
 		// TODO: test with multiple inputs
 		setNode(node = node)
-		return flowWith(processor.nodeHandlerContext) {
-			processor.process(logger, node, input)
+		return flowWith<IntermediateDataMapperRegistry, IntermediateData>(intermediateDataMapperRegistry) {
+			with(this as NodeHandleContext) {
+				processor.process(logger, node, input)
+			}
 		}
 			.flatMapConcat { output ->
 				node.next.asFlow()

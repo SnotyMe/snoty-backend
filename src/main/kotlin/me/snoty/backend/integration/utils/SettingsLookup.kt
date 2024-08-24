@@ -7,10 +7,14 @@ import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Single
 
-typealias SettingsLookup = (GraphNode) -> NodeSettings
+fun interface MongoSettingsService {
+	fun lookup(node: GraphNode): NodeSettings
+}
 
 @Single
-fun mongoSettingsLookup(nodeRegistry: NodeRegistry, codecRegistry: CodecRegistry): SettingsLookup = { node ->
-	val handler = nodeRegistry.lookupHandler(node.descriptor) ?: throw IllegalArgumentException("No handler found for node ${node.descriptor}")
-	codecRegistry.decode(handler.settingsClass, node.settings)
+class MongoSettingsServiceImpl(private val nodeRegistry: NodeRegistry, private val codecRegistry: CodecRegistry) : MongoSettingsService {
+	override fun lookup(node: GraphNode): NodeSettings {
+		val handler = nodeRegistry.lookupHandler(node.descriptor) ?: throw IllegalArgumentException("No handler found for node ${node.descriptor}")
+		return codecRegistry.decode(handler.metadata.settingsClass, node.settings)
+	}
 }

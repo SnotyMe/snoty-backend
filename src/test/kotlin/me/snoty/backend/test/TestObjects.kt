@@ -6,7 +6,6 @@ import kotlinx.datetime.Clock
 import me.snoty.backend.build.BuildInfo
 import me.snoty.backend.config.*
 import me.snoty.backend.database.mongo.apiCodecModule
-import me.snoty.backend.injection.ServicesContainer
 import me.snoty.backend.integration.flow.FlowBuilderImpl
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.NodeMetadata
@@ -96,13 +95,6 @@ val MockNodeHandlerContext = NodeHandlerContext(
 
 val TestFlowBuilder = FlowBuilderImpl {
 	EmptyNodeSettings()
-}
-
-val MockServicesContainer = object : ServicesContainer {
-	override fun <T : Any> register(clazz: KClass<T>, instance: T) = throw UnsupportedOperationException()
-	override fun <T : Any> register(instance: T) = throw UnsupportedOperationException()
-
-	override fun <T : Any> get(clazz: KClass<T>): T = mockkClass(clazz)
 }
 
 fun nodeMetadata(

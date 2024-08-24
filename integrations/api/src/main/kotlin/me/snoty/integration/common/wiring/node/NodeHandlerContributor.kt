@@ -1,7 +1,11 @@
 package me.snoty.integration.common.wiring.node
 
-import me.snoty.integration.common.wiring.NodeContextBuilder
+import me.snoty.integration.common.model.metadata.NodeMetadata
+import org.koin.core.Koin
+import kotlin.reflect.KClass
 
 interface NodeHandlerContributor {
-	fun contributeHandlers(registry: NodeRegistry, nodeContextBuilder: NodeContextBuilder)
+	val metadata: NodeMetadata
+	val nodeHandlerClass: KClass<out NodeHandler>
+	val koin: Koin
 }

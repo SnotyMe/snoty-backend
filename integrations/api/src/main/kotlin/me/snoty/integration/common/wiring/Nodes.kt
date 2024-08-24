@@ -57,11 +57,6 @@ data class StandaloneNode(
 	override val settings: NodeSettings,
 ) : Node
 
-context(NodeHandler)
 inline fun <reified T : NodeSettings> Node.getConfig(): T {
-	val nodeHandler = this@NodeHandler
-	require(nodeHandler.settingsClass == T::class) {
-		"Expected settings class ${nodeHandler.settingsClass}, got ${T::class}"
-	}
 	return settings as T
 }

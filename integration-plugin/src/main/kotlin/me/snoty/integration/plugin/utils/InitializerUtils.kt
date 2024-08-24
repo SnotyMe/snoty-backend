@@ -2,6 +2,7 @@ package me.snoty.integration.plugin.utils
 
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.asTypeName
+import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
@@ -43,6 +44,7 @@ fun FileSpec.Builder.addDataClassInitializer(copyFrom: Any, level: Int = 1): Fil
 				}
 				addCode("${"\t".repeat(level)})")
 			}
+			value is KClass<*> -> addCode("%T::class", value)
 			else -> throw IllegalArgumentException("Unsupported type: ${type.asTypeName()}")
 		}
 		addCode(",\n")

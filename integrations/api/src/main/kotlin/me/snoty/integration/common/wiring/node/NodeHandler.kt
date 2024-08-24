@@ -1,11 +1,10 @@
 package me.snoty.integration.common.wiring.node
 
+import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.Node
-import me.snoty.integration.common.wiring.NodeHandlerContext
-import me.snoty.integration.common.wiring.data.EmitNodeOutputContext
+import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import org.slf4j.Logger
-import kotlin.reflect.KClass
 
 
 /**
@@ -14,9 +13,8 @@ import kotlin.reflect.KClass
  * This can be fetching data from an LMS, mapping data, publishing results, etc.
  */
 interface NodeHandler {
-	val nodeHandlerContext: NodeHandlerContext
-	val settingsClass: KClass<out NodeSettings>
+	val metadata: NodeMetadata
 
-	context(NodeHandlerContext, EmitNodeOutputContext)
+	context(NodeHandleContext)
 	suspend fun process(logger: Logger, node: Node, input: IntermediateData)
 }
