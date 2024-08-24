@@ -30,7 +30,3 @@ dependencies {
 
 	ksp("${libs.getModule("koin-ksp")}:$koinAnnotationsVersion")
 }
-
-ksp {
-	arg("KOIN_CONFIG_CHECK", "true")
-}

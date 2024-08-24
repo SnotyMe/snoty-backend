@@ -12,9 +12,9 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.util.*
 
-class FlowBuilderImplTest {
+class MongoFlowBuilderTest {
 	private val uuid: UUID = UUID.randomUUID()
-	private val flowBuilder = FlowBuilderImpl {
+	private val flowBuilder = MongoFlowBuilder {
 		EmptyNodeSettings()
 	}
 

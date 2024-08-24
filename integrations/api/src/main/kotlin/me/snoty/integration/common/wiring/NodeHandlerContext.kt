@@ -9,9 +9,9 @@ import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
 import me.snoty.integration.common.wiring.flow.FlowService
-import me.snoty.integration.common.wiring.node.NodePersistenceServiceFactory
 import org.bson.codecs.configuration.CodecRegistry
 
+/*
 data class NodeHandlerContext(
 	val metadata: NodeMetadata,
 	val entityStateService: EntityStateService,
@@ -21,19 +21,19 @@ data class NodeHandlerContext(
 	override val intermediateDataMapperRegistry: IntermediateDataMapperRegistry,
 	val scheduler: Scheduler,
 	val openTelemetry: OpenTelemetry,
-	val nodePersistenceServiceFactory: NodePersistenceServiceFactory,
 	val hookRegistry: HookRegistry,
 ) : IntermediateDataMapperRegistryContext, CodecRegistryContext
+
+*/
 
 interface IntermediateDataMapperRegistryContext {
 	val intermediateDataMapperRegistry: IntermediateDataMapperRegistry
 }
 
-interface CodecRegistryContext {
-	val codecRegistry: CodecRegistry
-}
+/*
 
 typealias NodeContextBuilder = (NodeMetadata) -> NodeHandlerContext
 
 inline fun <reified D : Any, H : LifecycleHook<D>> NodeHandlerContext.addHook(hook: H)
 	= hookRegistry.registerHook(D::class, hook)
+*/

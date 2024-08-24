@@ -8,14 +8,17 @@ import me.snoty.backend.utils.respondStatus
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.FieldDescription
+import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.Node
-import me.snoty.integration.common.wiring.NodeHandlerContext
-import me.snoty.integration.common.wiring.data.EmitNodeOutputContext
+import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.get
 import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.node.*
 import net.fortuna.ical4j.data.CalendarOutputter
+import org.koin.core.annotation.InjectedParam
+import org.koin.core.annotation.Provided
+import org.koin.core.annotation.Single
 import org.slf4j.Logger
 import java.nio.charset.StandardCharsets
 import kotlin.reflect.KClass
@@ -35,10 +38,11 @@ data class ICalSettings(
 	settingsType = ICalSettings::class,
 	inputType = CalendarEvent::class,
 )
-class ICalNodeHandler(override val nodeHandlerContext: NodeHandlerContext) : NodeHandler {
-	override val settingsClass: KClass<out NodeSettings> = ICalSettings::class
-
-	private val eventPersistenceService = persistenceService<CalendarEvent>("events")
+class ICalNodeHandler(
+	@InjectedParam override val metadata: NodeMetadata,
+	@Provided persistenceFactory: NodePersistenceFactory,
+) : NodeHandler {
+	private val eventPersistenceService = persistenceFactory<CalendarEvent>("events")
 
 	init {
 		nodeRoute("calendar.ics", HttpMethod.Get, verifyUser = false) { node ->
@@ -60,7 +64,7 @@ class ICalNodeHandler(override val nodeHandlerContext: NodeHandlerContext) : Nod
 		}
 	}
 
-	context(NodeHandlerContext, EmitNodeOutputContext)
+	context(NodeHandleContext)
 	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
 		val data: CalendarEvent = input.get()
 

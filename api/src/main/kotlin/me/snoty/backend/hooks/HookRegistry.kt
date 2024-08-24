@@ -1,5 +1,6 @@
 package me.snoty.backend.hooks
 
+import org.koin.core.annotation.Single
 import kotlin.reflect.KClass
 
 interface HookRegistry {
@@ -8,6 +9,7 @@ interface HookRegistry {
 	fun <T : Any> executeHooks(clazz: KClass<T>, data: T)
 }
 
+@Single
 class HookRegistryImpl : HookRegistry {
 	private val hooks = mutableMapOf<KClass<*>, MutableList<LifecycleHook<*>>>()
 

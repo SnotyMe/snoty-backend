@@ -9,12 +9,16 @@ import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.FieldCensored
 import me.snoty.integration.common.model.metadata.FieldDescription
 import me.snoty.integration.common.model.metadata.FieldName
-import me.snoty.integration.common.wiring.*
-import me.snoty.integration.common.wiring.data.EmitNodeOutputContext
+import me.snoty.integration.common.model.metadata.NodeMetadata
+import me.snoty.integration.common.wiring.Node
+import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.node.*
+import me.snoty.integration.common.wiring.get
+import me.snoty.integration.common.wiring.getConfig
+import me.snoty.integration.common.wiring.node.NodeHandler
+import me.snoty.integration.common.wiring.node.NodeSettings
+import org.koin.core.annotation.InjectedParam
 import org.slf4j.Logger
-import kotlin.reflect.KClass
 
 @Serializable
 data class DiscordSettings(
@@ -35,12 +39,10 @@ data class DiscordSettings(
 	inputType = DiscordWebhook.Message::class
 )
 class DiscordNodeHandler(
-	override val nodeHandlerContext: NodeHandlerContext,
-	private val client: HttpClient = nodeHandlerContext.httpClient()
+	@InjectedParam override val metadata: NodeMetadata,
+	private val client: HttpClient,
 ) : NodeHandler {
-	override val settingsClass: KClass<out NodeSettings> = DiscordSettings::class
-
-	context(NodeHandlerContext, EmitNodeOutputContext)
+	context(NodeHandleContext)
 	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
 		val config: DiscordSettings = node.getConfig()
 		val data: DiscordWebhook.Message = input.get()

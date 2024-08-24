@@ -20,7 +20,7 @@ fun ktorApplicationTest(
 			configureSerialization(BaseSnotyJson)
 			configureSecurity(config)
 			configureRouting(config)
-			addResources(buildInfo, MockServicesContainer, BaseSnotyJson, mockk(relaxed = true))
+			addResources(mockk(relaxed = true))
 		}
 
 		block()

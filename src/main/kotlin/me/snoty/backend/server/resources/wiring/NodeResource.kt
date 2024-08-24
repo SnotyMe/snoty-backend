@@ -11,9 +11,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.serializerOrNull
 import me.snoty.backend.errors.ServiceResult
-import me.snoty.backend.injection.ServicesContainer
-import me.snoty.backend.injection.get
 import me.snoty.backend.integration.config.flow.NodeId
+import me.snoty.backend.server.koin.get
 import me.snoty.backend.server.plugins.void
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.letOrNull
@@ -26,15 +25,15 @@ import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.NodeSettings
 
-context(ServicesContainer)
 @OptIn(InternalSerializationApi::class)
 fun Routing.nodeResource(json: Json) {
-	val nodeRegistry = get<NodeRegistry>()
-	val nodeService = get<NodeService>()
+	val nodeRegistry: NodeRegistry = get()
+	val nodeService: NodeService = get()
+
 	suspend fun deserializeSettings(call: ApplicationCall, descriptor: NodeDescriptor, settingsJson: JsonElement): NodeSettings? {
 		val handler = nodeRegistry.lookupHandler(descriptor)
 			?: return void { call.noHandlerFound(descriptor) }
-		val serializer = handler.settingsClass.serializerOrNull()
+		val serializer = handler.metadata.settingsClass.serializerOrNull()
 			?: return void { call.noSerializerFound(handler) }
 		return json.decodeFromJsonElement(serializer, settingsJson)
 	}
@@ -112,4 +111,4 @@ suspend fun ApplicationCall.noHandlerFound(descriptor: NodeDescriptor)
 	= respond(HttpStatusCode.BadRequest, "No handler found for $descriptor")
 
 suspend fun ApplicationCall.noSerializerFound(handler: NodeHandler)
-	= respond(HttpStatusCode.BadRequest, "No serializer found for ${handler.settingsClass}")
+	= respond(HttpStatusCode.BadRequest, "No serializer found for ${handler.metadata.settingsClass}")

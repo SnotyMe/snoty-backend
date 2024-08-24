@@ -10,14 +10,13 @@ interface NodePersistenceService<T : Any> {
 	fun getEntities(node: Node): Flow<T>
 }
 
-interface NodePersistenceServiceFactory {
+interface NodePersistenceFactory {
 	fun <T : Any> create(nodeDescriptor: NodeDescriptor, name: String, entityClass: KClass<T>): NodePersistenceService<T>
 }
 
-inline fun <reified T : Any> NodeHandler.persistenceService(name: String) = with(nodeHandlerContext) {
-	nodePersistenceServiceFactory.create(
-		nodeDescriptor = metadata.descriptor,
-		name = name,
-		entityClass = T::class
-	)
-}
+context(NodeHandler)
+inline operator fun <reified T : Any> NodePersistenceFactory.invoke(name: String) = create(
+	nodeDescriptor = metadata.descriptor,
+	name = name,
+	entityClass = T::class
+)

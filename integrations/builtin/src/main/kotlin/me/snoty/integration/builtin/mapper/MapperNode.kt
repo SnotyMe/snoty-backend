@@ -5,16 +5,16 @@ import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.EmptySchema
 import me.snoty.integration.common.model.metadata.FieldDescription
-import me.snoty.integration.common.model.metadata.FieldName
+import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.*
-import me.snoty.integration.common.wiring.data.EmitNodeOutputContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.integration.common.wiring.node.Subsystem
 import org.bson.Document
+import org.koin.core.annotation.InjectedParam
+import org.koin.core.annotation.Single
 import org.slf4j.Logger
-import kotlin.reflect.KClass
 
 @Serializable
 data class MapperSettings(
@@ -33,10 +33,10 @@ data class MapperSettings(
 	inputType = EmptySchema::class,
 	outputType = EmptySchema::class
 )
-class MapperNodeHandler(override val nodeHandlerContext: NodeHandlerContext) : NodeHandler {
-	override val settingsClass: KClass<out NodeSettings> = MapperSettings::class
-
-	context(NodeHandlerContext, EmitNodeOutputContext)
+class MapperNodeHandler(
+	@InjectedParam override val metadata: NodeMetadata,
+) : NodeHandler {
+	context(NodeHandleContext)
 	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
 		val settings: MapperSettings = node.getConfig()
 		val data: Document = input.get()

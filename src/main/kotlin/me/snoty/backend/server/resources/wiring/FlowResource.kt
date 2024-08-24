@@ -5,10 +5,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.toList
-import me.snoty.backend.injection.ServicesContainer
-import me.snoty.backend.injection.get
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.logging.NodeLogService
+import me.snoty.backend.server.koin.get
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.letOrNull
 import me.snoty.integration.common.config.NodeService
@@ -17,11 +16,10 @@ import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.model.NodePosition
 
-context(ServicesContainer)
 fun Routing.flowResource() {
-	val nodeRegistry = get<NodeRegistry>()
-	val nodeService = get<NodeService>()
-	val flowService = get<FlowService>()
+	val nodeRegistry: NodeRegistry = get()
+	val nodeService: NodeService = get()
+	val flowService: FlowService = get()
 
 	get("list") {
 		val user = call.getUser()

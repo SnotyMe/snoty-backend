@@ -7,10 +7,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import me.snoty.backend.database.mongo.decode
 import me.snoty.backend.database.mongo.encode
 import me.snoty.backend.errors.ServiceResult
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.backend.integration.utils.SettingsLookup
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.config.NodeServiceResults
 import me.snoty.integration.common.model.NodePosition
@@ -28,9 +28,13 @@ import java.util.*
 class MongoNodeService(
 	db: MongoDatabase,
 	private val nodeRegistry: NodeRegistry,
-	private val settingsLookup: SettingsLookup
 ) : NodeService {
 	private val collection = db.getCollection<GraphNode>(FLOW_COLLECTION_NAME)
+
+	private fun mapSettings(node: GraphNode): NodeSettings {
+		val handler = nodeRegistry.lookupHandler(node.descriptor) ?: throw IllegalArgumentException("No handler found for node ${node.descriptor}")
+		return collection.codecRegistry.decode(handler.metadata.settingsClass, node.settings)
+	}
 
 	override fun query(userID: UUID?, position: NodePosition?): Flow<StandaloneNode> {
 		val filters = listOf(
@@ -42,7 +46,7 @@ class MongoNodeService(
 		return collection
 			.find<GraphNode>(Filters.and(filters))
 			.map { node ->
-				val settings = settingsLookup(node)
+				val settings = mapSettings(node)
 				node.toStandalone(settings)
 			}
 	}
@@ -52,7 +56,7 @@ class MongoNodeService(
 			Filters.eq(GraphNode::_id.name, id)
 		).firstOrNull() ?: return null
 
-		val settings = settingsLookup(graphNode)
+		val settings = mapSettings(graphNode)
 		return graphNode.toStandalone(settings)
 	}
 

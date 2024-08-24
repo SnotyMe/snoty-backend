@@ -4,6 +4,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.NodeSettings
+import kotlin.reflect.KClass
 
 @Serializable
 data class NodeMetadata(
@@ -11,6 +13,8 @@ data class NodeMetadata(
 	val descriptor: NodeDescriptor,
 	val position: NodePosition,
 	val settings: ObjectSchema,
+	@Transient
+	val settingsClass: KClass<out NodeSettings> = NodeSettings::class,
 	val input: ObjectSchema?,
 	val output: ObjectSchema?
 )

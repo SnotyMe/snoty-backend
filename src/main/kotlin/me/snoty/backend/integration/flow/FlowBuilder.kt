@@ -1,7 +1,7 @@
 package me.snoty.backend.integration.flow
 
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.backend.integration.utils.SettingsLookup
+import me.snoty.backend.integration.utils.MongoSettingsService
 import me.snoty.backend.utils.orNull
 import me.snoty.integration.common.wiring.RelationalFlowNode
 import me.snoty.integration.common.wiring.graph.Graph
@@ -18,7 +18,7 @@ interface FlowBuilder {
 }
 
 @Single
-class FlowBuilderImpl(val settingsLookup: SettingsLookup) : FlowBuilder {
+class MongoFlowBuilder(private val settingsService: MongoSettingsService) : FlowBuilder {
 	/**
 	 * Creates a flow from a graph node.
 	 * This involves recursively looking up `next` nodes in the graph and creating a flow node for each of them.
@@ -47,7 +47,7 @@ class FlowBuilderImpl(val settingsLookup: SettingsLookup) : FlowBuilder {
 			?.map { createFlowNode(it, involvedNodes, visitedNodes + it) }
 			?.orNull()
 
-		val settings = settingsLookup(graphNode)
+		val settings = settingsService.lookup(graphNode)
 		return graphNode.toRelational(settings, next ?: emptyList())
 	}
 }

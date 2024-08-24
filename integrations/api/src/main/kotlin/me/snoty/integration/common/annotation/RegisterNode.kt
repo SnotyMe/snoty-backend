@@ -4,6 +4,7 @@ import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.NoSchema
 import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.integration.common.wiring.node.Subsystem
+import org.koin.core.annotation.Single
 import kotlin.reflect.KClass
 
 annotation class RegisterNode(

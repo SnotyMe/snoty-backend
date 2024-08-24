@@ -1,7 +1,9 @@
 package me.snoty.integration.common.wiring.data
 
+import org.koin.core.annotation.Single
 import kotlin.reflect.KClass
 
+@Single
 class IntermediateDataMapperRegistry {
 	private val mappers = mutableMapOf<KClass<*>, IntermediateDataMapper<*>>()
 

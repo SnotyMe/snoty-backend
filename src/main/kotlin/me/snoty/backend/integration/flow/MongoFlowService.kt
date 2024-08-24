@@ -26,7 +26,7 @@ import org.slf4j.Logger
 open class MongoFlowService(
 	db: MongoDatabase,
 	private val builder: FlowBuilder,
-	private val runner: FlowRunner
+	private val runner: FlowRunner,
 ) : FlowService {
 	protected val collection = db.getCollection<GraphNode>(FLOW_COLLECTION_NAME)
 
