@@ -1,5 +1,7 @@
 [versions]
 hoplite = "2.8.0.RC3"
+koin = "4.0.0-RC1"
+koin-annotations = "1.4.0-RC4"
 ksp = "2.0.10-1.0.24"
 jackson = "2.17.0"
 kotlinx-serialization = "1.7.1"
@@ -22,6 +24,10 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 configuration-hoplite-core = { group = "com.sksamuel.hoplite", name = "hoplite-core", version.ref = "hoplite" }
 configuration-hoplite-datetime = { group = "com.sksamuel.hoplite", name = "hoplite-datetime", version.ref = "hoplite" }
 configuration-hoplite-yaml = { group = "com.sksamuel.hoplite", name = "hoplite-yaml", version.ref = "hoplite" }
+
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-annotations = { group = "io.insert-koin", name = "koin-annotations", version.ref = "koin-annotations" }
+koin-ksp = { group = "io.insert-koin", name = "koin-ksp-compiler", version.ref = "koin-annotations" }
 
 database-mongodb = { group = "org.mongodb", name = "mongodb-driver-kotlin-coroutine", version = "5.1.0" }
 database-mongodb-sync = { group = "org.mongodb", name = "mongodb-driver-sync", version = "5.1.0" }

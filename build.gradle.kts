@@ -21,6 +21,10 @@ subprojects {
     apply(plugin = "snoty.kotlin-conventions")
 }
 
+allprojects {
+    apply(plugin = "snoty.koin-conventions")
+}
+
 val devSourceSet = sourceSets.create("dev") {
     val main = sourceSets.main.get()
     compileClasspath += main.output
@@ -174,7 +178,7 @@ if (isDevelopment) {
 }
 
 application {
-    mainClass.set("me.snoty.backend.ApplicationKt")
+    mainClass.set("me.snoty.backend.MainKt")
 
     if (isDevelopment) {
         applicationDefaultJvmArgs += "-Dio.ktor.development=$isDevelopment"
