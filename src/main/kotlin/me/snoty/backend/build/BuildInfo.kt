@@ -1,9 +1,13 @@
 package me.snoty.backend.build
 
 import com.sksamuel.hoplite.ConfigAlias
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import me.snoty.backend.config.Config
+import me.snoty.backend.config.ConfigLoader
+import org.koin.core.annotation.Single
 
 @Serializable
 data class BuildInfo(
@@ -29,3 +33,17 @@ val DevBuildInfo = BuildInfo(
 	version = "dev",
 	application = "snoty-backend"
 )
+
+@Single
+fun provideBuildInfo(config: Config, configLoader: ConfigLoader): BuildInfo = try {
+		configLoader.loadBuildInfo()
+	} catch (e: Exception) {
+		// when ran without gradle, the build info is not available
+		// it'll just default to dev build info in this case
+		if (config.environment.isDev()) {
+			KotlinLogging.logger {}.warn { "Failed to load build info: ${e.message}" }
+			DevBuildInfo
+		} else {
+			throw e
+		}
+	}

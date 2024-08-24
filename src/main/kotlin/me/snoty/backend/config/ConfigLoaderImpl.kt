@@ -7,8 +7,10 @@ import com.sksamuel.hoplite.parsers.PropsParser
 import com.sksamuel.hoplite.parsers.PropsPropertySource
 import io.github.oshai.kotlinlogging.KotlinLogging
 import me.snoty.backend.build.BuildInfo
+import org.koin.core.annotation.Single
 import java.util.*
 
+@Single
 class ConfigLoaderImpl : ConfigLoader {
 	private val logger = KotlinLogging.logger {}
 

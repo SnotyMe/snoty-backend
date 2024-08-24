@@ -2,9 +2,11 @@ package me.snoty.backend.featureflags
 
 import dev.openfeature.sdk.Client
 import me.snoty.backend.config.Config
+import org.koin.core.annotation.Single
 import org.slf4j.event.Level
 
 @Suppress("PropertyName")
+@Single
 class FeatureFlags(private val config: Config, private val client: Client) {
 	val logLevelFlags = mutableListOf<LogLevelFeatureFlag>()
 
