@@ -19,8 +19,10 @@ import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.graph.Graph
 import me.snoty.integration.common.wiring.graph.GraphNode
 import me.snoty.integration.common.wiring.toRelational
+import org.koin.core.annotation.Single
 import org.slf4j.Logger
 
+@Single
 open class MongoFlowService(
 	db: MongoDatabase,
 	private val builder: FlowBuilder,

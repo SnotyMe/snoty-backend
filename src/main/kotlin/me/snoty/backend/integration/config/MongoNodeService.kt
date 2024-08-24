@@ -21,9 +21,10 @@ import me.snoty.integration.common.wiring.graph.toStandalone
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.NodeSettings
-import org.bson.conversions.Bson
+import org.koin.core.annotation.Single
 import java.util.*
 
+@Single
 class MongoNodeService(
 	db: MongoDatabase,
 	private val nodeRegistry: NodeRegistry,

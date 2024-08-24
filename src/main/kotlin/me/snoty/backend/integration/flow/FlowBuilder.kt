@@ -7,6 +7,7 @@ import me.snoty.integration.common.wiring.RelationalFlowNode
 import me.snoty.integration.common.wiring.graph.Graph
 import me.snoty.integration.common.wiring.graph.GraphNode
 import me.snoty.integration.common.wiring.graph.toRelational
+import org.koin.core.annotation.Single
 
 interface FlowBuilder {
 	/**
@@ -16,6 +17,7 @@ interface FlowBuilder {
 	fun createFlowFromGraph(graph: Graph): List<RelationalFlowNode>
 }
 
+@Single
 class FlowBuilderImpl(val settingsLookup: SettingsLookup) : FlowBuilder {
 	/**
 	 * Creates a flow from a graph node.

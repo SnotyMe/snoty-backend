@@ -5,7 +5,9 @@ import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.model.NodePosition
+import org.koin.core.annotation.Single
 
+@Single
 class NodeRegistryImpl : NodeRegistry {
 	/**
 	 * Handlers that can be used for specific nodes.

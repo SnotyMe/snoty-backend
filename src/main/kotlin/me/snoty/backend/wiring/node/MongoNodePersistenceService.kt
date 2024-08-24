@@ -15,6 +15,7 @@ import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePersistenceService
 import me.snoty.integration.common.wiring.node.NodePersistenceServiceFactory
 import org.bson.codecs.pojo.annotations.BsonId
+import org.koin.core.annotation.Single
 import kotlin.reflect.KClass
 
 private data class NodeEntities<T>(
@@ -55,6 +56,7 @@ class MongoNodePersistenceService<T : Any>(
 	}
 }
 
+@Single
 class MongoNodePersistenceServiceFactory(private val mongoDB: MongoDatabase) : NodePersistenceServiceFactory {
 	override fun <T : Any> create(nodeDescriptor: NodeDescriptor, name: String, entityClass: KClass<T>): NodePersistenceService<T> {
 		return MongoNodePersistenceService(mongoDB, nodeDescriptor, name, entityClass)
