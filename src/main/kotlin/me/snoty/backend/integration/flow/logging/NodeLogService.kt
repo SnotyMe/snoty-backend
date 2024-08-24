@@ -9,6 +9,7 @@ import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.integration.common.wiring.flow.FLOW_COLLECTION_NAME
 import me.snoty.integration.common.wiring.flow.NodeLogEntry
 import org.bson.codecs.pojo.annotations.BsonId
+import org.koin.core.annotation.Single
 
 interface NodeLogService {
 	suspend fun record(rootNode: NodeId, entry: NodeLogEntry)
@@ -22,6 +23,7 @@ internal data class NodeLogs(
 	val logs: List<NodeLogEntry>
 )
 
+@Single
 class MongoNodeLogService(mongoDB: MongoDatabase) : NodeLogService {
 	private val collection = mongoDB.getCollection<NodeLogs>("$FLOW_COLLECTION_NAME.log")
 

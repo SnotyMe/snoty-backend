@@ -49,9 +49,9 @@ class FlowRunnerImplTest {
 		registerHandler(nodeMetadata(NodeDescriptor(Subsystem.PROCESSOR, TYPE_QUOTE)), QuoteHandler)
 		registerHandler(nodeMetadata(NodeDescriptor(Subsystem.PROCESSOR, TYPE_EXCEPTION)), ExceptionHandler)
 	}
-	private val tracerExporter = createTestTracer(FlowRunnerImpl::class)
+	private val otel = createOpenTelemetry()
 	private val flagsProvider = testFeatureFlags()
-	private val runner = FlowRunnerImpl(nodeRegistry, flagsProvider.flags, tracerExporter.tracer).apply {
+	private val runner = FlowRunnerImpl(nodeRegistry, flagsProvider.flags, otel.openTelemetry).apply {
 		json = this@FlowRunnerImplTest.json
 	}
 	private val testLogService = TestNodeLogService()
@@ -88,7 +88,7 @@ class FlowRunnerImplTest {
 		runner.execute(jobId, flow, intermediateData).toList()
 		assertNoWarnings(flow)
 		assertEquals(intermediateDataRaw, mapHandler[flow._id])
-		val spans = tracerExporter.exporter.finishedSpanItems
+		val spans = otel.spanExporter.finishedSpanItems
 
 		assertEquals(2, spans.size)
 		assertEquals(traceName(flow), spans[0].name)
@@ -109,7 +109,7 @@ class FlowRunnerImplTest {
 		assertNoWarnings(flow)
 		assertEquals(nodeNext._id, flow.next.first()._id)
 		assertEquals("'test'", mapHandler[nodeNext._id])
-		val spans = tracerExporter.exporter.finishedSpanItems
+		val spans = otel.spanExporter.finishedSpanItems
 		assertEquals(3, spans.size)
 		assertAny(spans) { it.name.contains(traceName(flow)) }
 		assertAny(spans) { it.name.contains(traceName(nodeNext)) }
@@ -124,7 +124,7 @@ class FlowRunnerImplTest {
 			runner.execute("traces config attribute", flow, input).toList()
 			assertNoWarnings(flow)
 			assertEquals(input.value, mapHandler[flow._id])
-			val spans = tracerExporter.exporter.finishedSpanItems
+			val spans = otel.spanExporter.finishedSpanItems
 
 			assertEquals(2, spans.size)
 			// root node
@@ -138,7 +138,7 @@ class FlowRunnerImplTest {
 			} else {
 				assertNull(configAttribute)
 			}
-			tracerExporter.exporter.reset()
+			otel.spanExporter.reset()
 		}
 
 		flagsProvider.provider.setFlagValue(flagsProvider.flags.flow_traceConfig, false)
@@ -159,7 +159,7 @@ class FlowRunnerImplTest {
 			// expected
 			assertNull(mapHandler[nextNode._id])
 		}
-		val spans = tracerExporter.exporter.finishedSpanItems
+		val spans = otel.spanExporter.finishedSpanItems
 		assertEquals(3, spans.size)
 		val flowSpan = assertAny(spans) { it.name.contains(traceName(startNode)) }
 		val exceptionSpan = assertAny(spans) { it.name.contains(traceName(nextNode)) }

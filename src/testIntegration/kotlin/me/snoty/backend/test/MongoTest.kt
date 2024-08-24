@@ -27,6 +27,6 @@ object MongoTest {
 			name.contains("$") -> name.substringBefore("$")
 			else -> name
 		}.substringAfterLast(".")
-		return createMongoClients(config.mongodb, "${name}_${javaClass.hashCode()}").first
+		return createMongoClients(config.mongodb, "${name}_${javaClass.hashCode()}").coroutinesDatabase
 	}
 }

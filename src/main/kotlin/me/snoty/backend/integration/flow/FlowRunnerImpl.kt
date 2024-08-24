@@ -1,5 +1,6 @@
 package me.snoty.backend.integration.flow
 
+import io.opentelemetry.api.OpenTelemetry
 import io.opentelemetry.api.trace.Span
 import io.opentelemetry.api.trace.SpanBuilder
 import io.opentelemetry.api.trace.Tracer
@@ -16,13 +17,16 @@ import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.flow.FlowRunner
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.setAttribute
+import org.koin.core.annotation.Single
 import org.slf4j.Logger
 
+@Single
 class FlowRunnerImpl(
 	private val nodeRegistry: NodeRegistry,
 	private val featureFlags: FeatureFlags,
-	private val tracer: Tracer,
+	openTelemetry: OpenTelemetry,
 ) : FlowRunner {
+	private val tracer = openTelemetry.getTracer(FlowRunnerImpl::class)
 	lateinit var json: Json
 
 	override fun execute(
