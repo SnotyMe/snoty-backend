@@ -9,7 +9,9 @@ import kotlinx.serialization.json.Json
 import me.snoty.backend.config.Config
 import me.snoty.backend.server.plugins.*
 import org.koin.core.Koin
+import org.koin.core.annotation.Single
 
+@Single
 class KtorServer(
 	private val koin: Koin,
 	private val config: Config,

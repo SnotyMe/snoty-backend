@@ -16,12 +16,9 @@ import me.snoty.integration.common.wiring.get
 import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.node.*
 import net.fortuna.ical4j.data.CalendarOutputter
-import org.koin.core.annotation.InjectedParam
-import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
 import org.slf4j.Logger
 import java.nio.charset.StandardCharsets
-import kotlin.reflect.KClass
 
 @Serializable
 data class ICalSettings(
@@ -38,9 +35,10 @@ data class ICalSettings(
 	settingsType = ICalSettings::class,
 	inputType = CalendarEvent::class,
 )
+@Single
 class ICalNodeHandler(
-	@InjectedParam override val metadata: NodeMetadata,
-	@Provided persistenceFactory: NodePersistenceFactory,
+	override val metadata: NodeMetadata,
+	persistenceFactory: NodePersistenceFactory,
 ) : NodeHandler {
 	private val eventPersistenceService = persistenceFactory<CalendarEvent>("events")
 

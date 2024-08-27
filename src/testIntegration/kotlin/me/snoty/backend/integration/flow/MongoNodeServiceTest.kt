@@ -1,6 +1,5 @@
 package me.snoty.backend.integration.flow
 
-import io.mockk.mockk
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import me.snoty.backend.integration.config.MongoNodeService

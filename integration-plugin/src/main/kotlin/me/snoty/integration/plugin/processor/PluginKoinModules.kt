@@ -8,15 +8,19 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.modules.SerializersModule
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.wiring.node.NodeSettings
+import org.koin.core.annotation.Scope
+import org.koin.core.annotation.Scoped
 import org.koin.core.annotation.Single
 import kotlin.reflect.KClass
 
-fun FileSpec.Builder.addSerializersModule(registerNode: RegisterNode): FileSpec.Builder {
+fun TypeSpec.Builder.addSerializersModule(registerNode: RegisterNode): TypeSpec.Builder {
 	val serializationModule = "kotlinx.serialization.modules"
 
 	return addFunction(
 		FunSpec.builder("provide${registerNode.type}SerializersModule")
 			.addAnnotation(Single::class)
+			.addAnnotation(Scoped::class)
+			.addAnnotation(AnnotationSpec.get(Scope(name = registerNode.type)))
 			.returns(SerializersModule::class)
 			.addAnnotation(AnnotationSpec.get(OptIn(InternalSerializationApi::class)))
 			.addStatement(

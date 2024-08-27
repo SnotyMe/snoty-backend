@@ -2,6 +2,7 @@ package me.snoty.integration.common.wiring.data.impl
 
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.IntermediateDataMapper
+import org.koin.core.annotation.Single
 import kotlin.reflect.KClass
 
 data class SimpleIntermediateData(
@@ -9,7 +10,10 @@ data class SimpleIntermediateData(
 	val valueType: KClass<*> = value::class
 ) : IntermediateData
 
-object SimpleIntermediateDataMapper : IntermediateDataMapper<SimpleIntermediateData> {
+@Single
+class SimpleIntermediateDataMapper : IntermediateDataMapper<SimpleIntermediateData> {
+	override val intermediateDataClass = SimpleIntermediateData::class
+
 	@Suppress("UNCHECKED_CAST")
 	override fun <R : Any> deserialize(intermediateData: SimpleIntermediateData, clazz: KClass<R>): R {
 		val value = intermediateData.value

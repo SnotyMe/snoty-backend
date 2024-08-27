@@ -51,7 +51,7 @@ class FlowRunnerImplTest {
 	}
 	private val otel = createOpenTelemetry()
 	private val flagsProvider = testFeatureFlags()
-	private val runner = FlowRunnerImpl(nodeRegistry, flagsProvider.flags, otel.openTelemetry).apply {
+	private val runner = FlowRunnerImpl(nodeRegistry, flagsProvider.flags, IntermediateDataMapperRegistry, otel.openTelemetry).apply {
 		json = this@FlowRunnerImplTest.json
 	}
 	private val testLogService = TestNodeLogService()

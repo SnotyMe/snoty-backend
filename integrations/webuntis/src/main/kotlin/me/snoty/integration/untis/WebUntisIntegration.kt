@@ -8,14 +8,11 @@ import me.snoty.integration.common.fetch.fetchContext
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.*
-import me.snoty.integration.common.wiring.data.EmitNodeOutputContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.untis.model.UntisExam
 import me.snoty.integration.untis.request.getExams
 import org.jobrunr.jobs.context.JobContext
-import org.koin.core.annotation.InjectedParam
-import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
 import org.slf4j.Logger
 
@@ -25,8 +22,9 @@ import org.slf4j.Logger
 	position = NodePosition.START,
 	settingsType = WebUntisSettings::class
 )
+@Single
 class WebUntisIntegration(
-	@InjectedParam override val metadata: NodeMetadata,
+	override val metadata: NodeMetadata,
 	private val httpClient: HttpClient,
 	private val entityStateService: EntityStateService,
 	private val untisAPI: WebUntisAPI = WebUntisAPIImpl(httpClient)

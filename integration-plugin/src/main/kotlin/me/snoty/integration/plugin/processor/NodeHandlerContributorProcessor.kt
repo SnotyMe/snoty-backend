@@ -1,7 +1,6 @@
 package me.snoty.integration.plugin.processor
 
 import com.google.devtools.ksp.KspExperimental
-import com.google.devtools.ksp.getKotlinClassByName
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
@@ -33,12 +32,10 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 			.filterIsInstance<KSClassDeclaration>()
 			.toList()
 
-/*
 		allElements.mapNotNull { handler ->
 			handler.getAnnotation<Single>() ?:
 				logger.error("NodeHandlerContributorProcessor: ${handler.qualifiedName!!.asString()} is missing @Single annotation")
 		}
-*/
 
 		val ready = allElements
 			.filter {
@@ -51,12 +48,7 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 
 		ready
 			.forEach {
-				val processResult = try {
-					processClass(it)
-				} catch (e: FileAlreadyExistsException) {
-					throw e
-					return@forEach
-				}
+				val processResult = processClass(it)
 				allProcessingResults.add(processResult)
 			}
 
@@ -116,9 +108,9 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 			.addProperty(
 				contributorSpec
 					.propertySpecs
-					.single { it.name == NodeHandlerContributor::koin.name }
+					.single { it.name == NodeHandlerContributor::koinModules.name }
 					.override()
-					.buildKoinInitializer()
+					.buildKoinInitializer(clazz)
 					.build()
 			)
 
@@ -135,15 +127,24 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 		return ProcessResult(contributorClassName = contributorClassName, containingFile = clazz.containingFile!!)
 	}
 
-	private fun PropertySpec.Builder.buildKoinInitializer() = apply {
+	private fun PropertySpec.Builder.buildKoinInitializer(clazz: KSClassDeclaration) = apply {
+		fun CodeBlock.Builder.addModule(moduleClassName: ClassName): CodeBlock.Builder {
+			return apply {
+				add(
+					"%T.%M,\n",
+					moduleClassName,
+					MemberName("org.koin.ksp.generated", "module"),
+				)
+			}
+		}
+
 		initializer(
-			"""
-				%M {
-					%M()
-				}.koin
-			""".trimIndent(),
-			MemberName("org.koin.dsl", "koinApplication"),
-			MemberName("org.koin.ksp.generated", "defaultModule")
+			CodeBlock.builder()
+				.add("listOf(\n")
+				.add("%M,\n", MemberName("org.koin.ksp.generated", "defaultModule"))
+				.addModule(getGeneratedModule(clazz))
+				.add(")")
+				.build()
 		)
 	}
 

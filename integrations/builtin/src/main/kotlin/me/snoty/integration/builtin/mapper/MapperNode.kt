@@ -33,6 +33,7 @@ data class MapperSettings(
 	inputType = EmptySchema::class,
 	outputType = EmptySchema::class
 )
+@Single
 class MapperNodeHandler(
 	@InjectedParam override val metadata: NodeMetadata,
 ) : NodeHandler {

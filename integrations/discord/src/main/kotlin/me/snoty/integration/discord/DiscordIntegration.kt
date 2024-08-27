@@ -17,7 +17,7 @@ import me.snoty.integration.common.wiring.get
 import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
-import org.koin.core.annotation.InjectedParam
+import org.koin.core.annotation.Single
 import org.slf4j.Logger
 
 @Serializable
@@ -38,8 +38,9 @@ data class DiscordSettings(
 	settingsType = DiscordSettings::class,
 	inputType = DiscordWebhook.Message::class
 )
+@Single
 class DiscordNodeHandler(
-	@InjectedParam override val metadata: NodeMetadata,
+	override val metadata: NodeMetadata,
 	private val client: HttpClient,
 ) : NodeHandler {
 	context(NodeHandleContext)

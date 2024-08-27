@@ -3,13 +3,9 @@ package me.snoty.integration.moodle
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.engine.apache.*
-import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.reflect.*
-import me.snoty.integration.common.BaseSnotyJson
 import me.snoty.integration.moodle.param.MoodleParam
 import org.apache.http.client.utils.URIBuilder
 import java.net.URI
@@ -28,13 +24,8 @@ suspend inline fun <reified T> MoodleAPI.request(request: MoodleRequest): T = re
 
 const val MOODLE_WS = "/webservice/rest/server.php"
 
-class MoodleAPIImpl(client: HttpClient? = null) : MoodleAPI {
+class MoodleAPIImpl(private val httpClient: HttpClient) : MoodleAPI {
 	private val logger = KotlinLogging.logger {}
-	private val httpClient = client ?: HttpClient(Apache) {
-		install(ContentNegotiation) {
-			json(BaseSnotyJson)
-		}
-	}
 
 	override suspend fun <T> request(type: TypeInfo, request: MoodleRequest): T {
 		val response = httpClient.post(request.toUri().toASCIIString()) {

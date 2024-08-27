@@ -3,16 +3,27 @@ package me.snoty.integration.common.wiring.data
 import org.koin.core.annotation.Single
 import kotlin.reflect.KClass
 
+interface IntermediateDataMapperRegistry {
+	operator fun <T : IntermediateData> set(clazz: KClass<T>, mapper: IntermediateDataMapper<T>)
+	operator fun <T : IntermediateData> get(clazz: KClass<out T>): IntermediateDataMapper<T>
+}
+
 @Single
-class IntermediateDataMapperRegistry {
+class IntermediateDataMapperRegistryImpl(dataMappers: List<IntermediateDataMapper<*>>) : IntermediateDataMapperRegistry {
 	private val mappers = mutableMapOf<KClass<*>, IntermediateDataMapper<*>>()
 
-	operator fun <T : IntermediateData> set(clazz: KClass<T>, mapper: IntermediateDataMapper<T>) {
+	init {
+		dataMappers.forEach {
+			mappers[it.intermediateDataClass] = it
+		}
+	}
+
+	override operator fun <T : IntermediateData> set(clazz: KClass<T>, mapper: IntermediateDataMapper<T>) {
 		mappers[clazz] = mapper
 	}
 
 	@Suppress("UNCHECKED_CAST")
-	operator fun <T : IntermediateData> get(clazz: KClass<out T>): IntermediateDataMapper<T> {
+	override operator fun <T : IntermediateData> get(clazz: KClass<out T>): IntermediateDataMapper<T> {
 		return mappers[clazz] as? IntermediateDataMapper<T> ?: throw noMapper(clazz)
 	}
 
