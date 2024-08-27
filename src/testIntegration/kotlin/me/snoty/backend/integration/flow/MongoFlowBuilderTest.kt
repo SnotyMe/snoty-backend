@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.util.*
 
-class FlowBuilderImplTest : AbstractFlowFetchTest<MongoFlowBuilderTest.FlowTestContextImpl>(::FlowTestContextImpl) {
+class MongoFlowBuilderTest : AbstractFlowFetchTest<MongoFlowBuilderTest.FlowTestContextImpl>(::FlowTestContextImpl) {
 
 	data class FlowTestContextImpl(
 		override var flow: List<RelationalFlowNode>? = null
@@ -22,7 +22,7 @@ class FlowBuilderImplTest : AbstractFlowFetchTest<MongoFlowBuilderTest.FlowTestC
 		}
 
 		companion object {
-			val flowBuilderImpl = FlowBuilderImpl { EmptyNodeSettings() }
+			val flowBuilderImpl = MongoFlowBuilder { EmptyNodeSettings() }
 		}
 	}
 

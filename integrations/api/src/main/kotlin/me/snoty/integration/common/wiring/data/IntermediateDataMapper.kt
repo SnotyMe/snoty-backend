@@ -6,6 +6,8 @@ import kotlin.reflect.KClass
  * @param IM Intermediate data type - does NOT have something to do with the input / output it can handle
  */
 interface IntermediateDataMapper<IM : IntermediateData> {
+	val intermediateDataClass: KClass<IM>
+
 	fun <R : Any> deserialize(intermediateData: IM, clazz: KClass<R>): R
 
 	fun <R : Any> deserializeUnsafe(intermediateData: IntermediateData, clazz: KClass<R>): R {

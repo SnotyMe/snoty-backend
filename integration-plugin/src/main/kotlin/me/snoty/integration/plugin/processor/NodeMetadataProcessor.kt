@@ -10,6 +10,7 @@ import com.squareup.kotlinpoet.ksp.writeTo
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.integration.plugin.utils.addDataClassInitializer
 import me.snoty.integration.plugin.utils.generateObjectSchema
 import me.snoty.integration.plugin.utils.resolveClassFromAnnotation
@@ -42,6 +43,7 @@ class NodeMetadataProcessor(private val logger: KSPLogger, private val codeGener
 			descriptor = NodeDescriptor(subsystem = node.subsystem, type = node.type),
 			displayName = displayName,
 			position = node.position,
+			settingsClass = NodeSettings::class,
 			settings = generateObjectSchema(resolver, settingsClass)!!,
 			input = generateObjectSchema(resolver, inputClass),
 			output = generateObjectSchema(resolver, outputClass)
@@ -49,9 +51,10 @@ class NodeMetadataProcessor(private val logger: KSPLogger, private val codeGener
 
 		val fileSpec = FileSpec.scriptBuilder("${clazz.simpleName.asString()}Metadata", clazz.packageName.asString())
 			.addCode("internal val $NODE_METADATA = %T(\n", NodeMetadata::class)
-			.addDataClassInitializer(metadata)
+			.addDataClassInitializer(metadata, replacements = mapOf(
+				NodeMetadata::settingsClass.name to "${settingsClass.simpleName.asString()}::class",
+			))
 			.addCode(")\n")
-			.addSerializersModule(node)
 			.build()
 
 		fileSpec

@@ -11,9 +11,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import me.snoty.backend.featureflags.FeatureFlags
 import me.snoty.backend.observability.*
-import me.snoty.backend.utils.flowWith
-import me.snoty.integration.common.wiring.IntermediateDataMapperRegistryContext
-import me.snoty.integration.common.wiring.NodeHandleContext
+import me.snoty.integration.common.wiring.NodeHandleContextImpl
 import me.snoty.integration.common.wiring.RelationalFlowNode
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
@@ -86,8 +84,8 @@ class FlowRunnerImpl(
 			}
 		// TODO: test with multiple inputs
 		setNode(node = node)
-		return flowWith<IntermediateDataMapperRegistry, IntermediateData>(intermediateDataMapperRegistry) {
-			with(this as NodeHandleContext) {
+		return flow {
+			with(NodeHandleContextImpl(intermediateDataMapperRegistry = intermediateDataMapperRegistry, flowCollector = this)) {
 				processor.process(logger, node, input)
 			}
 		}

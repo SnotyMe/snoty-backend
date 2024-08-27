@@ -3,11 +3,20 @@ package me.snoty.integration.common.wiring
 import me.snoty.integration.common.fetch.FetchContext
 import me.snoty.integration.common.wiring.data.EmitNodeOutputContext
 import me.snoty.integration.common.wiring.data.IntermediateData
+import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
 import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
 import kotlin.reflect.KClass
 
-interface NodeHandleContext : IntermediateDataMapperRegistryContext, EmitNodeOutputContext
+interface NodeHandleContext {
+	val intermediateDataMapperRegistry: IntermediateDataMapperRegistry
+	val flowCollector: EmitNodeOutputContext
+}
+
+data class NodeHandleContextImpl(
+	override val intermediateDataMapperRegistry: IntermediateDataMapperRegistry,
+	override val flowCollector: EmitNodeOutputContext
+) : NodeHandleContext
 
 context(NodeHandleContext)
 suspend fun <T : Any> iterableStructOutput(
@@ -31,11 +40,10 @@ suspend fun <T : Any> simpleOutput(producer: suspend () -> T) = emitSerialized(S
 context(NodeHandleContext)
 private suspend fun <IM : IntermediateData, T : Any> emitSerialized(clazz: KClass<IM>, data: T) {
 	val mapper = intermediateDataMapperRegistry[clazz]
-	emit(mapper.serialize(data))
+	flowCollector.emit(mapper.serialize(data))
 }
 
-
-context(IntermediateDataMapperRegistryContext)
+context(NodeHandleContext)
 inline fun <reified T : Any> IntermediateData.get()
 	= intermediateDataMapperRegistry[this@get::class]
 		.deserializeUnsafe(this@get, T::class)

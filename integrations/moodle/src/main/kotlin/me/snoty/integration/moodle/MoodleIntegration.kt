@@ -25,6 +25,7 @@ import org.slf4j.event.Level
 	settingsType = MoodleSettings::class,
 	outputType = MoodleAssignment::class
 )
+@Single
 class MoodleIntegration(
 	@InjectedParam override val metadata: NodeMetadata,
 	private val entityStateService: EntityStateService,

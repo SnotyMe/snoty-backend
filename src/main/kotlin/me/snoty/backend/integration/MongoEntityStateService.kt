@@ -6,6 +6,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import me.snoty.backend.database.mongo.mongoCollectionPrefix
+import me.snoty.backend.observability.METRICS_POOL
 import me.snoty.backend.utils.listAsElements
 import me.snoty.integration.common.diff.*
 import me.snoty.integration.common.diff.state.EntityState
@@ -14,7 +15,7 @@ import me.snoty.integration.common.diff.state.NodeEntityStates
 import me.snoty.integration.common.diff.state.updateStates
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.node.NodeDescriptor
-import org.koin.core.annotation.InjectedParam
+import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -22,9 +23,9 @@ import java.util.concurrent.TimeUnit
 @Single
 class MongoEntityStateService(
 	mongoDB: MongoDatabase,
-	@InjectedParam integration: NodeDescriptor,
+	integration: NodeDescriptor,
 	meterRegistry: MeterRegistry,
-	private val metricsPool: ScheduledExecutorService
+	@Named(METRICS_POOL) private val metricsPool: ScheduledExecutorService
 ) : EntityStateService {
 	private val nodeEntityStates: EntityStateCollection = mongoDB.getCollection<NodeEntityStates>("${integration.mongoCollectionPrefix}.entityStates")
 	private val userEntityChanges: EntityChangesCollection = mongoDB.getCollection<UserEntityChanges>("${integration.mongoCollectionPrefix}.entityChanges")

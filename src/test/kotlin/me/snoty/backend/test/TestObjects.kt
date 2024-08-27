@@ -1,23 +1,23 @@
 package me.snoty.backend.test
 
 import io.mockk.mockk
-import io.mockk.mockkClass
 import kotlinx.datetime.Clock
 import me.snoty.backend.build.BuildInfo
 import me.snoty.backend.config.*
 import me.snoty.backend.database.mongo.apiCodecModule
-import me.snoty.backend.integration.flow.FlowBuilderImpl
+import me.snoty.backend.integration.flow.MongoFlowBuilder
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.utils.integrationsApiCodecModule
-import me.snoty.integration.common.wiring.NodeHandlerContext
 import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
+import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistryImpl
 import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
 import me.snoty.integration.common.wiring.data.impl.BsonIntermediateDataMapper
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateDataMapper
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.configuration.CodecRegistry
 import kotlin.reflect.KClass
@@ -77,34 +77,27 @@ val TestCodecRegistry: CodecRegistry = CodecRegistries.fromRegistries(
 	apiCodecModule()
 )
 
-val MockNodeHandlerContext = NodeHandlerContext(
-	metadata = mockk(),
-	entityStateService = mockk(),
-	nodeService = mockk(),
-	flowService = mockk(),
-	codecRegistry = mockk(),
-	intermediateDataMapperRegistry = IntermediateDataMapperRegistry().apply {
-		this[BsonIntermediateData::class] = BsonIntermediateDataMapper(TestCodecRegistry)
-		this[SimpleIntermediateData::class] = SimpleIntermediateDataMapper
-	},
-	scheduler = mockk(),
-	openTelemetry = mockk(),
-	nodePersistenceServiceFactory = mockk(),
-	hookRegistry = mockk(relaxed = true),
+val IntermediateDataMapperRegistry = IntermediateDataMapperRegistryImpl(
+	listOf(
+		BsonIntermediateDataMapper(TestCodecRegistry),
+		SimpleIntermediateDataMapper()
+	)
 )
 
-val TestFlowBuilder = FlowBuilderImpl {
+val TestFlowBuilder = MongoFlowBuilder {
 	EmptyNodeSettings()
 }
 
 fun nodeMetadata(
 	descriptor: NodeDescriptor,
 	position: NodePosition = NodePosition.MIDDLE,
+	settingsClass: KClass<out NodeSettings> = EmptyNodeSettings::class
 ) = NodeMetadata(
 	descriptor = descriptor,
 	displayName = "Test Node",
 	position = position,
 	settings = emptyList(),
+	settingsClass = settingsClass,
 	input = null,
 	output = null
 )

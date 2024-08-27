@@ -10,7 +10,7 @@ import kotlin.reflect.full.withNullability
 import kotlin.reflect.typeOf
 
 // TODO: support generics
-fun FileSpec.Builder.addDataClassInitializer(copyFrom: Any, level: Int = 1): FileSpec.Builder = apply {
+fun FileSpec.Builder.addDataClassInitializer(copyFrom: Any, level: Int = 1, replacements: Map<String, Any> = emptyMap()): FileSpec.Builder = apply {
 	copyFrom::class.primaryConstructor!!.parameters.forEach { param ->
 		val prop = copyFrom::class.memberProperties.first { it.name == param.name }
 		val value = prop.call(copyFrom)
@@ -19,6 +19,7 @@ fun FileSpec.Builder.addDataClassInitializer(copyFrom: Any, level: Int = 1): Fil
 		val isPrimitive = type == typeOf<String>() || type == typeOf<Int>() || type == typeOf<Boolean>()
 		addCode(prefix, param.name)
 		when {
+			replacements.containsKey(param.name) -> addCode("%L", replacements[param.name])
 			value == null -> addCode("null")
 			isPrimitive -> when {
 				type == typeOf<String>() -> addCode("\"%L\"", value)

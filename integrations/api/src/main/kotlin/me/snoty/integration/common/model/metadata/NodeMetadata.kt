@@ -14,7 +14,7 @@ data class NodeMetadata(
 	val position: NodePosition,
 	val settings: ObjectSchema,
 	@Transient
-	val settingsClass: KClass<out NodeSettings> = NodeSettings::class,
+	val settingsClass: KClass<out NodeSettings> = throw NotImplementedError("Deserialization is not supported"),
 	val input: ObjectSchema?,
 	val output: ObjectSchema?
 )

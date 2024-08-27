@@ -3,6 +3,8 @@ package me.snoty.backend
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import me.snoty.backend.server.resources.aboutResource
+import me.snoty.backend.test.TestBuildInfo
 import me.snoty.backend.test.ktorApplicationTest
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.InstanceOfAssertFactories
@@ -12,7 +14,7 @@ import org.junit.jupiter.api.Test
 
 class BuildInfoTest {
 	@Test
-	fun testBuildInfoEndpoint() = ktorApplicationTest {
+	fun testBuildInfoEndpoint() = ktorApplicationTest(configure = { aboutResource(TestBuildInfo) }) {
 		client.get("/info").apply {
 			assertEquals(HttpStatusCode.OK, status)
 			Assertions.assertThat(bodyAsText())
