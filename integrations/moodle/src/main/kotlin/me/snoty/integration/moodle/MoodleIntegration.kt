@@ -27,7 +27,7 @@ import org.slf4j.event.Level
 )
 @Single
 class MoodleIntegration(
-	@InjectedParam override val metadata: NodeMetadata,
+	override val metadata: NodeMetadata,
 	private val entityStateService: EntityStateService,
 	private val httpClient: HttpClient,
 	private val moodleAPI: MoodleAPI = MoodleAPIImpl(httpClient)

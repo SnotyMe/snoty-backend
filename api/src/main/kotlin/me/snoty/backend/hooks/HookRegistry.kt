@@ -4,7 +4,7 @@ import org.koin.core.annotation.Single
 import kotlin.reflect.KClass
 
 interface HookRegistry {
-	fun <T : Any> registerHook(clazz: KClass<T>, hook: LifecycleHook<T>)
+	fun <D : Any, L : LifecycleHook<D>> registerHook(clazz: KClass<D>, hook: L)
 
 	fun <T : Any> executeHooks(clazz: KClass<T>, data: T)
 }
@@ -13,7 +13,7 @@ interface HookRegistry {
 class HookRegistryImpl : HookRegistry {
 	private val hooks = mutableMapOf<KClass<*>, MutableList<LifecycleHook<*>>>()
 
-	override fun <T : Any> registerHook(clazz: KClass<T>, hook: LifecycleHook<T>) {
+	override fun <D : Any, L : LifecycleHook<D>> registerHook(clazz: KClass<D>, hook: L) {
 		val list = hooks.getOrPut(clazz) { mutableListOf() }
 		list.add(hook)
 	}
@@ -26,5 +26,5 @@ class HookRegistryImpl : HookRegistry {
 	}
 }
 
-inline fun <reified T : Any> HookRegistry.registerHook(noinline hook: LifecycleHook<T>)
-	= registerHook(T::class, hook)
+inline fun <reified D : Any, reified H : LifecycleHook<D>> HookRegistry.registerHook(hook: H)
+	= registerHook(D::class, hook)

@@ -18,12 +18,12 @@ fun main() = runBlocking {
 	val koin = startKoin {
 		logger(SLF4JLogger(level = Level.INFO))
 		modules(
+			module {
+				single<Koin> { this.getKoin() }
+			},
 			apiModule,
 			defaultModule,
 			integrationApiModule,
-			module {
-				single<Koin> { this.getKoin() }
-			}
 		)
 	}
 
