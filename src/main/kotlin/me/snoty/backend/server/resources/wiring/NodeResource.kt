@@ -21,7 +21,6 @@ import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.http.nodeNotFound
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.node.NodeDescriptor
-import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.NodeSettings
 
@@ -31,10 +30,9 @@ fun Routing.nodeResource(json: Json) {
 	val nodeService: NodeService = get()
 
 	suspend fun deserializeSettings(call: ApplicationCall, descriptor: NodeDescriptor, settingsJson: JsonElement): NodeSettings? {
-		val handler = nodeRegistry.lookupHandler(descriptor)
-			?: return void { call.noHandlerFound(descriptor) }
-		val serializer = handler.metadata.settingsClass.serializerOrNull()
-			?: return void { call.noSerializerFound(handler) }
+		val metadata = nodeRegistry.getMetadata(descriptor)
+		val serializer = metadata.settingsClass.serializerOrNull()
+			?: return void { call.noSerializerFound(metadata) }
 		return json.decodeFromJsonElement(serializer, settingsJson)
 	}
 
@@ -110,5 +108,5 @@ fun Routing.nodeResource(json: Json) {
 suspend fun ApplicationCall.noHandlerFound(descriptor: NodeDescriptor)
 	= respond(HttpStatusCode.BadRequest, "No handler found for $descriptor")
 
-suspend fun ApplicationCall.noSerializerFound(handler: NodeHandler)
-	= respond(HttpStatusCode.BadRequest, "No serializer found for ${handler.metadata.settingsClass}")
+suspend fun ApplicationCall.noSerializerFound(metadata: NodeMetadata)
+	= respond(HttpStatusCode.BadRequest, "No serializer found for ${metadata.settingsClass}")

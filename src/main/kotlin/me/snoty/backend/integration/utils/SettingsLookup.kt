@@ -14,8 +14,8 @@ fun interface MongoSettingsService {
 @Single
 class MongoSettingsServiceImpl(private val nodeRegistry: NodeRegistry, private val codecRegistry: CodecRegistry) : MongoSettingsService {
 	override fun lookup(node: GraphNode): NodeSettings {
-		val handler = nodeRegistry.lookupHandler(node.descriptor)
-			?: throw IllegalArgumentException("No handler found for node ${node.descriptor}")
-		return codecRegistry.decode(handler.metadata.settingsClass, node.settings)
+		val metadata = nodeRegistry.getMetadata(node.descriptor)
+
+		return codecRegistry.decode(metadata.settingsClass, node.settings)
 	}
 }

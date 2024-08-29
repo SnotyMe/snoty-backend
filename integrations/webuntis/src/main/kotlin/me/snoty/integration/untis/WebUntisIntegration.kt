@@ -24,7 +24,7 @@ import org.slf4j.Logger
 )
 @Single
 class WebUntisIntegration(
-	override val metadata: NodeMetadata,
+	val metadata: NodeMetadata,
 	private val httpClient: HttpClient,
 	private val entityStateService: EntityStateService,
 	private val untisAPI: WebUntisAPI = WebUntisAPIImpl(httpClient)

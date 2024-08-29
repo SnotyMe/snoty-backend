@@ -57,8 +57,8 @@ class MongoNodePersistenceService<T : Any>(
 }
 
 @Single
-class MongoNodePersistenceFactory(private val mongoDB: MongoDatabase) : NodePersistenceFactory {
-	override fun <T : Any> create(nodeDescriptor: NodeDescriptor, name: String, entityClass: KClass<T>): NodePersistenceService<T> {
+class MongoNodePersistenceFactory(private val mongoDB: MongoDatabase, private val nodeDescriptor: NodeDescriptor) : NodePersistenceFactory {
+	override fun <T : Any> create(name: String, entityClass: KClass<T>): NodePersistenceService<T> {
 		return MongoNodePersistenceService(mongoDB, nodeDescriptor, name, entityClass)
 	}
 }

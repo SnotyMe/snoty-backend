@@ -37,7 +37,6 @@ data class ICalSettings(
 )
 @Single
 class ICalNodeHandler(
-	override val metadata: NodeMetadata,
 	persistenceFactory: NodePersistenceFactory,
 	nodeRouteFactory: NodeRouteFactory,
 ) : NodeHandler {
