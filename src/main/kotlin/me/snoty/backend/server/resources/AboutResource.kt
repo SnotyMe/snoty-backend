@@ -6,6 +6,9 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import me.snoty.backend.build.BuildInfo
+import me.snoty.backend.server.routing.Resource
+import org.koin.core.annotation.Named
+import org.koin.core.annotation.Single
 import java.net.InetAddress
 
 @Serializable
@@ -15,7 +18,9 @@ data class AboutResponse(
 	val buildInfo: BuildInfo
 )
 
-fun Routing.aboutResource(buildInfo: BuildInfo) {
+@Single
+@Named("about")
+fun AboutResource(buildInfo: BuildInfo) = Resource {
 	val hostname = InetAddress.getLocalHost().hostName
 	get("/info") {
 		call.respond(AboutResponse(

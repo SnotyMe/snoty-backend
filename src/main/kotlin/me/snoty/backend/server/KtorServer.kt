@@ -8,6 +8,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.serialization.json.Json
 import me.snoty.backend.config.Config
 import me.snoty.backend.server.plugins.*
+import me.snoty.backend.server.routing.addResources
 import org.koin.core.Koin
 import org.koin.core.annotation.Single
 

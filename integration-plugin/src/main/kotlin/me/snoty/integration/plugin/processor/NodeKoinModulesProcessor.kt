@@ -33,7 +33,6 @@ class NodeKoinModulesProcessor(private val logger: KSPLogger, private val codeGe
 
 		val generatedModule = TypeSpec.objectBuilder(getGeneratedModule(clazz))
 			.addAnnotation(Module::class)
-			// .addAnnotation(AnnotationSpec.get(Scope(name = clazz.simpleName.asString())))
 			.addSerializersModule(node)
 			.build()
 

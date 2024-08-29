@@ -35,7 +35,7 @@ data class MapperSettings(
 )
 @Single
 class MapperNodeHandler(
-	@InjectedParam override val metadata: NodeMetadata,
+	override val metadata: NodeMetadata,
 ) : NodeHandler {
 	context(NodeHandleContext)
 	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {

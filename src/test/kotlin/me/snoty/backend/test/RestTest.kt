@@ -4,7 +4,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import io.mockk.mockk
 import me.snoty.backend.config.Config
-import me.snoty.backend.server.plugins.addResources
+import me.snoty.backend.server.routing.addResources
 import me.snoty.backend.server.plugins.configureRouting
 import me.snoty.backend.server.plugins.configureSecurity
 import me.snoty.backend.server.plugins.configureSerialization

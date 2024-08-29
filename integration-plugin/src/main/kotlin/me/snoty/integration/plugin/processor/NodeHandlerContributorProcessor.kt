@@ -88,7 +88,6 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 
 		classBuilder
 			.addSuperinterface(NodeHandlerContributor::class)
-			// .addFunction(createNodeHandlerContributorFun(clazz))
 			.addProperty(
 				contributorSpec
 					.propertySpecs
