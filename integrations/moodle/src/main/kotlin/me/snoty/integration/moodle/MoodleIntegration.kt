@@ -13,7 +13,6 @@ import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.moodle.model.MoodleAssignment
 import me.snoty.integration.moodle.request.getCalendarUpcoming
 import org.jobrunr.jobs.context.JobContext
-import org.koin.core.annotation.InjectedParam
 import org.koin.core.annotation.Single
 import org.slf4j.Logger
 import org.slf4j.event.Level
@@ -27,7 +26,7 @@ import org.slf4j.event.Level
 )
 @Single
 class MoodleIntegration(
-	override val metadata: NodeMetadata,
+	val metadata: NodeMetadata,
 	private val entityStateService: EntityStateService,
 	private val httpClient: HttpClient,
 	private val moodleAPI: MoodleAPI = MoodleAPIImpl(httpClient)

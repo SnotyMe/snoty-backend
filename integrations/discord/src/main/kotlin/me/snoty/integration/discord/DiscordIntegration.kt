@@ -9,7 +9,6 @@ import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.FieldCensored
 import me.snoty.integration.common.model.metadata.FieldDescription
 import me.snoty.integration.common.model.metadata.FieldName
-import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
@@ -40,7 +39,6 @@ data class DiscordSettings(
 )
 @Single
 class DiscordNodeHandler(
-	override val metadata: NodeMetadata,
 	private val client: HttpClient,
 ) : NodeHandler {
 	context(NodeHandleContext)
