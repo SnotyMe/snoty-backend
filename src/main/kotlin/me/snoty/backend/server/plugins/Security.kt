@@ -88,7 +88,11 @@ fun Application.configureSecurity(config: Config) {
 					val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>()
 						?: return@get call.respondRedirect("/login")
 
-					call.response.cookies.append("access_token", principal.accessToken)
+					call.response.cookies.append(
+						name = "access_token",
+						value = principal.accessToken,
+						path = "/",
+					)
 					call.respondText(principal.accessToken)
 				}
 			}
