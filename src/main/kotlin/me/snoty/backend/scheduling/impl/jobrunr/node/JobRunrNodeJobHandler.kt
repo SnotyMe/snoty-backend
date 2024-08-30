@@ -1,4 +1,4 @@
-package me.snoty.backend.scheduling.node
+package me.snoty.backend.scheduling.impl.jobrunr.node
 
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
@@ -10,16 +10,18 @@ import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import org.jobrunr.jobs.context.JobRunrDashboardLogger
+import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
 import ch.qos.logback.classic.Logger as LogbackLogger
 
-class NodeJobHandler(
+@Single
+class JobRunrNodeJobHandler(
 	private val nodeRegistry: NodeRegistry,
 	private val nodeService: NodeService,
 	private val flowService: FlowService,
 	nodeLogService: NodeLogService
-) : JobRequestHandler<NodeJobRequest> {
-	private val rootLogger = LoggerFactory.getLogger(NodeJobHandler::class.java) as LogbackLogger
+) : JobRequestHandler<JobRunrNodeJobRequest> {
+	private val rootLogger = LoggerFactory.getLogger(JobRunrNodeJobHandler::class.java) as LogbackLogger
 
 	init {
 		val nodeLogAppender = NodeLogAppender(nodeLogService)
@@ -27,7 +29,7 @@ class NodeJobHandler(
 		rootLogger.addAppender(nodeLogAppender)
 	}
 
-	override fun run(jobRequest: NodeJobRequest) {
+	override fun run(jobRequest: JobRunrNodeJobRequest) {
 		val jobContext = jobContext()
 		val logger = JobRunrDashboardLogger(this.rootLogger)
 

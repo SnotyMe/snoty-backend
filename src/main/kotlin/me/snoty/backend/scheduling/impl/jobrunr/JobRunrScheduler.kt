@@ -1,5 +1,7 @@
-package me.snoty.backend.scheduling
+package me.snoty.backend.scheduling.impl.jobrunr
 
+import me.snoty.backend.scheduling.Scheduler
+import me.snoty.backend.scheduling.SnotyJob
 import org.jobrunr.scheduling.BackgroundJob
 import org.jobrunr.scheduling.BackgroundJobRequest
 import org.jobrunr.scheduling.RecurringJobBuilder.aRecurringJob
@@ -8,7 +10,11 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.toJavaDuration
 
 @Single
-class JobRunrScheduler : Scheduler {
+class JobRunrScheduler(jobRunrConfigurer: JobRunrConfigurer) : Scheduler {
+	init {
+		jobRunrConfigurer.configure()
+	}
+
 	override fun scheduleJob(id: String, job: () -> Unit) {
 		BackgroundJob.createRecurrently(
 			aRecurringJob()
