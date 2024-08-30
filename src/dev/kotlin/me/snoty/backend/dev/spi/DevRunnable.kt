@@ -1,4 +1,4 @@
-package me.snoty.backend.spi
+package me.snoty.backend.dev.spi
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.jvm.jvmName

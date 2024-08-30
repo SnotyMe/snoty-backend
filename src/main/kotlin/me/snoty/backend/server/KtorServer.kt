@@ -1,6 +1,5 @@
 package me.snoty.backend.server
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -19,16 +18,7 @@ class KtorServer(
 	private val metricsRegistry: MeterRegistry,
 	private val json: Json,
 ) {
-	private val logger = KotlinLogging.logger {}
-
 	fun start(wait: Boolean) {
-		val dev = config.environment.isDev()
-
-		if (dev) {
-			logger.debug { "Running in development mode" }
-			System.setProperty("io.ktor.development", "true")
-		}
-
 		embeddedServer(
 			Netty,
 			port = config.port.toInt(),
@@ -36,7 +26,7 @@ class KtorServer(
 			module = {
 				module()
 			},
-			watchPaths = listOf("classes", "resources")
+			watchPaths = listOf("classes", "resources"),
 		).start(wait = wait)
 	}
 
