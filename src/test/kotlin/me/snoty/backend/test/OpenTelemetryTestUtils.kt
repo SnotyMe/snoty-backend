@@ -22,7 +22,6 @@ fun createOpenTelemetry(): OpenTelemetryWithExporters {
 	)
 }
 
-
 data class OpenTelemetryWithExporters(
 	val openTelemetry: OpenTelemetry,
 	val spanExporter: InMemorySpanExporter,

@@ -9,11 +9,8 @@ import me.snoty.backend.integration.flow.MongoFlowBuilder
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.utils.integrationsApiCodecModule
-import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
 import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistryImpl
-import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
 import me.snoty.integration.common.wiring.data.impl.BsonIntermediateDataMapper
-import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateDataMapper
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
@@ -91,7 +88,7 @@ val TestFlowBuilder = MongoFlowBuilder {
 fun nodeMetadata(
 	descriptor: NodeDescriptor,
 	position: NodePosition = NodePosition.MIDDLE,
-	settingsClass: KClass<out NodeSettings> = EmptyNodeSettings::class
+	settingsClass: KClass<out NodeSettings> = EmptyNodeSettings::class,
 ) = NodeMetadata(
 	descriptor = descriptor,
 	displayName = "Test Node",
