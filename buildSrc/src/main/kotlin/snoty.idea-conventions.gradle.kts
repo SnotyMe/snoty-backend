@@ -19,12 +19,18 @@ afterEvaluate {
 				runConfigurations {
 					create("Application [dev]", Application::class.java).apply {
 						mainClass = extensions.getByType(JavaApplication::class.java).mainClass.get()
+							.replace("Main", "dev.DevMain")
 						moduleName = "snoty-backend.dev"
 						jvmArgs = "-Dio.ktor.development=true"
 
 						envs = mutableMapOf(
 							"LOG_LEVEL" to "TRACE",
 						)
+					}
+
+					create("Application [prod]", Application::class.java).apply {
+						mainClass = extensions.getByType(JavaApplication::class.java).mainClass.get()
+						moduleName = "snoty-backend.main"
 					}
 				}
 			}

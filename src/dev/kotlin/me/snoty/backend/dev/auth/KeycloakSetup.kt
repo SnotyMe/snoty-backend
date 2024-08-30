@@ -4,7 +4,7 @@ import com.sksamuel.hoplite.ConfigLoaderBuilder
 import com.sksamuel.hoplite.Masked
 import com.sksamuel.hoplite.addFileSource
 import com.sksamuel.hoplite.parsers.PropsParser
-import me.snoty.backend.spi.DevRunnable
+import me.snoty.backend.dev.spi.DevRunnable
 import org.keycloak.admin.client.KeycloakBuilder
 
 const val REALM_NAME = "snoty"

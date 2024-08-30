@@ -14,7 +14,7 @@ import io.opentelemetry.sdk.resources.Resource
 import io.opentelemetry.sdk.trace.SdkTracerProvider
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor
 import io.opentelemetry.semconv.ServiceAttributes
-import me.snoty.backend.spi.DevRunnable
+import me.snoty.backend.dev.spi.DevRunnable
 
 
 class OtlpSetup : DevRunnable() {
