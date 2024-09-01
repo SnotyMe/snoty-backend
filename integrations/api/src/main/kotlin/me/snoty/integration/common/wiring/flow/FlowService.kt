@@ -16,4 +16,6 @@ interface FlowService {
 	suspend fun getWithNodes(flowId: NodeId): WorkflowWithNodes?
 
 	fun getAll(): Flow<StandaloneWorkflow>
+
+	suspend fun rename(flowId: NodeId, name: String)
 }

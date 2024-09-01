@@ -1,9 +1,11 @@
 package me.snoty.backend.server.resources.wiring
 
 import io.ktor.http.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.flow.toList
+import kotlinx.serialization.Serializable
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.logging.FlowLogService
 import me.snoty.backend.server.koin.get
@@ -14,6 +16,18 @@ import me.snoty.integration.common.wiring.flow.FlowService
 
 fun Routing.flowResource() {
 	val flowService: FlowService = get()
+
+	post {
+		val user = call.getUser()
+
+		@Serializable
+		data class FlowCreateRequest(val name: String)
+		val request = call.receive<FlowCreateRequest>()
+
+		val flow = flowService.create(user.id, request.name)
+
+		call.respond(flow)
+	}
 
 	get("list") {
 		val user = call.getUser()
@@ -34,6 +48,22 @@ fun Routing.flowResource() {
 		}
 
 		call.respond(flow)
+	}
+
+	put("{id}/rename") {
+		val user = call.getUser()
+		val id = call.parameters["id"]?.letOrNull { NodeId(it) }
+			?: return@put call.respond(HttpStatusCode.BadRequest, "Invalid node id")
+
+		val flow = flowService.getStandalone(id)
+		if (flow?.userId != user.id) {
+			return@put call.flowNotFound(flow)
+		}
+
+		val name = call.receiveText()
+		flowService.rename(id, name)
+
+		call.respond(HttpStatusCode.NoContent)
 	}
 
 	val flowLogService = get<FlowLogService>()
