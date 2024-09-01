@@ -1,13 +1,14 @@
 package me.snoty.backend
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.newSingleThreadContext
 import me.snoty.backend.featureflags.FeatureFlagsSetup
 import me.snoty.backend.integration.NodeHandlerContributorLookup
-import me.snoty.backend.scheduling.NodeScheduler
+import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.server.KtorServer
-import me.snoty.integration.common.config.NodeService
-import me.snoty.integration.common.model.NodePosition
+import me.snoty.integration.common.wiring.flow.FlowService
 import org.koin.core.Koin
 
 class Application(val koin: Koin) {
@@ -15,16 +16,17 @@ class Application(val koin: Koin) {
 
 	inline fun <reified T : Any> get() = koin.get<T>()
 
-	suspend fun start() {
+	suspend fun start() = coroutineScope {
 		FeatureFlagsSetup.setup(get(), get())
-
-		val nodeService: NodeService = get()
 
 		NodeHandlerContributorLookup(koin).executeContributors()
 
-		newSingleThreadContext("NodeScheduler").use {
-			nodeService.query(position = NodePosition.START)
-				.collect(get<NodeScheduler>()::schedule)
+		async(newSingleThreadContext("NodeScheduler")) {
+			val flowService: FlowService = get()
+			val flowScheduler: FlowScheduler = get()
+
+			flowService.getAll()
+				.collect { flowScheduler.schedule(it) }
 		}
 
 		get<KtorServer>().start(wait = true)

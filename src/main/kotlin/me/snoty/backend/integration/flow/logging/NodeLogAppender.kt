@@ -14,7 +14,7 @@ import me.snoty.integration.common.wiring.flow.NodeLogEntry
 private const val NAME = "NodeLogAppender"
 
 class NodeLogAppender(
-	private val nodeLogService: NodeLogService
+	private val flowLogService: FlowLogService
 ) : AppenderBase<ILoggingEvent>() {
 	init {
 		setName(NAME)
@@ -37,9 +37,9 @@ class NodeLogAppender(
 				node = eventObject.mdcPropertyMap["node.id"]?.toNodeId()
 			)
 
-			val rootNode = eventObject.mdcPropertyMap["rootNode.id"]?.toNodeId() ?: return@launch
+			val flowId = eventObject.mdcPropertyMap["flow.id"]?.toNodeId() ?: return@launch
 
-			nodeLogService.record(rootNode, entry)
+			flowLogService.record(flowId, entry)
 		}
 	}
 }

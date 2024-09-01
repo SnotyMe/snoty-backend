@@ -3,28 +3,23 @@ package me.snoty.backend.server.resources.wiring
 import io.ktor.http.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.toList
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.backend.integration.flow.logging.NodeLogService
+import me.snoty.backend.integration.flow.logging.FlowLogService
 import me.snoty.backend.server.koin.get
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.letOrNull
-import me.snoty.integration.common.config.NodeService
-import me.snoty.integration.common.http.nodeNotFound
+import me.snoty.integration.common.http.flowNotFound
 import me.snoty.integration.common.wiring.flow.FlowService
-import me.snoty.integration.common.wiring.node.NodeRegistry
-import me.snoty.integration.common.model.NodePosition
 
 fun Routing.flowResource() {
-	val nodeRegistry: NodeRegistry = get()
-	val nodeService: NodeService = get()
 	val flowService: FlowService = get()
 
 	get("list") {
 		val user = call.getUser()
-		val flows = nodeService.query(user.id, NodePosition.START)
+		val flows = flowService.query(user.id)
 		val result = flows.toList()
+
 		call.respond(result)
 	}
 
@@ -33,38 +28,26 @@ fun Routing.flowResource() {
 		val id = call.parameters["id"]?.letOrNull { NodeId(it) }
 			?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid node id")
 
-		val node = nodeService.get(id)
-		if (node?.userId != user.id) {
-			return@get call.nodeNotFound(node)
+		val flow = flowService.getWithNodes(id)
+		if (flow?.userId != user.id) {
+			return@get call.flowNotFound(flow)
 		}
-		val metadata = nodeRegistry.getMetadata(node.descriptor)
-		if (metadata.position != NodePosition.START) {
-			return@get call.respond(HttpStatusCode.BadRequest, "Node is not a flow start node")
-		}
-
-		val flow = flowService.getFlowForNode(node)
-			.single()
 
 		call.respond(flow)
 	}
 
-	val nodeLogService = get<NodeLogService>()
+	val flowLogService = get<FlowLogService>()
 	get("{id}/logs") {
 		val user = call.getUser()
 
 		val id = call.parameters["id"]?.letOrNull { NodeId(it) }
 			?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid node id")
-		val node = nodeService.get(id)
-		if (node?.userId != user.id) {
-			return@get call.nodeNotFound(node)
+		val flow = flowService.getStandalone(id)
+		if (flow?.userId != user.id) {
+			return@get call.flowNotFound(flow)
 		}
 
-		val metadata = nodeRegistry.getMetadata(node.descriptor)
-		if (metadata.position != NodePosition.START) {
-			return@get call.respond(HttpStatusCode.BadRequest, "Node is not a flow start node")
-		}
-
-		val logs = nodeLogService.retrieve(rootNode = id)
+		val logs = flowLogService.retrieve(flowId = id)
 
 		call.respond(logs)
 	}

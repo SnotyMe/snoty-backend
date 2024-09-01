@@ -1,11 +1,10 @@
-package me.snoty.backend.integration.flow
+package me.snoty.backend.integration.flow.execution
 
 import io.opentelemetry.api.trace.Span
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import me.snoty.backend.integration.flow.NodeExecutionException
 import me.snoty.backend.observability.setException
-import me.snoty.integration.common.wiring.RelationalFlowNode
-import org.slf4j.MDC
 
 fun <T> Flow<T>.flowCatching(span: Span) = catch {
 	// exception has already been handled
@@ -13,14 +12,4 @@ fun <T> Flow<T>.flowCatching(span: Span) = catch {
 	if (it is NodeExecutionException) throw it
 	span.setException(it)
 	throw NodeExecutionException(it)
-}
-
-fun traceName(node: RelationalFlowNode) =
-	"Node ${node.descriptor.subsystem}:${node.descriptor.type} (${node._id})"
-
-fun setNode(
-	nodeName: String = "node",
-	node: RelationalFlowNode
-) {
-	MDC.put("$nodeName.id", node._id.toString())
 }

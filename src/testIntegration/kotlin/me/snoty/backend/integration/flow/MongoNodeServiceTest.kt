@@ -3,6 +3,7 @@ package me.snoty.backend.integration.flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import me.snoty.backend.integration.config.MongoNodeService
+import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.node.NodeRegistryImpl
 import me.snoty.backend.test.MongoTest
 import me.snoty.backend.test.NoOpNodeHandler
@@ -31,7 +32,7 @@ class MongoNodeServiceTest {
 
 	@Test
 	fun `test getByUser`(): Unit = runBlocking {
-		val createdNode = service.create(USER_ID_1, descriptor, EmptyNodeSettings())
+		val createdNode = service.create(USER_ID_1, NodeId(), descriptor, EmptyNodeSettings())
 
 		val byUser = service.query(USER_ID_1, NodePosition.START).toList()
 		assertEquals(1, byUser.size)

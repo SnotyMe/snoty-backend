@@ -18,12 +18,19 @@ interface NodeService {
 		position: NodePosition? = null,
 	): Flow<StandaloneNode>
 
-	suspend fun <S : NodeSettings> create(userID: UUID, descriptor: NodeDescriptor, settings: S): StandaloneNode
+	suspend fun <S : NodeSettings> create(
+		userID: UUID,
+		flowId: NodeId,
+		descriptor: NodeDescriptor,
+		settings: S,
+	): StandaloneNode
 
 	suspend fun connect(from: NodeId, to: NodeId): ServiceResult
 	suspend fun disconnect(from: NodeId, to: NodeId): ServiceResult
 
 	suspend fun updateSettings(id: NodeId, settings: NodeSettings): ServiceResult
+
+	suspend fun delete(id: NodeId): ServiceResult
 }
 
 object NodeServiceResults {
@@ -31,4 +38,5 @@ object NodeServiceResults {
 	class NodeConnected(from: NodeId, to: NodeId) : ServiceResult(HttpStatusCode.OK, "Connected $from to $to")
 	class NodeDisconnected(from: NodeId, to: NodeId) : ServiceResult(HttpStatusCode.OK, "Disconnected $from from $to")
 	class NodeSettingsUpdated(id: NodeId) : ServiceResult(HttpStatusCode.OK, "Settings for node $id updated")
+	class NodeDeleted(id: NodeId) : ServiceResult(HttpStatusCode.OK, "Node $id deleted")
 }

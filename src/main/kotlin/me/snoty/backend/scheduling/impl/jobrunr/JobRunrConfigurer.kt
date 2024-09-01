@@ -5,7 +5,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.mongodb.client.MongoClient
 import io.micrometer.core.instrument.MeterRegistry
 import me.snoty.backend.database.mongo.MONGO_DB_NAME
-import me.snoty.backend.scheduling.impl.jobrunr.node.JobRunrNodeJobHandler
+import me.snoty.backend.scheduling.impl.jobrunr.node.JobRunrFlowJobHandler
 import org.jobrunr.configuration.JobRunr
 import org.jobrunr.configuration.JobRunrMicroMeterIntegration
 import org.jobrunr.dashboard.JobRunrDashboardWebServerConfiguration
@@ -19,7 +19,7 @@ import org.koin.core.annotation.Single
 class JobRunrConfigurer(
 	private val mongoClient: MongoClient,
 	private val meterRegistry: MeterRegistry,
-	private val jobHandler: JobRunrNodeJobHandler,
+	private val jobHandler: JobRunrFlowJobHandler,
 ) {
 	fun configure() {
 		JobRunr.configure()
@@ -36,7 +36,7 @@ class JobRunrConfigurer(
 				override fun <T : Any> activateJob(type: Class<T>): T? {
 					@Suppress("UNCHECKED_CAST")
 					return when (type) {
-						JobRunrNodeJobHandler::class.java -> jobHandler as T
+						JobRunrFlowJobHandler::class.java -> jobHandler as T
 						else -> null
 					}
 				}

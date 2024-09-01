@@ -4,7 +4,6 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.integration.common.wiring.node.NodeDescriptor
-import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
 import java.util.*
 
@@ -14,6 +13,7 @@ import java.util.*
  */
 interface GenericNode {
 	val _id: NodeId
+	val flowId: NodeId
 	val userId: UUID
 	val descriptor: NodeDescriptor
 }
@@ -30,26 +30,20 @@ interface Node : GenericNode {
  * Contains a list of the next nodes in the flow.
  */
 @Serializable
-data class RelationalFlowNode(
+data class FlowNode(
 	override val _id: NodeId,
+	override val flowId: NodeId,
 	@Contextual
 	override val userId: UUID,
 	override val descriptor: NodeDescriptor,
 	override val settings: NodeSettings,
-	val next: List<RelationalFlowNode> = emptyList()
+	val next: List<NodeId> = emptyList()
 ) : Node
-
-fun Node.toRelational(next: List<RelationalFlowNode>) = RelationalFlowNode(
-	_id = _id,
-	userId = userId,
-	descriptor = descriptor,
-	settings = settings,
-	next = next
-)
 
 @Serializable
 data class StandaloneNode(
 	override val _id: NodeId,
+	override val flowId: NodeId,
 	@Contextual
 	override val userId: UUID,
 	override val descriptor: NodeDescriptor,

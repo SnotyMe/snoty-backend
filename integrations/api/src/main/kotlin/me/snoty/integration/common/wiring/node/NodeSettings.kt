@@ -1,5 +1,6 @@
 package me.snoty.integration.common.wiring.node
 
+import kotlinx.serialization.Serializable
 import org.bson.BsonReader
 import org.bson.BsonWriter
 import org.bson.codecs.Codec
@@ -13,6 +14,7 @@ interface NodeSettings {
 	val name: String
 }
 
+@Serializable
 data class EmptyNodeSettings(
 	override val name: String = "Empty"
 ) : NodeSettings

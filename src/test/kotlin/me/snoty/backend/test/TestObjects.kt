@@ -5,7 +5,6 @@ import kotlinx.datetime.Clock
 import me.snoty.backend.build.BuildInfo
 import me.snoty.backend.config.*
 import me.snoty.backend.database.mongo.apiCodecModule
-import me.snoty.backend.integration.flow.MongoFlowBuilder
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.utils.integrationsApiCodecModule
@@ -80,10 +79,6 @@ val IntermediateDataMapperRegistry = IntermediateDataMapperRegistryImpl(
 		SimpleIntermediateDataMapper()
 	)
 )
-
-val TestFlowBuilder = MongoFlowBuilder {
-	EmptyNodeSettings()
-}
 
 fun nodeMetadata(
 	descriptor: NodeDescriptor,

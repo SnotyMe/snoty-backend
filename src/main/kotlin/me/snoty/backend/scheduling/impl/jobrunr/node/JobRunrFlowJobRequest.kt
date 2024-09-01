@@ -3,8 +3,8 @@ package me.snoty.backend.scheduling.impl.jobrunr.node
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.JobRequest
 
-data class JobRunrNodeJobRequest(
-	val nodeId: NodeId
+data class JobRunrFlowJobRequest(
+	val flowId: NodeId,
 ) : JobRequest {
-	override fun getJobRequestHandler() = JobRunrNodeJobHandler::class.java
+	override fun getJobRequestHandler() = JobRunrFlowJobHandler::class.java
 }

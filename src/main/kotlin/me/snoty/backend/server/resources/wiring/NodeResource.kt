@@ -51,14 +51,15 @@ fun Routing.nodeResource(json: Json) {
 
 		@Serializable
 		data class NodeCreateRequest(
+			val flowId: NodeId,
 			val descriptor: NodeDescriptor,
-			val settings: JsonElement
+			val settings: JsonElement,
 		)
 
-		val (descriptor, settingsJson) = call.receive<NodeCreateRequest>()
+		val (flowId, descriptor, settingsJson) = call.receive<NodeCreateRequest>()
 		val settingsObj = deserializeSettings(call, descriptor, settingsJson) ?: return@post
 
-		val createdNode = nodeService.create(user.id, descriptor, settingsObj)
+		val createdNode = nodeService.create(user.id, flowId, descriptor, settingsObj)
 
 		call.respond(status = HttpStatusCode.Created, message = createdNode)
 	}
@@ -100,6 +101,22 @@ fun Routing.nodeResource(json: Json) {
 		val settingsObj = deserializeSettings(call, node.descriptor, settingsJson) ?: return@put
 
 		val result = nodeService.updateSettings(id, settingsObj)
+
+		call.respondServiceResult(result)
+	}
+
+	delete("{id}") {
+		val user = call.getUser()
+
+		val id = call.parameters["id"]?.letOrNull { NodeId(it) }
+			?: return@delete call.respond(HttpStatusCode.BadRequest, "Invalid node id")
+
+		val node = nodeService.get(id)
+		if (node?.userId != user.id) {
+			return@delete call.nodeNotFound(node)
+		}
+
+		val result = nodeService.delete(id)
 
 		call.respondServiceResult(result)
 	}

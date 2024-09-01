@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Instant
-import me.snoty.backend.integration.config.flow.NodeId
+import me.snoty.backend.integration.flow.node
 import me.snoty.backend.test.MongoTest
 import me.snoty.backend.test.TestIds.ENTITY_TYPE
 import me.snoty.backend.test.TestIds.INTEGRATION_NAME
@@ -17,7 +17,6 @@ import me.snoty.backend.test.assertInstanceOf
 import me.snoty.backend.test.getField
 import me.snoty.integration.common.diff.*
 import me.snoty.integration.common.wiring.Node
-import me.snoty.integration.common.wiring.StandaloneNode
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.Subsystem
@@ -36,11 +35,10 @@ class MongoEntityStateServiceTest {
 		mockk()
 	)
 
-	private fun flowNode(): Node = StandaloneNode(
-		NodeId(),
-		USER_ID_1,
-		nodeDescriptor,
-		EmptyNodeSettings()
+	private fun flowNode(): Node = node(
+		userId = USER_ID_1,
+		descriptor = nodeDescriptor,
+		settings = EmptyNodeSettings()
 	)
 
 	@Test

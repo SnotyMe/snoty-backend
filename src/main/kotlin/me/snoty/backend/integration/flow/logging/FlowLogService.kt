@@ -11,31 +11,31 @@ import me.snoty.integration.common.wiring.flow.NodeLogEntry
 import org.bson.codecs.pojo.annotations.BsonId
 import org.koin.core.annotation.Single
 
-interface NodeLogService {
-	suspend fun record(rootNode: NodeId, entry: NodeLogEntry)
+interface FlowLogService {
+	suspend fun record(flowId: NodeId, entry: NodeLogEntry)
 
-	suspend fun retrieve(rootNode: NodeId): List<NodeLogEntry>
+	suspend fun retrieve(flowId: NodeId): List<NodeLogEntry>
 }
 
-internal data class NodeLogs(
+internal data class FlowLogs(
 	@BsonId
 	val _id: NodeId,
 	val logs: List<NodeLogEntry>
 )
 
 @Single
-class MongoNodeLogService(mongoDB: MongoDatabase) : NodeLogService {
-	private val collection = mongoDB.getCollection<NodeLogs>("$FLOW_COLLECTION_NAME.log")
+class MongoFlowLogService(mongoDB: MongoDatabase) : FlowLogService {
+	private val collection = mongoDB.getCollection<FlowLogs>("$FLOW_COLLECTION_NAME.log")
 
-	override suspend fun record(rootNode: NodeId, entry: NodeLogEntry) {
+	override suspend fun record(flowId: NodeId, entry: NodeLogEntry) {
 		collection.upsertOne(
-			Filters.eq(NodeLogs::_id.name, rootNode),
-			Updates.push(NodeLogs::logs.name, entry)
+			Filters.eq(FlowLogs::_id.name, flowId),
+			Updates.push(FlowLogs::logs.name, entry)
 		)
 	}
 
-	override suspend fun retrieve(rootNode: NodeId): List<NodeLogEntry> =
-		collection.find(Filters.eq(NodeLogs::_id.name, rootNode))
+	override suspend fun retrieve(flowId: NodeId): List<NodeLogEntry> =
+		collection.find(Filters.eq(FlowLogs::_id.name, flowId))
 			.firstOrNull()
 			?.logs
 			?: emptyList()

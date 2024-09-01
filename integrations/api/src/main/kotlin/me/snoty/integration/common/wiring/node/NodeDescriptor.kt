@@ -20,6 +20,9 @@ data class NodeDescriptor(
 			Filters.eq(NodeDescriptor::type.name, type)
 		)
 	}
+
+	val id: String
+		get() = "$subsystem:$type"
 }
 
 fun SpanBuilder.setAttribute(key: String, value: NodeDescriptor) {

@@ -15,8 +15,8 @@ import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.config.NodeServiceResults
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.StandaloneNode
-import me.snoty.integration.common.wiring.flow.FLOW_COLLECTION_NAME
-import me.snoty.integration.common.wiring.graph.GraphNode
+import me.snoty.integration.common.wiring.flow.NODE_COLLECTION_NAME
+import me.snoty.integration.common.wiring.graph.MongoNode
 import me.snoty.integration.common.wiring.graph.toStandalone
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRegistry
@@ -30,7 +30,7 @@ class MongoNodeService(
 	private val nodeRegistry: NodeRegistry,
 	private val settingsService: MongoSettingsService,
 ) : NodeService {
-	private val collection = db.getCollection<GraphNode>(FLOW_COLLECTION_NAME)
+	private val collection = db.getCollection<MongoNode>(NODE_COLLECTION_NAME)
 
 	override fun query(userID: UUID?, position: NodePosition?): Flow<StandaloneNode> {
 		val filters = listOf(
@@ -40,7 +40,7 @@ class MongoNodeService(
 		)
 
 		return collection
-			.find<GraphNode>(Filters.and(filters))
+			.find<MongoNode>(Filters.and(filters))
 			.map { node ->
 				val settings = settingsService.lookup(node)
 				node.toStandalone(settings)
@@ -48,16 +48,22 @@ class MongoNodeService(
 	}
 
 	override suspend fun get(id: NodeId): StandaloneNode? {
-		val graphNode = collection.find(
-			Filters.eq(GraphNode::_id.name, id)
+		val mongoNode = collection.find(
+			Filters.eq(MongoNode::_id.name, id)
 		).firstOrNull() ?: return null
 
-		val settings = settingsService.lookup(graphNode)
-		return graphNode.toStandalone(settings)
+		val settings = settingsService.lookup(mongoNode)
+		return mongoNode.toStandalone(settings)
 	}
 
-	override suspend fun <S : NodeSettings> create(userID: UUID, descriptor: NodeDescriptor, settings: S): StandaloneNode {
-		val node = GraphNode(
+	override suspend fun <S : NodeSettings> create(
+		userID: UUID,
+		flowId: NodeId,
+		descriptor: NodeDescriptor,
+		settings: S,
+	): StandaloneNode {
+		val node = MongoNode(
+			flowId = flowId,
 			userId = userID,
 			descriptor = descriptor,
 			settings = collection.codecRegistry.encode(settings),
@@ -74,8 +80,8 @@ class MongoNodeService(
 		val toNode = get(to) ?: return NodeServiceResults.NodeNotFoundError(to)
 
 		collection.updateOne(
-			Filters.eq(GraphNode::_id.name, fromNode._id),
-			Updates.addToSet(GraphNode::next.name, toNode._id)
+			Filters.eq(MongoNode::_id.name, fromNode._id),
+			Updates.addToSet(MongoNode::next.name, toNode._id)
 		)
 
 		return NodeServiceResults.NodeConnected(from, to)
@@ -86,8 +92,8 @@ class MongoNodeService(
 		val toNode = get(to) ?: return NodeServiceResults.NodeNotFoundError(to)
 
 		collection.updateOne(
-			Filters.eq(GraphNode::_id.name, fromNode._id),
-			Updates.pull(GraphNode::next.name, toNode._id)
+			Filters.eq(MongoNode::_id.name, fromNode._id),
+			Updates.pull(MongoNode::next.name, toNode._id)
 		)
 
 		return NodeServiceResults.NodeDisconnected(from, to)
@@ -95,12 +101,26 @@ class MongoNodeService(
 
 	override suspend fun updateSettings(id: NodeId, settings: NodeSettings): ServiceResult {
 		val result = collection.updateOne(
-			Filters.eq(GraphNode::_id.name, id),
-			Updates.set(GraphNode::settings.name, collection.codecRegistry.encode(settings))
+			Filters.eq(MongoNode::_id.name, id),
+			Updates.set(MongoNode::settings.name, collection.codecRegistry.encode(settings))
 		)
 		return when {
 			result.matchedCount == 0L -> NodeServiceResults.NodeNotFoundError(id)
 			else -> NodeServiceResults.NodeSettingsUpdated(id)
+		}
+	}
+
+	override suspend fun delete(id: NodeId): ServiceResult {
+		val node = get(id) ?: return NodeServiceResults.NodeNotFoundError(id)
+
+		val result = collection.deleteOne(Filters.eq(MongoNode::_id.name, id))
+		collection.updateMany(
+			Filters.eq(MongoNode::flowId.name, node.flowId),
+			Updates.pull(MongoNode::next.name, id)
+		)
+		return when {
+			result.deletedCount == 0L -> NodeServiceResults.NodeNotFoundError(id)
+			else -> NodeServiceResults.NodeDeleted(id)
 		}
 	}
 }
