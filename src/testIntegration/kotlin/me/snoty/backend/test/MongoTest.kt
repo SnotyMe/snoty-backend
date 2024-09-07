@@ -3,6 +3,7 @@ package me.snoty.backend.test
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import me.snoty.backend.config.Config
 import me.snoty.backend.config.MongoConfig
+import me.snoty.backend.config.MongoConnectionConfig
 import me.snoty.backend.database.mongo.createMongoClients
 import org.testcontainers.containers.MongoDBContainer
 import org.testcontainers.junit.jupiter.Container
@@ -15,7 +16,9 @@ object MongoTest {
 	init {
 		mongoContainer.start()
 		config = buildTestConfig {
-			mongodb = MongoConfig(mongoContainer.connectionString)
+			mongodb = MongoConfig(
+				connection = MongoConnectionConfig.ConnectionString(mongoContainer.connectionString),
+			)
 		}
 	}
 

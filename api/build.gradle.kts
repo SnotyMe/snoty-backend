@@ -12,6 +12,7 @@ dependencies { with(libs) {
     implementation(ktor.server.auth)
     implementation(ktor.server.auth.jwt)
     implementation(libraries.openfeature)
+    implementation(configuration.hoplite.core)
     api(libraries.bson.kotlinx)
     api(database.mongodb)
     api(monitoring.opentelemetry.api)

@@ -18,20 +18,12 @@ class ConfigLoaderImpl : ConfigLoader {
 	override fun loadConfig(): Config {
 		val mongoContainerConfig = loadContainerConfig<MongoContainerConfig>("database").map {
 			Properties().apply {
-				var prefix = ""
-				if (it.username != null) {
-					prefix = it.username
-				}
-				if (it.password != null) {
-					prefix += if (it.username != null) ":" else ""
-					prefix += it.password.value
-				}
-				if (prefix.isNotEmpty()) {
-					prefix += "@"
-				}
-				setProperty("mongodb.connectionString",
-				            "mongodb://${prefix}localhost:${it.port}/"
+				setProperty("mongodb.connection.type", MongoConnectionConfig.ConnectionString::class.simpleName)
+				setProperty("mongodb.connection.connectionString",
+				            "mongodb://localhost:${it.port}/"
 				)
+				setProperty("mongodb.authentication.username", it.username ?: "")
+				setProperty("mongodb.authentication.password", it.password?.value ?: "")
 			}
 		}
 
