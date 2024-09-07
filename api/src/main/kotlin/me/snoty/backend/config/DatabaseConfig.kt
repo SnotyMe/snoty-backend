@@ -14,6 +14,7 @@ sealed class MongoConnectionConfig {
 		val host: String,
 		val port: Int? = 27017,
 		val database: String = "snoty",
+		val additionalOptions: String = "",
 	) : MongoConnectionConfig() {
 		override fun buildConnectionString() = buildString {
 			append("mongodb")
@@ -22,6 +23,7 @@ sealed class MongoConnectionConfig {
 			// srv connections don't use port - they get it from the DNS record
 			if (port != null && !srv) append(":$port")
 			append("/$database")
+			if (additionalOptions.isNotEmpty()) append("?$additionalOptions")
 		}
 	}
 
