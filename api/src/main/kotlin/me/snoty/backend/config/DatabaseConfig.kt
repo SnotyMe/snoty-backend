@@ -15,7 +15,7 @@ sealed class MongoConnectionConfig {
 		val port: Int = 27017,
 		val database: String = "snoty",
 	) : MongoConnectionConfig() {
-		override fun buildConnectionString() = "mongodb" + if (srv) "+srv" else "" +
+		override fun buildConnectionString() = "mongodb" + (if (srv) "+srv" else "") +
 			"://${host}:${port}/${database}"
 	}
 
