@@ -12,11 +12,17 @@ sealed class MongoConnectionConfig {
 	data class Split(
 		val srv: Boolean = false,
 		val host: String,
-		val port: Int = 27017,
+		val port: Int? = 27017,
 		val database: String = "snoty",
 	) : MongoConnectionConfig() {
-		override fun buildConnectionString() = "mongodb" + (if (srv) "+srv" else "") +
-			"://${host}:${port}/${database}"
+		override fun buildConnectionString() = buildString {
+			append("mongodb")
+			if (srv) append("+srv")
+			append("://$host")
+			// srv connections don't use port - they get it from the DNS record
+			if (port != null && !srv) append(":$port")
+			append("/$database")
+		}
 	}
 
 	abstract fun buildConnectionString(): String
