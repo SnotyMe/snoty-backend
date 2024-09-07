@@ -4,6 +4,7 @@ import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.MongoCredential
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
+import io.github.oshai.kotlinlogging.KotlinLogging
 import me.snoty.backend.config.Config
 import me.snoty.backend.config.MongoConfig
 import me.snoty.integration.common.utils.integrationsApiCodecModule
@@ -20,15 +21,20 @@ data class MongoClients(
 )
 
 fun createMongoClients(config: MongoConfig, dbName: String = MONGO_DB_NAME): MongoClients {
+	val logger = KotlinLogging.logger {}
 	val mongoCodecRegistry = CodecRegistries.fromRegistries(
 		// TODO: extra codecs from integrations
 		integrationsApiCodecModule(),
 		apiCodecModule()
 	)
 
+	val connectionString = config.connection.buildConnectionString()
+
+	logger.info { "Connecting to MongoDB at $connectionString"}
+
 	val mongoClientSettings = MongoClientSettings.builder()
 		.codecRegistry(mongoCodecRegistry)
-		.applyConnectionString(ConnectionString(config.connection.buildConnectionString()))
+		.applyConnectionString(ConnectionString(connectionString))
 		.apply {
 			config.authentication?.let {
 				credential(MongoCredential.createCredential(
@@ -46,6 +52,8 @@ fun createMongoClients(config: MongoConfig, dbName: String = MONGO_DB_NAME): Mon
 	)
 
 	val syncMongoClient = SyncMongoClients.create(mongoClientSettings)
+
+	logger.info { "Successfully established MongoDB connection"}
 
 	return MongoClients(mongoDB, syncMongoClient)
 }
