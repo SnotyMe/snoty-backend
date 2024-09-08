@@ -6,7 +6,6 @@ import io.opentelemetry.context.propagation.ContextPropagators
 import io.opentelemetry.context.propagation.TextMapPropagator
 import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporter
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter
-import io.opentelemetry.instrumentation.logback.appender.v1_0.OpenTelemetryAppender
 import io.opentelemetry.sdk.OpenTelemetrySdk
 import io.opentelemetry.sdk.logs.SdkLoggerProvider
 import io.opentelemetry.sdk.logs.export.SimpleLogRecordProcessor
@@ -17,7 +16,7 @@ import io.opentelemetry.semconv.ServiceAttributes
 import me.snoty.backend.dev.spi.DevRunnable
 
 
-class OtlpSetup : DevRunnable() {
+class OpenTelemetryDevSetup : DevRunnable() {
 	override fun run() {
 		val resource = Resource.getDefault().toBuilder().put(ServiceAttributes.SERVICE_NAME, "snoty-backend").build()
 
@@ -35,7 +34,7 @@ class OtlpSetup : DevRunnable() {
 			.setResource(resource)
 			.build()
 
-		val opentelemetry = OpenTelemetrySdk.builder()
+		OpenTelemetrySdk.builder()
 			.setTracerProvider(sdkTracerProvider)
 			.setLoggerProvider(sdkLoggerProvider)
 			.setPropagators(
@@ -44,7 +43,5 @@ class OtlpSetup : DevRunnable() {
 				)
 			)
 			.buildAndRegisterGlobal()
-
-		OpenTelemetryAppender.install(opentelemetry)
 	}
 }

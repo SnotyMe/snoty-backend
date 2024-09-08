@@ -4,6 +4,7 @@ import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.micrometer.core.instrument.MeterRegistry
+import io.opentelemetry.api.OpenTelemetry
 import kotlinx.serialization.json.Json
 import me.snoty.backend.config.Config
 import me.snoty.backend.server.plugins.*
@@ -15,6 +16,7 @@ import org.koin.core.annotation.Single
 class KtorServer(
 	private val koin: Koin,
 	private val config: Config,
+	private val openTelemetry: OpenTelemetry,
 	private val metricsRegistry: MeterRegistry,
 	private val json: Json,
 ) {
@@ -32,7 +34,7 @@ class KtorServer(
 
 	private fun Application.module() {
 		setKoin(koin)
-		configureMonitoring(config, metricsRegistry)
+		configureMonitoring(config, openTelemetry, metricsRegistry)
 		configureHTTP(config)
 		configureSecurity(config)
 		configureSerialization(json)
