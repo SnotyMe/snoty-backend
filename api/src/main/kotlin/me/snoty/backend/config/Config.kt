@@ -8,5 +8,6 @@ data class Config(
 	val corsHosts: List<String> = emptyList(),
 	val environment: Environment,
 	val authentication: OidcConfig,
-	val featureFlags: FeatureFlagsConfig
+	val featureFlags: FeatureFlagsConfig,
+	val openTelemetry: OpenTelemetryConfig = OpenTelemetryConfig(),
 )

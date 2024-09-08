@@ -12,10 +12,12 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.prometheus.PrometheusMeterRegistry
+import io.opentelemetry.api.OpenTelemetry
+import io.opentelemetry.instrumentation.ktor.v3_0.server.KtorServerTracing
 import me.snoty.backend.config.Config
 import org.slf4j.event.Level
 
-fun Application.configureMonitoring(config: Config, meterRegistry: MeterRegistry) {
+fun Application.configureMonitoring(config: Config, openTelemetry: OpenTelemetry, meterRegistry: MeterRegistry) {
 	install(MicrometerMetrics) {
 		registry = meterRegistry
 	}
@@ -23,6 +25,9 @@ fun Application.configureMonitoring(config: Config, meterRegistry: MeterRegistry
 		level = Level.INFO
 		filter { call -> call.request.path().startsWith("/") }
 		callIdMdc("call-id")
+	}
+	install(KtorServerTracing) {
+		setOpenTelemetry(openTelemetry)
 	}
 	install(CallId) {
 		header(HttpHeaders.XRequestId)

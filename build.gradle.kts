@@ -133,6 +133,8 @@ dependencies { with(libs) {
     implementation(monitoring.opentelemetry.api)
     implementation(monitoring.opentelemetry.context)
     implementation(monitoring.opentelemetry.semconv)
+    implementation(monitoring.opentelemetry.sdk.autoconfigure)
+    implementation(monitoring.opentelemetry.exporter.otlp)
     implementation(monitoring.opentelemetry.kotlin)
     implementation(monitoring.opentelemetry.logback)
 
@@ -161,7 +163,6 @@ dependencies { with(libs) {
     // dev
     devImplementation(dev.keycloak.adminClient)
     devImplementation(monitoring.opentelemetry.sdk)
-    devImplementation(monitoring.opentelemetry.exporter.otlp)
 
     moduleImplementation(projects.integrations.api)
     // depend on all integrations by default

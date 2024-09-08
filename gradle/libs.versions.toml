@@ -71,7 +71,7 @@ log-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-s
 log-kotlinLogging = { group = "io.github.oshai", name = "kotlin-logging", version = "6.0.9" }
 log-logback = { group = "ch.qos.logback", name = "logback-classic", version = "1.4.14" }
 
-monitoring-ktor-opentelemetry = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-ktor-3.0", version = "2.5.0-alpha-snoty.1" }
+monitoring-ktor-opentelemetry = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-ktor-3.0", version = "2.5.0-alpha-snoty.2" }
 monitoring-ktor-server-metricsMicrometer = { group = "io.ktor", name = "ktor-server-metrics-micrometer-jvm", version = "3.0.0-beta-2" }
 monitoring-micrometer = { group = "io.micrometer", name = "micrometer-core", version = "1.6.3" }
 monitoring-micrometer-prometheus = { group = "io.micrometer", name = "micrometer-registry-prometheus", version = "1.6.3" }
@@ -81,6 +81,7 @@ monitoring-opentelemetry-exporter-otlp = { group = "io.opentelemetry", name = "o
 monitoring-opentelemetry-kotlin = { group = "io.opentelemetry", name = "opentelemetry-extension-kotlin", version.ref = "opentelemetry" }
 monitoring-opentelemetry-logback = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-logback-appender-1.0", version = "2.5.0-alpha" }
 monitoring-opentelemetry-sdk = { group = "io.opentelemetry", name = "opentelemetry-sdk", version.ref = "opentelemetry" }
+monitoring-opentelemetry-sdk-autoconfigure = { group = "io.opentelemetry", name = "opentelemetry-sdk-extension-autoconfigure", version.ref = "opentelemetry" }
 monitoring-opentelemetry-semconv = { group = "io.opentelemetry.semconv", name = "opentelemetry-semconv", version = "1.25.0-alpha" }
 monitoring-opentelemetry-testing = { group = "io.opentelemetry", name = "opentelemetry-sdk-testing", version.ref = "opentelemetry" }
 
