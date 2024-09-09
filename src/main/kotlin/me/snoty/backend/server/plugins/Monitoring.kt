@@ -1,5 +1,6 @@
 package me.snoty.backend.server.plugins
 
+import com.sun.imageio.plugins.common.ImageUtil
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -23,7 +24,8 @@ fun Application.configureMonitoring(config: Config, openTelemetry: OpenTelemetry
 	}
 	install(CallLogging) {
 		level = Level.INFO
-		filter { call -> call.request.path().startsWith("/") }
+		// doesn't play nicely with OpenTelemetry and the custom color log format in dev
+		disableDefaultColors()
 		callIdMdc("call-id")
 	}
 	install(KtorServerTracing) {
