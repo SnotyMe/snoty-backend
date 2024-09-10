@@ -10,5 +10,7 @@ data class CalendarEvent(
 	 */
 	val id: String,
 	val name: String,
-	val date: Instant,
+	val date: Instant?,
+	val startDate: Instant?,
+	val endDate: Instant?,
 )

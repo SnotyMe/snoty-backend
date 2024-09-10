@@ -17,8 +17,8 @@ object ICalBuilder {
 		events.collect { row ->
 			calendar.add<Calendar>(
 				VEvent(
-					row.date.toJavaInstant(),
-					row.date.toJavaInstant(),
+					(row.startDate ?: row.date)?.toJavaInstant(),
+					(row.endDate ?: row.date)?.toJavaInstant(),
 					row.name,
 				)
 			)
