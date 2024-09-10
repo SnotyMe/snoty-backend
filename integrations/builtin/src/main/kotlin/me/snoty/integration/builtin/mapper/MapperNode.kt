@@ -19,7 +19,9 @@ data class MapperSettings(
 	override val name: String = "Mapper",
 	val engine: MapperEngine,
 	@FieldDescription("The fields to map - every key will be part of the output object")
-	val fields: Map<String, String>
+	val fields: Map<String, String>,
+	@FieldDescription("If true, the ID of the input object will be preserved in the output object")
+	val preserveId: Boolean = true
 ) : NodeSettings
 
 @RegisterNode(
@@ -37,7 +39,7 @@ class MapperNodeHandler : NodeHandler {
 	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
 		val settings: MapperSettings = node.getConfig()
 		val data: Document = input.get()
-		val mappedData = settings.engine.templater(settings, data)
+		val mappedData = settings.engine.template(logger, settings, data)
 
 		structOutput {
 			mappedData
