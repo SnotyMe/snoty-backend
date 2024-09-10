@@ -1,5 +1,6 @@
 package me.snoty.integration.common.wiring.node
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.*
 import io.ktor.server.routing.*
 import me.snoty.backend.hooks.HookRegistry
@@ -24,14 +25,20 @@ internal class NodeRouteFactoryImpl(
 	private val hookRegistry: HookRegistry,
 	private val nodeService: NodeService,
 ) : NodeRouteFactory {
+	val logger = KotlinLogging.logger {}
+
 	/**
 	 * @param verifyUser whether to verify that the user is the owner of the node
 	 */
 	override operator fun invoke(route: String, method: HttpMethod, verifyUser: Boolean, block: suspend RoutingContext.(Node) -> Unit) =
 		hookRegistry.registerHook<Routing, AddRoutesHook> { routing ->
+			logger.debug { "Registering route for $nodeDescriptor node: $route"}
+
 			routing.route("{nodeId}/$route") {
 				method(method) {
 					handle {
+						logger.debug { "Handling route for $nodeDescriptor node: $route"}
+
 						val nodeId = call.parameters["nodeId"]?.toNodeId()
 							?: return@handle call.respondStatus(BadRequestException("nodeId is required"))
 						val node = nodeService.get(nodeId)
