@@ -66,6 +66,11 @@ class ICalNodeHandler(
 	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
 		val data: CalendarEvent = input.get()
 
+		if (data.date == null && (data.startDate == null || data.endDate == null)) {
+			logger.error("Event has no date or start/end date")
+			return
+		}
+
 		eventPersistenceService.persistEntity(node, data.id, data)
 	}
 }
