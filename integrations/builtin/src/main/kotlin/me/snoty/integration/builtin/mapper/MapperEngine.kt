@@ -3,8 +3,9 @@ package me.snoty.integration.builtin.mapper
 import liqp.TemplateParser
 import me.snoty.integration.common.model.metadata.DisplayName
 import org.bson.Document
+import org.slf4j.Logger
 
-enum class MapperEngine(val templater: Templater) {
+enum class MapperEngine(private val templater: Templater) {
 	@DisplayName("Replace")
 	REPLACE({ settings, data ->
 		val mappedData = settings.fields.mapValues {
@@ -28,5 +29,21 @@ enum class MapperEngine(val templater: Templater) {
 		}
 
 		mappedData
-	})
+	});
+
+	fun template(logger: Logger, settings: MapperSettings, data: Document): Document {
+		val mappedData = templater(settings, data)
+
+		if (settings.preserveId) {
+			val alreadyMapped = mappedData["id"] != null
+			val inputHasId = data["id"] != null
+			when {
+				!alreadyMapped && inputHasId -> mappedData["id"] = data["id"].toString()
+				alreadyMapped -> logger.warn("Configured to preserve ID, but output already contains an ID")
+				else -> logger.warn("Configured to preserve ID, but input does not contain an ID")
+			}
+		}
+
+		return mappedData
+	}
 }
