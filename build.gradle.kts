@@ -7,6 +7,7 @@ plugins {
     application
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.buildinfo)
+    alias(libs.plugins.doctor)
     id("snoty.kotlin-conventions")
     id("snoty.jib-conventions")
     id("snoty.idea-conventions")
