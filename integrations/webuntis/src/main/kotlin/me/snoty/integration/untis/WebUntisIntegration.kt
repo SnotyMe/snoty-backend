@@ -2,7 +2,6 @@ package me.snoty.integration.untis
 
 import io.ktor.client.*
 import me.snoty.integration.common.annotation.RegisterNode
-import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.fetch.FetchContext
 import me.snoty.integration.common.fetch.fetchContext
 import me.snoty.integration.common.model.NodePosition
@@ -20,13 +19,13 @@ import org.slf4j.Logger
 	displayName = "WebUntis",
 	type = "webuntis",
 	position = NodePosition.START,
-	settingsType = WebUntisSettings::class
+	settingsType = WebUntisSettings::class,
+	outputType = UntisExam::class,
 )
 @Single
 class WebUntisIntegration(
 	val metadata: NodeMetadata,
 	private val httpClient: HttpClient,
-	private val entityStateService: EntityStateService,
 	private val untisAPI: WebUntisAPI = WebUntisAPIImpl(httpClient)
 ) : NodeHandler {
 
@@ -39,10 +38,6 @@ class WebUntisIntegration(
 
 		val exams = fetchStage {
 			untisAPI.getExams(untisSettings)
-		}
-
-		updateStage {
-			entityStateService.updateStates(node, exams)
 		}
 
 		logger.info("Fetched ${exams.size} exams for ${untisSettings.username}")
