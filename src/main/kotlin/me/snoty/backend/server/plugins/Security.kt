@@ -36,6 +36,9 @@ data class OAuth2TokenResponse(
 	val expiresIn: Long,
 	@SerialName("refresh_token")
 	val refreshToken: String?,
+	// used to sign-out without redirects
+	@SerialName("id_token")
+	val idToken: String?,
 )
 
 fun Application.configureSecurity(config: Config) {
