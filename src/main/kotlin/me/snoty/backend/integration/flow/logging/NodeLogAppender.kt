@@ -2,6 +2,7 @@ package me.snoty.backend.integration.flow.logging
 
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.AppenderBase
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
@@ -9,6 +10,7 @@ import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.datetime.Instant
 import me.snoty.backend.integration.config.flow.toNodeId
 import me.snoty.backend.logging.toSLF4JLevel
+import me.snoty.backend.observability.JOB_ID
 import me.snoty.integration.common.wiring.flow.NodeLogEntry
 
 private const val NAME = "NodeLogAppender"
@@ -24,6 +26,9 @@ class NodeLogAppender(
 	private val dispatcher = newSingleThreadContext(NAME)
 	private val scope = CoroutineScope(dispatcher)
 
+	// won't loop as the appender isn't installed
+	val logger = KotlinLogging.logger {}
+
 	override fun append(eventObject: ILoggingEvent) {
 		scope.launch {
 			val message = eventObject.formattedMessage + (eventObject.throwableProxy?.message?.let {
@@ -37,9 +42,12 @@ class NodeLogAppender(
 				node = eventObject.mdcPropertyMap["node.id"]?.toNodeId()
 			)
 
-			val flowId = eventObject.mdcPropertyMap["flow.id"]?.toNodeId() ?: return@launch
+			val jobId = eventObject.mdcPropertyMap[JOB_ID.key]
+				?: return@launch logger.warn { "No job ID found in log entry" }
+			val flowId = eventObject.mdcPropertyMap["flow.id"]?.toNodeId()
+				?: return@launch logger.warn { "No flow ID found in log entry" }
 
-			flowLogService.record(flowId, entry)
+			flowLogService.record(jobId, flowId, entry)
 		}
 	}
 }

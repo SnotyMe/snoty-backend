@@ -24,6 +24,15 @@ class FeatureFlagBoolean(
 	}
 }
 
+class FeatureFlagLong(
+	name: String,
+	defaultValue: Long
+) : FeatureFlag<Long>(name, defaultValue) {
+	override val getter: Client.(Long?) -> Long = { defaultValue ->
+		this.getIntegerValue(name, null)?.toLong() ?: defaultValue!!
+	}
+}
+
 open class EnumFeatureFlag<E : Enum<E>>(
 	name: String,
 	defaultValue: E,

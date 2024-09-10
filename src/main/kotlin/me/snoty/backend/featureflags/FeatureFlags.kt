@@ -4,6 +4,7 @@ import dev.openfeature.sdk.Client
 import me.snoty.backend.config.Config
 import org.koin.core.annotation.Single
 import org.slf4j.event.Level
+import kotlin.time.Duration.Companion.days
 
 @Suppress("PropertyName")
 @Single
@@ -38,6 +39,8 @@ class FeatureFlags(private val config: Config, private val client: Client) {
 	val flow_logFlow = FeatureFlagBoolean("flow.logFlow", false)
 	val flow_traceConfig = FeatureFlagBoolean("flow.traceConfig", false)
 	val flow_traceInput = FeatureFlagBoolean("flow.traceInput", false)
+
+	val flow_expirationSeconds = FeatureFlagLong("flow.expirationSeconds", 7.days.inWholeSeconds)
 
 	fun <T> get(flag: FeatureFlag<T>): T = flag.getValue(client)
 }
