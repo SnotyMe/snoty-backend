@@ -16,6 +16,7 @@ import me.snoty.integration.common.wiring.flow.FlowService
 
 fun Routing.flowResource() {
 	val flowService: FlowService = get()
+	val flowLogService: FlowLogService = get()
 
 	post {
 		val user = call.getUser()
@@ -35,6 +36,14 @@ fun Routing.flowResource() {
 		val result = flows.toList()
 
 		call.respond(result)
+	}
+
+	get("list/executions") {
+		val user = call.getUser()
+		val executions = flowLogService.query(user.id)
+			.toList()
+
+		call.respond(executions)
 	}
 
 	get("{id}") {
@@ -66,7 +75,6 @@ fun Routing.flowResource() {
 		call.respond(HttpStatusCode.NoContent)
 	}
 
-	val flowLogService = get<FlowLogService>()
 	get("{id}/logs") {
 		val user = call.getUser()
 
