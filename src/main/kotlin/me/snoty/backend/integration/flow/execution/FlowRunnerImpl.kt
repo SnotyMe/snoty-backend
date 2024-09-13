@@ -11,6 +11,7 @@ import kotlinx.serialization.json.Json
 import me.snoty.backend.featureflags.FeatureFlags
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.FlowExecutionException
+import me.snoty.backend.integration.flow.logging.FlowLogService
 import me.snoty.backend.observability.setException
 import me.snoty.backend.observability.subspan
 import me.snoty.integration.common.model.NodePosition
@@ -18,6 +19,7 @@ import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.NodeHandleContextImpl
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
+import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
 import me.snoty.integration.common.wiring.flow.FlowRunner
 import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
 import me.snoty.integration.common.wiring.node.NodeRegistry
@@ -30,6 +32,7 @@ class FlowRunnerImpl(
 	private val featureFlags: FeatureFlags,
 	private val intermediateDataMapperRegistry: IntermediateDataMapperRegistry,
 	private val flowTracing: FlowTracing,
+	private val flowLogService: FlowLogService,
 ) : FlowRunner {
 	lateinit var json: Json
 
@@ -52,13 +55,20 @@ class FlowRunnerImpl(
 			logger = kLogger as Slf4jLogger<Logger>,
 		)
 
-		return with(executionContext) {
+		with(executionContext) {
 			flow.nodes.filter {
 				nodeRegistry.getMetadata(it.descriptor).position == NodePosition.START
 			}
 				.asFlow()
 				.flatMapConcat {
 					executeStartNode(rootSpan, it, input)
+				}
+				.onCompletion {
+					rootSpan.end()
+					flowLogService.setExecutionStatus(
+						jobId,
+						if (it == null) FlowExecutionStatus.SUCCESS else FlowExecutionStatus.FAILED,
+					)
 				}
 				.collect()
 		}
@@ -84,7 +94,7 @@ class FlowRunnerImpl(
 				throw e
 			}
 			.onCompletion {
-				rootSpan.end()
+				subspan.end()
 			}
 	}
 
