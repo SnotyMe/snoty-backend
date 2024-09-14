@@ -1,6 +1,8 @@
 package me.snoty.backend.server.plugins
 
-import com.sun.imageio.plugins.common.ImageUtil
+import ch.qos.logback.classic.spi.ILoggingEvent
+import ch.qos.logback.core.filter.Filter
+import ch.qos.logback.core.spi.FilterReply
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -8,7 +10,6 @@ import io.ktor.server.metrics.micrometer.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.callid.*
 import io.ktor.server.plugins.calllogging.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.micrometer.core.instrument.MeterRegistry
@@ -16,7 +17,9 @@ import io.micrometer.prometheus.PrometheusMeterRegistry
 import io.opentelemetry.api.OpenTelemetry
 import io.opentelemetry.instrumentation.ktor.v3_0.server.KtorServerTracing
 import me.snoty.backend.config.Config
+import org.koin.core.annotation.Single
 import org.slf4j.event.Level
+import ch.qos.logback.classic.Level as LogbackLevel
 
 fun Application.configureMonitoring(config: Config, openTelemetry: OpenTelemetry, meterRegistry: MeterRegistry) {
 	install(MicrometerMetrics) {
@@ -39,6 +42,7 @@ fun Application.configureMonitoring(config: Config, openTelemetry: OpenTelemetry
 		// generate if not set already
 		generate(10, dictionary = "abcdefghijklmnopqrstuvwxyz0123456789")
 	}
+
 	embeddedServer(Netty, port = config.monitoringPort.toInt()) {
 		routing {
 			get("/hello") {
@@ -51,4 +55,20 @@ fun Application.configureMonitoring(config: Config, openTelemetry: OpenTelemetry
 			}
 		}
 	}.start(wait = false)
+}
+
+@Single
+class MonitoringServerFilter(config: Config) : Filter<ILoggingEvent>() {
+	private val isDev = config.environment.isDev()
+
+	override fun decide(event: ILoggingEvent): FilterReply {
+		if (!isDev) {
+			return FilterReply.NEUTRAL
+		}
+
+		return when {
+			LogbackLevel.TRACE == event.level && event.formattedMessage.contains("Trace for [metrics]") -> FilterReply.DENY
+			else -> FilterReply.NEUTRAL
+		}
+	}
 }

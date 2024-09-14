@@ -26,7 +26,7 @@ fun startApplication(vararg extraModules: Module) = runBlocking {
 			integrationApiModule,
 		)
 	}.koin
-	setupLogbackFilters(koin.getAll())
+	setupLogbackFilters(koin.getAll(), koin.getAll())
 
 	val application = Application(koin)
 	application.start()
