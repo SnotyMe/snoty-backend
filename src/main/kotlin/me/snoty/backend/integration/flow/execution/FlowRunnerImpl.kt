@@ -8,7 +8,6 @@ import io.opentelemetry.extension.kotlin.asContextElement
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.slf4j.MDCContext
 import kotlinx.serialization.json.Json
-import me.snoty.backend.featureflags.FeatureFlags
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.FlowExecutionException
 import me.snoty.backend.integration.flow.logging.FlowLogService
@@ -29,7 +28,7 @@ import org.slf4j.Logger
 @Single
 class FlowRunnerImpl(
 	private val nodeRegistry: NodeRegistry,
-	private val featureFlags: FeatureFlags,
+	private val featureFlags: FlowFeatureFlags,
 	private val intermediateDataMapperRegistry: IntermediateDataMapperRegistry,
 	private val flowTracing: FlowTracing,
 	private val flowLogService: FlowLogService,
@@ -45,7 +44,7 @@ class FlowRunnerImpl(
 		val kLogger = KotlinLogging.logger(logger)
 		val rootSpan = flowTracing.createRootSpan(jobId, flow)
 
-		if (featureFlags.flow_logFlow) {
+		if (featureFlags.logFlow) {
 			kLogger.info { "Starting flow ${flow._id}" }
 		}
 

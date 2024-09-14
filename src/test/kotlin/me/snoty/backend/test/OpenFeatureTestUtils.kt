@@ -2,9 +2,7 @@ package me.snoty.backend.test
 
 import dev.openfeature.sdk.*
 import io.github.oshai.kotlinlogging.KotlinLogging
-import me.snoty.backend.config.Config
 import me.snoty.backend.featureflags.FeatureFlag
-import me.snoty.backend.featureflags.FeatureFlags
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.reflect.KProperty0
 import kotlin.reflect.jvm.isAccessible
@@ -52,19 +50,19 @@ class OpenFeatureTestProvider : FeatureProvider {
 
 private val openFeatureClientId = AtomicInteger()
 
-fun testFeatureFlags(config: Config = TestConfig): FeatureFlagsAndProvider {
+fun testFeatureFlags(): ClientAndProvider {
 	val provider = OpenFeatureTestProvider()
 	val id = openFeatureClientId.getAndIncrement()
 	val openFeature = OpenFeatureAPI.getInstance()
 	val clientName = "test-$id"
 	openFeature.setProvider(clientName, provider)
-	return FeatureFlagsAndProvider(
-		FeatureFlags(config, openFeature.getClient(clientName)),
-		provider
+	return ClientAndProvider(
+		openFeature.getClient(clientName),
+		provider,
 	)
 }
 
-data class FeatureFlagsAndProvider(
-	val flags: FeatureFlags,
+data class ClientAndProvider(
+	val client: Client,
 	val provider: OpenFeatureTestProvider
 )

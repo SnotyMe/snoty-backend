@@ -6,7 +6,6 @@ import io.opentelemetry.api.trace.SpanBuilder
 import io.opentelemetry.api.trace.Tracer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import me.snoty.backend.featureflags.FeatureFlags
 import me.snoty.backend.observability.JOB_ID
 import me.snoty.backend.observability.USER_ID
 import me.snoty.backend.observability.getTracer
@@ -23,7 +22,7 @@ import org.slf4j.MDC
 @Single
 class FlowTracing(
 	private val json: Json,
-	private val featureFlags: FeatureFlags,
+	private val featureFlags: FlowFeatureFlags,
 	openTelemetry: OpenTelemetry,
 ) : Tracer by openTelemetry.getTracer(FlowRunner::class) {
 	fun createRootSpan(jobId: String, flow: Workflow): Span {
@@ -47,10 +46,10 @@ class FlowTracing(
 		setAttribute(USER_ID, node.userId)
 		MDC.put("user.id", node.userId.toString())
 
-		if (featureFlags.flow_traceConfig) {
+		if (featureFlags.traceConfig) {
 			setAttribute("config", json.encodeToString(node.settings))
 		}
-		if (input != null && featureFlags.flow_traceInput) {
+		if (input != null && featureFlags.traceInput) {
 			setAttribute("input", input.toString())
 		}
 	}

@@ -9,12 +9,13 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.slf4j.LoggerFactory
 
 object FeatureFlagsSetup {
-	val logger = KotlinLogging.logger {}
+	private val logger = KotlinLogging.logger {}
 
-	fun setup(featureClient: Client, featureFlags: FeatureFlags) {
+	fun setup(featureClient: Client, featureFlags: LogFeatureFlags) {
 		val changeListeners = featureFlags.logLevelFlags.map {
-			loggerFeatureFlagListener(featureFlags, it)
+			loggerFeatureFlagListener(featureClient, it)
 		}
+
 		featureClient.on(ProviderEvent.PROVIDER_CONFIGURATION_CHANGED) { details ->
 			logger.debug { "Received change event: $details" }
 			changeListeners.forEach { listener ->
@@ -23,9 +24,10 @@ object FeatureFlagsSetup {
 		}
 	}
 
-	private fun loggerFeatureFlagListener(featureFlags: FeatureFlags, flag: LogLevelFeatureFlag) =
-		FeatureFlagChangeListener(featureFlags, flag, true) {
-			val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
+	private val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
+
+	private fun loggerFeatureFlagListener(client: Client, flag: LogLevelFeatureFlag) =
+		FeatureFlagChangeListener(client, flag, true) {
 			flag.loggers.forEach { loggerName ->
 				val logger: Logger? =
 					if (loggerName == "root") loggerContext.getLogger(loggerName)
@@ -42,12 +44,12 @@ object FeatureFlagsSetup {
 		}
 
 	class FeatureFlagChangeListener<T>(
-		private val featureFlags: FeatureFlags,
+		private val client: Client,
 		private val flag: FeatureFlag<T>,
 		initialFire: Boolean = false,
 		private val onChange: (T) -> Unit
 	) {
-		private var previous = featureFlags.get(flag)
+		private var previous = flag.getValue(client)
 
 		init {
 			if (initialFire) {
@@ -56,7 +58,7 @@ object FeatureFlagsSetup {
 		}
 
 		fun configChanged() {
-			val new = featureFlags.get(flag)
+			val new = flag.getValue(client)
 			if (previous != new) {
 				previous = new
 				onChange(new)

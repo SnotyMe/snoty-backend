@@ -11,9 +11,9 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import me.snoty.backend.database.mongo.*
-import me.snoty.backend.featureflags.FeatureFlags
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.MongoWorkflow
+import me.snoty.backend.integration.flow.execution.FlowFeatureFlags
 import me.snoty.integration.common.wiring.flow.*
 import org.bson.codecs.pojo.annotations.BsonId
 import org.koin.core.annotation.Single
@@ -41,7 +41,7 @@ internal data class FlowLogs(
 )
 
 @Single
-class MongoFlowLogService(mongoDB: MongoDatabase, featureFlags: FeatureFlags) : FlowLogService {
+class MongoFlowLogService(mongoDB: MongoDatabase, featureFlags: FlowFeatureFlags) : FlowLogService {
 	private val logger = KotlinLogging.logger {}
 	private val collection = mongoDB.getCollection<FlowLogs>(FLOW_EXECUTION_COLLECTION_NAME)
 
@@ -57,7 +57,7 @@ class MongoFlowLogService(mongoDB: MongoDatabase, featureFlags: FeatureFlags) : 
 						Filters.eq(FlowLogs::creationDate.name, 1),
 						IndexOptions()
 							.name(expirationIndex)
-							.expireAfter(featureFlags.flow_expirationSeconds, TimeUnit.SECONDS)
+							.expireAfter(featureFlags.expirationSeconds, TimeUnit.SECONDS)
 					),
 				),
 			).retryWhen { cause, attempt ->

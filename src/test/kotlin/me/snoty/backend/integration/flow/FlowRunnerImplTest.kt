@@ -10,6 +10,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.plus
 import kotlinx.serialization.modules.polymorphic
+import me.snoty.backend.integration.flow.execution.FlowFeatureFlags
 import me.snoty.backend.integration.flow.execution.FlowRunnerImpl
 import me.snoty.backend.integration.flow.execution.FlowTracing
 import me.snoty.backend.integration.flow.logging.NodeLogAppender
@@ -54,9 +55,11 @@ class FlowRunnerImplTest {
 		registerEmitHandler()
 	}
 	private val otel = createOpenTelemetry()
-	private val flagsProvider = testFeatureFlags()
-	private val tracing = FlowTracing(json = json, openTelemetry = otel.openTelemetry, featureFlags = flagsProvider.flags)
-	private val runner = FlowRunnerImpl(nodeRegistry, flagsProvider.flags, IntermediateDataMapperRegistry, tracing, TestFlowLogService()).apply {
+	private val clientAndProvider = testFeatureFlags()
+	private val featureFlags = FlowFeatureFlags(clientAndProvider.client)
+	private val flagsProvider = clientAndProvider.provider
+	private val tracing = FlowTracing(json = json, openTelemetry = otel.openTelemetry, featureFlags = featureFlags)
+	private val runner = FlowRunnerImpl(nodeRegistry, featureFlags, IntermediateDataMapperRegistry, tracing, TestFlowLogService()).apply {
 		json = this@FlowRunnerImplTest.json
 	}
 	private val testLogService = TestFlowLogService()
@@ -156,9 +159,9 @@ class FlowRunnerImplTest {
 			otel.spanExporter.reset()
 		}
 
-		flagsProvider.provider.setFlagValue(flagsProvider.flags::flow_traceConfig, false)
+		flagsProvider.setFlagValue(featureFlags::traceConfig, false)
 		verifyTrace(flow, intermediateData, withConfig = false)
-		flagsProvider.provider.setFlagValue(flagsProvider.flags::flow_traceConfig, true)
+		flagsProvider.setFlagValue(featureFlags::traceConfig, true)
 		verifyTrace(flow, intermediateData, withConfig = true)
 	}
 
