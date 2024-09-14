@@ -6,6 +6,8 @@ import me.snoty.backend.config.Config
 import me.snoty.backend.featureflags.FeatureFlag
 import me.snoty.backend.featureflags.FeatureFlags
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.reflect.KProperty0
+import kotlin.reflect.jvm.isAccessible
 
 class OpenFeatureTestProvider : FeatureProvider {
 	private val logger = KotlinLogging.logger {}
@@ -16,7 +18,10 @@ class OpenFeatureTestProvider : FeatureProvider {
 
 	private val flagValues = mutableMapOf<String, Any>()
 
-	fun <T: Any> setFlagValue(flag: FeatureFlag<T>, value: T) {
+	fun <T : Any> setFlagValue(property: KProperty0<Any>, value: T) {
+		property.isAccessible = true
+		@Suppress("UNCHECKED_CAST")
+		val flag = property.getDelegate() as FeatureFlag<T>
 		flagValues[flag.name] = value
 	}
 

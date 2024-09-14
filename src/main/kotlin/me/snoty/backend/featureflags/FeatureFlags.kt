@@ -8,7 +8,7 @@ import kotlin.time.Duration.Companion.days
 
 @Suppress("PropertyName")
 @Single
-class FeatureFlags(private val config: Config, private val client: Client) {
+class FeatureFlags(private val config: Config, override val client: Client) : FeatureFlagsContainer {
 	val logLevelFlags = mutableListOf<LogLevelFeatureFlag>()
 
 	private fun logLevelFlag(
@@ -29,18 +29,18 @@ class FeatureFlags(private val config: Config, private val client: Client) {
 		return flag
 	}
 
-	val logLevel_root = logLevelFlag("", "root")
-	val logLevel_http_client = logLevelFlag("http.client", "io.ktor.client")
-	val logLevel_http_server = logLevelFlag("http.server", "io.netty", "io.ktor.server")
-	val logLevel_jobRunr = logLevelFlag("jobrunr", "org.jobrunr")
-	val logLevel_mongo = logLevelFlag("mongo", "org.mongodb.driver")
-	val logLevel_mongo_commands = logLevelFlag("mongo.commands", "org.mongodb.driver.protocol.command")
+	val logLevel_root by logLevelFlag("", "root")
+	val logLevel_http_client by logLevelFlag("http.client", "io.ktor.client")
+	val logLevel_http_server by logLevelFlag("http.server", "io.netty", "io.ktor.server")
+	val logLevel_jobRunr by logLevelFlag("jobrunr", "org.jobrunr")
+	val logLevel_mongo by logLevelFlag("mongo", "org.mongodb.driver")
+	val logLevel_mongo_commands by logLevelFlag("mongo.commands", "org.mongodb.driver.protocol.command")
 
-	val flow_logFlow = FeatureFlagBoolean("flow.logFlow", false)
-	val flow_traceConfig = FeatureFlagBoolean("flow.traceConfig", false)
-	val flow_traceInput = FeatureFlagBoolean("flow.traceInput", false)
+	val flow_logFlow by FeatureFlagBoolean("flow.logFlow", false)
+	val flow_traceConfig by FeatureFlagBoolean("flow.traceConfig", false)
+	val flow_traceInput by FeatureFlagBoolean("flow.traceInput", false)
 
-	val flow_expirationSeconds = FeatureFlagLong("flow.expirationSeconds", 7.days.inWholeSeconds)
+	val flow_expirationSeconds by FeatureFlagLong("flow.expirationSeconds", 7.days.inWholeSeconds)
 
 	fun <T> get(flag: FeatureFlag<T>): T = flag.getValue(client)
 }

@@ -47,10 +47,10 @@ class FlowTracing(
 		setAttribute(USER_ID, node.userId)
 		MDC.put("user.id", node.userId.toString())
 
-		if (featureFlags.get(featureFlags.flow_traceConfig)) {
+		if (featureFlags.flow_traceConfig) {
 			setAttribute("config", json.encodeToString(node.settings))
 		}
-		if (input != null && featureFlags.get(featureFlags.flow_traceInput)) {
+		if (input != null && featureFlags.flow_traceInput) {
 			setAttribute("input", input.toString())
 		}
 	}

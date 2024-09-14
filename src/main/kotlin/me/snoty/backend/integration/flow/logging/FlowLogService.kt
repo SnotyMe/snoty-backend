@@ -57,7 +57,7 @@ class MongoFlowLogService(mongoDB: MongoDatabase, featureFlags: FeatureFlags) : 
 						Filters.eq(FlowLogs::creationDate.name, 1),
 						IndexOptions()
 							.name(expirationIndex)
-							.expireAfter(featureFlags.get(featureFlags.flow_expirationSeconds), TimeUnit.SECONDS)
+							.expireAfter(featureFlags.flow_expirationSeconds, TimeUnit.SECONDS)
 					),
 				),
 			).retryWhen { cause, attempt ->

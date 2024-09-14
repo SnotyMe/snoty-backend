@@ -156,9 +156,9 @@ class FlowRunnerImplTest {
 			otel.spanExporter.reset()
 		}
 
-		flagsProvider.provider.setFlagValue(flagsProvider.flags.flow_traceConfig, false)
+		flagsProvider.provider.setFlagValue(flagsProvider.flags::flow_traceConfig, false)
 		verifyTrace(flow, intermediateData, withConfig = false)
-		flagsProvider.provider.setFlagValue(flagsProvider.flags.flow_traceConfig, true)
+		flagsProvider.provider.setFlagValue(flagsProvider.flags::flow_traceConfig, true)
 		verifyTrace(flow, intermediateData, withConfig = true)
 	}
 

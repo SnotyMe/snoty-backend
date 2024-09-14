@@ -45,7 +45,7 @@ class FlowRunnerImpl(
 		val kLogger = KotlinLogging.logger(logger)
 		val rootSpan = flowTracing.createRootSpan(jobId, flow)
 
-		if (featureFlags.get(featureFlags.flow_logFlow)) {
+		if (featureFlags.flow_logFlow) {
 			kLogger.info { "Starting flow ${flow._id}" }
 		}
 
