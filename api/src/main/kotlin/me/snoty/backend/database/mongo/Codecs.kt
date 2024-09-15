@@ -1,8 +1,8 @@
 package me.snoty.backend.database.mongo
 
 import com.mongodb.MongoClientSettings
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.*
+import org.bson.BsonDateTime
 import org.bson.BsonReader
 import org.bson.BsonWriter
 import org.bson.UuidRepresentation
@@ -12,18 +12,29 @@ import org.bson.codecs.EncoderContext
 import org.bson.codecs.UuidCodec
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.kotlinx.KotlinSerializerCodecProvider
+import java.time.ZoneOffset as JavaZoneOffset
+import java.time.LocalDateTime as JavaLocalDateTime
 
 class LocalDateTimeCodec : Codec<LocalDateTime> {
 	override fun encode(writer: BsonWriter, value: LocalDateTime, encoderContext: EncoderContext) {
-		writer.writeString(value.toString())
+		writer.writeDateTime(value.toInstant(TimeZone.UTC).toEpochMilliseconds())
 	}
 
 	override fun getEncoderClass(): Class<LocalDateTime> = LocalDateTime::class.java
 
 	override fun decode(reader: BsonReader, decoderContext: DecoderContext): LocalDateTime {
-		return LocalDateTime.parse(reader.readString())
+		return fromEpochTimeMillis(reader.readDateTime())
 	}
 }
+
+fun BsonDateTime.decode(): LocalDateTime = fromEpochTimeMillis(value)
+
+fun fromEpochTimeMillis(dateTime: Long) =
+	JavaLocalDateTime.ofEpochSecond(
+		dateTime / 1000,
+		(dateTime % 1000).toInt() * 1_000_000,
+		JavaZoneOffset.UTC
+	).toKotlinLocalDateTime()
 
 
 class InstantCodec : Codec<Instant> {

@@ -2,6 +2,7 @@ package me.snoty.integration.common.diff
 
 import org.bson.BsonReader
 import org.bson.BsonWriter
+import org.bson.Document
 import org.bson.codecs.Codec
 import org.bson.codecs.DecoderContext
 import org.bson.codecs.DocumentCodec
@@ -10,9 +11,9 @@ import org.bson.codecs.configuration.CodecRegistry
 
 sealed class DiffResult {
 	data object Unchanged : DiffResult()
-	data class Created(val checksum: Long, val fields: Fields) : DiffResult()
+	data class Created(val checksum: Long, val fields: Document) : DiffResult()
 	data class Updated(val checksum: Long, val diff: Diff) : DiffResult()
-	data class Deleted(val checksum: Long, val previous: Fields) : DiffResult()
+	data class Deleted(val checksum: Long, val previous: Document) : DiffResult()
 }
 
 class DiffResultCodec(private val codecRegistry: CodecRegistry) : Codec<DiffResult> {
@@ -49,7 +50,7 @@ class DiffResultCodec(private val codecRegistry: CodecRegistry) : Codec<DiffResu
 		return when (val type = document.getString("type")) {
 			DiffResult.Created::class.simpleName -> DiffResult.Created(
 				document.getLong("checksum"),
-				document.get("fields", Fields::class.java)
+				document.get("fields", Document::class.java)
 			)
 			DiffResult.Updated::class.simpleName -> DiffResult.Updated(
 				document.getLong("checksum"),
@@ -57,7 +58,7 @@ class DiffResultCodec(private val codecRegistry: CodecRegistry) : Codec<DiffResu
 			)
 			DiffResult.Deleted::class.simpleName -> DiffResult.Deleted(
 				document.getLong("checksum"),
-				document.get("previous", Fields::class.java)
+				document.get("previous", Document::class.java)
 			)
 			DiffResult.Unchanged::class.simpleName -> DiffResult.Unchanged
 			else -> throw UnsupportedOperationException("Unsupported type: $type")

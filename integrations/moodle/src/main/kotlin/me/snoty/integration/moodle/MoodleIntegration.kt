@@ -2,7 +2,6 @@ package me.snoty.integration.moodle
 
 import io.ktor.client.*
 import me.snoty.integration.common.annotation.RegisterNode
-import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.fetch.FetchContext
 import me.snoty.integration.common.fetch.fetchContext
 import me.snoty.integration.common.model.NodePosition
@@ -27,7 +26,6 @@ import org.slf4j.event.Level
 @Single
 class MoodleIntegration(
 	val metadata: NodeMetadata,
-	private val entityStateService: EntityStateService,
 	private val httpClient: HttpClient,
 	private val moodleAPI: MoodleAPI = MoodleAPIImpl(httpClient)
 ) : NodeHandler {
@@ -38,10 +36,6 @@ class MoodleIntegration(
 		val moodleSettings = node.getConfig<MoodleSettings>()
 		val assignments = fetchStage {
 			moodleAPI.getCalendarUpcoming(moodleSettings)
-		}
-
-		updateStage {
-			entityStateService.updateStates(node, assignments)
 		}
 
 		logger.atLevel(

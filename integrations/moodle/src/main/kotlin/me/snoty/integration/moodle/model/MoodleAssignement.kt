@@ -1,46 +1,16 @@
 package me.snoty.integration.moodle.model
 
 import kotlinx.datetime.Instant
-import kotlinx.datetime.toKotlinInstant
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
-import me.snoty.integration.common.diff.Fields
-import me.snoty.integration.common.diff.UpdatableEntity
 import me.snoty.integration.moodle.model.raw.MoodleEvent
 
 @Serializable
 data class MoodleAssignment(
-	override val id: Long,
+	val id: Long,
 	val name: String,
 	val due: Instant,
 	val state: MoodleAssignmentState
-) : UpdatableEntity<Long>() {
-	override val type: String = TYPE
-
-	@Transient
-	override val fields: Fields = buildDocument {
-		put("name", name)
-		put("due", due)
-		put("state", state.name)
-	}
-
-	override fun prepareFieldsForDiff(fields: Fields) {
-		fields["due"] = fields.getDate("due").toInstant().toKotlinInstant()
-	}
-
-	companion object {
-		const val TYPE = "assignment"
-
-		fun fromFields(id: Long, fields: Fields): MoodleAssignment {
-			return MoodleAssignment(
-				id = id,
-				name = fields.getString("name"),
-				due = fields.getDate("due").toInstant().toKotlinInstant(),
-				state = MoodleAssignmentState.valueOf(fields.getString("state"))
-			)
-		}
-	}
-}
+)
 
 enum class MoodleAssignmentState {
 	/**

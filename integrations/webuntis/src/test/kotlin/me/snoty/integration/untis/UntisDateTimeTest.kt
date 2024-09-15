@@ -38,10 +38,14 @@ class UntisDateTimeTest {
 
 	@Test
 	fun testDeserialization_valid() {
-		var date = "2024-04-01T10:55Z"
-		assertEquals(UntisDateTime(Instant.parse(date)), decode(date))
-		date = "2023-12-31T23:59Z"
-		assertEquals(UntisDateTime(Instant.parse(date)), decode(date))
+		var baseDate = "2024-04-01T10:55"
+		// date, as returned by the API
+		fun date() = "${baseDate}Z"
+		// date, as parsable by `Instant`
+		fun dateInstant() = Instant.parse("${baseDate}:00Z")
+		assertEquals(UntisDateTime(dateInstant()), decode(date()))
+		baseDate = "2023-12-31T23:59"
+		assertEquals(UntisDateTime(dateInstant()), decode(date()))
 	}
 
 	@Test

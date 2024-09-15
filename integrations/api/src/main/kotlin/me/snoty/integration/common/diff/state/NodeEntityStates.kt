@@ -2,14 +2,13 @@ package me.snoty.integration.common.diff.state
 
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.integration.common.diff.Fields
+import org.bson.Document
 import org.bson.codecs.pojo.annotations.BsonId
 
 data class EntityState(
 	val id: String,
-	val type: String,
-	val state: Fields,
-	val checksum: Long
+	val state: Document,
+	val checksum: Long,
 )
 
 data class NodeEntityStates(
