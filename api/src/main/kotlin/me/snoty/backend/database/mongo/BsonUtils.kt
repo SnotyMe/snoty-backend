@@ -9,6 +9,7 @@ import org.bson.codecs.DecoderContext
 import org.bson.codecs.DocumentCodec
 import org.bson.codecs.EncoderContext
 import org.bson.codecs.configuration.CodecRegistry
+import org.bson.types.ObjectId
 import kotlin.reflect.KClass
 
 // the joys of mongodb
@@ -33,4 +34,13 @@ inline fun <T : Any> CodecRegistry.decode(clazz: KClass<T>, document: Document):
 			BsonDocumentReader(document.toBsonDocument()),
 			DecoderContext.builder().build()
 		)
+}
+
+fun Document.getIdAsString(): String? = when (val id = get("id")) {
+	null -> null
+	is String -> id
+	is ObjectId -> id.toHexString()
+	is Long -> id.toString()
+	is Int -> id.toString()
+	else -> throw IllegalArgumentException("Unsupported id type: $id")
 }

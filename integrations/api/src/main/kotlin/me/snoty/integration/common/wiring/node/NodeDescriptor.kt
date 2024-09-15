@@ -33,4 +33,5 @@ fun SpanBuilder.setAttribute(key: String, value: NodeDescriptor) {
 object Subsystem {
 	const val INTEGRATION = "integration"
 	const val PROCESSOR = "processor"
+	const val FILTER = "filter"
 }

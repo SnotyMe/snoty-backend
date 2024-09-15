@@ -1,13 +1,11 @@
 package me.snoty.integration.common.diff
 
-import kotlinx.coroutines.flow.Flow
+import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.integration.common.diff.state.EntityState
-import me.snoty.integration.common.wiring.Node
+import org.bson.Document
 
 interface EntityStateService {
-	fun scheduleMetricsTask()
+	suspend fun getLastState(nodeId: NodeId, entityId: String): EntityState?
 
-	suspend fun updateStates(node: Node, entities: List<IUpdatableEntity<out Any>>)
-
-	fun getStates(node: Node): Flow<EntityState>
+	suspend fun updateState(nodeId: NodeId, state: Document, diff: DiffResult)
 }

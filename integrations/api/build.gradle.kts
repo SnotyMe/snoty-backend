@@ -25,6 +25,7 @@ dependencies { with(libs) {
 
 	testImplementation(kotlin("test"))
 	testImplementation(tests.mockk)
+	testImplementation(tests.junit.api)
 }}
 
 base.archivesName = "integration-api"
