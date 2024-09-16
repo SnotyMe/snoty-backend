@@ -5,11 +5,14 @@ import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.EmptySchema
 import me.snoty.integration.common.model.metadata.FieldDescription
-import me.snoty.integration.common.wiring.*
+import me.snoty.integration.common.wiring.Node
+import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
+import me.snoty.integration.common.wiring.data.mapInputWithSettings
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.integration.common.wiring.node.Subsystem
+import me.snoty.integration.common.wiring.structOutput
 import org.bson.Document
 import org.koin.core.annotation.Single
 import org.slf4j.Logger
@@ -36,13 +39,13 @@ data class MapperSettings(
 @Single
 class MapperNodeHandler : NodeHandler {
 	context(NodeHandleContext)
-	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
-		val settings: MapperSettings = node.getConfig()
-		val data: Document = input.get()
+	override suspend fun process(
+		logger: Logger,
+		node: Node,
+		input: Collection<IntermediateData>,
+	) = mapInputWithSettings<Document, MapperSettings>(node, input) { data, settings ->
 		val mappedData = settings.engine.template(logger, settings, data)
 
-		structOutput {
-			mappedData
-		}
+		structOutput(mappedData)
 	}
 }

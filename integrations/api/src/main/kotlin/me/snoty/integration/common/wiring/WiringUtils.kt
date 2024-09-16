@@ -1,46 +1,43 @@
 package me.snoty.integration.common.wiring
 
-import me.snoty.integration.common.fetch.FetchContext
-import me.snoty.integration.common.wiring.data.EmitNodeOutputContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
+import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
 import kotlin.reflect.KClass
 
 interface NodeHandleContext {
 	val intermediateDataMapperRegistry: IntermediateDataMapperRegistry
-	val flowCollector: EmitNodeOutputContext
 }
 
 data class NodeHandleContextImpl(
 	override val intermediateDataMapperRegistry: IntermediateDataMapperRegistry,
-	override val flowCollector: EmitNodeOutputContext
 ) : NodeHandleContext
 
 context(NodeHandleContext)
-suspend fun <T : Any> iterableStructOutput(
-	context: FetchContext,
-	producer: suspend FetchContext.() -> Iterable<T>
-): Unit = producer(context)
+fun <T : Any> iterableStructOutput(
+	items: Iterable<T>
+): Collection<IntermediateData> = items
 	// serialize arbitrary object into BsonIntermediateData
-	.forEach { emitBson(it) }
+	.map { serializeBson(it) }
 
 context(NodeHandleContext)
-suspend fun <T : Any> structOutput(producer: suspend () -> T) = emitBson(producer())
+fun <T : Any> structOutput(vararg data: T) = data.map { serializeBson(it) }
 
 context(NodeHandleContext)
-private suspend fun emitBson(data: Any) = emitSerialized(BsonIntermediateData::class, data)
-
-
-context(NodeHandleContext)
-suspend fun <T : Any> simpleOutput(producer: suspend () -> T) = emitSerialized(SimpleIntermediateData::class, producer())
+private fun serializeBson(data: Any) = serialize(BsonIntermediateData::class, data)
 
 
 context(NodeHandleContext)
-private suspend fun <IM : IntermediateData, T : Any> emitSerialized(clazz: KClass<IM>, data: T) {
+fun <T : Any> simpleOutput(vararg items: T): NodeOutput = items
+	.map { serialize(SimpleIntermediateData::class, it) }
+
+
+context(NodeHandleContext)
+private fun <IM : IntermediateData, T : Any> serialize(clazz: KClass<IM>, data: T): IM {
 	val mapper = intermediateDataMapperRegistry[clazz]
-	flowCollector.emit(mapper.serialize(data))
+	return mapper.serialize(data)
 }
 
 context(NodeHandleContext)
