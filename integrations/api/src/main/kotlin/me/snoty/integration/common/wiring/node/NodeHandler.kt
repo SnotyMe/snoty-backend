@@ -3,6 +3,7 @@ package me.snoty.integration.common.wiring.node
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
+import me.snoty.integration.common.wiring.data.NodeOutput
 import org.slf4j.Logger
 
 
@@ -13,5 +14,5 @@ import org.slf4j.Logger
  */
 interface NodeHandler {
 	context(NodeHandleContext)
-	suspend fun process(logger: Logger, node: Node, input: IntermediateData)
+	suspend fun process(logger: Logger, node: Node, input: Collection<IntermediateData>): NodeOutput
 }

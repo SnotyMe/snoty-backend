@@ -8,6 +8,7 @@ import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
+import me.snoty.integration.common.wiring.data.NodeInput
 import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
 import me.snoty.integration.common.wiring.node.*
 import me.snoty.integration.common.wiring.simpleOutput
@@ -34,11 +35,8 @@ object EmitHandler : NodeHandler {
 	)
 
 	context(NodeHandleContext)
-	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
-		simpleOutput {
-			"test"
-		}
-	}
+	override suspend fun process(logger: Logger, node: Node, input: NodeInput)
+		= simpleOutput("test")
 }
 fun NodeRegistry.registerEmitHandler() {
 	registerHandler(EmitHandler.metadata, EmitHandler)

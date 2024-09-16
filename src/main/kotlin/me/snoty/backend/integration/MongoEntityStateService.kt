@@ -5,7 +5,10 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import io.micrometer.core.instrument.MeterRegistry
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapMerge
 import me.snoty.backend.database.mongo.*
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.observability.METRICS_POOL
@@ -45,6 +48,10 @@ class MongoEntityStateService(
 			Aggregates.replaceRoot(NodeEntityStates::entities.mongoField)
 		).firstOrNull()
 
+	override fun getLastStates(nodeId: NodeId): Flow<EntityState> =
+		nodeEntityStates.find(Filters.eq(NodeEntityStates::nodeId.name, nodeId))
+			.flatMapMerge { it.entities.asFlow() }
+
 	override suspend fun updateState(nodeId: NodeId, state: Document, diff: DiffResult) {
 		entityDiffMetrics.process(diff)
 
@@ -74,5 +81,14 @@ class MongoEntityStateService(
 				upsert()
 			}
 		}
+	}
+
+	override suspend fun updateStates(nodeId: NodeId, states: Map<EntityState, DiffResult>) {
+		entityDiffMetrics.process(states.values)
+
+		nodeEntityStates.upsertOne(
+			Filters.eq(NodeEntityStates::nodeId.name, nodeId),
+			Updates.set(NodeEntityStates::entities.name, states.values)
+		)
 	}
 }

@@ -12,8 +12,7 @@ import me.snoty.integration.common.model.metadata.FieldName
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.get
-import me.snoty.integration.common.wiring.getConfig
+import me.snoty.integration.common.wiring.data.eachWithSettings
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.koin.core.annotation.Single
@@ -42,16 +41,17 @@ class DiscordNodeHandler(
 	private val client: HttpClient,
 ) : NodeHandler {
 	context(NodeHandleContext)
-	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
-		val config: DiscordSettings = node.getConfig()
-		val data: DiscordWebhook.Message = input.get()
-
+	override suspend fun process(
+		logger: Logger,
+		node: Node,
+		input: Collection<IntermediateData>,
+	) = input.eachWithSettings<DiscordWebhook.Message, DiscordSettings>(node) { data, config ->
 		if (data.content.isNullOrEmpty() && data.embeds.isEmpty()) {
 			if (config.emptyIsError) {
 				throw IllegalStateException("Discord message content and fields are empty")
 			} else {
 				logger.warn("Discord message content is empty, aborting...")
-				return
+				return@eachWithSettings
 			}
 		}
 

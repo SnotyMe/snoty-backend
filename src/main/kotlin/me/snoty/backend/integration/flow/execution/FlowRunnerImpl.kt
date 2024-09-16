@@ -13,11 +13,14 @@ import me.snoty.backend.integration.flow.FlowExecutionException
 import me.snoty.backend.integration.flow.logging.FlowLogService
 import me.snoty.backend.observability.setException
 import me.snoty.backend.observability.subspan
+import me.snoty.backend.utils.flowWith
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.FlowNode
+import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.NodeHandleContextImpl
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
+import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
 import me.snoty.integration.common.wiring.flow.FlowRunner
 import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
@@ -54,43 +57,40 @@ class FlowRunnerImpl(
 			logger = kLogger as Slf4jLogger<Logger>,
 		)
 
-		with(executionContext) {
-			flow.nodes.filter {
+		flow.nodes
+			.filter {
 				nodeRegistry.getMetadata(it.descriptor).position == NodePosition.START
 			}
-				.asFlow()
-				.flatMapConcat {
-					executeStartNode(rootSpan, it, input)
-				}
-				.onCompletion {
-					rootSpan.end()
-					flowLogService.setExecutionStatus(
-						jobId,
-						if (it == null) FlowExecutionStatus.SUCCESS else FlowExecutionStatus.FAILED,
-					)
-				}
-				.collect()
-		}
+			.asFlow()
+			.flatMapMerge {
+				executionContext.executeStartNode(rootSpan, it, listOf(input))
+			}
+			.onCompletion {
+				rootSpan.end()
+				flowLogService.setExecutionStatus(
+					jobId,
+					if (it == null) FlowExecutionStatus.SUCCESS else FlowExecutionStatus.FAILED,
+				)
+			}
+			.collect()
 	}
 
 	private fun FlowExecutionContext.executeStartNode(
 		rootSpan: Span,
 		node: FlowNode,
-		input: IntermediateData
+		input: Collection<IntermediateData>
 	) = with(flowTracing) {
 		val subspan = rootSpan.subspan(traceName(node)) {
 			setNodeAttributes(node, input)
 		}
-		executeImpl(subspan, node, input, emptyList())
-			// propagate the span and MDC through the flow
+
+		executeImpl(subspan, node, input, visited = emptyList(), depth = 0)
 			.flowOn(subspan.asContextElement() + MDCContext())
-			.flowCatching(subspan)
-			.catch { rawException ->
-				logger.error(rawException) { "Exception during flow execution" }
-				// set exception of root to explain the failure to the user
-				val e = FlowExecutionException(rawException)
-				rootSpan.setException(e)
-				throw e
+			.catch { nodeException ->
+				logger.error(nodeException) { "Exception during flow execution" }
+				val flowException = FlowExecutionException(nodeException)
+				rootSpan.setException(flowException)
+				throw flowException
 			}
 			.onCompletion {
 				subspan.end()
@@ -105,44 +105,43 @@ class FlowRunnerImpl(
 	private fun FlowExecutionContext.executeImpl(
 		span: Span,
 		node: FlowNode,
-		input: IntermediateData,
+		input: Collection<IntermediateData>,
 		visited: List<NodeId>,
-		depth: Int = 0,
+		depth: Int,
 	): Flow<Unit> {
 		val handler = nodeRegistry.lookupHandler(node.descriptor)
 			?: let {
 				logger.error { "No handler found for node ${node.descriptor}" }
-				return flowOf()
+				return emptyFlow()
 			}
 
 		if (node._id in visited) {
 			logger.error { "Cycle detected at node ${node.descriptor}" }
-			return flowOf()
+			return emptyFlow()
 		}
 
-		return flow {
-			logger.debug { "Processing ${node.descriptor.id} node (${node._id}) with $input" }
-
-			with(NodeHandleContextImpl(intermediateDataMapperRegistry = intermediateDataMapperRegistry, flowCollector = this)) {
-				handler.process(logger.underlyingLogger, node, input)
-			}
+		logger.debug { "Processing ${node.descriptor.id} node (${node._id}) with $input" }
+		return flowWith<NodeHandleContext, NodeOutput>(NodeHandleContextImpl(intermediateDataMapperRegistry = intermediateDataMapperRegistry)) {
+			emit(handler.process(logger.underlyingLogger, node, input))
 		}
-			.flatMapConcat { output ->
-				node.next.asFlow()
-					.flatMapConcat { nextNodeId ->
-						val nextNode = nodeMap[nextNodeId] ?: let {
+			.flowCatching(span)
+			.flowOn(span.asContextElement() + MDCContext())
+			.flatMapMerge { output ->
+				node.next
+					.asFlow()
+					.mapNotNull { nextNodeId ->
+						nodeMap[nextNodeId] ?: let {
 							logger.error { "Next node $nextNodeId not found" }
-							return@flatMapConcat flowOf()
+							null
 						}
-
+					}
+					.flatMapMerge { nextNode ->
 						val subspan = span.subspan(traceName(nextNode)) {
 							setNodeAttributes(nextNode, output)
 						}
 						executeImpl(subspan, nextNode, output, visited + node._id, depth + 1)
 					}
 			}
-			.flowOn(span.asContextElement() + MDCContext())
-			.flowCatching(span)
 			.onCompletion {
 				span.end()
 			}

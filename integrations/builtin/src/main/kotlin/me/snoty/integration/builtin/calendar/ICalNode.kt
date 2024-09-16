@@ -8,11 +8,10 @@ import me.snoty.backend.utils.respondStatus
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.FieldDescription
-import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.get
+import me.snoty.integration.common.wiring.data.each
 import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.node.*
 import net.fortuna.ical4j.data.CalendarOutputter
@@ -63,12 +62,10 @@ class ICalNodeHandler(
 	}
 
 	context(NodeHandleContext)
-	override suspend fun process(logger: Logger, node: Node, input: IntermediateData) {
-		val data: CalendarEvent = input.get()
-
+	override suspend fun process(logger: Logger, node: Node, input: Collection<IntermediateData>) = input.each<CalendarEvent> { data ->
 		if (data.date == null && (data.startDate == null || data.endDate == null)) {
 			logger.error("Event has no date or start/end date")
-			return
+			return@each
 		}
 
 		eventPersistenceService.persistEntity(node, data.id, data)

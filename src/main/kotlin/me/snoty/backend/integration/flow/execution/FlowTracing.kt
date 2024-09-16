@@ -39,7 +39,7 @@ class FlowTracing(
 		return rootSpan
 	}
 
-	fun SpanBuilder.setNodeAttributes(node: Node, input: IntermediateData?) = apply {
+	fun SpanBuilder.setNodeAttributes(node: Node, input: Collection<IntermediateData>?) = apply {
 		setAttribute("node.id", node._id.toString())
 		MDC.put("node.id", node._id.toString())
 		setAttribute("node.descriptor", node.descriptor)
