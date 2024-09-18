@@ -7,6 +7,7 @@ import me.snoty.backend.config.*
 import me.snoty.backend.database.mongo.apiCodecModule
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.NodeMetadata
+import me.snoty.integration.common.utils.bsonTypeClassMap
 import me.snoty.integration.common.utils.integrationsApiCodecModule
 import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistryImpl
 import me.snoty.integration.common.wiring.data.impl.BsonIntermediateDataMapper
@@ -69,7 +70,7 @@ val TestBuildInfo = BuildInfo(
 )
 
 val TestCodecRegistry: CodecRegistry = CodecRegistries.fromRegistries(
-	integrationsApiCodecModule(),
+	integrationsApiCodecModule(bsonTypeClassMap()),
 	apiCodecModule()
 )
 

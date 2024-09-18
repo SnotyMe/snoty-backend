@@ -7,6 +7,7 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import io.github.oshai.kotlinlogging.KotlinLogging
 import me.snoty.backend.config.Config
 import me.snoty.backend.config.MongoConfig
+import me.snoty.integration.common.utils.bsonTypeClassMap
 import me.snoty.integration.common.utils.integrationsApiCodecModule
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.configuration.CodecRegistry
@@ -24,7 +25,7 @@ fun createMongoClients(config: MongoConfig, dbName: String = MONGO_DB_NAME): Mon
 	val logger = KotlinLogging.logger {}
 	val mongoCodecRegistry = CodecRegistries.fromRegistries(
 		// TODO: extra codecs from integrations
-		integrationsApiCodecModule(),
+		integrationsApiCodecModule(bsonTypeClassMap()),
 		apiCodecModule()
 	)
 

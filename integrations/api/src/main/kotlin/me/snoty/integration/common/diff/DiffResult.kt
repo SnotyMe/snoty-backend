@@ -3,10 +3,7 @@ package me.snoty.integration.common.diff
 import org.bson.BsonReader
 import org.bson.BsonWriter
 import org.bson.Document
-import org.bson.codecs.Codec
-import org.bson.codecs.DecoderContext
-import org.bson.codecs.DocumentCodec
-import org.bson.codecs.EncoderContext
+import org.bson.codecs.*
 import org.bson.codecs.configuration.CodecRegistry
 
 sealed class DiffResult {
@@ -16,8 +13,11 @@ sealed class DiffResult {
 	data class Deleted(val checksum: Long, val previous: Document) : DiffResult()
 }
 
-class DiffResultCodec(private val codecRegistry: CodecRegistry) : Codec<DiffResult> {
-	private val documentCodec = DocumentCodec(codecRegistry)
+class DiffResultCodec(
+	private val codecRegistry: CodecRegistry,
+	bsonTypeClassMap: BsonTypeClassMap,
+) : Codec<DiffResult> {
+	private val documentCodec = DocumentCodec(codecRegistry, bsonTypeClassMap)
 
 	override fun encode(writer: BsonWriter, value: DiffResult, encoderContext: EncoderContext) = value.run {
 		writer.writeStartDocument()

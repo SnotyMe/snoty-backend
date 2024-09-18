@@ -1,8 +1,9 @@
 package me.snoty.backend
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import me.snoty.backend.featureflags.FeatureFlagsSetup
 import me.snoty.backend.integration.NodeHandlerContributorLookup
@@ -21,11 +22,12 @@ class Application(val koin: Koin) {
 
 		NodeHandlerContributorLookup(koin).executeContributors()
 
-		async(newSingleThreadContext("NodeScheduler")) {
+		launch(newSingleThreadContext("NodeScheduler")) {
 			val flowService: FlowService = get()
 			val flowScheduler: FlowScheduler = get()
 
 			flowService.getAll()
+				.catch { e -> logger.error(e) { "Failed to schedule flows" } }
 				.collect { flowScheduler.schedule(it) }
 		}
 
