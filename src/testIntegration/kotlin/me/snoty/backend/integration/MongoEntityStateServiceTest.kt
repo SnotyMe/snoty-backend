@@ -14,6 +14,8 @@ import me.snoty.backend.test.TestIds.USER_ID_1
 import me.snoty.integration.common.diff.Change
 import me.snoty.integration.common.diff.DiffResult
 import me.snoty.integration.common.diff.checksum
+import me.snoty.integration.common.diff.provideStateCodecRegistry
+import me.snoty.integration.common.utils.bsonTypeClassMap
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
@@ -32,7 +34,8 @@ class MongoEntityStateServiceTest {
 		mongoDB,
 		nodeDescriptor,
 		meterRegistry = SimpleMeterRegistry(),
-		metricsPool = mockk(relaxed = true)
+		metricsPool = mockk(relaxed = true),
+		codecRegistry = provideStateCodecRegistry(bsonTypeClassMap(), mongoDB.codecRegistry),
 	)
 
 	private fun flowNode(): Node = node(

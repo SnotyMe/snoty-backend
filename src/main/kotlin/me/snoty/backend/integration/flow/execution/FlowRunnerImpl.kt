@@ -7,7 +7,6 @@ import io.opentelemetry.api.trace.Span
 import io.opentelemetry.extension.kotlin.asContextElement
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.slf4j.MDCContext
-import kotlinx.serialization.json.Json
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.FlowExecutionException
 import me.snoty.backend.integration.flow.logging.FlowLogService
@@ -36,8 +35,6 @@ class FlowRunnerImpl(
 	private val flowTracing: FlowTracing,
 	private val flowLogService: FlowLogService,
 ) : FlowRunner {
-	lateinit var json: Json
-
 	override suspend fun execute(
 		jobId: String,
 		logger: Logger,
@@ -62,7 +59,7 @@ class FlowRunnerImpl(
 				nodeRegistry.getMetadata(it.descriptor).position == NodePosition.START
 			}
 			.asFlow()
-			.flatMapMerge {
+			.flatMapConcat {
 				executionContext.executeStartNode(rootSpan, it, listOf(input))
 			}
 			.onCompletion {
@@ -126,7 +123,7 @@ class FlowRunnerImpl(
 		}
 			.flowCatching(span)
 			.flowOn(span.asContextElement() + MDCContext())
-			.flatMapMerge { output ->
+			.flatMapConcat { output ->
 				node.next
 					.asFlow()
 					.mapNotNull { nextNodeId ->
@@ -135,7 +132,7 @@ class FlowRunnerImpl(
 							null
 						}
 					}
-					.flatMapMerge { nextNode ->
+					.flatMapConcat { nextNode ->
 						val subspan = span.subspan(traceName(nextNode)) {
 							setNodeAttributes(nextNode, output)
 						}

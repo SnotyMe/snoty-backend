@@ -59,9 +59,7 @@ class FlowRunnerImplTest {
 	private val featureFlags = FlowFeatureFlags(clientAndProvider.client)
 	private val flagsProvider = clientAndProvider.provider
 	private val tracing = FlowTracing(json = json, openTelemetry = otel.openTelemetry, featureFlags = featureFlags)
-	private val runner = FlowRunnerImpl(nodeRegistry, featureFlags, IntermediateDataMapperRegistry, tracing, TestFlowLogService()).apply {
-		json = this@FlowRunnerImplTest.json
-	}
+	private val runner = FlowRunnerImpl(nodeRegistry, featureFlags, IntermediateDataMapperRegistry, tracing, TestFlowLogService())
 	private val testLogService = TestFlowLogService()
 	private val logger = (LoggerFactory.getLogger(FlowRunnerImplTest::class.java) as Logger).apply {
 		val appender = NodeLogAppender(testLogService)

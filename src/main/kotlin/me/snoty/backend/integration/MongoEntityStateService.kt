@@ -15,12 +15,14 @@ import me.snoty.backend.observability.METRICS_POOL
 import me.snoty.integration.common.diff.DiffResult
 import me.snoty.integration.common.diff.EntityDiffMetrics
 import me.snoty.integration.common.diff.EntityStateService
+import me.snoty.integration.common.diff.STATE_CODEC_REGISTRY
 import me.snoty.integration.common.diff.checksum
 import me.snoty.integration.common.diff.state.EntityState
 import me.snoty.integration.common.diff.state.EntityStateCollection
 import me.snoty.integration.common.diff.state.NodeEntityStates
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import org.bson.Document
+import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 import java.util.concurrent.ScheduledExecutorService
@@ -31,9 +33,11 @@ class MongoEntityStateService(
 	mongoDB: MongoDatabase,
 	integration: NodeDescriptor,
 	meterRegistry: MeterRegistry,
-	@Named(METRICS_POOL) metricsPool: ScheduledExecutorService
+	@Named(METRICS_POOL) metricsPool: ScheduledExecutorService,
+	@Named(STATE_CODEC_REGISTRY) codecRegistry: CodecRegistry,
 ) : EntityStateService {
 	private val nodeEntityStates: EntityStateCollection = mongoDB.getCollection<NodeEntityStates>("${integration.mongoCollectionPrefix}.entityStates")
+		.withCodecRegistry(codecRegistry)
 	private val entityDiffMetrics = EntityDiffMetrics(meterRegistry, integration.type, nodeEntityStates)
 
 	init {

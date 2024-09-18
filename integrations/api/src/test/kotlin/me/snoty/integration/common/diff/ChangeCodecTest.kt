@@ -6,6 +6,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import me.snoty.backend.database.mongo.apiCodecModule
 import me.snoty.backend.database.mongo.decode
+import me.snoty.integration.common.utils.bsonTypeClassMap
 import me.snoty.integration.common.utils.integrationsApiCodecModule
 import org.bson.BsonDocument
 import org.bson.BsonDocumentReader
@@ -18,7 +19,7 @@ import kotlin.test.assertNotEquals
 
 class ChangeCodecTest {
 	private val codecs: CodecRegistry = CodecRegistries.fromRegistries(
-		integrationsApiCodecModule(),
+		integrationsApiCodecModule(bsonTypeClassMap()),
 		apiCodecModule()
 	)
 
