@@ -25,7 +25,10 @@ class BsonIntermediateDataMapper(private val codecRegistry: CodecRegistry) : Int
 		return codecRegistry.decode(clazz, intermediateData.value)
 	}
 
-	override fun <R : Any> serialize(data: R): BsonIntermediateData {
-		return BsonIntermediateData(codecRegistry.encode(data))
-	}
+	override fun <R : Any> serialize(data: R) = BsonIntermediateData(
+		when (data) {
+			is Document -> (data)
+			else -> codecRegistry.encode(data)
+		}
+	)
 }

@@ -10,5 +10,7 @@ interface EntityStateService {
 	fun getLastStates(nodeId: NodeId): Flow<EntityState>
 
 	suspend fun updateState(nodeId: NodeId, state: Document, diff: DiffResult)
-	suspend fun updateStates(nodeId: NodeId, states: Map<EntityState, DiffResult>)
+	suspend fun updateStates(nodeId: NodeId, states: Collection<EntityStateUpdate>)
+
+	data class EntityStateUpdate(val state: EntityState, val diffResult: DiffResult)
 }

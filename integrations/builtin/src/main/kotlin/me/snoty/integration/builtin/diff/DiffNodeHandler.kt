@@ -1,0 +1,64 @@
+package me.snoty.integration.builtin.diff
+
+import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.oshai.kotlinlogging.slf4j.logger
+import kotlinx.coroutines.flow.toList
+import me.snoty.backend.database.mongo.getIdAsString
+import me.snoty.integration.common.diff.EntityStateService
+import me.snoty.integration.common.diff.diff
+import me.snoty.integration.common.diff.state.EntityState
+import me.snoty.integration.common.wiring.Node
+import me.snoty.integration.common.wiring.NodeHandleContext
+import me.snoty.integration.common.wiring.data.NodeInput
+import me.snoty.integration.common.wiring.get
+import me.snoty.integration.common.wiring.node.NodeHandler
+import org.bson.Document
+import org.slf4j.Logger
+
+
+abstract class DiffNodeHandler(private val entityStateService: EntityStateService) : NodeHandler {
+	suspend fun NodeHandleContext.handleStatesAndDiff(slf4jLogger: Logger, node: Node, input: NodeInput, excludedFields: Collection<String>): Pair<Data, States> {
+		val logger = KotlinLogging.logger(slf4jLogger)
+
+		val newData = input
+			.map { it.get<Document>() }
+			// clone the document to avoid modifying the original
+			.map { Document(it) }
+			.mapNotNull { document ->
+				val id = document.getIdAsString() ?: let {
+					logger.warn { "Document has no _id field, skipping..." }
+					return@mapNotNull null
+				}
+				id to document
+			}
+			.toMap()
+
+		val oldStates = entityStateService.getLastStates(node._id)
+			.toList()
+		val newStates = newData
+			// remove excluded fields to not consider them in the diff
+			.onEach { (_, document) ->
+				excludedFields.forEach { field -> document.remove(field) }
+			}
+			.mapValues { (id, newState) ->
+				val oldState = oldStates.find { it.id == id }
+				val diff = newState.diff(oldState)
+
+				logger.debug { "Entity $id was $diff" }
+
+				EntityStateService.EntityStateUpdate(EntityState(id, newState), diff)
+			}
+
+		entityStateService.updateStates(node._id, newStates.values)
+
+		return Data(newData) to States(newStates)
+	}
+
+	@JvmInline
+	value class Data(private val data: Map<String, Document>)
+		: Map<String, Document> by data
+
+	@JvmInline
+	value class States(private val states: Map<String, EntityStateService.EntityStateUpdate>)
+		: Map<String, EntityStateService.EntityStateUpdate> by states
+}

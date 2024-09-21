@@ -12,23 +12,19 @@ import kotlinx.coroutines.flow.flatMapMerge
 import me.snoty.backend.database.mongo.*
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.observability.METRICS_POOL
-import me.snoty.integration.common.diff.DiffResult
-import me.snoty.integration.common.diff.EntityDiffMetrics
-import me.snoty.integration.common.diff.EntityStateService
-import me.snoty.integration.common.diff.STATE_CODEC_REGISTRY
-import me.snoty.integration.common.diff.checksum
+import me.snoty.integration.common.diff.*
 import me.snoty.integration.common.diff.state.EntityState
 import me.snoty.integration.common.diff.state.EntityStateCollection
 import me.snoty.integration.common.diff.state.NodeEntityStates
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
+import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Named
-import org.koin.core.annotation.Single
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
-@Single
+@Factory
 class MongoEntityStateService(
 	mongoDB: MongoDatabase,
 	integration: NodeDescriptor,
@@ -87,12 +83,12 @@ class MongoEntityStateService(
 		}
 	}
 
-	override suspend fun updateStates(nodeId: NodeId, states: Map<EntityState, DiffResult>) {
-		entityDiffMetrics.process(states.values)
+	override suspend fun updateStates(nodeId: NodeId, states: Collection<EntityStateService.EntityStateUpdate>) {
+		entityDiffMetrics.process(states.map { it.diffResult })
 
 		nodeEntityStates.upsertOne(
 			Filters.eq(NodeEntityStates::nodeId.name, nodeId),
-			Updates.set(NodeEntityStates::entities.name, states.values)
+			Updates.set(NodeEntityStates::entities.name, states.map { it.state })
 		)
 	}
 }

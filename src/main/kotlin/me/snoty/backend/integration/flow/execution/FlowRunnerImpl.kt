@@ -117,9 +117,12 @@ class FlowRunnerImpl(
 			return emptyFlow()
 		}
 
-		logger.debug { "Processing ${node.descriptor.id} node (${node._id}) with $input" }
 		return flowWith<NodeHandleContext, NodeOutput>(NodeHandleContextImpl(intermediateDataMapperRegistry = intermediateDataMapperRegistry)) {
-			emit(handler.process(logger.underlyingLogger, node, input))
+			logger.debug { "Processing ${node.descriptor.id} node \"${node.settings.name}\" (${node._id}) with $input" }
+			val data = handler.process(logger.underlyingLogger, node, input)
+			logger.debug { "Processed ${node.descriptor.id} node \"${node.settings.name}\" (${node._id})" }
+
+			emit(data)
 		}
 			.flowCatching(span)
 			.flowOn(span.asContextElement() + MDCContext())
