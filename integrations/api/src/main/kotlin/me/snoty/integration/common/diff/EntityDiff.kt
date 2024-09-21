@@ -6,7 +6,7 @@ import org.bson.Document
 fun Document.diff(lastState: EntityState?): DiffResult = when {
 	lastState == null -> DiffResult.Created(checksum(), this)
 	checksum() == lastState.checksum -> DiffResult.Unchanged
-	else -> diff(lastState)
+	else -> diff(lastState.state)
 }
 
 fun Document.diff(other: Document): DiffResult {

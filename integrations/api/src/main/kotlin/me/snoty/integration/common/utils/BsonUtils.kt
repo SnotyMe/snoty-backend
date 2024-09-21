@@ -21,14 +21,15 @@ import org.koin.core.annotation.Single
 @Suppress("UNCHECKED_CAST")
 fun integrationsApiCodecModule(bsonTypeClassMap: BsonTypeClassMap): CodecRegistry =
 	CodecRegistries.fromProviders(object : CodecProvider {
-		override fun <T : Any> get(clazz: Class<T>, registry: CodecRegistry): Codec<T>? {
-			return when (clazz) {
+		override fun <T : Any> get(clazz: Class<T>, registry: CodecRegistry): Codec<T>? =
+			when (clazz) {
 				Change::class.java -> ChangeCodec(registry, bsonTypeClassMap)
-				DiffResult::class.java -> DiffResultCodec(registry, bsonTypeClassMap)
 				EmptyNodeSettings::class.java -> EmptyNodeSettingsCodec
 				else -> null
+			} as? Codec<T> ?: when {
+				DiffResult::class.java.isAssignableFrom(clazz) -> DiffResultCodec(registry, bsonTypeClassMap)
+				else -> null
 			} as? Codec<T>
-		}
 	})
 
 val kotlinxSerializersModule = SerializersModule {
