@@ -9,6 +9,9 @@ import org.bson.Document
 import org.bson.conversions.Bson
 import kotlin.reflect.KProperty
 
+val KProperty<*>.mongoField
+	get() = "\$$name"
+
 inline fun <reified T : Any> MongoCollection<*>.aggregate(vararg stages: Bson): AggregateFlow<T>
 	= aggregate<T>(stages.toList())
 
@@ -25,6 +28,9 @@ object Aggregations {
 
 	fun unwind(field: KProperty<*>): Bson
 		= Aggregates.unwind("$${field.name}")
+
+	fun size(field: KProperty<*>): Bson
+		= Document("\$size", "$${field.name}")
 }
 
 object Stages {
