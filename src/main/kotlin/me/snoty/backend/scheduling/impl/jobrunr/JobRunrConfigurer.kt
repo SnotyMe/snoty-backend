@@ -5,41 +5,29 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.mongodb.client.MongoClient
 import io.micrometer.core.instrument.MeterRegistry
 import me.snoty.backend.database.mongo.MONGO_DB_NAME
-import me.snoty.backend.scheduling.impl.jobrunr.node.JobRunrFlowJobHandler
 import org.jobrunr.configuration.JobRunr
 import org.jobrunr.configuration.JobRunrMicroMeterIntegration
 import org.jobrunr.dashboard.JobRunrDashboardWebServerConfiguration
 import org.jobrunr.server.JobActivator
+import org.jobrunr.storage.StorageProvider
 import org.jobrunr.storage.StorageProviderUtils
 import org.jobrunr.storage.nosql.mongo.MongoDBStorageProvider
 import org.jobrunr.utils.mapper.jackson.JacksonJsonMapper
+import org.koin.core.Koin
 import org.koin.core.annotation.Single
 
 @Single
 class JobRunrConfigurer(
-	private val mongoClient: MongoClient,
 	private val meterRegistry: MeterRegistry,
-	private val jobHandler: JobRunrFlowJobHandler,
+	private val storageProvider: StorageProvider,
+	private val koin: Koin,
 ) {
 	fun configure() {
 		JobRunr.configure()
 			.useJsonMapper(JacksonJsonMapper(ObjectMapper().registerKotlinModule()))
-			.useStorageProvider(
-				MongoDBStorageProvider(
-					mongoClient,
-					MONGO_DB_NAME,
-					"jobrunr:",
-					StorageProviderUtils.DatabaseOptions.CREATE
-				)
-			)
+			.useStorageProvider(storageProvider)
 			.useJobActivator(object : JobActivator {
-				override fun <T : Any> activateJob(type: Class<T>): T? {
-					@Suppress("UNCHECKED_CAST")
-					return when (type) {
-						JobRunrFlowJobHandler::class.java -> jobHandler as T
-						else -> null
-					}
-				}
+				override fun <T : Any> activateJob(type: Class<T>): T? = koin.getOrNull(type.kotlin)
 			})
 			.useBackgroundJobServer()
 			.useMicroMeter(JobRunrMicroMeterIntegration(meterRegistry))
@@ -50,3 +38,11 @@ class JobRunrConfigurer(
 			.initialize()
 	}
 }
+
+@Single
+fun storageProvider(mongoClient: MongoClient): StorageProvider = MongoDBStorageProvider(
+	mongoClient,
+	MONGO_DB_NAME,
+	"jobrunr:",
+	StorageProviderUtils.DatabaseOptions.CREATE
+)

@@ -33,9 +33,6 @@ class FlowTracing(
 			.setAttribute("flow.id", flowId)
 			.startSpan()
 
-		MDC.put("flow.id", flowId)
-		MDC.put("user.id", flow.userId.toString())
-
 		return rootSpan
 	}
 

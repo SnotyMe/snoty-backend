@@ -1,15 +1,11 @@
 package me.snoty.backend
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.*
 import me.snoty.backend.featureflags.FeatureFlagsSetup
 import me.snoty.backend.integration.NodeHandlerContributorLookup
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.server.KtorServer
-import me.snoty.integration.common.wiring.flow.FlowService
 import org.koin.core.Koin
 
 class Application(val koin: Koin) {
@@ -22,15 +18,16 @@ class Application(val koin: Koin) {
 
 		NodeHandlerContributorLookup(koin).executeContributors()
 
-		launch(newSingleThreadContext("NodeScheduler")) {
-			val flowService: FlowService = get()
-			val flowScheduler: FlowScheduler = get()
-
-			flowService.getAll()
-				.catch { e -> logger.error(e) { "Failed to schedule flows" } }
-				.collect { flowScheduler.schedule(it) }
+		launch(
+			newSingleThreadContext("FlowScheduler") +
+				SupervisorJob() +
+				CoroutineExceptionHandler { _, err ->
+					logger.error(err) { "Exception scheduling flows" }
+				}
+		) {
+			get<FlowScheduler>().scheduleMissing(get())
 		}
 
-		get<KtorServer>().start(wait = true)
+		get<KtorServer>().start(wait = false)
 	}
 }

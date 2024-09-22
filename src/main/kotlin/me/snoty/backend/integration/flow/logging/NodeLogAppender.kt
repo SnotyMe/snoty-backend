@@ -10,6 +10,7 @@ import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.datetime.Instant
 import me.snoty.backend.integration.config.flow.toNodeId
 import me.snoty.backend.logging.toSLF4JLevel
+import me.snoty.backend.observability.FLOW_ID
 import me.snoty.backend.observability.JOB_ID
 import me.snoty.integration.common.wiring.flow.NodeLogEntry
 
@@ -43,9 +44,9 @@ class NodeLogAppender(
 			)
 
 			val jobId = eventObject.mdcPropertyMap[JOB_ID.key]
-				?: return@launch logger.warn { "No job ID found in log entry" }
-			val flowId = eventObject.mdcPropertyMap["flow.id"]?.toNodeId()
-				?: return@launch logger.warn { "No flow ID found in log entry" }
+				?: return@launch logger.warn { "No job ID found in log entry with msg='$message'" }
+			val flowId = eventObject.mdcPropertyMap[FLOW_ID.key]?.toNodeId()
+				?: return@launch logger.warn { "No flow ID found in log entry with msg='$message'" }
 
 			flowLogService.record(jobId, flowId, entry)
 		}

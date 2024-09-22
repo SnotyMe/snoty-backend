@@ -4,7 +4,9 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.slf4j.MDCContext
 import me.snoty.backend.integration.flow.logging.FlowLogService
 import me.snoty.backend.integration.flow.logging.NodeLogAppender
+import me.snoty.backend.observability.FLOW_ID
 import me.snoty.backend.observability.JOB_ID
+import me.snoty.backend.observability.USER_ID
 import me.snoty.backend.scheduling.JobRequestHandler
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
 import me.snoty.integration.common.wiring.flow.FlowRunner
@@ -34,12 +36,15 @@ class JobRunrFlowJobHandler(
 		val logger = JobRunrDashboardLogger(this.rootLogger)
 
 		MDC.put(JOB_ID.key, jobContext.jobId.toString())
+		MDC.put(FLOW_ID.key, jobRequest.flowId.toString())
 
 		runBlocking(MDCContext()) {
 			val flow = flowService.getWithNodes(jobRequest.flowId) ?: let {
 				logger.error("Flow not found: {}", jobRequest.flowId)
 				return@runBlocking
 			}
+
+			MDC.put(USER_ID.key, flow.userId.toString())
 
 			logger.debug("Processing flow {}", flow)
 

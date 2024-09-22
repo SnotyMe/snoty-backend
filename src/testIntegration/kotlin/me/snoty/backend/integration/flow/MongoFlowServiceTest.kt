@@ -1,10 +1,12 @@
 package me.snoty.backend.integration.flow
 
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import me.snoty.backend.integration.config.MongoNodeService
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.node.NodeRegistryImpl
+import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.test.MongoTest
 import me.snoty.backend.test.assertAny
 import me.snoty.integration.common.wiring.FlowNode
@@ -24,7 +26,8 @@ class MongoFlowServiceTest {
 	private val mongoDB = MongoTest.getMongoDatabase {}
 	private val nodeRegistry = NodeRegistryImpl()
 	private val nodeService: MongoNodeService = MongoNodeService(mongoDB, nodeRegistry, mockk(relaxed = true))
-	private val service = MongoFlowService(mongoDB, mockk(relaxed = true))
+	private val flowScheduler: FlowScheduler = mockk(relaxed = true)
+	private val service = MongoFlowService(mongoDB, flowScheduler, mockk(relaxed = true))
 
 	data class FlowTestContext(
 		val flowId: NodeId = NodeId(),
@@ -39,6 +42,17 @@ class MongoFlowServiceTest {
 		assertAny(this) {
 			it._id == node._id
 		}
+
+	@Test
+	fun testCreateFlow() = test {
+		val result = service.getWithNodes(flowId)
+		assertNotNull(result)
+		assertEquals(0, result.nodes.size)
+
+		verify(exactly = 1) {
+			flowScheduler.schedule(match { it._id == result._id })
+		}
+	}
 
 	@Test
 	fun testEmptyFlow() = test {

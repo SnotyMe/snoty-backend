@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.map
 import me.snoty.backend.database.mongo.aggregate
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.utils.MongoSettingsService
+import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.integration.common.wiring.flow.*
 import me.snoty.integration.common.wiring.graph.MongoNode
 import me.snoty.integration.common.wiring.graph.toRelational
@@ -21,6 +22,7 @@ import java.util.*
 @Single
 class MongoFlowService(
 	db: MongoDatabase,
+	private val flowScheduler: FlowScheduler,
 	private val settingsLookup: MongoSettingsService,
 ) : FlowService {
 	private val collection = db.getCollection<MongoWorkflow>(FLOW_COLLECTION_NAME)
@@ -28,16 +30,17 @@ class MongoFlowService(
 	override suspend fun create(userId: UUID, name: String): StandaloneWorkflow {
 		val workflow = MongoWorkflow(name = name, userId = userId)
 		collection.insertOne(workflow)
+		flowScheduler.schedule(workflow)
 		return workflow.toStandalone()
 	}
 
-	override fun query(userId: UUID): Flow<StandaloneWorkflow> = collection.aggregate<MongoWorkflow>(
+	override fun query(userId: UUID): Flow<StandaloneWorkflow> = collection.find(
 		match(Filters.eq(MongoWorkflow::userId.name, userId))
 	).map {
 		it.toStandalone()
 	}
 
-	override fun getAll(): Flow<StandaloneWorkflow> = collection.aggregate<MongoWorkflow>().map {
+	override fun getAll(): Flow<StandaloneWorkflow> = collection.find().map {
 		it.toStandalone()
 	}
 

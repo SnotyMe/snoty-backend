@@ -96,6 +96,7 @@ dependencies { with(libs) {
     moduleImplementation(projects.api)
 
     implementation(koin.slf4j)
+    implementation(libraries.coroutines.core)
 
     // configuration
     implementation(configuration.hoplite.core)
