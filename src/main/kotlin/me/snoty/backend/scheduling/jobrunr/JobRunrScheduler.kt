@@ -1,4 +1,4 @@
-package me.snoty.backend.scheduling.impl.jobrunr
+package me.snoty.backend.scheduling.jobrunr
 
 import me.snoty.backend.scheduling.Scheduler
 import me.snoty.backend.scheduling.SnotyJob

@@ -1,10 +1,10 @@
-package me.snoty.backend.scheduling.impl.jobrunr.node
+package me.snoty.backend.scheduling.jobrunr.node
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filterNot
 import me.snoty.backend.scheduling.FlowScheduler
-import me.snoty.backend.scheduling.impl.jobrunr.JobRunrScheduler
+import me.snoty.backend.scheduling.jobrunr.JobRunrScheduler
 import me.snoty.integration.common.utils.createFlowJob
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.flow.Workflow

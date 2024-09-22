@@ -1,4 +1,4 @@
-package me.snoty.backend.scheduling.impl.jobrunr
+package me.snoty.backend.scheduling.jobrunr
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
@@ -41,8 +41,10 @@ class JobRunrConfigurer(
 
 @Single
 fun storageProvider(mongoClient: MongoClient): StorageProvider = MongoDBStorageProvider(
-	mongoClient,
-	MONGO_DB_NAME,
-	"jobrunr:",
-	StorageProviderUtils.DatabaseOptions.CREATE
+	/* mongoClient = */ mongoClient,
+	/* dbName = */ MONGO_DB_NAME,
+	/* collectionPrefix = */ JOBRUNR_COLLECTION_PREFIX,
+	/* databaseOptions = */ StorageProviderUtils.DatabaseOptions.CREATE
 )
+
+const val JOBRUNR_COLLECTION_PREFIX = "jobrunr:"

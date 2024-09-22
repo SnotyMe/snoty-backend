@@ -1,4 +1,4 @@
-package me.snoty.backend.scheduling.impl.jobrunr.node
+package me.snoty.backend.scheduling.jobrunr.node
 
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.slf4j.MDCContext

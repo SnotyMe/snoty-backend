@@ -10,3 +10,6 @@ interface ConfigLoader {
 
 @Single
 fun provideConfig(configLoader: ConfigLoader) = configLoader.loadConfig()
+
+@Single
+fun provideEnvironment(config: Config) = config.environment
