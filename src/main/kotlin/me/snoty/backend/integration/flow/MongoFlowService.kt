@@ -35,7 +35,7 @@ class MongoFlowService(
 	}
 
 	override fun query(userId: UUID): Flow<StandaloneWorkflow> = collection.find(
-		match(Filters.eq(MongoWorkflow::userId.name, userId))
+		Filters.eq(MongoWorkflow::userId.name, userId)
 	).map {
 		it.toStandalone()
 	}
