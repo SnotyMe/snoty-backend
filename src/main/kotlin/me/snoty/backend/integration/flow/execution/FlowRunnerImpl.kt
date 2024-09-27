@@ -12,14 +12,11 @@ import me.snoty.backend.integration.flow.FlowExecutionException
 import me.snoty.backend.integration.flow.logging.FlowLogService
 import me.snoty.backend.observability.setException
 import me.snoty.backend.observability.subspan
-import me.snoty.backend.utils.flowWith
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.FlowNode
-import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.NodeHandleContextImpl
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
-import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
 import me.snoty.integration.common.wiring.flow.FlowRunner
 import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
@@ -52,6 +49,7 @@ class FlowRunnerImpl(
 		val executionContext = FlowExecutionContext(
 			nodeMap = flow.nodes.associateBy { it._id },
 			logger = kLogger as Slf4jLogger<Logger>,
+			flowTracing = flowTracing,
 		)
 
 		flow.nodes
@@ -77,7 +75,7 @@ class FlowRunnerImpl(
 		node: FlowNode,
 		input: Collection<IntermediateData>
 	) = with(flowTracing) {
-		val subspan = rootSpan.subspan(traceName(node)) {
+		val subspan = rootSpan.subspan(flowTracing, traceName(node)) {
 			setNodeAttributes(node, input)
 		}
 
@@ -98,7 +96,6 @@ class FlowRunnerImpl(
 	 * Executes the flow for the given node with the given input.
 	 * Will end the span when the flow completes.
 	 */
-	context(FlowTracing)
 	private fun FlowExecutionContext.executeImpl(
 		span: Span,
 		node: FlowNode,
@@ -116,10 +113,14 @@ class FlowRunnerImpl(
 			logger.error { "Cycle detected at node ${node.descriptor}" }
 			return emptyFlow()
 		}
-
-		return flowWith<NodeHandleContext, NodeOutput>(NodeHandleContextImpl(intermediateDataMapperRegistry = intermediateDataMapperRegistry)) {
+		val context = NodeHandleContextImpl(
+			intermediateDataMapperRegistry = intermediateDataMapperRegistry,
+			logger = logger.underlyingLogger,
+		)
+		return flow {
 			logger.debug { "Processing ${node.descriptor.id} node \"${node.settings.name}\" (${node._id}) with $input" }
-			val data = handler.process(logger.underlyingLogger, node, input)
+			// pls fix Kotlin
+			val data = with(context) { with (handler) { process(node, input) } }
 			logger.debug { "Processed ${node.descriptor.id} node \"${node.settings.name}\" (${node._id})" }
 
 			emit(data)
@@ -136,7 +137,7 @@ class FlowRunnerImpl(
 						}
 					}
 					.flatMapConcat { nextNode ->
-						val subspan = span.subspan(traceName(nextNode)) {
+						val subspan = span.subspan(flowTracing, traceName(nextNode)) {
 							setNodeAttributes(nextNode, output)
 						}
 						executeImpl(subspan, nextNode, output, visited + node._id, depth + 1)

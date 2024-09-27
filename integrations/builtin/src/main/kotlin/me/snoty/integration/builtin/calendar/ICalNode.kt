@@ -16,7 +16,6 @@ import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.node.*
 import net.fortuna.ical4j.data.CalendarOutputter
 import org.koin.core.annotation.Single
-import org.slf4j.Logger
 import java.nio.charset.StandardCharsets
 
 @Serializable
@@ -61,8 +60,7 @@ class ICalNodeHandler(
 		}
 	}
 
-	context(NodeHandleContext)
-	override suspend fun process(logger: Logger, node: Node, input: Collection<IntermediateData>) = input.each<CalendarEvent> { data ->
+	override suspend fun NodeHandleContext.process(node: Node, input: Collection<IntermediateData>) = each<CalendarEvent>(input) { data ->
 		if (data.date == null && (data.startDate == null || data.endDate == null)) {
 			logger.error("Event has no date or start/end date")
 			return@each

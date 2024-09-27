@@ -19,13 +19,19 @@ import me.snoty.integration.common.wiring.node.setAttribute
 import org.koin.core.annotation.Single
 import org.slf4j.MDC
 
+interface FlowTracing : Tracer {
+	fun createRootSpan(jobId: String, flow: Workflow): Span
+	fun SpanBuilder.setNodeAttributes(node: Node, input: Collection<IntermediateData>?): SpanBuilder
+	fun traceName(node: GenericNode): String
+}
+
 @Single
-class FlowTracing(
+class FlowTracingImpl(
 	private val json: Json,
 	private val featureFlags: FlowFeatureFlags,
 	openTelemetry: OpenTelemetry,
-) : Tracer by openTelemetry.getTracer(FlowRunner::class) {
-	fun createRootSpan(jobId: String, flow: Workflow): Span {
+) : FlowTracing, Tracer by openTelemetry.getTracer(FlowRunner::class) {
+	override fun createRootSpan(jobId: String, flow: Workflow): Span {
 		val flowId = flow._id.toString()
 
 		val rootSpan = spanBuilder("Flow $flowId")
@@ -36,7 +42,7 @@ class FlowTracing(
 		return rootSpan
 	}
 
-	fun SpanBuilder.setNodeAttributes(node: Node, input: Collection<IntermediateData>?) = apply {
+	override fun SpanBuilder.setNodeAttributes(node: Node, input: Collection<IntermediateData>?) = apply {
 		setAttribute("node.id", node._id.toString())
 		MDC.put("node.id", node._id.toString())
 		setAttribute("node.descriptor", node.descriptor)
@@ -51,6 +57,6 @@ class FlowTracing(
 		}
 	}
 
-	fun traceName(node: GenericNode) =
+	override fun traceName(node: GenericNode) =
 		"Node ${node.descriptor.id} (${node._id})"
 }

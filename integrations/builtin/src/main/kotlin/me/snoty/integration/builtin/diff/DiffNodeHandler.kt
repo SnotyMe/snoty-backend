@@ -21,7 +21,7 @@ abstract class DiffNodeHandler(private val entityStateService: EntityStateServic
 		val logger = KotlinLogging.logger(slf4jLogger)
 
 		val newData = input
-			.map { it.get<Document>() }
+			.map { get<Document>(it) }
 			// clone the document to avoid modifying the original
 			.map { Document(it) }
 			.mapNotNull { document ->

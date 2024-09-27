@@ -15,7 +15,6 @@ import me.snoty.integration.common.wiring.node.Subsystem
 import me.snoty.integration.common.wiring.structOutput
 import org.bson.Document
 import org.koin.core.annotation.Single
-import org.slf4j.Logger
 
 @Serializable
 data class MapperSettings(
@@ -38,12 +37,10 @@ data class MapperSettings(
 )
 @Single
 class MapperNodeHandler : NodeHandler {
-	context(NodeHandleContext)
-	override suspend fun process(
-		logger: Logger,
+	override suspend fun NodeHandleContext.process(
 		node: Node,
 		input: Collection<IntermediateData>,
-	) = mapInputWithSettings<Document, MapperSettings>(node, input) { data, settings ->
+	) = mapInputWithSettings<Document, MapperSettings>(input, node) { data, settings ->
 		val mappedData = settings.engine.template(logger, settings, data)
 
 		structOutput(mappedData)

@@ -4,13 +4,15 @@ import io.ktor.client.*
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.NodeMetadata
-import me.snoty.integration.common.wiring.*
+import me.snoty.integration.common.wiring.Node
+import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
+import me.snoty.integration.common.wiring.getConfig
+import me.snoty.integration.common.wiring.iterableStructOutput
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.moodle.model.MoodleAssignment
 import me.snoty.integration.moodle.request.getCalendarUpcoming
 import org.koin.core.annotation.Single
-import org.slf4j.Logger
 import org.slf4j.event.Level
 
 @RegisterNode(
@@ -26,9 +28,7 @@ class MoodleIntegration(
 	private val httpClient: HttpClient,
 	private val moodleAPI: MoodleAPI = MoodleAPIImpl(httpClient)
 ) : NodeHandler {
-	context(NodeHandleContext)
-	override suspend fun process(
-		logger: Logger,
+	override suspend fun NodeHandleContext.process(
 		node: Node,
 		input: Collection<IntermediateData>,
 	) = input.flatMap { _ ->

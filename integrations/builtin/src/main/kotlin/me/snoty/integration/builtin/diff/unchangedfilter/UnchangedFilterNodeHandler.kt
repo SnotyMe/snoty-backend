@@ -7,13 +7,15 @@ import me.snoty.integration.common.diff.DiffResult
 import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.EmptySchema
-import me.snoty.integration.common.wiring.*
+import me.snoty.integration.common.wiring.Node
+import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
+import me.snoty.integration.common.wiring.getConfig
+import me.snoty.integration.common.wiring.iterableStructOutput
 import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.integration.common.wiring.node.Subsystem
 import org.koin.core.annotation.Single
-import org.slf4j.Logger
 
 @Serializable
 data class UnchangedFilterSettings(
@@ -34,9 +36,7 @@ data class UnchangedFilterSettings(
 class UnchangedFilterNodeHandler(
 	entityStateService: EntityStateService,
 ) : DiffNodeHandler(entityStateService) {
-	context(NodeHandleContext)
-	override suspend fun process(
-		logger: Logger,
+	override suspend fun NodeHandleContext.process(
 		node: Node,
 		input: Collection<IntermediateData>,
 	): NodeOutput {

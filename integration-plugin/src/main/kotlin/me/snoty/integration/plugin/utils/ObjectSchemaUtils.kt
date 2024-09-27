@@ -42,9 +42,9 @@ fun generateObjectSchema(resolver: Resolver, clazz: KSClassDeclaration): ObjectS
 fun Resolver.getDetails(prop: KSPropertyDeclaration): NodeFieldDetails? {
 	val type = prop.type.resolve()
 	return when {
-		Enum::class.isAssignableFrom(type) ->
+		Enum::class.isAssignableFrom(type, this) ->
 			getEnumDetails(prop)
-		String::class.isAssignableFrom(type) ->
+		String::class.isAssignableFrom(type, this) ->
 			NodeFieldDetails.PlaintextDetails(
 				lines = prop.getAnnotation<Multiline>()?.values ?: Multiline.DEFAULT_LINES,
 			)
@@ -52,15 +52,16 @@ fun Resolver.getDetails(prop: KSPropertyDeclaration): NodeFieldDetails? {
 	}
 }
 
-context(Resolver)
 @OptIn(KspExperimental::class)
-private fun KClass<*>.isAssignableFrom(type: KSType): Boolean {
-	return getKotlinClassByName(qualifiedName!!)!!.asStarProjectedType().isAssignableFrom(type.makeNotNullable())
+private fun KClass<*>.isAssignableFrom(type: KSType, resolver: Resolver): Boolean {
+	return resolver
+		.getKotlinClassByName(qualifiedName!!)!!
+		.asStarProjectedType()
+		.isAssignableFrom(type.makeNotNullable())
 }
 
-context(Resolver)
 @OptIn(KspExperimental::class)
-private fun getEnumDetails(prop: KSPropertyDeclaration): NodeFieldDetails.EnumDetails {
+private fun Resolver.getEnumDetails(prop: KSPropertyDeclaration): NodeFieldDetails.EnumDetails {
 	val test = getKotlinClassByName(prop.type.resolve().toClassName().canonicalName)!!
 	val elements = test.declarations
 		.filterIsInstance<KSClassDeclaration>()

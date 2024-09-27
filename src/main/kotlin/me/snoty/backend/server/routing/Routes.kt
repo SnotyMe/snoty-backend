@@ -8,6 +8,6 @@ fun Application.addResources(resources: List<Resource>) = routing {
 	val logger = KotlinLogging.logger {}
 	resources.forEach {
 		logger.debug { "Adding resource $it" }
-		it.register()
+		with (it) { register() }
 	}
 }

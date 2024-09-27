@@ -8,4 +8,5 @@ import org.slf4j.Logger
 data class FlowExecutionContext(
 	val nodeMap: Map<NodeId, FlowNode>,
 	val logger: Slf4jLogger<Logger>,
-)
+	val flowTracing: FlowTracing,
+) : FlowTracing by flowTracing

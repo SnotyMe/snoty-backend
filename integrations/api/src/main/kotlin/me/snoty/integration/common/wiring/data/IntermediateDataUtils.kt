@@ -6,41 +6,45 @@ import me.snoty.integration.common.wiring.get
 import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.node.NodeSettings
 
-context(NodeHandleContext)
-inline fun <reified T : Any> Collection<IntermediateData>.each(block: (T) -> Unit): NodeOutput =
-	forEach {
-		block(it.get())
-	}.let { emptyList() }
+inline fun <reified T : Any> NodeHandleContext.each(input: Collection<IntermediateData>, block: (T) -> Unit): NodeOutput = input
+	.forEach {
+		block(get(it))
+	}
+	.let { emptyList() }
 
-context(NodeHandleContext)
-inline fun <reified T : Any, reified Settings : NodeSettings> Collection<IntermediateData>.eachWithSettings(node: Node, block: (T, Settings) -> Unit): NodeOutput {
+inline fun <reified T : Any, reified Settings : NodeSettings> NodeHandleContext.eachWithSettings(
+	input: Collection<IntermediateData>,
+	node: Node,
+	block: (T, Settings) -> Unit
+): NodeOutput {
 	val settings = node.getConfig<Settings>()
 
-	for (element in this) {
-		val data = element.get<T>()
+	for (element in input) {
+		val data = get<T>(element)
 		block(data, settings)
 	}
 
 	return emptyList()
 }
 
-context(NodeHandleContext)
-inline fun <reified T : Any> Collection<IntermediateData>.mapInput(block: (T) -> NodeOutput): NodeOutput =
-	this.flatMap {
-		block(it.get<T>())
+inline fun <reified T : Any> NodeHandleContext.mapInput(input: Collection<IntermediateData>, block: (T) -> NodeOutput): NodeOutput =
+	input.flatMap {
+		block(get<T>(it))
 	}
 
-context(NodeHandleContext)
-inline fun <reified T : Any, reified Settings : NodeSettings> mapInputWithSettings(node: Node, input: Collection<IntermediateData>, block: (T, Settings) -> NodeOutput): NodeOutput {
+inline fun <reified T : Any, reified Settings : NodeSettings> NodeHandleContext.mapInputWithSettings(
+	input: Collection<IntermediateData>,
+	node: Node,
+	block: (T, Settings) -> NodeOutput
+): NodeOutput {
 	val settings = node.getConfig<Settings>()
 
 	return input.flatMap {
-		val data = it.get<T>()
+		val data = get<T>(it)
 		block(data, settings)
 	}
 }
 
-context(NodeHandleContext)
 inline fun <reified Settings : NodeSettings> Collection<IntermediateData>.mapWithSettings(node: Node, block: (Settings) -> NodeOutput): NodeOutput {
 	val settings = node.getConfig<Settings>()
 

@@ -5,42 +5,39 @@ import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
 import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
+import org.slf4j.Logger
 import kotlin.reflect.KClass
 
 interface NodeHandleContext {
 	val intermediateDataMapperRegistry: IntermediateDataMapperRegistry
+	val logger: Logger
 }
 
 data class NodeHandleContextImpl(
 	override val intermediateDataMapperRegistry: IntermediateDataMapperRegistry,
+	override val logger: Logger,
 ) : NodeHandleContext
 
-context(NodeHandleContext)
-fun <T : Any> iterableStructOutput(
+fun <T : Any> NodeHandleContext.iterableStructOutput(
 	items: Iterable<T>
 ): Collection<IntermediateData> = items
 	// serialize arbitrary object into BsonIntermediateData
 	.map { serializeBson(it) }
 
-context(NodeHandleContext)
-fun <T : Any> structOutput(vararg data: T) = data.map { serializeBson(it) }
+fun <T : Any> NodeHandleContext.structOutput(vararg data: T) = data.map { serializeBson(it) }
 
-context(NodeHandleContext)
-private fun serializeBson(data: Any) = serialize(BsonIntermediateData::class, data)
+private fun NodeHandleContext.serializeBson(data: Any) = serialize(BsonIntermediateData::class, data)
 
 
-context(NodeHandleContext)
-fun <T : Any> simpleOutput(vararg items: T): NodeOutput = items
+fun <T : Any> NodeHandleContext.simpleOutput(vararg items: T): NodeOutput = items
 	.map { serialize(SimpleIntermediateData::class, it) }
 
 
-context(NodeHandleContext)
-private fun <IM : IntermediateData, T : Any> serialize(clazz: KClass<IM>, data: T): IM {
+private fun <IM : IntermediateData, T : Any> NodeHandleContext.serialize(clazz: KClass<IM>, data: T): IM {
 	val mapper = intermediateDataMapperRegistry[clazz]
 	return mapper.serialize(data)
 }
 
-context(NodeHandleContext)
-inline fun <reified T : Any> IntermediateData.get()
-	= intermediateDataMapperRegistry[this@get::class]
-		.deserializeUnsafe(this@get, T::class)
+inline fun <reified T : Any> NodeHandleContext.get(intermediateData: IntermediateData)
+	= intermediateDataMapperRegistry[intermediateData::class]
+		.deserializeUnsafe(intermediateData, T::class)

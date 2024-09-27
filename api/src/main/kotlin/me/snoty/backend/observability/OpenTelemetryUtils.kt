@@ -18,9 +18,8 @@ fun OpenTelemetry.getTracer(clazz: KClass<*>): Tracer
 fun TracerProvider.getTracer(clazz: KClass<*>): Tracer
 	= get(clazz.java.`package`.specificationTitle)
 
-context(Tracer)
-fun Span.subspan(name: String, builder: SpanBuilder.() -> Unit): Span
-	= this@Tracer.spanBuilder(name)
+fun Span.subspan(tracer: Tracer, name: String, builder: SpanBuilder.() -> Unit): Span
+	= tracer.spanBuilder(name)
 		.also(builder)
 		.apply {
 			setParent(Context.current().with(this@subspan))

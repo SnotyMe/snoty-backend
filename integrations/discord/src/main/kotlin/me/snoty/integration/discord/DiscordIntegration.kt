@@ -16,7 +16,6 @@ import me.snoty.integration.common.wiring.data.eachWithSettings
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.koin.core.annotation.Single
-import org.slf4j.Logger
 
 @Serializable
 data class DiscordSettings(
@@ -40,12 +39,10 @@ data class DiscordSettings(
 class DiscordNodeHandler(
 	private val client: HttpClient,
 ) : NodeHandler {
-	context(NodeHandleContext)
-	override suspend fun process(
-		logger: Logger,
+	override suspend fun NodeHandleContext.process(
 		node: Node,
 		input: Collection<IntermediateData>,
-	) = input.eachWithSettings<DiscordWebhook.Message, DiscordSettings>(node) { data, config ->
+	) = eachWithSettings<DiscordWebhook.Message, DiscordSettings>(input, node) { data, config ->
 		if (data.content.isNullOrEmpty() && data.embeds.isEmpty()) {
 			if (config.emptyIsError) {
 				throw IllegalStateException("Discord message content and fields are empty")

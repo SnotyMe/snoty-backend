@@ -7,12 +7,10 @@ import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeInput
 import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
 import me.snoty.integration.common.wiring.node.*
 import me.snoty.integration.common.wiring.simpleOutput
-import org.slf4j.Logger
 import java.util.*
 
 fun relationalFlow(
@@ -34,8 +32,7 @@ object EmitHandler : NodeHandler {
 		NodePosition.START,
 	)
 
-	context(NodeHandleContext)
-	override suspend fun process(logger: Logger, node: Node, input: NodeInput)
+	override suspend fun NodeHandleContext.process(node: Node, input: NodeInput)
 		= simpleOutput("test")
 }
 fun NodeRegistry.registerEmitHandler() {

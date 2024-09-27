@@ -12,7 +12,7 @@ import kotlinx.serialization.modules.plus
 import kotlinx.serialization.modules.polymorphic
 import me.snoty.backend.integration.flow.execution.FlowFeatureFlags
 import me.snoty.backend.integration.flow.execution.FlowRunnerImpl
-import me.snoty.backend.integration.flow.execution.FlowTracing
+import me.snoty.backend.integration.flow.execution.FlowTracingImpl
 import me.snoty.backend.integration.flow.logging.NodeLogAppender
 import me.snoty.backend.integration.flow.node.NodeRegistryImpl
 import me.snoty.backend.observability.JOB_ID
@@ -58,7 +58,7 @@ class FlowRunnerImplTest {
 	private val clientAndProvider = testFeatureFlags()
 	private val featureFlags = FlowFeatureFlags(clientAndProvider.client)
 	private val flagsProvider = clientAndProvider.provider
-	private val tracing = FlowTracing(json = json, openTelemetry = otel.openTelemetry, featureFlags = featureFlags)
+	private val tracing = FlowTracingImpl(json = json, openTelemetry = otel.openTelemetry, featureFlags = featureFlags)
 	private val runner = FlowRunnerImpl(nodeRegistry, featureFlags, IntermediateDataMapperRegistry, tracing, TestFlowLogService())
 	private val testLogService = TestFlowLogService()
 	private val logger = (LoggerFactory.getLogger(FlowRunnerImplTest::class.java) as Logger).apply {
