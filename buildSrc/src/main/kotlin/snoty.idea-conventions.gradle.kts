@@ -12,7 +12,6 @@ afterEvaluate {
 			// long import times but worth it as, without it, functions may not have proper documentation
 			isDownloadJavadoc = true
 			isDownloadSources = true
-			excludeDirs.add(file("infra"))
 		}
 
 		project {

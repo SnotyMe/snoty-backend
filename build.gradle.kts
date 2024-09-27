@@ -68,7 +68,6 @@ testing {
                 implementation(tests.mockk)
                 implementation(tests.assertj.core)
                 implementation(tests.json)
-                implementation(tests.h2)
                 implementation(tests.testcontainers)
                 implementation(tests.testcontainers.junit)
                 implementation(tests.testcontainers.keycloak)

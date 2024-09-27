@@ -3,7 +3,9 @@ plugins {
 }
 
 dependencies {
-	implementation(kotlin("gradle-plugin"))
+	libs.plugins.kotlin.jvm.get().apply {
+		implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$version")
+	}
 	libs.plugins.kotlin.kover.get().apply {
 		implementation("org.jetbrains.kotlinx:kover-gradle-plugin:$version")
 	}
