@@ -1,6 +1,5 @@
 package me.snoty.integration.common.wiring.node.template
 
-import me.snoty.backend.config.Environment
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -16,18 +15,18 @@ object NodeTemplateUtils {
 	fun nodeTemplatesModule(descriptor: NodeDescriptor) = module {
 		provideNodeTemplates(descriptor)
 			?.forEach { templateFile ->
-				val initialContent = NodeTemplate(
+				val cached = NodeTemplate(
 					node = descriptor,
 					name = templateFile.nameWithoutExtension,
 					template = templateFile.readText(),
 				)
 
 				factory<NodeTemplate>(named(templateFile.name)) {
-					val environment: Environment = get()
-					if (environment.isDev()) {
-						initialContent.copy(template = templateFile.readText())
+					val nodeMetadataFeatureFlags: NodeMetadataFeatureFlags = get()
+					if (nodeMetadataFeatureFlags.cacheNodeTemplates) {
+						cached
 					} else {
-						initialContent
+						cached.copy(template = templateFile.readText())
 					}
 				}
 			}
