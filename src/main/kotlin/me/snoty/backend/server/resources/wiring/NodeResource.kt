@@ -36,16 +36,6 @@ fun Routing.nodeResource(json: Json) {
 		return json.decodeFromJsonElement(serializer, settingsJson)
 	}
 
-	get("list") {
-		@Serializable
-		data class NodeDescription(val descriptor: NodeDescriptor, val metadata: NodeMetadata)
-
-		val nodeDescriptions = nodeRegistry.getMetadata().map { (descriptor, metadata) ->
-			NodeDescription(descriptor, metadata)
-		}
-
-		call.respond(nodeDescriptions)
-	}
 	post("create") {
 		val user = call.getUser()
 

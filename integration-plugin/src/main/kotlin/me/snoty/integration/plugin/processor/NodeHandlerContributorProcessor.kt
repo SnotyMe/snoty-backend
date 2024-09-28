@@ -14,7 +14,9 @@ import com.squareup.kotlinpoet.metadata.specs.toTypeSpec
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.node.NodeHandlerContributor
+import me.snoty.integration.common.wiring.node.template.NodeTemplateUtils
 import me.snoty.integration.plugin.utils.getAnnotation
+import me.snoty.integration.plugin.utils.getMemberName
 import me.snoty.integration.plugin.utils.override
 import org.koin.core.annotation.Single
 
@@ -142,6 +144,10 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 				.add("listOf(\n")
 				.add("%M,\n", MemberName("org.koin.ksp.generated", "defaultModule"))
 				.addModule(getGeneratedModule(clazz))
+				.add(
+					"%M(${NodeMetadataProcessor.NODE_METADATA}.${NodeMetadata::descriptor.name}),\n",
+					NodeTemplateUtils::nodeTemplatesModule.getMemberName<NodeTemplateUtils>(),
+				)
 				.add(")")
 				.build()
 		)
