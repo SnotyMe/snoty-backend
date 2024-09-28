@@ -7,6 +7,7 @@ import me.snoty.backend.utils.ForbiddenException
 import me.snoty.backend.utils.respondStatus
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
+import me.snoty.integration.common.model.metadata.FieldCensored
 import me.snoty.integration.common.model.metadata.FieldDescription
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
@@ -22,6 +23,7 @@ import java.nio.charset.StandardCharsets
 data class ICalSettings(
 	override val name: String = "Calendar",
 	@FieldDescription("A secret that has to be provided to access the calendar")
+	@FieldCensored
 	val secret: String? = null,
 ) : NodeSettings
 

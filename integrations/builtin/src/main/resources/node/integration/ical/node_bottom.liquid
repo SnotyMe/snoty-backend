@@ -1,0 +1,9 @@
+{% assign url = config.apiHost | append: "/wiring/node/" | append: node._id | append: "/calendar.ics" %}
+{% if settings.secret != blank %}
+    {% assign url = url | append: "?secret=" | append: settings.secret %}
+{% endif %}
+
+Use
+<a class="anchor" href="{{ url }}">this URL</a>
+<small style="cursor: pointer" onclick="templateAPI.copyToClipboard('{{ url }}')">(copy)</small>
+to subscribe to this calendar.
