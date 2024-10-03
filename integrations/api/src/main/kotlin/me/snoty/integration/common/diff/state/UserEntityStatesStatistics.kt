@@ -7,8 +7,12 @@ import com.mongodb.kotlin.client.coroutine.AggregateFlow
 import me.snoty.backend.database.mongo.Aggregations
 import me.snoty.backend.database.mongo.aggregate
 import me.snoty.backend.database.mongo.mongoField
+import org.bson.types.ObjectId
 
-data class UserEntityStateStats(val totalEntities: Long)
+/**
+ * @param _id will always be null, just there to make the logger stfu
+ */
+data class UserEntityStateStats(private val _id: ObjectId, val totalEntities: Long)
 
 fun EntityStateCollection.getStatistics(): AggregateFlow<UserEntityStateStats> = aggregate<UserEntityStateStats>(
 	Aggregates.project(

@@ -8,6 +8,7 @@ data class MoodleEvent(
 	val id: Long,
 	@SerialName("activityname")
 	val name: String,
+	val description: String,
 	@SerialName("timestart")
 	val timeStart: Long,
 	val overdue: Boolean,
