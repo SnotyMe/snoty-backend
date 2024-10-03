@@ -20,7 +20,7 @@ fun <T : Any> CodecRegistry.encode(value: T): Document {
 	val codec = get(value::class.java) as Codec<T>
 	codec.encode(writer, value, EncoderContext.builder().build())
 
-	val documentCodec = DocumentCodec()
+	val documentCodec = DocumentCodec(this)
 
 	return documentCodec.decode(BsonDocumentReader(document), DecoderContext.builder().build())
 }
@@ -31,7 +31,7 @@ fun <T : Any> CodecRegistry.encode(value: T): Document {
 inline fun <T : Any> CodecRegistry.decode(clazz: KClass<T>, document: Document): T {
 	return get(clazz.java)
 		.decode(
-			BsonDocumentReader(document.toBsonDocument()),
+			BsonDocumentReader(document.toBsonDocument(BsonDocument::class.java, this)),
 			DecoderContext.builder().build()
 		)
 }

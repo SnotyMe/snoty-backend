@@ -8,6 +8,7 @@ import me.snoty.integration.moodle.model.raw.MoodleEvent
 data class MoodleAssignment(
 	val id: Long,
 	val name: String,
+	val description: String,
 	val due: Instant,
 	val state: MoodleAssignmentState
 )
@@ -27,6 +28,7 @@ fun MoodleEvent.toMoodleAssignment(): MoodleAssignment {
 	return MoodleAssignment(
 		id = id,
 		name = name,
+		description = description,
 		due = Instant.fromEpochSeconds(timeStart),
 		state = when {
 			overdue -> MoodleAssignmentState.OVERDUE
