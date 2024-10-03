@@ -23,6 +23,7 @@ data class NodeMetadata(
 data class NodeField(
 	val name: String,
 	val type: String,
+	val defaultValue: String?,
 	val displayName: String,
 	val description: String?,
 	val hidden: Boolean,

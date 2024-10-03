@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.EmptySchema
+import me.snoty.integration.common.model.metadata.FieldDefaultValue
 import me.snoty.integration.common.model.metadata.FieldDescription
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
@@ -23,6 +24,7 @@ data class MapperSettings(
 	@FieldDescription("The fields to map - every key will be part of the output object")
 	val fields: Map<String, String>,
 	@FieldDescription("If true, the ID of the input object will be preserved in the output object")
+	@FieldDefaultValue("true")
 	val preserveId: Boolean = true
 ) : NodeSettings
 

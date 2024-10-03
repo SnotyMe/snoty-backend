@@ -25,11 +25,13 @@ fun generateObjectSchema(resolver: Resolver, clazz: KSClassDeclaration): ObjectS
 		val censored = prop.hasAnnotation<FieldCensored>()
 		val displayName = prop.getAnnotation<FieldName>()?.value ?: name.asString().toTitleCase()
 		val description = prop.getAnnotation<FieldDescription>()?.value
+		val defaultValue = prop.getAnnotation<FieldDefaultValue>()?.value
 
 		val details = resolver.getDetails(prop)
 		NodeField(
 			name = name.asString(),
 			type = details?.valueType ?: prop.type.toString(),
+			defaultValue = defaultValue,
 			displayName = displayName,
 			description = description,
 			hidden = hidden,
