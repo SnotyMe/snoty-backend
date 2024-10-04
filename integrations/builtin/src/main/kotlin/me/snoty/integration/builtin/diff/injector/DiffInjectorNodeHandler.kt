@@ -23,6 +23,12 @@ import org.koin.core.annotation.Single
 data class DiffInjectorSettings(
 	override val name: String = "Diff Injector",
 	val excludeFields: List<String>,
+	@FieldDefaultValue("true")
+	val emitCreated: Boolean = true,
+	@FieldDefaultValue("true")
+	val emitUpdated: Boolean = true,
+	@FieldDefaultValue("true")
+	val emitDeleted: Boolean = true,
 	@FieldDefaultValue("false")
 	val emitUnchanged: Boolean = false,
 ) : NodeSettings
@@ -46,15 +52,24 @@ class DiffInjectorNodeHandler(
 	): NodeOutput {
 		val settings = node.getConfig<DiffInjectorSettings>()
 
-		val (newData, newStates) = handleStatesAndDiff(logger, node, input, settings.excludeFields)
+		val (newData, allStates) = handleStatesAndDiff(logger, node, input, settings.excludeFields)
 		val items = newData
 			.filter { (id, _) ->
-				settings.emitUnchanged || newStates[id]?.diffResult != DiffResult.Unchanged
+				when (allStates[id]?.diffResult) {
+					is DiffResult.Created -> settings.emitCreated
+					is DiffResult.Updated -> settings.emitUpdated
+					is DiffResult.Deleted -> settings.emitDeleted
+					is DiffResult.Unchanged -> settings.emitUnchanged
+					else -> {
+						logger.error("DiffResult is null for entity $id")
+						false
+					}
+				}
 			}
 			.map { (id, ogDoc) ->
 				// clone to avoid referencing self
 				Document(ogDoc)
-					.append("diff", newStates[id]?.diffResult)
+					.append("diff", allStates[id]?.diffResult)
 			}
 
 		return iterableStructOutput(items)

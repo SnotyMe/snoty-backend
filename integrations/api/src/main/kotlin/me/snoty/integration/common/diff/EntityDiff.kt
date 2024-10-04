@@ -3,7 +3,11 @@ package me.snoty.integration.common.diff
 import me.snoty.integration.common.diff.state.EntityState
 import org.bson.Document
 
-fun Document.diff(lastState: EntityState?): DiffResult = when {
+fun Document?.diff(lastState: EntityState?): DiffResult = when {
+	this == null && lastState == null -> DiffResult.Unchanged
+	this == null && lastState != null -> DiffResult.Deleted(lastState.checksum, lastState.state)
+	// will never happen, as the first conditions catch all those cases
+	this == null -> error("Cannot diff a null document")
 	lastState == null -> DiffResult.Created(checksum(), this)
 	checksum() == lastState.checksum -> DiffResult.Unchanged
 	else -> diff(lastState.state)

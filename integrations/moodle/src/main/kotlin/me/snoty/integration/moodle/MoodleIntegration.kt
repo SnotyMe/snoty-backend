@@ -1,6 +1,7 @@
 package me.snoty.integration.moodle
 
 import io.ktor.client.*
+import me.snoty.backend.utils.filterIfNot
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.NodeMetadata
@@ -11,6 +12,7 @@ import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.iterableStructOutput
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.moodle.model.MoodleAssignment
+import me.snoty.integration.moodle.model.MoodleAssignmentState
 import me.snoty.integration.moodle.request.getCalendarUpcoming
 import org.koin.core.annotation.Single
 import org.slf4j.event.Level
@@ -41,6 +43,10 @@ class MoodleIntegration(
 			else Level.INFO
 		).log("Fetched ${assignments.size} assignments for ${moodleSettings.username}")
 
-		iterableStructOutput(assignments)
+		iterableStructOutput(
+			assignments
+				.filterIfNot(moodleSettings.emitClosedAssignments) { it.state != MoodleAssignmentState.CLOSED }
+				.filterIfNot(moodleSettings.emitDoneAssignments) { it.state != MoodleAssignmentState.DONE }
+		)
 	}
 }

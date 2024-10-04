@@ -54,6 +54,13 @@ class MongoNodePersistenceService<T : Any>(
 			entityClass.java
 		)
 	}
+
+	override suspend fun deleteEntity(node: Node, entityId: String) {
+		collection.updateOne(
+			Filters.eq(node._id),
+			Updates.unset("${NodeEntities<T>::entities.name}.$entityId")
+		)
+	}
 }
 
 @Factory

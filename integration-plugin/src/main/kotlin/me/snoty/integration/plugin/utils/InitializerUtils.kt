@@ -22,7 +22,7 @@ fun FileSpec.Builder.addDataClassInitializer(copyFrom: Any, level: Int = 1, repl
 			replacements.containsKey(param.name) -> addCode("%L", replacements[param.name])
 			value == null -> addCode("null")
 			isPrimitive -> when {
-				type == typeOf<String>() -> addCode("\"%L\"", value)
+				type == typeOf<String>() -> addCode("%S", value)
 				else -> addCode("%L", value)
 			}
 			value::class.isData -> {
