@@ -110,7 +110,9 @@ class FlowRunnerImpl(
 			}
 
 		if (node._id in visited) {
-			logger.error { "Cycle detected at node ${node.descriptor}" }
+			val referencingNodes = visited
+				.filter { nodeMap[it]?.next?.contains(node._id) == true }
+			logger.error { "Cycle detected at node ${node.descriptor} (${node._id}, referenced by $referencingNodes)" }
 			return emptyFlow()
 		}
 		val context = NodeHandleContextImpl(

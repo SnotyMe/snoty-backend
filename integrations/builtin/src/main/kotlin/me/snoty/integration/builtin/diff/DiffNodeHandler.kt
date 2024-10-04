@@ -35,13 +35,14 @@ abstract class DiffNodeHandler(private val entityStateService: EntityStateServic
 
 		val oldStates = entityStateService.getLastStates(node._id)
 			.toList()
+			.associateBy { it.id }
 		val newStates = newData
 			// remove excluded fields to not consider them in the diff
 			.onEach { (_, document) ->
 				excludedFields.forEach { field -> document.remove(field) }
 			}
 			.mapValues { (id, newState) ->
-				val oldState = oldStates.find { it.id == id }
+				val oldState = oldStates[id]
 				val diff = newState.diff(oldState)
 
 				logger.debug { "Entity $id was $diff" }
@@ -50,8 +51,18 @@ abstract class DiffNodeHandler(private val entityStateService: EntityStateServic
 			}
 
 		entityStateService.updateStates(node._id, newStates.values)
+		val allStates = newStates + oldStates
+			// we only care about deleted entities
+			.filterKeys { it !in newData }
+			.mapValues { (id, _) ->
+				val oldState = oldStates[id] ?: error("Old state not found for entity $id")
+				EntityStateService.EntityStateUpdate(oldState, null.diff(oldState))
+			}
+		val allData = newData + oldStates
+			.filterKeys { it !in newData }
+			.mapValues { it.value.state }
 
-		return Data(newData) to States(newStates)
+		return Data(allData) to States(allStates)
 	}
 
 	@JvmInline

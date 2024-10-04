@@ -86,6 +86,7 @@ class TodoistNodeHandler(
 							return@forEach
 						}
 					api.closeTask(taskId)
+					taskService.deleteEntity(node, data.id)
 					logger.info("Closed task: {}", data.content)
 				}
 				is DiffResult.Unchanged -> {}

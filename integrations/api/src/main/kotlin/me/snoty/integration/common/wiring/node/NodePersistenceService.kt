@@ -8,6 +8,8 @@ interface NodePersistenceService<T : Any> {
 	suspend fun persistEntity(node: Node, entityId: String, entity: T)
 
 	fun getEntities(node: Node): Flow<T>
+
+	suspend fun deleteEntity(node: Node, entityId: String)
 }
 
 interface NodePersistenceFactory {
