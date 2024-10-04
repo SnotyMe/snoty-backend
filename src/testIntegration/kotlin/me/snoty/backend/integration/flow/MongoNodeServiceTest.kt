@@ -26,7 +26,7 @@ class MongoNodeServiceTest {
 	private val nodeRegistry = NodeRegistryImpl().apply {
 		registerHandler(nodeMetadata(descriptor = descriptor, position = NodePosition.START), NoOpNodeHandler)
 	}
-	private val service = MongoNodeService(db, nodeRegistry) {
+	private val service = MongoNodeService(db, nodeRegistry) { _, _ ->
 		EmptyNodeSettings()
 	}
 

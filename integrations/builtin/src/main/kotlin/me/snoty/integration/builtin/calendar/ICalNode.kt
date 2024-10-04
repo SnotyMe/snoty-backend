@@ -44,7 +44,8 @@ class ICalNodeHandler(
 
 	init {
 		nodeRouteFactory("calendar.ics", HttpMethod.Get, verifyUser = false) { node ->
-			val secret = node.getConfig<ICalSettings>().secret
+			val settings = node.getConfig<ICalSettings>()
+			val secret = settings.secret
 			if (!secret.isNullOrEmpty() && secret != call.queryParameters["secret"]) {
 				call.respondStatus(ForbiddenException("Invalid calendar secret"))
 				return@nodeRouteFactory
@@ -52,7 +53,7 @@ class ICalNodeHandler(
 
 			val events = eventPersistenceService.getEntities(node)
 
-			val calendar = ICalBuilder.build(node.settings.name, events)
+			val calendar = ICalBuilder.build(settings.name, events)
 
 			val contentType = calendar.getContentType(StandardCharsets.UTF_8)
 			val outputter = CalendarOutputter()

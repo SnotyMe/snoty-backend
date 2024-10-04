@@ -11,6 +11,7 @@ import me.snoty.backend.database.mongo.encode
 import me.snoty.backend.errors.ServiceResult
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.utils.MongoSettingsService
+import me.snoty.backend.integration.utils.lookupOrInvalid
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.config.NodeServiceResults
 import me.snoty.integration.common.model.NodePosition
@@ -42,7 +43,7 @@ class MongoNodeService(
 		return collection
 			.find<MongoNode>(Filters.and(filters))
 			.map { node ->
-				val settings = settingsService.lookup(node)
+				val settings = settingsService.lookupOrInvalid(node)
 				node.toStandalone(settings)
 			}
 	}
@@ -52,7 +53,7 @@ class MongoNodeService(
 			Filters.eq(MongoNode::_id.name, id)
 		).firstOrNull() ?: return null
 
-		val settings = settingsService.lookup(mongoNode)
+		val settings = settingsService.lookupOrInvalid(mongoNode)
 		return mongoNode.toStandalone(settings)
 	}
 

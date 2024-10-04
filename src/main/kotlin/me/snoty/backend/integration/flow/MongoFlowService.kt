@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.map
 import me.snoty.backend.database.mongo.aggregate
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.utils.MongoSettingsService
+import me.snoty.backend.integration.utils.lookupOrInvalid
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.integration.common.wiring.flow.*
 import me.snoty.integration.common.wiring.graph.MongoNode
@@ -94,6 +95,9 @@ internal data class MongoWorkflowWithNodes(
 		_id = _id,
 		name = name,
 		userId = userId,
-		nodes = nodes.map { it.toRelational(settingsLookup.lookup(it)) },
+		nodes = nodes.map {
+			val settings = settingsLookup.lookupOrInvalid(it)
+			it.toRelational(settings)
+		},
 	)
 }

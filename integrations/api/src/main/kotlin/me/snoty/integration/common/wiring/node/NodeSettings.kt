@@ -19,6 +19,12 @@ data class EmptyNodeSettings(
 	override val name: String = "Empty"
 ) : NodeSettings
 
+@Serializable
+data class InvalidNodeSettings(
+	override val name: String,
+	private val _invalid: Boolean = true
+) : NodeSettings
+
 object EmptyNodeSettingsCodec : Codec<EmptyNodeSettings> {
 	override fun getEncoderClass(): Class<EmptyNodeSettings> = EmptyNodeSettings::class.java
 	override fun encode(writer: BsonWriter?, value: EmptyNodeSettings?, encoderContext: EncoderContext?) {}
