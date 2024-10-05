@@ -5,8 +5,8 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import me.snoty.backend.config.ApplicationConfigLoader
 import me.snoty.backend.config.Config
-import me.snoty.backend.config.ConfigLoader
 import org.koin.core.annotation.Single
 
 @Serializable
@@ -35,7 +35,7 @@ val DevBuildInfo = BuildInfo(
 )
 
 @Single
-fun provideBuildInfo(config: Config, configLoader: ConfigLoader): BuildInfo = try {
+fun provideBuildInfo(config: Config, configLoader: ApplicationConfigLoader): BuildInfo = try {
 		configLoader.loadBuildInfo()
 	} catch (e: Exception) {
 		// when ran without gradle, the build info is not available

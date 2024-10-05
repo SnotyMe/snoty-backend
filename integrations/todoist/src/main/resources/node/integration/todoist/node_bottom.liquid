@@ -1,0 +1,9 @@
+{% assign url = config.apiHost | append: "/wiring/node/integration/todoist/authorize" %}
+
+Click
+<a class="anchor"
+   href="#"
+   onClick="window.open('{{ url }}','TodoistLogin','width=600,height=500,popup=true')">
+    here</a>
+to open a new window and authorize the Todoist integration.
+Paste the token shown in that window into the Token field above.

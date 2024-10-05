@@ -1,8 +1,12 @@
 package me.snoty.integration.todoist
 
 import io.ktor.client.*
+import io.ktor.http.*
+import io.ktor.server.response.*
 import kotlinx.coroutines.flow.toList
 import kotlinx.serialization.Serializable
+import me.snoty.backend.utils.BadRequestException
+import me.snoty.backend.utils.respondStatus
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.diff.DiffResult
 import me.snoty.integration.common.model.NodePosition
@@ -12,10 +16,8 @@ import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.get
-import me.snoty.integration.common.wiring.node.NodeHandler
-import me.snoty.integration.common.wiring.node.NodePersistenceFactory
-import me.snoty.integration.common.wiring.node.NodeSettings
-import me.snoty.integration.common.wiring.node.invoke
+import me.snoty.integration.common.wiring.node.*
+import me.snoty.integration.todoist.oauth.TodoistOAuth
 import org.bson.Document
 import org.koin.core.annotation.Single
 
@@ -40,10 +42,33 @@ class TodoistNodeHandler(
 	private val httpClient: HttpClient,
 	private val apiFactory: (String) -> TodoistAPI = { TodoistAPIImpl(httpClient, it) },
 	persistenceFactory: NodePersistenceFactory,
+	nodeHandlerRouteFactory: NodeHandlerRouteFactory,
+	config: TodoistConfig,
+	oauth: TodoistOAuth,
 ) : NodeHandler {
 	data class Task(val externalId: String, val todoistId: String)
 
 	private val taskService = persistenceFactory<Task>("tasks")
+
+	init {
+		val authUrl = URLBuilder("https://todoist.com/oauth/authorize")
+			.apply {
+				parameters["client_id"] = config.clientId
+				parameters["scope"] = "data:read_write"
+			}
+			.build()
+
+		nodeHandlerRouteFactory("authorize", HttpMethod.Get, authenticated = false) {
+			call.respondRedirect(authUrl)
+		}
+		nodeHandlerRouteFactory("callback", HttpMethod.Get, authenticated = false) {
+			val code = call.parameters["code"]
+				?: return@nodeHandlerRouteFactory call.respondStatus(BadRequestException("Missing code parameter"))
+
+			val token = oauth.exchangeToken(code)
+			call.respondText(token)
+		}
+	}
 
 	override suspend fun NodeHandleContext.process(node: Node, input: Collection<IntermediateData>): NodeOutput {
 		val settings = node.settings as TodoistSettings
