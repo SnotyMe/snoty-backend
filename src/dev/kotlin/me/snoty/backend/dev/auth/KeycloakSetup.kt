@@ -4,6 +4,7 @@ import com.sksamuel.hoplite.ConfigLoaderBuilder
 import com.sksamuel.hoplite.Masked
 import com.sksamuel.hoplite.addFileSource
 import com.sksamuel.hoplite.parsers.PropsParser
+import me.snoty.backend.config.saneDefault
 import me.snoty.backend.dev.spi.DevRunnable
 import org.keycloak.admin.client.KeycloakBuilder
 
@@ -12,7 +13,7 @@ const val ADMIN_CLI = "admin-cli"
 
 class KeycloakSetup : DevRunnable() {
 	override fun run() {
-		val containerConfig = ConfigLoaderBuilder.default()
+		val containerConfig = ConfigLoaderBuilder.saneDefault()
 			// don't give a shit
 			.withReportPrintFn {}
 			.addParser("env", PropsParser())

@@ -1,6 +1,9 @@
 package me.snoty.backend.integration
 
+import dev.openfeature.sdk.Client
 import io.github.oshai.kotlinlogging.KotlinLogging
+import me.snoty.backend.featureflags.FeatureFlagBoolean
+import me.snoty.backend.featureflags.FeatureFlagsContainer
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeHandlerContributor
 import me.snoty.integration.common.wiring.node.NodeRegistry
@@ -11,7 +14,16 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.util.*
 
-class NodeHandlerContributorLookup(private val koin: Koin) {
+@Single
+class NodeHandlerContributorLookupFeatureFlags(override val client: Client) : FeatureFlagsContainer {
+	val crashOnStartupFailure by FeatureFlagBoolean(
+		"nodeHandlerContributorLookup.crashOnStartupFailure",
+		false
+	)
+}
+
+@Single
+class NodeHandlerContributorLookup(private val koin: Koin, private val featureFlags: NodeHandlerContributorLookupFeatureFlags) {
 	val logger = KotlinLogging.logger {}
 
 	val nodeRegistry: NodeRegistry by koin.inject()
@@ -19,28 +31,39 @@ class NodeHandlerContributorLookup(private val koin: Koin) {
 	fun executeContributors() {
 		val loader = ServiceLoader.load(NodeHandlerContributor::class.java)
 
-		loader.forEach { contributor ->
-			logger.info { "Adding from ${contributor.javaClass.simpleName}..." }
+		loader.forEach {
+			val result = registerContributor(it)
+			if (result.isFailure) {
+				logger.error(result.exceptionOrNull()) { "Failed to add from ${it.javaClass.simpleName}" }
 
-			val scopeName = named(contributor.metadata.descriptor.toString())
-			koin.loadModules(listOf(module {
-				includes(contributor.koinModules)
-				scope(scopeName) {
-					scoped { contributor.metadata }
-					scoped { contributor.metadata.descriptor }
+				if (featureFlags.crashOnStartupFailure) {
+					throw result.exceptionOrNull()!!
 				}
-			}))
-
-			val scope = koin.getOrCreateScope(scopeName.value, scopeName)
-			val handler: NodeHandler = scope.get(
-				clazz = contributor.nodeHandlerClass,
-				parameters = { parametersOf(contributor.metadata, contributor.metadata.descriptor) }
-			)
-			nodeRegistry.registerHandler(contributor.metadata, handler)
-			logger.info { "Added from ${contributor.javaClass.simpleName}!" }
+			}
 		}
 
 		val count = loader.count()
 		logger.info { "Executed $count NodeHandlerContributors" }
+	}
+
+	private fun registerContributor(contributor: NodeHandlerContributor) = runCatching {
+		logger.info { "Adding from ${contributor.javaClass.simpleName}..." }
+
+		val scopeName = named(contributor.metadata.descriptor.toString())
+		koin.loadModules(listOf(module {
+			includes(contributor.koinModules)
+			scope(scopeName) {
+				scoped { contributor.metadata }
+				scoped { contributor.metadata.descriptor }
+			}
+		}))
+
+		val scope = koin.getOrCreateScope(scopeName.value, scopeName)
+		val handler: NodeHandler = scope.get(
+			clazz = contributor.nodeHandlerClass,
+			parameters = { parametersOf(contributor.metadata, contributor.metadata.descriptor) }
+		)
+		nodeRegistry.registerHandler(contributor.metadata, handler)
+		logger.info { "Added from ${contributor.javaClass.simpleName}!" }
 	}
 }

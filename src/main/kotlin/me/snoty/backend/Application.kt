@@ -16,7 +16,7 @@ class Application(val koin: Koin) {
 	suspend fun start() = coroutineScope {
 		FeatureFlagsSetup.setup(get(), get())
 
-		NodeHandlerContributorLookup(koin).executeContributors()
+		get<NodeHandlerContributorLookup>().executeContributors()
 
 		launch(
 			newSingleThreadContext("FlowScheduler") +
