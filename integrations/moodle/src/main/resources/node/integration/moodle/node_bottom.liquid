@@ -1,0 +1,36 @@
+<p class="text-center">Get your App Secret</p>
+
+<style>
+    .moodle-form > input {
+        margin-bottom: 0.75em;
+    }
+</style>
+
+<div class="moodle-form">
+    <label for="moodle-url">Base URL</label>
+    <input id="moodle-url" type="text" placeholder="Moodle Base URL" class="input-field" value="{{ settings.baseUrl }}">
+    <label for="moodle-username">Username</label>
+    <input id="moodle-username" type="text" placeholder="Moodle Username" class="input-field" value="{{ settings.username }}"/>
+    <label for="moodle-password">Password</label>
+    <input id="moodle-password" type="text" placeholder="Moodle Password" class="input-field"/>
+    <button
+        onclick="
+            const baseUrl = templateAPI.getInputValue('moodle-url');
+            const username = templateAPI.getInputValue('moodle-username')
+            const password = templateAPI.getInputValue('moodle-password')
+
+            const { settings } = templateAPI.getNodeAPI('{{ node._id }}')
+
+            fetch(`${baseUrl}/login/token.php?username=${username}&password=${password}&service=moodle_mobile_app`)
+                .then(res => res.json())
+                .then(res => {
+                    const token = res.token
+                    alert(`Fetched token: ${token}`)
+                    settings.setProperty(null, 'appSecret', token)
+                })
+                .catch(e => alert(e))
+        "
+        class="btn preset-filled moodle-submit"
+    >Get & Update App Secret</button>
+</div>
+<small>100% Client side. Your password does not leave the browser and is not saved.</small>
