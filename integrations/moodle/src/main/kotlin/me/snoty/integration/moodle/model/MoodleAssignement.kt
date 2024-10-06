@@ -7,6 +7,7 @@ import me.snoty.integration.moodle.model.raw.MoodleEvent
 @Serializable
 data class MoodleAssignment(
 	val id: Long,
+	val instance: Long,
 	val name: String,
 	val description: String,
 	val due: Instant,
@@ -24,17 +25,16 @@ enum class MoodleAssignmentState {
 	OVERDUE,
 }
 
-fun MoodleEvent.toMoodleAssignment(): MoodleAssignment {
-	return MoodleAssignment(
-		id = id,
-		name = name,
-		description = description,
-		due = Instant.fromEpochSeconds(timeStart),
-		state = when {
-			overdue -> MoodleAssignmentState.OVERDUE
-			action?.actionable == true -> MoodleAssignmentState.DUE
-			action?.actionable == false -> MoodleAssignmentState.CLOSED
-			else -> MoodleAssignmentState.DONE
-		}
-	)
-}
+fun MoodleEvent.toMoodleAssignment() = MoodleAssignment(
+	id = id,
+	instance = instance,
+	name = name,
+	description = description,
+	due = Instant.fromEpochSeconds(timeStart),
+	state = when {
+		overdue -> MoodleAssignmentState.OVERDUE
+		action?.actionable == true -> MoodleAssignmentState.DUE
+		action?.actionable == false -> MoodleAssignmentState.CLOSED
+		else -> MoodleAssignmentState.DONE
+	}
+)
