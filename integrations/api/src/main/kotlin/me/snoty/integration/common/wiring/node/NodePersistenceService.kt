@@ -6,6 +6,7 @@ import kotlin.reflect.KClass
 
 interface NodePersistenceService<T : Any> {
 	suspend fun persistEntity(node: Node, entityId: String, entity: T)
+	suspend fun setEntities(node: Node, entities: List<T>, idGetter: (T) -> String)
 
 	fun getEntities(node: Node): Flow<T>
 
