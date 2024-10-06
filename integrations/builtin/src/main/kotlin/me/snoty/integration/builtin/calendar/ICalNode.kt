@@ -9,10 +9,12 @@ import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.FieldCensored
 import me.snoty.integration.common.model.metadata.FieldDescription
+import me.snoty.integration.common.utils.filterNot
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.data.each
+import me.snoty.integration.common.wiring.data.NodeOutput
+import me.snoty.integration.common.wiring.get
 import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.node.*
 import net.fortuna.ical4j.data.CalendarOutputter
@@ -63,12 +65,15 @@ class ICalNodeHandler(
 		}
 	}
 
-	override suspend fun NodeHandleContext.process(node: Node, input: Collection<IntermediateData>) = each<CalendarEvent>(input) { data ->
-		if (data.date == null && (data.startDate == null || data.endDate == null)) {
-			logger.error("Event has no date or start/end date")
-			return@each
-		}
+	override suspend fun NodeHandleContext.process(node: Node, input: Collection<IntermediateData>): NodeOutput {
+		val events = input
+			.map { get<CalendarEvent>(it) }
+			.filterNot(
+				predicate = { it.date == null && (it.startDate == null || it.endDate == null) },
+				ifTrue = { logger.error("Event has no date or start/end date") }
+			)
+		eventPersistenceService.setEntities(node, events) { it.id }
 
-		eventPersistenceService.persistEntity(node, data.id, data)
+		return emptyList()
 	}
 }

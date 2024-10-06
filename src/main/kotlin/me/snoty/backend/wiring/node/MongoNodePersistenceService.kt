@@ -39,6 +39,13 @@ class MongoNodePersistenceService<T : Any>(
 		)
 	}
 
+	override suspend fun setEntities(node: Node, entities: List<T>, idGetter: (T) -> String) {
+		collection.upsertOne(
+			Filters.eq(node._id),
+			Updates.set(NodeEntities<T>::entities.name, entities.associateBy(idGetter))
+		)
+	}
+
 	override fun getEntities(node: Node): Flow<T> {
 		return collection.aggregate(
 			listOf(
