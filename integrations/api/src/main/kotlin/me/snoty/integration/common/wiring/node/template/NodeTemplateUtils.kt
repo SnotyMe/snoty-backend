@@ -2,6 +2,7 @@ package me.snoty.integration.common.wiring.node.template
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.scope
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.nio.file.FileSystems
@@ -48,12 +49,14 @@ object NodeTemplateUtils {
 					template = templateFile.readText(),
 				)
 
-				factory<NodeTemplate>(named(templateFile.name)) {
-					val nodeMetadataFeatureFlags: NodeMetadataFeatureFlags = get()
-					if (nodeMetadataFeatureFlags.cacheNodeTemplates) {
-						cached
-					} else {
-						cached.copy(template = templateFile.readText())
+				scope(descriptor.scope) {
+					factory<NodeTemplate>(named(templateFile.name)) {
+						val nodeMetadataFeatureFlags: NodeMetadataFeatureFlags = get()
+						if (nodeMetadataFeatureFlags.cacheNodeTemplates) {
+							cached
+						} else {
+							cached.copy(template = templateFile.readText())
+						}
 					}
 				}
 			} ?: logger.trace { "Found no templates for ${descriptor.id}" }

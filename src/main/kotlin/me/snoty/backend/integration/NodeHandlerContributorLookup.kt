@@ -7,10 +7,10 @@ import me.snoty.backend.featureflags.FeatureFlagsContainer
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeHandlerContributor
 import me.snoty.integration.common.wiring.node.NodeRegistry
+import me.snoty.integration.common.wiring.node.scope
 import org.koin.core.Koin
 import org.koin.core.annotation.Single
 import org.koin.core.parameter.parametersOf
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.util.*
 
@@ -49,7 +49,7 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 	private fun registerContributor(contributor: NodeHandlerContributor) = runCatching {
 		logger.info { "Adding from ${contributor.javaClass.simpleName}..." }
 
-		val scopeName = named(contributor.metadata.descriptor.toString())
+		val scopeName = contributor.metadata.descriptor.scope
 		koin.loadModules(listOf(module {
 			includes(contributor.koinModules)
 			scope(scopeName) {
