@@ -4,6 +4,7 @@ import com.mongodb.client.model.Filters
 import io.opentelemetry.api.trace.SpanBuilder
 import kotlinx.serialization.Serializable
 import org.bson.conversions.Bson
+import org.koin.core.qualifier.named
 
 @Serializable
 data class NodeDescriptor(
@@ -24,6 +25,9 @@ data class NodeDescriptor(
 	val id: String
 		get() = "$subsystem:$type"
 }
+
+val NodeDescriptor.scope
+	get() = named(id)
 
 fun SpanBuilder.setAttribute(key: String, value: NodeDescriptor) {
 	this.setAttribute("$key.subsystem", value.subsystem)
