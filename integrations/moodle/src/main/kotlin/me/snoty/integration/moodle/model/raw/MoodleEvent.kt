@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class MoodleEvent(
 	val id: Long,
+	val instance: Long,
 	@SerialName("activityname")
 	val name: String,
 	val description: String,
