@@ -2,33 +2,34 @@ package me.snoty.integration.untis.request
 
 import kotlinx.serialization.Serializable
 import me.snoty.integration.untis.*
+import me.snoty.integration.untis.helpers.toUserParams
 import me.snoty.integration.untis.model.UntisDate
+import me.snoty.integration.untis.model.UntisMasterData
 import me.snoty.integration.untis.model.UntisTimetable
-import me.snoty.integration.untis.param.UntisAuth
-import me.snoty.integration.untis.param.UntisParam
+import me.snoty.integration.untis.param.TimetableParams
+import java.time.LocalDate
 
-suspend fun WebUntisAPI.getTimeTable(userSettings: WebUntisSettings, query: TimetableParams): TimeTableResponse {
+suspend fun WebUntisAPI.getTimetable(userSettings: WebUntisSettings): TimetableResponse {
+	val userData = getUserData(userSettings)
+
 	val request = UntisRequest(userSettings) {
 		data = UntisPayload {
 			method = UntisApiConstants.Method.GET_TIMETABLE
-			param(query)
+			val userParams = userSettings.toUserParams()
+			param(TimetableParams(
+				id = userData.id,
+				type = userData.type,
+				// subtract one week to make sure to reach the latest monday
+				// otherwise, the current week would be excluded
+				startDate = UntisDate(LocalDate.now().minusWeeks(1)),
+				endDate = UntisDate(LocalDate.now().plusWeeks(2)),
+				auth = userParams.auth
+			))
 		}
 	}
 
-	return request<TimeTableResponse>(request)
+	return request<TimetableResponse>(request)
 }
 
 @Serializable
-data class TimeTableResponse(val timetable: UntisTimetable)
-
-@Serializable
-data class TimetableParams(
-	val id: Int,
-	val type: String,
-	val startDate: UntisDate,
-	val endDate: UntisDate,
-	val masterDataTimestamp: Long = 0,
-	val timetableTimestamp: Long = 0,
-	val timetableTimestamps: List<Long> = listOf(),
-	val auth: UntisAuth
-) : UntisParam()
+data class TimetableResponse(val timetable: UntisTimetable, val masterData: UntisMasterData)

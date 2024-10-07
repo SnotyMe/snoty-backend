@@ -37,3 +37,15 @@ data class ExamParams(
 	val endDate: UntisDate,
 	val auth: UntisAuth
 ) : UntisParam()
+
+@Serializable
+data class TimetableParams(
+	val id: Int,
+	val type: String,
+	val startDate: UntisDate,
+	val endDate: UntisDate,
+	val masterDataTimestamp: Long = 0,
+	val timetableTimestamp: Long = 0,
+	val timetableTimestamps: List<Long> = listOf(),
+	val auth: UntisAuth
+) : UntisParam()
