@@ -16,6 +16,7 @@ import me.snoty.integration.common.jsonrpc.JsonRpc
 import me.snoty.integration.common.jsonrpc.JsonRpcResponse
 import me.snoty.integration.untis.param.UntisParam
 import org.apache.http.client.utils.URIBuilder
+import org.koin.core.annotation.Single
 import java.net.URI
 
 interface WebUntisAPI {
@@ -30,6 +31,7 @@ interface WebUntisAPI {
  */
 suspend inline fun <reified T> WebUntisAPI.request(request: UntisRequest): T = request<T>(typeInfo<JsonRpcResponse<T>>(), request).result
 
+@Single
 class WebUntisAPIImpl(client: HttpClient) : WebUntisAPI {
 	private val logger = KotlinLogging.logger {}
 	private val httpClient = client.config {
