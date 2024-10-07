@@ -26,4 +26,5 @@
     <logger name="dev.openfeature" level="INFO"/>
     <logger name="org.mongodb.driver" level="INFO"/>
     <logger name="org.mongodb.driver.protocol.command" level="INFO"/>
+    <logger name="net.fortuna.ical4j" level="INFO"/>
 </configuration>

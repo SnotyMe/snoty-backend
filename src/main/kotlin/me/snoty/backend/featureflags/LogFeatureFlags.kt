@@ -14,6 +14,7 @@ class LogFeatureFlags(override val environment: Environment, override val client
 		logLevelFlag("jobrunr", "org.jobrunr"),
 		logLevelFlag("mongo", "org.mongodb.driver"),
 		logLevelFlag(MONGO_COMMANDS, MONGO_COMMANDS_LOGGER),
+		logLevelFlag("ical4j", "net.fortuna.ical4j"),
 	)
 
 	companion object {
