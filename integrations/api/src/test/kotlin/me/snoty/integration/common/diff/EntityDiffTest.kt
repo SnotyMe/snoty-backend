@@ -25,12 +25,12 @@ class EntityDiffTest {
 		result.diff.apply {
 			assertEquals(1, size)
 			val change = assertIs<Change<*, *>>(values.first())
-			assertEquals("value", change.old)
-			assertNull(change.new)
+			assertEquals("value", change.new)
+			assertNull(change.old)
 		}
 
-		document = Document("key", "old")
-		val other = Document("key", "new")
+		document = Document("key", "new")
+		val other = Document("key", "old")
 		val result2 = document.diff(other)
 		assertIs<DiffResult.Updated>(result2)
 		result2.diff.apply {
