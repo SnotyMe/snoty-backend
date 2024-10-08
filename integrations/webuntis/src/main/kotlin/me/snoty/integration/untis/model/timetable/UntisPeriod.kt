@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import me.snoty.integration.untis.model.UntisDateTime
 
 @Serializable
-data class Period(
+data class UntisPeriod(
 	val id: Int,
 	val lessonId: Int,
 	var startDateTime: UntisDateTime,
@@ -13,12 +13,12 @@ data class Period(
 	val backColor: String,
 	val innerForeColor: String,
 	val innerBackColor: String,
-	val text: PeriodText,
-	val elements: List<PeriodElement>,
+	val text: UntisPeriodText,
+	val elements: List<UntisPeriodElement>,
 	val can: List<String>,
 	// contains the codes from the companion object
 	val `is`: List<String>,
-	val exam: PeriodExam? = null,
+	val exam: UntisPeriodExam? = null,
 	val blockHash: Int? = null
 ) {
 	companion object {

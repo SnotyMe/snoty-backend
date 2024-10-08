@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PeriodExam(
+data class UntisPeriodExam(
 	val id: Int,
 	@SerialName("examtype")
 	val examType: String?,

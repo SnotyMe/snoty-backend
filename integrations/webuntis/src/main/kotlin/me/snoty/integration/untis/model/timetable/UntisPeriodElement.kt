@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
  * - type: CLASS, id: 5
  * - type: TEACHER, id: 10
  */
-data class PeriodElement(
+data class UntisPeriodElement(
 	val type: String,
 	val id: Int,
 	val orgId: Int = id

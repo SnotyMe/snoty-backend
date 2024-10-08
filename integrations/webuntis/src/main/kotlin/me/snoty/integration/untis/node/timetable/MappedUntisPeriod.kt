@@ -1,17 +1,17 @@
 package me.snoty.integration.untis.node.timetable
 
 import me.snoty.integration.untis.model.*
-import me.snoty.integration.untis.model.timetable.Period
-import me.snoty.integration.untis.model.timetable.PeriodElement
-import me.snoty.integration.untis.model.timetable.PeriodExam
-import me.snoty.integration.untis.model.timetable.PeriodText
+import me.snoty.integration.untis.model.timetable.UntisPeriod
+import me.snoty.integration.untis.model.timetable.UntisPeriodElement
+import me.snoty.integration.untis.model.timetable.UntisPeriodExam
+import me.snoty.integration.untis.model.timetable.UntisPeriodText
 
 /**
- * Mapped from [Period]
+ * Mapped from [UntisPeriod]
  */
-data class UntisPeriod(
+data class MappedUntisPeriod(
 	val id: Int,
-	val raw: Period,
+	val raw: UntisPeriod,
 	val lessonId: Int,
 	var startDateTime: UntisDateTime,
 	var endDateTime: UntisDateTime,
@@ -19,21 +19,21 @@ data class UntisPeriod(
 	val backgroundColor: String,
 	val innerForegroundColor: String,
 	val innerBackgroundColor: String,
-	val text: PeriodText,
-	val elements: List<PeriodElement>,
+	val text: UntisPeriodText,
+	val elements: List<UntisPeriodElement>,
 	val `class`: LongMasterElement? = null,
 	val teacher: TeacherMasterElement? = null,
 	val subject: LongMasterElement? = null,
 	val room: LongMasterElement? = null,
 	/**
-	 * Contains the codes of [Period.Companion]
+	 * Contains the codes of [UntisPeriod.Companion]
 	 */
 	val `is`: List<String>,
-	val exam: PeriodExam? = null,
+	val exam: UntisPeriodExam? = null,
 	val blockHash: Int? = null
 )
 
-fun Period.toUntisPeriod(mappedMasterData: MappedMasterData) = UntisPeriod(
+fun UntisPeriod.toUntisPeriod(mappedMasterData: MappedMasterData) = MappedUntisPeriod(
 	id = id,
 	raw = this,
 	lessonId = lessonId,
@@ -54,4 +54,4 @@ fun Period.toUntisPeriod(mappedMasterData: MappedMasterData) = UntisPeriod(
 	blockHash = blockHash,
 )
 
-private fun Period.find(type: String) = elements.find { it.type == type }?.id
+private fun UntisPeriod.find(type: String) = elements.find { it.type == type }?.id

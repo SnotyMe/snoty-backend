@@ -14,7 +14,7 @@ import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.untis.WebUntisAPI
 import me.snoty.integration.untis.WebUntisSettings
 import me.snoty.integration.untis.model.map
-import me.snoty.integration.untis.model.timetable.Period
+import me.snoty.integration.untis.model.timetable.UntisPeriod
 import me.snoty.integration.untis.request.getTimetable
 import org.koin.core.annotation.Single
 
@@ -23,7 +23,7 @@ import org.koin.core.annotation.Single
 	type = "webuntis_timetable",
 	position = NodePosition.START,
 	settingsType = WebUntisTimetableSettings::class,
-	outputType = Period::class,
+	outputType = UntisPeriod::class,
 )
 @Single
 class WebUntisTimetableNodeHandler(
