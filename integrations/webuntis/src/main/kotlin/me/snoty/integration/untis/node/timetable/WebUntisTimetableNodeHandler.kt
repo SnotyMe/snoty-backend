@@ -23,7 +23,7 @@ import org.koin.core.annotation.Single
 	type = "webuntis_timetable",
 	position = NodePosition.START,
 	settingsType = WebUntisTimetableSettings::class,
-	outputType = UntisPeriod::class,
+	outputType = MappedUntisPeriod::class,
 )
 @Single
 class WebUntisTimetableNodeHandler(

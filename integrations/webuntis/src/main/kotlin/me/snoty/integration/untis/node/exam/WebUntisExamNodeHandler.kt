@@ -24,7 +24,7 @@ import org.koin.core.annotation.Single
 	type = "webuntis_exams",
 	position = NodePosition.START,
 	settingsType = WebUntisExamSettings::class,
-	outputType = UntisExam::class,
+	outputType = MappedUntisExam::class,
 )
 @Single
 class WebUntisExamNodeHandler(
