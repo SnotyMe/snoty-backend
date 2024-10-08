@@ -77,7 +77,8 @@ class TodoistNodeHandler(
 		val tasks = taskService.getEntities(node).toList()
 		input.forEach {
 			val data = get<TodoistInput>(it)
-			val diff = get<Document>(it)["diff"] as DiffResult
+			val diff = get<Document>(it)["diff"] as? DiffResult
+				?: return@forEach error("No diff included in the input for ${data.id} - did you forget to add a DiffInjector node?")
 
 			suspend fun create() {
 				api.createTask(data.toTaskCreateDTO(
