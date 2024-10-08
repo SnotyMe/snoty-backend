@@ -5,13 +5,12 @@ import me.snoty.integration.untis.*
 import me.snoty.integration.untis.helpers.toUserParams
 import me.snoty.integration.untis.model.UntisDate
 import me.snoty.integration.untis.model.UntisExam
+import me.snoty.integration.untis.model.UntisUserData
 import me.snoty.integration.untis.param.ExamParams
 import java.time.LocalDate
 
-suspend fun WebUntisAPI.getExams(userSettings: WebUntisSettings): List<UntisExam> {
+suspend fun WebUntisAPI.getExams(userSettings: WebUntisSettings, userData: UntisUserData): List<UntisExam> {
 	// will be moved to database as this information is static
-	val userData = getUserData(userSettings)
-
 	val request = UntisRequest(userSettings) {
 		data = UntisPayload {
 			method = UntisApiConstants.Method.GET_EXAMS

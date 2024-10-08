@@ -14,7 +14,9 @@ import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.untis.WebUntisAPI
 import me.snoty.integration.untis.WebUntisSettings
 import me.snoty.integration.untis.model.UntisExam
+import me.snoty.integration.untis.model.map
 import me.snoty.integration.untis.request.getExams
+import me.snoty.integration.untis.request.getUserAndMasterData
 import org.koin.core.annotation.Single
 
 @RegisterNode(
@@ -30,11 +32,16 @@ class WebUntisExamNodeHandler(
 	private val untisAPI: WebUntisAPI
 ) : NodeHandler {
 	override suspend fun NodeHandleContext.process(node: Node, input: Collection<IntermediateData>) = input.mapWithSettings<WebUntisSettings>(node) { settings ->
-		val exams = untisAPI.getExams(settings)
+		val (userData, masterData) = untisAPI.getUserAndMasterData(settings)
+		val untisExams = untisAPI.getExams(settings, userData)
 
-		logger.info("Fetched ${exams.size} exams for ${settings.username}")
+		val mappedMasterData = masterData.map()
+		val mappedExams = untisExams
+			.map { it.map(mappedMasterData) }
 
-		iterableStructOutput(exams)
+		logger.info("Fetched ${mappedExams.size} exams for ${settings.username}")
+
+		iterableStructOutput(mappedExams)
 	}
 }
 
