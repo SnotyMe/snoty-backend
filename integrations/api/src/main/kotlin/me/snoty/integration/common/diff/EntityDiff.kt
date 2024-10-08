@@ -13,18 +13,19 @@ fun Document?.diff(lastState: EntityState?): DiffResult = when {
 	else -> diff(lastState.state)
 }
 
-fun Document.diff(other: Document): DiffResult {
-	val createdOrChanged = entries
-		.filter { (key, value) -> value != other[key] }
+fun Document.diff(old: Document): DiffResult {
+	val createdOrChanged = this.entries
+		.filter { (key, value) -> value != old[key] }
 		.associate { (key, value) ->
-			key to Change(value, other[key])
+			key to Change(old = old[key], new = value)
 		}
 
-		val deleted = other.entries
-			.filter { (key, _) -> !containsKey(key) }
-			.associate { (key, value) ->
-				key to Change(null, value)
-			}
+	// keys that previously existed
+	val deleted = old.entries
+		.filter { (key, _) -> !containsKey(key) }
+		.associate { (key, value) ->
+			key to Change(old = value, new = null)
+		}
 
 	val diff: Diff = createdOrChanged + deleted
 
