@@ -41,6 +41,7 @@ data class ICalSettings(
 class ICalNodeHandler(
 	persistenceFactory: NodePersistenceFactory,
 	nodeRouteFactory: NodeRouteFactory,
+	iCalBuilder: ICalBuilder,
 ) : NodeHandler {
 	private val eventPersistenceService = persistenceFactory<CalendarEvent>("events")
 
@@ -55,7 +56,7 @@ class ICalNodeHandler(
 
 			val events = eventPersistenceService.getEntities(node)
 
-			val calendar = ICalBuilder.build(settings.name, events)
+			val calendar = iCalBuilder.build(node._id.toString(), settings.name, events)
 
 			val contentType = calendar.getContentType(StandardCharsets.UTF_8)
 			val outputter = CalendarOutputter()
