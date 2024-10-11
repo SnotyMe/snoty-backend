@@ -19,4 +19,7 @@ dependencies {
 	libs.plugins.idea.get().apply {
 		implementation("gradle.plugin.org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext:$version")
 	}
+	libs.plugins.doctor.get().apply {
+		implementation("com.osacky.doctor:doctor-plugin:$version")
+	}
 }
