@@ -14,14 +14,14 @@ import me.snoty.integration.common.wiring.node.template.NodeMetadataFeatureFlags
 import me.snoty.integration.common.wiring.node.template.NodeTemplateRegistry
 import me.snoty.backend.server.koin.get as getDependency
 
-fun Routing.nodeMetadataResource() {
+fun Route.nodeMetadataResource() {
 	val featureFlags: NodeMetadataFeatureFlags = getDependency()
 	val json: Json = getDependency()
 	metadataEndpoint(featureFlags, json)
 	templateEndpoint(featureFlags, json)
 }
 
-private fun Routing.metadataEndpoint(featureFlags: NodeMetadataFeatureFlags, json: Json) {
+private fun Route.metadataEndpoint(featureFlags: NodeMetadataFeatureFlags, json: Json) {
 	val logger = KotlinLogging.logger {}
 	val nodeRegistry: NodeRegistry = getDependency()
 
@@ -47,7 +47,7 @@ private fun Routing.metadataEndpoint(featureFlags: NodeMetadataFeatureFlags, jso
 	}
 }
 
-private fun Routing.templateEndpoint(featureFlags: NodeMetadataFeatureFlags, json: Json) {
+private fun Route.templateEndpoint(featureFlags: NodeMetadataFeatureFlags, json: Json) {
 	val logger = KotlinLogging.logger {}
 	val nodeTemplateRegistry: NodeTemplateRegistry = getDependency()
 

@@ -16,8 +16,6 @@ File(rootDir, "integrations")
 	}
 
 include("api")
-include("integrations:utils")
-include("integrations:utils:calendar")
 include("integration-plugin")
 
 includeBuild("integration-conventions")

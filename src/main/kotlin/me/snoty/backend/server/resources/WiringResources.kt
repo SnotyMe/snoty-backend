@@ -15,7 +15,7 @@ import org.koin.core.annotation.Single
 @Named("wiring")
 fun wiringResources(json: Json, hookRegistry: HookRegistry) = Resource {
 	route("wiring/node") {
-		hookRegistry.executeHooks(Routing::class, this)
+		hookRegistry.executeHooks(Route::class, this)
 
 		route("metadata") {
 			nodeMetadataResource()

@@ -25,7 +25,7 @@ import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.NodeSettings
 
 @OptIn(InternalSerializationApi::class)
-fun Routing.nodeResource(json: Json) {
+fun Route.nodeResource(json: Json) {
 	val nodeRegistry: NodeRegistry = get()
 	val nodeService: NodeService = get()
 

@@ -10,6 +10,7 @@ coroutines = "1.9.0"
 opentelemetry = "1.39.0"
 junit = "5.10.2"
 testcontainers = "1.19.7"
+ktor = "3.0.0"
 
 [plugins]
 doctor = { id = "com.osacky.doctor", version = "0.10.0" }
@@ -39,23 +40,23 @@ dev-keycloak-adminClient = { group = "org.keycloak", name = "keycloak-admin-clie
 
 integrationPlugin-ksp-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
 
-ktor-client-apache = { group = "io.ktor", name = "ktor-client-apache-jvm", version = "3.0.0-beta-2" }
-ktor-client-contentNegotiation = { group = "io.ktor", name = "ktor-client-content-negotiation-jvm", version = "3.0.0-beta-2" }
-ktor-client-core = { group = "io.ktor", name = "ktor-client-core-jvm", version = "3.0.0-beta-2" }
-ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json-jvm", version = "3.0.0-beta-2" }
-ktor-server-auth = { group = "io.ktor", name = "ktor-server-auth-jvm", version = "3.0.0-beta-2" }
-ktor-server-auth-jwt = { group = "io.ktor", name = "ktor-server-auth-jwt-jvm", version = "3.0.0-beta-2" }
-ktor-server-call-id = { group = "io.ktor", name = "ktor-server-call-id-jvm", version = "3.0.0-beta-2" }
-ktor-server-call-logging = { group = "io.ktor", name = "ktor-server-call-logging-jvm", version = "3.0.0-beta-2" }
-ktor-server-contentNegotiation = { group = "io.ktor", name = "ktor-server-content-negotiation-jvm", version = "3.0.0-beta-2" }
-ktor-server-core = { group = "io.ktor", name = "ktor-server-core-jvm", version = "3.0.0-beta-2" }
-ktor-server-cors = { group = "io.ktor", name = "ktor-server-cors-jvm", version = "3.0.0-beta-2" }
-ktor-server-defaultHeaders = { group = "io.ktor", name = "ktor-server-default-headers-jvm", version = "3.0.0-beta-2" }
-ktor-server-doubleReceive = { group = "io.ktor", name = "ktor-server-double-receive-jvm", version = "3.0.0-beta-2" }
-ktor-server-forwardedHeader = { group = "io.ktor", name = "ktor-server-forwarded-header-jvm", version = "3.0.0-beta-2" }
-ktor-server-hostCommon = { group = "io.ktor", name = "ktor-server-host-common-jvm", version = "3.0.0-beta-2" }
-ktor-server-netty = { group = "io.ktor", name = "ktor-server-netty-jvm", version = "3.0.0-beta-2" }
-ktor-server-statusPages = { group = "io.ktor", name = "ktor-server-status-pages-jvm", version = "3.0.0-beta-2" }
+ktor-client-apache = { group = "io.ktor", name = "ktor-client-apache-jvm", version.ref = "ktor" }
+ktor-client-contentNegotiation = { group = "io.ktor", name = "ktor-client-content-negotiation-jvm", version.ref = "ktor" }
+ktor-client-core = { group = "io.ktor", name = "ktor-client-core-jvm", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json-jvm", version.ref = "ktor" }
+ktor-server-auth = { group = "io.ktor", name = "ktor-server-auth-jvm", version.ref = "ktor" }
+ktor-server-auth-jwt = { group = "io.ktor", name = "ktor-server-auth-jwt-jvm", version.ref = "ktor" }
+ktor-server-call-id = { group = "io.ktor", name = "ktor-server-call-id-jvm", version.ref = "ktor" }
+ktor-server-call-logging = { group = "io.ktor", name = "ktor-server-call-logging-jvm", version.ref = "ktor" }
+ktor-server-contentNegotiation = { group = "io.ktor", name = "ktor-server-content-negotiation-jvm", version.ref = "ktor" }
+ktor-server-core = { group = "io.ktor", name = "ktor-server-core-jvm", version.ref = "ktor" }
+ktor-server-cors = { group = "io.ktor", name = "ktor-server-cors-jvm", version.ref = "ktor" }
+ktor-server-defaultHeaders = { group = "io.ktor", name = "ktor-server-default-headers-jvm", version.ref = "ktor" }
+ktor-server-doubleReceive = { group = "io.ktor", name = "ktor-server-double-receive-jvm", version.ref = "ktor" }
+ktor-server-forwardedHeader = { group = "io.ktor", name = "ktor-server-forwarded-header-jvm", version.ref = "ktor" }
+ktor-server-hostCommon = { group = "io.ktor", name = "ktor-server-host-common-jvm", version.ref = "ktor" }
+ktor-server-netty = { group = "io.ktor", name = "ktor-server-netty-jvm", version.ref = "ktor" }
+ktor-server-statusPages = { group = "io.ktor", name = "ktor-server-status-pages-jvm", version.ref = "ktor" }
 
 libraries-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 libraries-bson-kotlinx = { group = "org.mongodb", name = "bson-kotlinx", version = "5.1.0" }
@@ -74,8 +75,8 @@ log-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-s
 log-kotlinLogging = { group = "io.github.oshai", name = "kotlin-logging", version = "7.0.0" }
 log-logback = { group = "ch.qos.logback", name = "logback-classic", version = "1.5.8" }
 
-monitoring-ktor-opentelemetry = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-ktor-3.0", version = "2.5.0-alpha-snoty.2" }
-monitoring-ktor-server-metricsMicrometer = { group = "io.ktor", name = "ktor-server-metrics-micrometer-jvm", version = "3.0.0-beta-2" }
+monitoring-ktor-opentelemetry = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-ktor-3.0", version = "2.5.0-alpha-snoty.3" }
+monitoring-ktor-server-metricsMicrometer = { group = "io.ktor", name = "ktor-server-metrics-micrometer-jvm", version.ref = "ktor" }
 monitoring-micrometer = { group = "io.micrometer", name = "micrometer-core", version = "1.6.3" }
 monitoring-micrometer-prometheus = { group = "io.micrometer", name = "micrometer-registry-prometheus", version = "1.6.3" }
 monitoring-opentelemetry-api = { group = "io.opentelemetry", name = "opentelemetry-api", version.ref = "opentelemetry" }
@@ -93,7 +94,7 @@ tests-json = { group = "org.json", name = "json", version = "20240303" }
 tests-junit-api = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit" }
 tests-junit-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit" }
 tests-junit-launcher = { group = "org.junit.platform", name = "junit-platform-launcher", version = "1.10.2" }
-tests-ktor-server-testHost = { group = "io.ktor", name = "ktor-server-test-host-jvm", version = "3.0.0-beta-2" }
+tests-ktor-server-testHost = { group = "io.ktor", name = "ktor-server-test-host-jvm", version.ref = "ktor" }
 tests-mockk = { group = "io.mockk", name = "mockk", version = "1.13.10" }
 tests-testcontainers = { group = "org.testcontainers", name = "testcontainers", version.ref = "testcontainers" }
 tests-testcontainers-junit = { group = "org.testcontainers", name = "junit-jupiter", version.ref = "testcontainers" }

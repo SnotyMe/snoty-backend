@@ -10,7 +10,7 @@ import me.snoty.integration.common.BaseSnotyJson
 
 fun ktorApplicationTest(
 	config: Config = TestConfig,
-	configure: Routing.() -> Unit = {},
+	configure: Route.() -> Unit = {},
 	block: suspend ApplicationTestBuilder.() -> Unit
 ) {
 	testApplication {

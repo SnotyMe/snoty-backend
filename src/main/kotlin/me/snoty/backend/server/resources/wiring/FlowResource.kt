@@ -14,7 +14,7 @@ import me.snoty.backend.utils.letOrNull
 import me.snoty.integration.common.http.flowNotFound
 import me.snoty.integration.common.wiring.flow.FlowService
 
-fun Routing.flowResource() {
+fun Route.flowResource() {
 	val flowService: FlowService = get()
 	val flowLogService: FlowLogService = get()
 

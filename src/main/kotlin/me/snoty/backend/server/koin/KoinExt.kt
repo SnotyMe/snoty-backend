@@ -18,7 +18,7 @@ import org.koin.core.qualifier.Qualifier
  * @param qualifier - bean name / optional
  * @param parameters
  */
-inline fun <reified T : Any> Routing.inject(
+inline fun <reified T : Any> Route.inject(
 	qualifier: Qualifier? = null,
 	noinline parameters: ParametersDefinition? = null
 ) =
@@ -29,18 +29,18 @@ inline fun <reified T : Any> Routing.inject(
  * @param qualifier - bean name / optional
  * @param parameters
  */
-inline fun <reified T : Any> Routing.get(
+inline fun <reified T : Any> Route.get(
 	qualifier: Qualifier? = null,
 	noinline parameters: ParametersDefinition? = null
 ) =
-	getKoin().get<T>(qualifier, parameters)
+	application.getKoin().get<T>(qualifier, parameters)
 
 /**
  * Retrieve given property for KoinComponent
  * @param key - key property
  */
-fun <T : Any> Routing.getProperty(key: String) =
-	getKoin().getProperty<T>(key)
+fun <T : Any> Route.getProperty(key: String) =
+	application.getKoin().getProperty<T>(key)
 
 /**
  * Retrieve given property for KoinComponent
@@ -50,7 +50,7 @@ fun <T : Any> Routing.getProperty(key: String) =
  * @param defaultValue - default value if property is missing
  *
  */
-inline fun <reified T> Routing.getProperty(key: String, defaultValue: T) =
-	getKoin().getProperty(key) ?: defaultValue
+inline fun <reified T> Route.getProperty(key: String, defaultValue: T) =
+	application.getKoin().getProperty(key) ?: defaultValue
 
 fun Routing.getKoin(): Koin = application.getKoin()
