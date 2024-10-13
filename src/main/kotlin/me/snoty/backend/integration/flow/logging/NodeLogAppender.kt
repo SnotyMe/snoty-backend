@@ -10,9 +10,11 @@ import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.datetime.Instant
 import me.snoty.backend.integration.config.flow.toNodeId
 import me.snoty.backend.logging.toSLF4JLevel
+import me.snoty.backend.observability.APPENDER_LOG_LEVEL
 import me.snoty.backend.observability.FLOW_ID
 import me.snoty.backend.observability.JOB_ID
 import me.snoty.integration.common.wiring.flow.NodeLogEntry
+import org.slf4j.event.Level
 
 private const val NAME = "NodeLogAppender"
 
@@ -32,13 +34,19 @@ class NodeLogAppender(
 
 	override fun append(eventObject: ILoggingEvent) {
 		scope.launch {
+			val eventLevel = eventObject.level.toSLF4JLevel()
+			val appenderLevel = eventObject.mdcPropertyMap[APPENDER_LOG_LEVEL.key]?.let { Level.valueOf(it) } ?: Level.INFO
+			if (eventLevel.toInt() < appenderLevel.toInt()) {
+				return@launch
+			}
+
 			val message = eventObject.formattedMessage + (eventObject.throwableProxy?.message?.let {
 				"\n$it"
 			} ?: "")
 
 			val entry = NodeLogEntry(
 				timestamp = Instant.fromEpochMilliseconds(eventObject.timeStamp),
-				level = eventObject.level.toSLF4JLevel(),
+				level = eventLevel,
 				message = message,
 				node = eventObject.mdcPropertyMap["node.id"]?.toNodeId()
 			)

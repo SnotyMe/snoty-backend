@@ -6,3 +6,4 @@ import io.opentelemetry.api.common.AttributeKey
 val USER_ID = AttributeKey.stringKey("user.id")
 val JOB_ID = AttributeKey.stringKey("job.id")
 val FLOW_ID = AttributeKey.stringKey("flow.id")
+val APPENDER_LOG_LEVEL = AttributeKey.stringKey("appender.log_level")

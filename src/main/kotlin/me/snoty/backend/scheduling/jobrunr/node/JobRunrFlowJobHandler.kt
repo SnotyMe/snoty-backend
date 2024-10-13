@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.slf4j.MDCContext
 import me.snoty.backend.integration.flow.logging.FlowLogService
 import me.snoty.backend.integration.flow.logging.NodeLogAppender
+import me.snoty.backend.observability.APPENDER_LOG_LEVEL
 import me.snoty.backend.observability.FLOW_ID
 import me.snoty.backend.observability.JOB_ID
 import me.snoty.backend.observability.USER_ID
@@ -37,6 +38,7 @@ class JobRunrFlowJobHandler(
 
 		MDC.put(JOB_ID.key, jobContext.jobId.toString())
 		MDC.put(FLOW_ID.key, jobRequest.flowId.toString())
+		MDC.put(APPENDER_LOG_LEVEL.key, jobRequest.logLevel.name)
 
 		runBlocking(MDCContext()) {
 			val flow = flowService.getWithNodes(jobRequest.flowId) ?: let {
