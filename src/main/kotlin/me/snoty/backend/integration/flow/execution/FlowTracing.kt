@@ -25,7 +25,7 @@ interface FlowTracing : Tracer {
 	fun traceName(node: GenericNode): String
 }
 
-@Single
+@Single(binds = [FlowTracing::class])
 class FlowTracingImpl(
 	private val json: Json,
 	private val featureFlags: FlowFeatureFlags,
