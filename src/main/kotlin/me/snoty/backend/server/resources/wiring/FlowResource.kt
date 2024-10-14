@@ -11,10 +11,13 @@ import me.snoty.backend.integration.flow.logging.FlowLogService
 import me.snoty.backend.scheduling.FlowJobRequest
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.server.koin.get
+import me.snoty.backend.server.plugins.void
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.letOrNull
 import me.snoty.integration.common.http.flowNotFound
+import me.snoty.integration.common.http.invalidNodeId
 import me.snoty.integration.common.wiring.flow.FlowService
+import me.snoty.integration.common.wiring.flow.StandaloneWorkflow
 import org.slf4j.event.Level
 
 fun Route.flowResource() {
@@ -49,16 +52,22 @@ fun Route.flowResource() {
 		call.respond(executions)
 	}
 
-	val flowScheduler: FlowScheduler = get()
-	post("{id}/trigger") {
+	suspend fun RoutingContext.getPersonalFlowOrNull(): StandaloneWorkflow? {
 		val user = call.getUser()
 		val id = call.parameters["id"]?.letOrNull { NodeId(it) }
-			?: return@post call.respond(HttpStatusCode.BadRequest, "Invalid node id")
+			?: return void { invalidNodeId() }
 
 		val flow = flowService.getStandalone(id)
 		if (flow?.userId != user.id) {
-			return@post call.flowNotFound(flow)
+			return void { flowNotFound(flow) }
 		}
+
+		return flow
+	}
+
+	val flowScheduler: FlowScheduler = get()
+	post("{id}/trigger") {
+		val flow = getPersonalFlowOrNull() ?: return@post
 
 		val jobRequest: FlowJobRequest = call.receiveNullable() ?: FlowJobRequest(logLevel = Level.DEBUG)
 
@@ -70,43 +79,29 @@ fun Route.flowResource() {
 	get("{id}") {
 		val user = call.getUser()
 		val id = call.parameters["id"]?.letOrNull { NodeId(it) }
-			?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid node id")
+			?: return@get invalidNodeId()
 
 		val flow = flowService.getWithNodes(id)
 		if (flow?.userId != user.id) {
-			return@get call.flowNotFound(flow)
+			return@get flowNotFound(flow)
 		}
 
 		call.respond(flow)
 	}
 
 	put("{id}/rename") {
-		val user = call.getUser()
-		val id = call.parameters["id"]?.letOrNull { NodeId(it) }
-			?: return@put call.respond(HttpStatusCode.BadRequest, "Invalid node id")
-
-		val flow = flowService.getStandalone(id)
-		if (flow?.userId != user.id) {
-			return@put call.flowNotFound(flow)
-		}
+		val flow = getPersonalFlowOrNull() ?: return@put
 
 		val name = call.receiveText()
-		flowService.rename(id, name)
+		flowService.rename(flow._id, name)
 
 		call.respond(HttpStatusCode.NoContent)
 	}
 
 	get("{id}/logs") {
-		val user = call.getUser()
+		val flow = getPersonalFlowOrNull() ?: return@get
 
-		val id = call.parameters["id"]?.letOrNull { NodeId(it) }
-			?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid node id")
-		val flow = flowService.getStandalone(id)
-		if (flow?.userId != user.id) {
-			return@get call.flowNotFound(flow)
-		}
-
-		val logs = flowLogService.retrieve(flowId = id)
+		val logs = flowLogService.retrieve(flowId = flow._id)
 
 		call.respond(logs)
 	}

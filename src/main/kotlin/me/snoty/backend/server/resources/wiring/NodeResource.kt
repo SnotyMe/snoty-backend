@@ -1,7 +1,6 @@
 package me.snoty.backend.server.resources.wiring
 
 import io.ktor.http.*
-import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -29,10 +28,10 @@ fun Route.nodeResource(json: Json) {
 	val nodeRegistry: NodeRegistry = get()
 	val nodeService: NodeService = get()
 
-	suspend fun deserializeSettings(call: ApplicationCall, descriptor: NodeDescriptor, settingsJson: JsonElement): NodeSettings? {
+	suspend fun RoutingContext.deserializeSettings(descriptor: NodeDescriptor, settingsJson: JsonElement): NodeSettings? {
 		val metadata = nodeRegistry.getMetadata(descriptor)
 		val serializer = metadata.settingsClass.serializerOrNull()
-			?: return void { call.noSerializerFound(metadata) }
+			?: return void { noSerializerFound(metadata) }
 		return json.decodeFromJsonElement(serializer, settingsJson)
 	}
 
@@ -47,7 +46,7 @@ fun Route.nodeResource(json: Json) {
 		)
 
 		val (flowId, descriptor, settingsJson) = call.receive<NodeCreateRequest>()
-		val settingsObj = deserializeSettings(call, descriptor, settingsJson) ?: return@post
+		val settingsObj = deserializeSettings(descriptor, settingsJson) ?: return@post
 
 		val createdNode = nodeService.create(user.id, flowId, descriptor, settingsObj)
 
@@ -63,11 +62,11 @@ fun Route.nodeResource(json: Json) {
 		val (from, to) = call.receive<ConnectionRequest>()
 		val fromNode = nodeService.get(from)
 		if (fromNode?.userId != user.id) {
-			return@put call.nodeNotFound(fromNode)
+			return@put nodeNotFound(fromNode)
 		}
 		val toNode = nodeService.get(to)
 		if (toNode?.userId != user.id) {
-			return@put call.nodeNotFound(toNode)
+			return@put nodeNotFound(toNode)
 		}
 		val result = nodeService.action(from, to)
 
@@ -84,11 +83,11 @@ fun Route.nodeResource(json: Json) {
 			?: return@put call.respond(HttpStatusCode.BadRequest, "Invalid node id")
 		val node = nodeService.get(id)
 		if (node?.userId != user.id) {
-			return@put call.nodeNotFound(node)
+			return@put nodeNotFound(node)
 		}
 
 		val settingsJson = call.receive<JsonElement>()
-		val settingsObj = deserializeSettings(call, node.descriptor, settingsJson) ?: return@put
+		val settingsObj = deserializeSettings(node.descriptor, settingsJson) ?: return@put
 
 		val result = nodeService.updateSettings(id, settingsObj)
 
@@ -103,7 +102,7 @@ fun Route.nodeResource(json: Json) {
 
 		val node = nodeService.get(id)
 		if (node?.userId != user.id) {
-			return@delete call.nodeNotFound(node)
+			return@delete nodeNotFound(node)
 		}
 
 		val result = nodeService.delete(id)
@@ -112,8 +111,5 @@ fun Route.nodeResource(json: Json) {
 	}
 }
 
-suspend fun ApplicationCall.noHandlerFound(descriptor: NodeDescriptor)
-	= respond(HttpStatusCode.BadRequest, "No handler found for $descriptor")
-
-suspend fun ApplicationCall.noSerializerFound(metadata: NodeMetadata)
-	= respond(HttpStatusCode.BadRequest, "No serializer found for ${metadata.settingsClass}")
+suspend fun RoutingContext.noSerializerFound(metadata: NodeMetadata)
+	= call.respond(HttpStatusCode.BadRequest, "No serializer found for ${metadata.settingsClass}")
