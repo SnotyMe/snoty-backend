@@ -4,7 +4,15 @@ import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.flow.Workflow
 
 interface FlowScheduler {
+	/**
+	 * Schedule recurring jobs
+	 */
 	fun schedule(workflow: Workflow)
+
+	/**
+	 * Trigger a one-off workflow
+	 */
+	fun trigger(workflow: Workflow)
 
 	/**
 	 * @param flowService manually injected FlowService to avoid circular dependencies

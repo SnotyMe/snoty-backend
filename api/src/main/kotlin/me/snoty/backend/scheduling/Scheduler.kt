@@ -1,7 +1,6 @@
 package me.snoty.backend.scheduling
 
 interface Scheduler {
-	fun scheduleJob(id: String, job: () -> Unit)
-
-	fun scheduleJob(id: String, job: SnotyJob)
+	fun scheduleJob(job: SnotyJob)
+	fun scheduleRecurringJob(id: String, job: SnotyJob)
 }

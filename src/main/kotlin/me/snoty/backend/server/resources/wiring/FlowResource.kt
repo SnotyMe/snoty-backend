@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.serialization.Serializable
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.logging.FlowLogService
+import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.server.koin.get
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.letOrNull
@@ -44,6 +45,22 @@ fun Route.flowResource() {
 			.toList()
 
 		call.respond(executions)
+	}
+
+	val flowScheduler: FlowScheduler = get()
+	post("{id}/trigger") {
+		val user = call.getUser()
+		val id = call.parameters["id"]?.letOrNull { NodeId(it) }
+			?: return@post call.respond(HttpStatusCode.BadRequest, "Invalid node id")
+
+		val flow = flowService.getStandalone(id)
+		if (flow?.userId != user.id) {
+			return@post call.flowNotFound(flow)
+		}
+
+		flowScheduler.trigger(flow)
+
+		call.respond(HttpStatusCode.Accepted)
 	}
 
 	get("{id}") {
