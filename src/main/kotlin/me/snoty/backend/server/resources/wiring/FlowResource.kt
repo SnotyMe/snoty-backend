@@ -8,12 +8,14 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.serialization.Serializable
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.logging.FlowLogService
+import me.snoty.backend.scheduling.FlowJobRequest
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.server.koin.get
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.letOrNull
 import me.snoty.integration.common.http.flowNotFound
 import me.snoty.integration.common.wiring.flow.FlowService
+import org.slf4j.event.Level
 
 fun Route.flowResource() {
 	val flowService: FlowService = get()
@@ -58,7 +60,9 @@ fun Route.flowResource() {
 			return@post call.flowNotFound(flow)
 		}
 
-		flowScheduler.trigger(flow)
+		val jobRequest: FlowJobRequest = call.receiveNullable() ?: FlowJobRequest(logLevel = Level.DEBUG)
+
+		flowScheduler.trigger(flow, jobRequest)
 
 		call.respond(HttpStatusCode.Accepted)
 	}

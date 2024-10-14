@@ -3,6 +3,7 @@ package me.snoty.backend.scheduling.jobrunr.node
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filterNot
+import me.snoty.backend.scheduling.FlowJobRequest
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.scheduling.SnotyJob
 import me.snoty.backend.scheduling.jobrunr.JobRunrScheduler
@@ -19,18 +20,23 @@ class JobRunrFlowScheduler(
 ) : FlowScheduler {
 	private val logger = KotlinLogging.logger {}
 
-	private fun createJob(workflow: Workflow): SnotyJob {
-		val jobRequest = JobRunrFlowJobRequest(workflow._id)
+	private fun createJob(workflow: Workflow, jobRequest: FlowJobRequest): SnotyJob {
+		val jobRequest = jobRequest.run {
+			JobRunrFlowJobRequest(
+				flowId = workflow._id,
+				logLevel = logLevel,
+			)
+		}
 		val job = createFlowJob(workflow, jobRequest)
 		return job
 	}
 
-	override fun schedule(workflow: Workflow) {
-		jobRunrScheduler.scheduleRecurringJob(jobId(workflow), createJob(workflow))
+	override fun schedule(workflow: Workflow, jobRequest: FlowJobRequest) {
+		jobRunrScheduler.scheduleRecurringJob(jobId(workflow), createJob(workflow, jobRequest))
 	}
 
-	override fun trigger(workflow: Workflow) {
-		jobRunrScheduler.scheduleJob(createJob(workflow))
+	override fun trigger(workflow: Workflow, jobRequest: FlowJobRequest) {
+		jobRunrScheduler.scheduleJob(createJob(workflow, jobRequest))
 	}
 
 	override suspend fun scheduleMissing(flowService: FlowService) {
