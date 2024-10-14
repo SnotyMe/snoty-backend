@@ -26,6 +26,6 @@ class RequestContextMap : RequestContext {
 	override fun stream(): Stream<MutableMap.MutableEntry<Any, Any>> = map.entries.stream()
 }
 
-inline fun <reified T : Any> RequestContext.get(): T? = get(T::class) ?: get(T::class.java)
+inline fun <reified T : Any> RequestContext.get(): T? = getOrDefault(T::class, null) ?: getOrDefault(T::class.java, null)
 inline fun <reified T : Any> RequestContext.put(value: T): Unit = put(T::class, value)
 inline fun <reified T : Any> RequestContext.delete(): Unit = delete(T::class)
