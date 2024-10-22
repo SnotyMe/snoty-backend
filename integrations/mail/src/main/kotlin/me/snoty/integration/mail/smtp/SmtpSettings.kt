@@ -2,6 +2,7 @@ package me.snoty.integration.mail.smtp
 
 import kotlinx.serialization.Serializable
 import me.snoty.integration.common.model.metadata.FieldCensored
+import me.snoty.integration.common.model.metadata.FieldDefaultValue
 import me.snoty.integration.common.model.metadata.FieldHidden
 import me.snoty.integration.common.model.metadata.FieldName
 import me.snoty.integration.common.wiring.node.NodeSettings
@@ -20,7 +21,8 @@ data class SmtpSettings(
 	val from: String,
 	val to: String,
 	@FieldHidden
-	val mimeType: String = "text/html; charset=utf-8",
+	@FieldDefaultValue(TEXT_HTML_UTF8)
+	val mimeType: String = TEXT_HTML_UTF8,
 ) : NodeSettings
 
 fun SmtpSettings.toConfiguration() = Properties().apply {

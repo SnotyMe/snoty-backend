@@ -21,10 +21,13 @@ fun interface MongoSettingsService {
 
 fun MongoSettingsService.lookupOrInvalid(node: MongoNode) = runCatching {
 	lookup(node, null)
-}.getOrElse { e ->
+}.recover { e ->
 	logger.error(e) { "Failed to lookup settings for node $node" }
 	lookup(node, InvalidNodeSettings::class)
-}
+}.recover { e ->
+	logger.error(e) { "Failed to lookup invalid settings for node $node" }
+	InvalidNodeSettings(node.settings.getString(NodeSettings::name.name))
+}.getOrThrow()
 
 @Single
 class MongoSettingsServiceImpl(private val nodeRegistry: NodeRegistry, private val codecRegistry: CodecRegistry) : MongoSettingsService {

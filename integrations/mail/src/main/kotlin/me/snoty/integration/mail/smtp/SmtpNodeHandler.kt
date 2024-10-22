@@ -1,10 +1,6 @@
 package me.snoty.integration.mail.smtp
 
-import jakarta.mail.Message
 import jakarta.mail.Session
-import jakarta.mail.internet.MimeBodyPart
-import jakarta.mail.internet.MimeMessage
-import jakarta.mail.internet.MimeMultipart
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.Node
@@ -16,7 +12,6 @@ import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.Subsystem
 import me.snoty.integration.mail.MailInput
 import org.koin.core.annotation.Single
-
 
 @RegisterNode(
 	subsystem = Subsystem.INTEGRATION,
@@ -36,24 +31,14 @@ class SmtpNodeHandler : NodeHandler {
 			transport.connect(settings.host, settings.username, settings.password)
 
 			each<MailInput>(input) { mail ->
-				val message = createMessage(mail, session, settings)
+				val send = SmtpSend(
+					from = settings.from,
+					to = settings.to,
+					mimeType = settings.mimeType,
+				)
+				val message = createMessage(mail, session, send)
 				transport.sendMessage(message, message.allRecipients)
 			}
-		}
-	}
-
-	private fun createMessage(mail: MailInput, session: Session, settings: SmtpSettings): MimeMessage {
-		val mimeBodyPart = MimeBodyPart()
-		mimeBodyPart.setContent(mail.body, settings.mimeType)
-
-		val multipart = MimeMultipart()
-		multipart.addBodyPart(mimeBodyPart)
-
-		return MimeMessage(session).apply {
-			setFrom(settings.from)
-			setRecipients(Message.RecipientType.TO, settings.to)
-			setSubject(mail.subject)
-			setContent(multipart)
 		}
 	}
 }
