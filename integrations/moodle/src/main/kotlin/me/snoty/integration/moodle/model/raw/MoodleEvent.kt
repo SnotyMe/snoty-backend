@@ -13,5 +13,6 @@ data class MoodleEvent(
 	@SerialName("timestart")
 	val timeStart: Long,
 	val overdue: Boolean,
-	val action: MoodleAction? = null
+	val action: MoodleAction? = null,
+	val course: MoodleCourse,
 )

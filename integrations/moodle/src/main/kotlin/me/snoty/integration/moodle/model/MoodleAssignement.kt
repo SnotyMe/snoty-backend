@@ -2,6 +2,7 @@ package me.snoty.integration.moodle.model
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import me.snoty.integration.moodle.model.raw.MoodleCourse
 import me.snoty.integration.moodle.model.raw.MoodleEvent
 
 @Serializable
@@ -11,7 +12,8 @@ data class MoodleAssignment(
 	val name: String,
 	val description: String,
 	val due: Instant,
-	val state: MoodleAssignmentState
+	val state: MoodleAssignmentState,
+	val course: MoodleCourse,
 )
 
 enum class MoodleAssignmentState {
@@ -36,5 +38,6 @@ fun MoodleEvent.toMoodleAssignment() = MoodleAssignment(
 		action?.actionable == true -> MoodleAssignmentState.DUE
 		action?.actionable == false -> MoodleAssignmentState.CLOSED
 		else -> MoodleAssignmentState.DONE
-	}
+	},
+	course = course,
 )
