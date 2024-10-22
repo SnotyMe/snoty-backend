@@ -16,7 +16,8 @@ interface NodeRegistry {
 
 	fun getHandlers(): Map<NodeDescriptor, NodeHandler>
 	fun getMetadata(): Map<NodeDescriptor, NodeMetadata>
-	fun getMetadata(descriptor: NodeDescriptor): NodeMetadata {
-		return getMetadata()[descriptor] ?: throw IllegalArgumentException("No metadata found for $descriptor")
-	}
+
+	fun getMetadataOrNull(descriptor: NodeDescriptor): NodeMetadata? = getMetadata()[descriptor]
+	fun getMetadata(descriptor: NodeDescriptor): NodeMetadata =
+		getMetadataOrNull(descriptor) ?: throw IllegalArgumentException("No metadata found for $descriptor")
 }

@@ -55,7 +55,7 @@ class FlowRunnerImpl(
 		flow.nodes
 			.asFlow()
 			.filter {
-				nodeRegistry.getMetadata(it.descriptor).position == NodePosition.START
+				nodeRegistry.getMetadataOrNull(it.descriptor)?.position == NodePosition.START
 			}
 			.flatMapConcat {
 				executionContext.executeStartNode(rootSpan, it, listOf(input))
