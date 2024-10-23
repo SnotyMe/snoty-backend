@@ -23,6 +23,7 @@ import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.koin.core.annotation.Single
+import org.slf4j.event.Level
 import java.util.*
 
 @Single
@@ -108,6 +109,20 @@ class MongoNodeService(
 		return when {
 			result.matchedCount == 0L -> NodeServiceResults.NodeNotFoundError(id)
 			else -> NodeServiceResults.NodeSettingsUpdated(id)
+		}
+	}
+
+	override suspend fun updateLogLevel(id: NodeId, logLevel: Level?): ServiceResult {
+		val result = collection.updateOne(
+			Filters.eq(MongoNode::_id.name, id),
+			when {
+				logLevel != null -> Updates.set(MongoNode::logLevel.name, logLevel)
+				else -> Updates.unset(MongoNode::logLevel.name)
+			}
+		)
+		return when {
+			result.matchedCount == 0L -> NodeServiceResults.NodeNotFoundError(id)
+			else -> NodeServiceResults.NodeLogLevelUpdated(id)
 		}
 	}
 

@@ -35,6 +35,12 @@ inline fun <reified T : Any> Route.get(
 ) =
 	application.getKoin().get<T>(qualifier, parameters)
 
+inline fun <reified T : Any> RoutingContext.get(
+	qualifier: Qualifier? = null,
+	noinline parameters: ParametersDefinition? = null
+) =
+	call.application.getKoin().get<T>(qualifier, parameters)
+
 /**
  * Retrieve given property for KoinComponent
  * @param key - key property

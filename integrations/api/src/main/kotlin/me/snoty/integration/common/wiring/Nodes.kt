@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings
+import org.slf4j.event.Level
 import java.util.*
 
 /**
@@ -16,6 +17,7 @@ interface GenericNode {
 	val flowId: NodeId
 	val userId: UUID
 	val descriptor: NodeDescriptor
+	val logLevel: Level?
 }
 
 /**
@@ -36,6 +38,7 @@ data class FlowNode(
 	@Contextual
 	override val userId: UUID,
 	override val descriptor: NodeDescriptor,
+	override val logLevel: Level?,
 	override val settings: NodeSettings,
 	val next: List<NodeId> = emptyList()
 ) : Node
@@ -47,6 +50,7 @@ data class StandaloneNode(
 	@Contextual
 	override val userId: UUID,
 	override val descriptor: NodeDescriptor,
+	override val logLevel: Level?,
 	@Contextual
 	override val settings: NodeSettings,
 ) : Node

@@ -53,6 +53,7 @@ class JobRunrFlowJobHandler(
 			flowRunner.execute(
 				jobId = jobContext.jobId.toString(),
 				logger = logger,
+				logLevel = jobRequest.logLevel,
 				flow = flow,
 				input = SimpleIntermediateData(jobContext),
 			)

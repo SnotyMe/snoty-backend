@@ -10,6 +10,7 @@ import kotlinx.coroutines.slf4j.MDCContext
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.FlowExecutionException
 import me.snoty.backend.integration.flow.logging.FlowLogService
+import me.snoty.backend.observability.APPENDER_LOG_LEVEL
 import me.snoty.backend.observability.setException
 import me.snoty.backend.observability.subspan
 import me.snoty.integration.common.model.NodePosition
@@ -23,6 +24,8 @@ import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import org.koin.core.annotation.Single
 import org.slf4j.Logger
+import org.slf4j.MDC
+import org.slf4j.event.Level
 
 @Single
 class FlowRunnerImpl(
@@ -35,6 +38,7 @@ class FlowRunnerImpl(
 	override suspend fun execute(
 		jobId: String,
 		logger: Logger,
+		logLevel: Level,
 		flow: WorkflowWithNodes,
 		input: IntermediateData,
 	) {
@@ -49,6 +53,7 @@ class FlowRunnerImpl(
 		val executionContext = FlowExecutionContext(
 			nodeMap = flow.nodes.associateBy { it._id },
 			logger = kLogger as Slf4jLogger<Logger>,
+			logLevel = logLevel,
 			flowTracing = flowTracing,
 		)
 
@@ -115,10 +120,14 @@ class FlowRunnerImpl(
 			logger.error { "Cycle detected at node ${node.descriptor} (${node._id}, referenced by $referencingNodes)" }
 			return emptyFlow()
 		}
+
 		val context = NodeHandleContextImpl(
 			intermediateDataMapperRegistry = intermediateDataMapperRegistry,
 			logger = logger.underlyingLogger,
 		)
+
+		MDC.put(APPENDER_LOG_LEVEL.key, (node.logLevel ?: logLevel).name)
+
 		return flow {
 			logger.debug { "Processing ${node.descriptor.id} node \"${node.settings.name}\" (${node._id}) with $input" }
 			// pls fix Kotlin

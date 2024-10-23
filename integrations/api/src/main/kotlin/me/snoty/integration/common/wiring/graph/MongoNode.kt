@@ -8,6 +8,7 @@ import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.Document
 import org.bson.codecs.pojo.annotations.BsonId
+import org.slf4j.event.Level
 import java.util.*
 
 /**
@@ -20,6 +21,7 @@ data class MongoNode(
 	override val flowId: NodeId,
 	override val userId: UUID,
 	override val descriptor: NodeDescriptor,
+	override val logLevel: Level? = null,
 	val settings: Document,
 	val next: List<NodeId>?,
 ) : GenericNode
@@ -31,7 +33,8 @@ fun MongoNode.toStandalone(
 	flowId = flowId,
 	userId = userId,
 	descriptor = descriptor,
-	settings = settings
+	logLevel = logLevel,
+	settings = settings,
 )
 
 fun MongoNode.toRelational(
@@ -41,6 +44,7 @@ fun MongoNode.toRelational(
 	flowId = flowId,
 	userId = userId,
 	descriptor = descriptor,
+	logLevel = logLevel,
 	settings = settings,
 	next = next ?: emptyList()
 )

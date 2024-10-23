@@ -68,7 +68,7 @@ class FlowRunnerImplTest {
 	}
 
 	private suspend fun FlowRunnerImpl.executeStartNode(jobId: String, flow: WorkflowWithNodes, input: IntermediateData)
-		= execute(jobId, logger, flow, input)
+		= execute(jobId, logger, Level.DEBUG, flow, input)
 
 	private fun assertNoWarnings(flow: Workflow) = runBlocking {
 		val output = testLogService.retrieve(flow._id)

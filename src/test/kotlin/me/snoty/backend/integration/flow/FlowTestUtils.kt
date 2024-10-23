@@ -53,6 +53,7 @@ fun node(
 	flowId = NodeId(),
 	userId = userId,
 	descriptor = descriptor,
+	logLevel = null,
 	settings = settings,
 	next = next.map(FlowNode::_id),
 )
