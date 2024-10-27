@@ -171,6 +171,7 @@ class MongoFlowLogService(mongoDB: MongoDatabase, featureFlags: FlowFeatureFlags
 	override fun query(flowId: NodeId): Flow<FlowExecution> =
 		// TODO: paginate
 		collection.find(Filters.eq(FlowLogs::flowId.name, flowId))
+			.sort(Sorts.descending(FlowLogs::creationDate.name))
 			.limit(15)
 			.map {
 				it.run {
