@@ -10,6 +10,7 @@ import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.scope
 import org.koin.core.Koin
 import org.koin.core.annotation.Single
+import org.koin.core.error.InstanceCreationException
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 import java.util.*
@@ -34,10 +35,11 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 		loader.forEach {
 			val result = registerContributor(it)
 			if (result.isFailure) {
-				logger.error(result.exceptionOrNull()) { "Failed to add from ${it.javaClass.simpleName}" }
+				val exception = result.exceptionOrNull()?.run { prettify(this) }
+				logger.error(exception) { "Failed to add from ${it.javaClass.simpleName}" }
 
 				if (featureFlags.crashOnStartupFailure) {
-					throw result.exceptionOrNull()!!
+					throw exception!!
 				}
 			}
 		}
@@ -65,5 +67,11 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 		)
 		nodeRegistry.registerHandler(contributor.metadata, handler)
 		logger.info { "Added from ${contributor.javaClass.simpleName}!" }
+	}
+
+	private fun prettify(e: Throwable): Throwable = when (val cause = e.cause) {
+		null -> e
+		else if e is InstanceCreationException -> prettify(cause)
+		else -> e
 	}
 }
