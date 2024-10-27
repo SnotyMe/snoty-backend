@@ -10,6 +10,7 @@ import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.logging.FlowLogService
 import me.snoty.backend.scheduling.FlowJobRequest
 import me.snoty.backend.scheduling.FlowScheduler
+import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.server.koin.get
 import me.snoty.backend.server.plugins.void
 import me.snoty.backend.utils.getUser
@@ -69,7 +70,13 @@ fun Route.flowResource() {
 	post("{id}/trigger") {
 		val flow = getPersonalFlowOrNull() ?: return@post
 
-		val jobRequest: FlowJobRequest = call.receiveNullable() ?: FlowJobRequest(logLevel = Level.DEBUG)
+		@Serializable
+		data class FlowJobRequestRequest(val logLevel: Level)
+
+		val jobRequest: FlowJobRequest =
+			call.receiveNullable<FlowJobRequestRequest?>()
+				?.let { any -> FlowJobRequest(logLevel = any.logLevel, triggeredBy = FlowTriggerReason.Manual) }
+				?: FlowJobRequest(logLevel = Level.DEBUG, triggeredBy = FlowTriggerReason.Manual)
 
 		flowScheduler.trigger(flow, jobRequest)
 
@@ -104,5 +111,13 @@ fun Route.flowResource() {
 		val logs = flowLogService.retrieve(flowId = flow._id)
 
 		call.respond(logs)
+	}
+
+	get("{id}/executions") {
+		val flow = getPersonalFlowOrNull() ?: return@get
+
+		val executions = flowLogService.query(flow._id)
+
+		call.respond(executions)
 	}
 }

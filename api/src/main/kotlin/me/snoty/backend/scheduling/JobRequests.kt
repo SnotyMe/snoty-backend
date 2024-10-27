@@ -14,4 +14,5 @@ data class SnotyJob(
 
 data class FlowJobRequest(
 	val logLevel: Level = Level.INFO,
+	val triggeredBy: FlowTriggerReason,
 )

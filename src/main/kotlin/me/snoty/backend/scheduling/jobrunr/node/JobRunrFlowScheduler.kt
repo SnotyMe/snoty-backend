@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filterNot
 import me.snoty.backend.scheduling.FlowJobRequest
 import me.snoty.backend.scheduling.FlowScheduler
+import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.scheduling.SnotyJob
 import me.snoty.backend.scheduling.jobrunr.JobRunrScheduler
 import me.snoty.integration.common.utils.createFlowJob
@@ -24,6 +25,7 @@ class JobRunrFlowScheduler(
 		val jobRequest = jobRequest.run {
 			JobRunrFlowJobRequest(
 				flowId = workflow._id,
+				triggeredBy = triggeredBy,
 				logLevel = logLevel,
 			)
 		}

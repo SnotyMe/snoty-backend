@@ -13,6 +13,7 @@ import me.snoty.backend.integration.flow.logging.FlowLogService
 import me.snoty.backend.observability.APPENDER_LOG_LEVEL
 import me.snoty.backend.observability.setException
 import me.snoty.backend.observability.subspan
+import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.NodeHandleContextImpl
@@ -37,6 +38,7 @@ class FlowRunnerImpl(
 ) : FlowRunner {
 	override suspend fun execute(
 		jobId: String,
+		triggeredBy: FlowTriggerReason,
 		logger: Logger,
 		logLevel: Level,
 		flow: WorkflowWithNodes,
@@ -44,6 +46,7 @@ class FlowRunnerImpl(
 	) {
 		val kLogger = KotlinLogging.logger(logger)
 		val rootSpan = flowTracing.createRootSpan(jobId, flow)
+		flowLogService.create(jobId, flow._id, triggeredBy)
 
 		if (featureFlags.logFlow) {
 			kLogger.info { "Starting flow ${flow._id}" }

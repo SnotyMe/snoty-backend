@@ -1,5 +1,6 @@
 package me.snoty.backend.integration.flow.logging
 
+import com.mongodb.MongoWriteException
 import com.mongodb.client.model.*
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -14,6 +15,7 @@ import me.snoty.backend.database.mongo.*
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.MongoWorkflow
 import me.snoty.backend.integration.flow.execution.FlowFeatureFlags
+import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.integration.common.wiring.flow.*
 import org.bson.codecs.pojo.annotations.BsonId
 import org.koin.core.annotation.Single
@@ -21,11 +23,13 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 interface FlowLogService {
-	suspend fun record(jobId: String, flowId: NodeId, entry: NodeLogEntry)
+	suspend fun create(jobId: String, flowId: NodeId, triggeredBy: FlowTriggerReason)
+	suspend fun record(jobId: String, entry: NodeLogEntry)
 	suspend fun setExecutionStatus(jobId: String, status: FlowExecutionStatus)
 
 	suspend fun retrieve(flowId: NodeId): List<NodeLogEntry>
-	fun query(userId: UUID): Flow<FlowExecution>
+	fun query(userId: UUID): Flow<EnumeratedFlowExecution>
+	fun query(flowId: NodeId): Flow<FlowExecution>
 }
 
 internal data class FlowLogs(
@@ -35,6 +39,7 @@ internal data class FlowLogs(
 	 */
 	val _id: String,
 	val flowId: NodeId,
+	val triggeredBy: FlowTriggerReason?,
 	val creationDate: Instant,
 	val status: FlowExecutionStatus? = null,
 	val logs: List<NodeLogEntry>,
@@ -74,6 +79,33 @@ class MongoFlowLogService(mongoDB: MongoDatabase, featureFlags: FlowFeatureFlags
 		}
 	}
 
+	override suspend fun create(jobId: String, flowId: NodeId, triggeredBy: FlowTriggerReason) {
+		runCatching {
+			collection.insertOne(
+				FlowLogs(
+					_id = jobId,
+					flowId = flowId,
+					triggeredBy = triggeredBy,
+					creationDate = Clock.System.now(),
+					status = FlowExecutionStatus.RUNNING,
+					logs = listOf()
+				)
+			)
+		}.onFailure {
+			// E11000 duplicate key error
+			if (it !is MongoWriteException || it.code != 11000) throw it
+
+			// was inserted already (by a previous attempt), let's just update that doc
+			collection.upsertOne(
+				Filters.eq(FlowLogs::_id.name, jobId),
+				Updates.combine(
+					Updates.set(FlowLogs::creationDate.name, Clock.System.now()),
+					Updates.set(FlowLogs::status.name, FlowExecutionStatus.RUNNING),
+				)
+			)
+		}
+	}
+
 	override suspend fun setExecutionStatus(jobId: String, status: FlowExecutionStatus) {
 		collection.updateOne(
 			Filters.eq(FlowLogs::_id.name, jobId),
@@ -81,15 +113,10 @@ class MongoFlowLogService(mongoDB: MongoDatabase, featureFlags: FlowFeatureFlags
 		)
 	}
 
-	override suspend fun record(jobId: String, flowId: NodeId, entry: NodeLogEntry) {
-		collection.upsertOne(
+	override suspend fun record(jobId: String, entry: NodeLogEntry) {
+		collection.updateOne(
 			Filters.eq(FlowLogs::_id.name, jobId),
-			Updates.combine(
-				Updates.push(FlowLogs::logs.name, entry),
-				Updates.setOnInsert(FlowLogs::flowId.name, flowId),
-				Updates.setOnInsert(FlowLogs::creationDate.name, Clock.System.now()),
-				Updates.setOnInsert(FlowLogs::status.name, FlowExecutionStatus.RUNNING),
-			)
+			Updates.push(FlowLogs::logs.name, entry),
 		)
 	}
 
@@ -98,7 +125,7 @@ class MongoFlowLogService(mongoDB: MongoDatabase, featureFlags: FlowFeatureFlags
 			.toList()
 			.flatMap { it.logs }
 
-	override fun query(userId: UUID): Flow<FlowExecution> {
+	override fun query(userId: UUID): Flow<EnumeratedFlowExecution> {
 		val flow = "flow"
 
 		data class MongoFlowExecution(
@@ -106,11 +133,13 @@ class MongoFlowLogService(mongoDB: MongoDatabase, featureFlags: FlowFeatureFlags
 			@BsonId
 			val flowId: NodeId,
 			val status: FlowExecutionStatus,
+			val triggeredBy: FlowTriggerReason?,
 			val startDate: Instant,
 		) {
-			fun toFlowExecution() = FlowExecution(
+			fun toFlowExecution() = EnumeratedFlowExecution(
 				jobId = jobId,
 				flowId = flowId,
+				triggeredBy = triggeredBy ?: FlowTriggerReason.Unknown,
 				startDate = startDate,
 				status = status,
 			)
@@ -138,4 +167,21 @@ class MongoFlowLogService(mongoDB: MongoDatabase, featureFlags: FlowFeatureFlags
 			),
 		).map { it.toFlowExecution() }
 	}
+
+	override fun query(flowId: NodeId): Flow<FlowExecution> =
+		// TODO: paginate
+		collection.find(Filters.eq(FlowLogs::flowId.name, flowId))
+			.limit(15)
+			.map {
+				it.run {
+					FlowExecution(
+						jobId = _id,
+						flowId = flowId,
+						triggeredBy = triggeredBy ?: FlowTriggerReason.Unknown,
+						startDate = creationDate,
+						status = status,
+						logs = logs,
+					)
+				}
+			}
 }

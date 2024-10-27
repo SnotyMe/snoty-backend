@@ -53,10 +53,8 @@ class NodeLogAppender(
 
 			val jobId = eventObject.mdcPropertyMap[JOB_ID.key]
 				?: return@launch logger.warn { "No job ID found in log entry with msg='$message'" }
-			val flowId = eventObject.mdcPropertyMap[FLOW_ID.key]?.toNodeId()
-				?: return@launch logger.warn { "No flow ID found in log entry with msg='$message'" }
 
-			flowLogService.record(jobId, flowId, entry)
+			flowLogService.record(jobId, entry)
 		}
 	}
 }

@@ -52,6 +52,7 @@ class JobRunrFlowJobHandler(
 
 			flowRunner.execute(
 				jobId = jobContext.jobId.toString(),
+				triggeredBy = jobRequest.triggeredBy,
 				logger = logger,
 				logLevel = jobRequest.logLevel,
 				flow = flow,

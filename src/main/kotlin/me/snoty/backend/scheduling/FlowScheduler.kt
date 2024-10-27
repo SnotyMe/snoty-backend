@@ -7,7 +7,7 @@ interface FlowScheduler {
 	/**
 	 * Schedule recurring jobs
 	 */
-	fun schedule(workflow: Workflow, jobRequest: FlowJobRequest = FlowJobRequest())
+	fun schedule(workflow: Workflow, jobRequest: FlowJobRequest = FlowJobRequest(triggeredBy = FlowTriggerReason.Scheduled))
 
 	/**
 	 * Trigger a one-off workflow

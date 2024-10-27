@@ -16,6 +16,7 @@ import me.snoty.backend.integration.flow.execution.FlowTracingImpl
 import me.snoty.backend.integration.flow.logging.NodeLogAppender
 import me.snoty.backend.integration.flow.node.NodeRegistryImpl
 import me.snoty.backend.observability.JOB_ID
+import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.test.*
 import me.snoty.integration.common.snotyJson
 import me.snoty.integration.common.wiring.data.IntermediateData
@@ -68,7 +69,7 @@ class FlowRunnerImplTest {
 	}
 
 	private suspend fun FlowRunnerImpl.executeStartNode(jobId: String, flow: WorkflowWithNodes, input: IntermediateData)
-		= execute(jobId, logger, Level.DEBUG, flow, input)
+		= execute(jobId, FlowTriggerReason.Unknown, logger, Level.DEBUG, flow, input)
 
 	private fun assertNoWarnings(flow: Workflow) = runBlocking {
 		val output = testLogService.retrieve(flow._id)
