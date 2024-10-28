@@ -11,7 +11,6 @@ import io.ktor.server.routing.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import me.snoty.backend.config.Config
-import me.snoty.backend.config.OidcConfig
 import me.snoty.backend.server.plugins.security.authenticationResource
 import me.snoty.backend.utils.UnauthorizedException
 import me.snoty.backend.utils.respondStatus
@@ -73,3 +72,6 @@ fun Application.configureSecurity(config: Config, httpClient: HttpClient) {
 		authenticationResource(authConfig, httpClient, keycloakProvider)
 	}
 }
+
+@Single
+fun provideAuthConfig(config: Config) = config.authentication
