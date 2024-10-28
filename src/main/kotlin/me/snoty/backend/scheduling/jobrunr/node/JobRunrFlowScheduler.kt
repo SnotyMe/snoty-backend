@@ -5,10 +5,8 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filterNot
 import me.snoty.backend.scheduling.FlowJobRequest
 import me.snoty.backend.scheduling.FlowScheduler
-import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.scheduling.SnotyJob
 import me.snoty.backend.scheduling.jobrunr.JobRunrScheduler
-import me.snoty.integration.common.utils.createFlowJob
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.flow.Workflow
 import org.jobrunr.storage.StorageProvider
@@ -29,7 +27,10 @@ class JobRunrFlowScheduler(
 				logLevel = logLevel,
 			)
 		}
-		val job = createFlowJob(workflow, jobRequest)
+		val job = SnotyJob(
+			name = jobName(workflow),
+			request = jobRequest,
+		)
 		return job
 	}
 

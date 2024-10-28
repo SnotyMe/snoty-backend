@@ -7,6 +7,7 @@
 
 package me.snoty.backend.server.koin
 
+import io.ktor.server.application.ApplicationCall
 import io.ktor.server.routing.*
 import me.snoty.backend.server.plugins.getKoin
 import org.koin.core.Koin
@@ -35,11 +36,22 @@ inline fun <reified T : Any> Route.get(
 ) =
 	application.getKoin().get<T>(qualifier, parameters)
 
+/**
+ * Retrieve given dependency for KoinComponent
+ * @param qualifier - bean name / optional
+ * @param parameters
+ */
+inline fun <reified T : Any> ApplicationCall.get(
+	qualifier: Qualifier? = null,
+	noinline parameters: ParametersDefinition? = null
+) =
+	application.getKoin().get<T>(qualifier, parameters)
+
 inline fun <reified T : Any> RoutingContext.get(
 	qualifier: Qualifier? = null,
 	noinline parameters: ParametersDefinition? = null
 ) =
-	call.application.getKoin().get<T>(qualifier, parameters)
+	call.get<T>(qualifier, parameters)
 
 /**
  * Retrieve given property for KoinComponent

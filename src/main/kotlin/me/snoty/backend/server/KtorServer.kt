@@ -36,7 +36,7 @@ class KtorServer(
 		setKoin(koin)
 		configureMonitoring(config, openTelemetry, metricsRegistry)
 		configureHTTP(config)
-		configureSecurity(config)
+		configureSecurity(config, koin.get())
 		configureSerialization(json)
 		configureRouting(config)
 		addResources(koin.getAll())

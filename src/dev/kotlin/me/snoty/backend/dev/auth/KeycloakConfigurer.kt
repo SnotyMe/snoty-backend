@@ -1,9 +1,11 @@
 package me.snoty.backend.dev.auth
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import jakarta.ws.rs.core.Response
 import me.snoty.backend.dev.randomString
 import org.keycloak.admin.client.resource.RealmsResource
 import org.keycloak.representations.idm.ClientRepresentation
+import org.keycloak.representations.idm.ProtocolMapperRepresentation
 import org.keycloak.representations.idm.RealmRepresentation
 import kotlin.time.Duration.Companion.days
 
@@ -57,8 +59,25 @@ class KeycloakConfigurer(private var realmsResource: RealmsResource, private var
 					isDirectAccessGrantsEnabled = true
 					isServiceAccountsEnabled = true
 					redirectUris = listOf("http://localhost:8080/*", "http://localhost:5173/*", *extraRedirectUris)
-					clientsResource.create(this)
-					logger.info { "Created client 'snoty'" }
+						protocolMappers = listOf(ProtocolMapperRepresentation().apply {
+						name = "Group Mapper"
+						protocol = "openid-connect"
+						protocolMapper = "oidc-group-membership-mapper"
+						// https://github.com/keycloak/keycloak/blob/main/services/src/main/java/org/keycloak/protocol/oidc/mappers/OIDCAttributeMapperHelper.java#L57
+						config = mapOf(
+							"full-path" to false.toString(),
+							"claim.name" to "groups",
+							"id.token.claim" to true.toString(),
+							"access.token.claim" to true.toString(),
+							"userinfo.token.claim" to true.toString()
+						)
+					})
+					val response = clientsResource.create(this)
+					if (response.statusInfo.family != Response.Status.Family.SUCCESSFUL) {
+						logger.error { "Error creating client: HTTP ${response.status} - ${response.readEntity(String::class.java)}" }
+					} else {
+						logger.info { "Created client 'snoty'" }
+					}
 				}
 			})
 		.let {
