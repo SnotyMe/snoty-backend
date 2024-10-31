@@ -1,30 +1,38 @@
 package me.snoty.backend.hooks
 
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import org.koin.core.annotation.Single
 import kotlin.reflect.KClass
 
 interface HookRegistry {
-	fun <D : Any, L : LifecycleHook<D>> registerHook(clazz: KClass<D>, hook: L)
+	fun <D : Any, H : LifecycleHook<D>> registerHook(clazz: KClass<H>, hook: H)
 
-	fun <T : Any> executeHooks(clazz: KClass<T>, data: T)
+	suspend fun <D : Any, H : LifecycleHook<D>> executeHooks(clazz: KClass<H>, data: D)
 }
 
 @Single
 class HookRegistryImpl : HookRegistry {
 	private val hooks = mutableMapOf<KClass<*>, MutableList<LifecycleHook<*>>>()
 
-	override fun <D : Any, L : LifecycleHook<D>> registerHook(clazz: KClass<D>, hook: L) {
+	override fun <D : Any, H : LifecycleHook<D>> registerHook(clazz: KClass<H>, hook: H) {
 		val list = hooks.getOrPut(clazz) { mutableListOf() }
 		list.add(hook)
 	}
 
 	@Suppress("UNCHECKED_CAST")
-	override fun <T : Any> executeHooks(clazz: KClass<T>, data: T) {
+	override suspend fun <D : Any, H : LifecycleHook<D>> executeHooks(clazz: KClass<H>, data: D) = coroutineScope {
 		// removing cleans up the map
-		val list = hooks.remove(clazz) as? List<LifecycleHook<T>> ?: return
-		list.forEach { it(data) }
+		val list = hooks[clazz] as? List<LifecycleHook<D>> ?: return@coroutineScope
+		list.map {
+			async {
+				it(data)
+			}
+		}.awaitAll()
+		Unit
 	}
 }
 
-inline fun <reified D : Any, reified H : LifecycleHook<D>> HookRegistry.registerHook(hook: H)
-	= registerHook(D::class, hook)
+inline fun <reified H : LifecycleHook<*>> HookRegistry.register(hook: H)
+	= registerHook(H::class, hook)

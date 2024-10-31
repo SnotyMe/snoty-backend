@@ -18,4 +18,6 @@ interface FlowService {
 	fun getAll(): Flow<StandaloneWorkflow>
 
 	suspend fun rename(flowId: NodeId, name: String)
+
+	suspend fun delete(flowId: NodeId)
 }

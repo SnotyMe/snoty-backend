@@ -32,4 +32,6 @@ class TestFlowLogService : FlowLogService {
 
 	override fun query(userId: UUID): Flow<EnumeratedFlowExecution> = throw NotImplementedError()
 	override fun query(flowId: NodeId): Flow<FlowExecution> = throw NotImplementedError()
+
+	override suspend fun deleteAll(flowId: NodeId) = throw NotImplementedError()
 }

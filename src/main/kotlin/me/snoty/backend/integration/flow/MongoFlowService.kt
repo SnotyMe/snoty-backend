@@ -69,6 +69,10 @@ class MongoFlowService(
 			Updates.set(MongoWorkflow::name.name, name)
 		)
 	}
+
+	override suspend fun delete(flowId: NodeId) {
+		collection.deleteOne(Filters.eq(MongoWorkflow::_id.name, flowId))
+	}
 }
 
 internal data class MongoWorkflow(

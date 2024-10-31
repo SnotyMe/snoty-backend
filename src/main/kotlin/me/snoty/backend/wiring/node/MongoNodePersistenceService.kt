@@ -10,7 +10,10 @@ import me.snoty.backend.database.mongo.Aggregations
 import me.snoty.backend.database.mongo.Stages
 import me.snoty.backend.database.mongo.mongoCollectionPrefix
 import me.snoty.backend.database.mongo.upsertOne
+import me.snoty.backend.hooks.HookRegistry
+import me.snoty.backend.hooks.register
 import me.snoty.integration.common.wiring.Node
+import me.snoty.integration.common.wiring.flow.NodeDeletedHook
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePersistenceFactory
 import me.snoty.integration.common.wiring.node.NodePersistenceService
@@ -68,11 +71,19 @@ class MongoNodePersistenceService<T : Any>(
 			Updates.unset("${NodeEntities<T>::entities.name}.$entityId")
 		)
 	}
+
+	override suspend fun delete(node: Node) {
+		collection.deleteOne(Filters.eq(NodeEntities<T>::_id.name, node._id))
+	}
 }
 
 @Factory
-class MongoNodePersistenceFactory(private val mongoDB: MongoDatabase, private val nodeDescriptor: NodeDescriptor) : NodePersistenceFactory {
+class MongoNodePersistenceFactory(private val mongoDB: MongoDatabase, private val nodeDescriptor: NodeDescriptor, private val hookRegistry: HookRegistry) : NodePersistenceFactory {
 	override fun <T : Any> create(name: String, entityClass: KClass<T>): NodePersistenceService<T> {
-		return MongoNodePersistenceService(mongoDB, nodeDescriptor, name, entityClass)
+		val service = MongoNodePersistenceService(mongoDB, nodeDescriptor, name, entityClass)
+		hookRegistry.register(NodeDeletedHook {
+			service.delete(it)
+		})
+		return service
 	}
 }

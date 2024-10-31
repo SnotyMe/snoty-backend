@@ -5,8 +5,10 @@ import io.ktor.http.*
 import io.ktor.server.routing.*
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.impl.AddRoutesHook
-import me.snoty.backend.hooks.registerHook
-import me.snoty.backend.utils.*
+import me.snoty.backend.hooks.register
+import me.snoty.backend.utils.UnauthorizedException
+import me.snoty.backend.utils.getUserOrNull
+import me.snoty.backend.utils.respondStatus
 import org.koin.core.annotation.Factory
 
 interface NodeHandlerRouteFactory {
@@ -24,13 +26,13 @@ internal class NodeHandlerRouteFactoryImpl(
 	 * @param authenticated whether to verify that the user is authenticated
 	 */
 	override operator fun invoke(route: String, method: HttpMethod, authenticated: Boolean, block: suspend RoutingContext.() -> Unit) =
-		hookRegistry.registerHook<Routing, AddRoutesHook> { routing ->
-			logger.debug { "Registering route for $nodeDescriptor node: $route"}
+		hookRegistry.register(AddRoutesHook { routing ->
+			logger.debug { "Registering route for $nodeDescriptor node: $route" }
 
 			routing.route("${nodeDescriptor.subsystem}/${nodeDescriptor.type}/$route") {
 				method(method) {
 					handle {
-						logger.debug { "Handling route for $nodeDescriptor node: $route"}
+						logger.debug { "Handling route for $nodeDescriptor node: $route" }
 
 						if (authenticated && call.getUserOrNull() == null) {
 							return@handle call.respondStatus(UnauthorizedException("User is not authenticated"))
@@ -40,5 +42,5 @@ internal class NodeHandlerRouteFactoryImpl(
 					}
 				}
 			}
-		}
+		})
 }

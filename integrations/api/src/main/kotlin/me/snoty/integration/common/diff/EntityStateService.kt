@@ -3,9 +3,10 @@ package me.snoty.integration.common.diff
 import kotlinx.coroutines.flow.Flow
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.integration.common.diff.state.EntityState
+import me.snoty.integration.common.wiring.node.NodeScopedPersistenceService
 import org.bson.Document
 
-interface EntityStateService {
+interface EntityStateService : NodeScopedPersistenceService {
 	suspend fun getLastState(nodeId: NodeId, entityId: String): EntityState?
 	fun getLastStates(nodeId: NodeId): Flow<EntityState>
 

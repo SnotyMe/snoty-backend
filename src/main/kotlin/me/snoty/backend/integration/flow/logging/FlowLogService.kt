@@ -30,6 +30,8 @@ interface FlowLogService {
 	suspend fun retrieve(flowId: NodeId): List<NodeLogEntry>
 	fun query(userId: UUID): Flow<EnumeratedFlowExecution>
 	fun query(flowId: NodeId): Flow<FlowExecution>
+
+	suspend fun deleteAll(flowId: NodeId)
 }
 
 internal data class FlowLogs(
@@ -185,4 +187,8 @@ class MongoFlowLogService(mongoDB: MongoDatabase, featureFlags: FlowFeatureFlags
 					)
 				}
 			}
+
+	override suspend fun deleteAll(flowId: NodeId) {
+		collection.deleteMany(Filters.eq(FlowLogs::flowId.name, flowId))
+	}
 }

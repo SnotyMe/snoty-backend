@@ -10,12 +10,16 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapMerge
 import me.snoty.backend.database.mongo.*
+import me.snoty.backend.hooks.HookRegistry
+import me.snoty.backend.hooks.register
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.observability.METRICS_POOL
 import me.snoty.integration.common.diff.*
 import me.snoty.integration.common.diff.state.EntityState
 import me.snoty.integration.common.diff.state.EntityStateCollection
 import me.snoty.integration.common.diff.state.NodeEntityStates
+import me.snoty.integration.common.wiring.Node
+import me.snoty.integration.common.wiring.flow.NodeDeletedHook
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
@@ -29,6 +33,7 @@ class MongoEntityStateService(
 	mongoDB: MongoDatabase,
 	integration: NodeDescriptor,
 	meterRegistry: MeterRegistry,
+	hookRegistry: HookRegistry,
 	@Named(METRICS_POOL) metricsPool: ScheduledExecutorService,
 	@Named(STATE_CODEC_REGISTRY) codecRegistry: CodecRegistry,
 ) : EntityStateService {
@@ -90,5 +95,15 @@ class MongoEntityStateService(
 			Filters.eq(NodeEntityStates::nodeId.name, nodeId),
 			Updates.set(NodeEntityStates::entities.name, states.map { it.state })
 		)
+	}
+
+	init {
+		hookRegistry.register(NodeDeletedHook {
+			delete(it)
+		})
+	}
+
+	override suspend fun delete(node: Node) {
+		nodeEntityStates.deleteOne(Filters.eq(NodeEntityStates::nodeId.name, node._id))
 	}
 }

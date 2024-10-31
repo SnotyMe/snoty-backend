@@ -6,6 +6,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Instant
 import me.snoty.backend.database.mongo.getIdAsString
 import me.snoty.backend.dev.randomString
+import me.snoty.backend.hooks.HookRegistryImpl
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.node
 import me.snoty.backend.test.MongoTest
@@ -34,6 +35,7 @@ class MongoEntityStateServiceTest {
 		mongoDB,
 		nodeDescriptor,
 		meterRegistry = SimpleMeterRegistry(),
+		hookRegistry = HookRegistryImpl(),
 		metricsPool = mockk(relaxed = true),
 		codecRegistry = provideStateCodecRegistry(bsonTypeClassMap(), mongoDB.codecRegistry),
 	)

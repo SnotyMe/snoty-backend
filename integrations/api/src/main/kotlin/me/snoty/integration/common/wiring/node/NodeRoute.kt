@@ -5,7 +5,7 @@ import io.ktor.http.*
 import io.ktor.server.routing.*
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.impl.AddRoutesHook
-import me.snoty.backend.hooks.registerHook
+import me.snoty.backend.hooks.register
 import me.snoty.backend.integration.config.flow.toNodeId
 import me.snoty.backend.utils.BadRequestException
 import me.snoty.backend.utils.getUserOrNull
@@ -31,7 +31,7 @@ internal class NodeRouteFactoryImpl(
 	 * @param verifyUser whether to verify that the user is the owner of the node
 	 */
 	override operator fun invoke(route: String, method: HttpMethod, verifyUser: Boolean, block: suspend RoutingContext.(Node) -> Unit) =
-		hookRegistry.registerHook<Routing, AddRoutesHook> { routing ->
+		hookRegistry.register(AddRoutesHook { routing ->
 			logger.debug { "Registering route for $nodeDescriptor node: $route"}
 
 			routing.route("{nodeId}/$route") {
@@ -56,5 +56,5 @@ internal class NodeRouteFactoryImpl(
 					}
 				}
 			}
-		}
+		})
 }

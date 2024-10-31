@@ -17,6 +17,7 @@ import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.letOrNull
 import me.snoty.integration.common.http.flowNotFound
 import me.snoty.integration.common.http.invalidNodeId
+import me.snoty.integration.common.wiring.flow.FlowManagementService
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.flow.StandaloneWorkflow
 import org.slf4j.event.Level
@@ -119,5 +120,14 @@ fun Route.flowResource() {
 		val executions = flowLogService.query(flow._id)
 
 		call.respond(executions)
+	}
+
+	val flowManagement: FlowManagementService = get()
+	delete("{id}") {
+		val flow = getPersonalFlowOrNull() ?: return@delete
+
+		flowManagement.deleteFlowCascading(flow)
+
+		call.respond(HttpStatusCode.OK)
 	}
 }
