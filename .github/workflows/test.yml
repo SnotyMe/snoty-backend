@@ -9,22 +9,26 @@ jobs:
     name: Build and run Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
       - name: Set up JDK 21
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: 21
           distribution: temurin
+
       - name: Setup gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
+
       - name: Run tests
         run: ./gradlew check koverXmlReport
+
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v4
         if: always()
         with:
           report_paths: '**/build/test-results/*/TEST-*.xml'
+
       - name: Find JUnit test results
         id: junit_files
         run: |
@@ -32,12 +36,14 @@ jobs:
           files="$(ls **/build/test-results/**/TEST-*.xml | paste -s -d ',' -)"
           echo "files=$files" >> "$GITHUB_OUTPUT"
           echo "Found files: $files"
+
       - name: Upload Test Results to Codecov
         if: ${{ !cancelled() }}
         uses: codecov/test-results-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ${{ steps.junit_files.outputs.files }}
+          files: **/build/test-results/**
+
       - name: Upload Coverage Report
         uses: codecov/codecov-action@v4
         with:
