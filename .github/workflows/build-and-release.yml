@@ -45,7 +45,7 @@ jobs:
           ./gradlew \
             -Pme.snoty.docker.tags="$full_version $additional_tags" \
             -Pme.snoty.github.run="${{github.run_id}}:${{github.run_number}}" \
-            jibDockerBuild
+            build jibDockerBuild
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
