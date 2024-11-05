@@ -1,6 +1,9 @@
 plugins {
 	alias(libs.plugins.kotlin.dsl)
+	`maven-publish`
 }
+
+apply(from = "../version.gradle.kts")
 
 dependencies {
 	libs.plugins.kotlin.jvm.get().apply {
@@ -22,4 +25,19 @@ dependencies {
 	libs.plugins.doctor.get().apply {
 		implementation("com.osacky.doctor:doctor-plugin:$version")
 	}
+
+	libs.koin.let { koin ->
+		listOf(koin.core, koin.ksp, koin.annotations)
+	}.forEach {
+		implementation(it)
+	}
+}
+
+publishing {
+	publications
+		.configureEach {
+			if (this is MavenPublication) {
+				artifactId = "conventions"
+			}
+		}
 }

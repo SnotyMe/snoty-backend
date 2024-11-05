@@ -25,7 +25,7 @@ import java.util.*
 class AuthenticationTest {
 	companion object {
 		@Container
-		val keycloakContainer = KeycloakContainer()
+		val keycloakContainer = KeycloakContainer("quay.io/keycloak/keycloak:26.0")
 		lateinit var config: Config
 
 		@BeforeAll
