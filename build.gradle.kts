@@ -13,9 +13,6 @@ plugins {
     id("snoty.idea-conventions")
 }
 
-group = "me.snoty"
-version = "0.0.1"
-
 val isDevelopment: Boolean = project.findProperty("me.snoty.development")?.toString().toBoolean()
 
 subprojects {
@@ -24,6 +21,10 @@ subprojects {
 
 allprojects {
     apply(plugin = "snoty.koin-conventions")
+}
+
+allprojects {
+    apply(from = "$rootDir/version.gradle.kts")
 }
 
 val devSourceSet = sourceSets.create("dev") {
@@ -70,7 +71,11 @@ testing {
                 implementation(tests.json)
                 implementation(tests.testcontainers)
                 implementation(tests.testcontainers.junit)
-                implementation(tests.testcontainers.keycloak)
+                implementation(tests.testcontainers.keycloak) {
+                    // explicit dependency, the bundled version is buggy
+                    exclude(group = "org.keycloak")
+                }
+                implementation(dev.keycloak.adminClient)
                 implementation(tests.testcontainers.mongodb)
                 implementation(monitoring.opentelemetry.testing)
                 implementation(devSourceSet.output)
@@ -164,12 +169,13 @@ dependencies { with(libs) {
     // dev
     devImplementation(dev.keycloak.adminClient)
     devImplementation(monitoring.opentelemetry.sdk)
+    file("dist/integrations").listFiles()?.let {
+        implementation(files(it))
+    }
 
-    moduleImplementation(projects.integrations.api)
     // depend on all integrations by default
     subprojects
         .filter { it.path.startsWith(":integrations:") }
-        .filter { !it.path.startsWith(":integrations:utils") }
         .forEach {
             moduleImplementation(it)
         }

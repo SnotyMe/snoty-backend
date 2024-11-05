@@ -20,6 +20,7 @@ jib {
 	}
 	container {
 		jvmFlags = listOf("-Dio.ktor.development=false")
+		extraClasspath = extraClasspath + "/integrations/*"
 		creationTime = "USE_CURRENT_TIMESTAMP"
 		appRoot = "/app"
 		workingDirectory = "/app"

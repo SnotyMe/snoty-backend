@@ -1,5 +1,6 @@
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.kotlin.dsl.getByType
+import kotlin.jvm.optionals.getOrNull
 
 plugins {
 	kotlin("jvm")
@@ -14,16 +15,24 @@ fun VersionCatalog.getModule(name: String) =
 dependencies {
 	val libs = project.rootProject.extensions
 		.getByType<VersionCatalogsExtension>()
-		.named("libs")
+		.run {
+			runCatching {
+				named("snoty")
+			}.getOrElse {
+				named("libs")
+			}
+		}
 
 	val koinVersion = libs
 		.findVersion("koin")
-		.get()
-		.displayName
+		.getOrNull()
+		?.displayName
+			?: throw IllegalStateException("No koin version")
 	val koinAnnotationsVersion = libs
 		.findVersion("koin-annotations")
-		.get()
-		.displayName
+		.getOrNull()
+		?.displayName
+			?: throw IllegalStateException("No koin-annotations version")
 
 	implementation("${libs.getModule("koin-core")}:$koinVersion")
 	api("${libs.getModule("koin-annotations")}:$koinAnnotationsVersion")
