@@ -4,6 +4,7 @@ import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.micrometer.core.instrument.MeterRegistry
+import io.netty.handler.codec.http.HttpServerCodec
 import io.opentelemetry.api.OpenTelemetry
 import kotlinx.serialization.json.Json
 import me.snoty.backend.config.Config
@@ -23,16 +24,26 @@ class KtorServer(
 	fun start(wait: Boolean) {
 		embeddedServer(
 			Netty,
-			port = config.port.toInt(),
-			host = "0.0.0.0",
-			module = {
-				module()
-			},
-			watchPaths = listOf("classes", "resources"),
-		).start(wait = wait)
+			serverConfig {
+				watchPaths = listOf("classes", "resources")
+				module { installModules() }
+			}
+		) {
+			connectors += EngineConnectorBuilder().apply {
+				port = config.port.toInt()
+				host = "0.0.0.0"
+			}
+			httpServerCodec = {
+				HttpServerCodec(
+					/* maxInitialLineLength = */ maxInitialLineLength,
+					/* maxHeaderSize = */ config.server.maxHeaderSize,
+					/* maxChunkSize = */ maxChunkSize
+				)
+			}
+		}.start(wait = wait)
 	}
 
-	private fun Application.module() {
+	private fun Application.installModules() {
 		setKoin(koin)
 		configureMonitoring(config, openTelemetry, metricsRegistry)
 		configureHTTP(config)

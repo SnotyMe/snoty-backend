@@ -8,6 +8,7 @@ import io.ktor.http.auth.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+import io.ktor.server.request.*
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonPrimitive
@@ -16,6 +17,11 @@ import me.snoty.backend.config.OidcConfig
 import me.snoty.backend.config.getReverseMapping
 import me.snoty.backend.server.koin.get
 import java.util.*
+
+fun ApplicationRequest.parseAuthHeader() =
+	call.request.parseAuthorizationHeader()
+		// optionally load from cookies
+		?: parseAuthorizationHeader("Bearer ${call.request.cookies["access_token"]}")
 
 fun ApplicationCall.getUser(): User =
 	getUserOrNull() ?: throw UnauthorizedException("User not authenticated")
@@ -37,7 +43,7 @@ fun ApplicationCall.getUserOrNull(): User? {
 suspend fun ApplicationCall.getUserGroups(): List<String> {
 	val oidcConfig: OidcConfig = get()
 
-	val token = request.parseAuthorizationHeader() as? HttpAuthHeader.Single
+	val token = request.parseAuthHeader() as? HttpAuthHeader.Single
 		?: throw UnauthorizedException("Invalid token")
 	val groups = getGroups(token.blob)
 	return groups.mapNotNull {

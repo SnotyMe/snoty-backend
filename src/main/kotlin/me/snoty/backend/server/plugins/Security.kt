@@ -3,7 +3,6 @@ package me.snoty.backend.server.plugins
 import com.auth0.jwk.UrlJwkProvider
 import io.ktor.client.*
 import io.ktor.http.*
-import io.ktor.http.auth.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
@@ -13,6 +12,7 @@ import kotlinx.serialization.Serializable
 import me.snoty.backend.config.Config
 import me.snoty.backend.server.plugins.security.authenticationResource
 import me.snoty.backend.utils.UnauthorizedException
+import me.snoty.backend.utils.parseAuthHeader
 import me.snoty.backend.utils.respondStatus
 import org.koin.core.annotation.Single
 import java.net.URI
@@ -52,9 +52,7 @@ fun Application.configureSecurity(config: Config, httpClient: HttpClient) {
 		}
 		jwt("jwt-auth") {
 			authHeader { call ->
-				call.request.parseAuthorizationHeader()
-					// optionally load from cookies
-					?: parseAuthorizationHeader("Bearer ${call.request.cookies["access_token"]}")
+				call.request.parseAuthHeader()
 			}
 			verifier(
 				UrlJwkProvider(URI(authConfig.certUrl).toURL()),
