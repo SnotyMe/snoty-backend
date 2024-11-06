@@ -1,23 +1,29 @@
-package me.snoty.integration.untis
+package me.snoty.integration.untis.model
 
-import kotlinx.datetime.*
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import me.snoty.backend.utils.DateTimeParseException
-import me.snoty.integration.untis.UntisDateTimeTest.DateWrapper.Companion.decode
-import me.snoty.integration.untis.UntisDateTimeTest.DateWrapper.Companion.makeJson
-import me.snoty.integration.untis.model.UntisDateTime
+import me.snoty.integration.untis.model.UntisDateTimeTest.DateWrapper.Companion.decode
+import me.snoty.integration.untis.model.UntisDateTimeTest.DateWrapper.Companion.makeJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class UntisDateTimeTest {
 	@Serializable
-	data class DateWrapper(val dateTime: UntisDateTime) {
+	data class DateWrapper(val dateTime: @Serializable(with = ViennaSerializer::class) UntisDateTime) {
+		object ViennaSerializer : UntisDateTime.Serializer(timeZone = TimeZone.of("Europe/Vienna"))
 		companion object {
 			fun makeJson(date: String) = """{"dateTime":"$date"}"""
-			fun decode(date: String) = Json.decodeFromString<DateWrapper>(makeJson(date)).dateTime
+			fun decode(date: String): UntisDateTime {
+				return Json
+					.decodeFromString<DateWrapper>(makeJson(date)).dateTime
+			}
 		}
 	}
 
@@ -38,14 +44,23 @@ class UntisDateTimeTest {
 
 	@Test
 	fun testDeserialization_valid() {
-		var baseDate = "2024-04-01T10:55"
-		// date, as returned by the API
-		fun date() = "${baseDate}Z"
-		// date, as parsable by `Instant`
-		fun dateInstant() = Instant.parse("${baseDate}:00Z")
-		assertEquals(UntisDateTime(dateInstant()), decode(date()))
-		baseDate = "2023-12-31T23:59"
-		assertEquals(UntisDateTime(dateInstant()), decode(date()))
+		fun test(expectedUtcDate: String, untisDate: String) {
+			assertEquals(expectedUtcDate, decode(untisDate).dateTime.toString())
+		}
+
+		// Untis returns it suffixed with a Z, but removing it should work as well
+		listOf("", "Z").forEach { suffix ->
+			// CEST = UTC + 2 => UTC (snoty) = CEST (untis) - 2
+			test(
+				"2024-07-27T07:45:00Z",
+				"2024-07-27T09:45"
+			)
+			// CET = UTC + 1 => UTC (snoty) = CEST (untis) - 1
+			test(
+				"2024-11-06T08:45:00Z",
+				"2024-11-06T09:45"
+			)
+		}
 	}
 
 	@Test

@@ -15,14 +15,13 @@ import org.bson.codecs.Codec
 import org.bson.codecs.DecoderContext
 import org.bson.codecs.EncoderContext
 import java.time.LocalDateTime
-import java.time.ZoneOffset
-import java.util.Date
 
 @Serializable(with = UntisDateTime.Companion::class)
 data class UntisDateTime(
 	val dateTime: Instant
 ) {
-	companion object : KSerializer<UntisDateTime>, Codec<UntisDateTime> {
+	companion object : Serializer()
+	open class Serializer internal constructor(private val timeZone: TimeZone = TimeZone.currentSystemDefault()) : KSerializer<UntisDateTime>, Codec<UntisDateTime> {
 		// kotlinx.serialization
 		override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("UntisDateTime", PrimitiveKind.STRING)
 
@@ -31,16 +30,13 @@ data class UntisDateTime(
 		}
 
 		override fun deserialize(decoder: Decoder): UntisDateTime {
-			val dateTime = DateTimeUtils.parseIsoDateTime(decoder.decodeString())
-			return UntisDateTime(dateTime.toInstant(ZoneOffset.UTC).toKotlinInstant())
-		}
-
-		fun fromString(dateTime: String): UntisDateTime {
-			return UntisDateTime(DateTimeUtils.parseIsoDateTime(dateTime).toInstant(ZoneOffset.UTC).toKotlinInstant())
-		}
-
-		fun fromDate(date: Date): UntisDateTime {
-			return UntisDateTime(Instant.fromEpochMilliseconds(date.time))
+			// strip faulty "Z" from datetime
+			// webuntis for some reason returns a string like 2024-11-06T10:55Z - however, that is LOCAL time, not UTC as the trailing Z would imply
+			// therefore, it is dropped as that, according to ISO-8601, represents local time (https://en.wikipedia.org/wiki/ISO_8601#Local_time_(unqualified))
+			val dateTimeString = decoder.decodeString().substringBeforeLast("Z")
+			val dateTime = DateTimeUtils.parseIsoDateTime(dateTimeString)
+				.toKotlinLocalDateTime()
+			return UntisDateTime(dateTime.toInstant(timeZone))
 		}
 
 		// BSON

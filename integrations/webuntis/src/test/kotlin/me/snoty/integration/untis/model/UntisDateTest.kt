@@ -1,12 +1,11 @@
-package me.snoty.integration.untis
+package me.snoty.integration.untis.model
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import me.snoty.backend.utils.DateParseException
-import me.snoty.integration.untis.UntisDateTest.DateWrapper.Companion.decode
-import me.snoty.integration.untis.UntisDateTest.DateWrapper.Companion.makeJson
-import me.snoty.integration.untis.model.UntisDate
+import me.snoty.integration.untis.model.UntisDateTest.DateWrapper.Companion.decode
+import me.snoty.integration.untis.model.UntisDateTest.DateWrapper.Companion.makeJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
