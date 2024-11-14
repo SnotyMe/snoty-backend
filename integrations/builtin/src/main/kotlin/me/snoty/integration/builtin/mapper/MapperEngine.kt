@@ -8,15 +8,17 @@ import org.slf4j.Logger
 enum class MapperEngine(private val templater: Templater) {
 	@DisplayName("Replace")
 	REPLACE({ settings, data ->
-		val mappedData = settings.fields.mapValues {
-			var result = it.value
+		val mappedData = Document()
+		settings.fields.forEach { (key, ogValue) ->
+			var result = ogValue
 			for (field in data) {
 				result = result.replace("%${field.key}%", field.value.toString())
 			}
-			result
+
+			mappedData.setRecursively(key, result)
 		}
 
-		Document(mappedData)
+		mappedData
 	}),
 	@DisplayName("Liquid")
 	LIQUID({ settings, data ->
@@ -25,7 +27,7 @@ enum class MapperEngine(private val templater: Templater) {
 			val template = TemplateParser.DEFAULT.parse(value)
 			val rendered = template.render(data as Map<String, Any>)
 
-			mappedData[key] = rendered
+			mappedData.setRecursively(key, rendered)
 		}
 
 		mappedData
@@ -46,4 +48,13 @@ enum class MapperEngine(private val templater: Templater) {
 
 		return mappedData
 	}
+}
+
+private fun Document.setRecursively(key: String, value: Any) {
+	val parts = key.split(".")
+	parts.dropLast(1).fold(this) { acc, part ->
+		val next = acc[part] as? Document ?: Document()
+		acc[part] = next
+		next
+	}[parts.last()] = value
 }

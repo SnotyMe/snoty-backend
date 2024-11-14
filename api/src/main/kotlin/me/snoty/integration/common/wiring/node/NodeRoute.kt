@@ -2,6 +2,7 @@ package me.snoty.integration.common.wiring.node
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.*
+import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.impl.AddRoutesHook
@@ -34,7 +35,7 @@ internal class NodeRouteFactoryImpl(
 		hookRegistry.register(AddRoutesHook { routing ->
 			logger.debug { "Registering route for $nodeDescriptor node: $route"}
 
-			routing.route("{nodeId}/$route") {
+			fun Route.doRoute() = route("{nodeId}/$route") {
 				method(method) {
 					handle {
 						logger.debug { "Handling route for $nodeDescriptor node: $route"}
@@ -55,6 +56,15 @@ internal class NodeRouteFactoryImpl(
 						block(this, node)
 					}
 				}
+			}
+
+
+			if (verifyUser) {
+				routing.authenticate("jwt-auth") {
+					doRoute()
+				}
+			} else {
+				routing.doRoute()
 			}
 		})
 }

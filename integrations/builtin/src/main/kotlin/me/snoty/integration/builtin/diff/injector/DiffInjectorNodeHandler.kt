@@ -14,9 +14,11 @@ import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.iterableStructOutput
+import me.snoty.integration.common.wiring.node.NodeRouteFactory
 import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.integration.common.wiring.node.Subsystem
 import org.bson.Document
+import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Single
 
 @Serializable
@@ -45,7 +47,9 @@ data class DiffInjectorSettings(
 @Single
 class DiffInjectorNodeHandler(
 	entityStateService: EntityStateService,
-) : DiffNodeHandler(entityStateService) {
+	nodeRouteFactory: NodeRouteFactory,
+	codecRegistry: CodecRegistry,
+) : DiffNodeHandler(entityStateService, nodeRouteFactory, codecRegistry) {
 	override suspend fun NodeHandleContext.process(
 		node: Node,
 		input: Collection<IntermediateData>,

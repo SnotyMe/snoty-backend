@@ -2,7 +2,10 @@ package me.snoty.integration.builtin.diff
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.oshai.kotlinlogging.slf4j.logger
+import io.ktor.http.*
+import io.ktor.server.response.*
 import kotlinx.coroutines.flow.toList
+import me.snoty.backend.database.mongo.encode
 import me.snoty.backend.database.mongo.getIdAsString
 import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.diff.diff
@@ -12,11 +15,36 @@ import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.NodeInput
 import me.snoty.integration.common.wiring.get
 import me.snoty.integration.common.wiring.node.NodeHandler
+import me.snoty.integration.common.wiring.node.NodeRouteFactory
 import org.bson.Document
+import org.bson.codecs.configuration.CodecRegistry
 import org.slf4j.Logger
 
 
-abstract class DiffNodeHandler(private val entityStateService: EntityStateService) : NodeHandler {
+abstract class DiffNodeHandler(
+	private val entityStateService: EntityStateService,
+	nodeRouteFactory: NodeRouteFactory,
+	codecRegistry: CodecRegistry,
+) : NodeHandler {
+	init {
+		nodeRouteFactory("state", method = HttpMethod.Get, verifyUser = true) { node ->
+			// scuffed code to encode states to json using bson
+
+			data class States(val states: List<EntityState>)
+
+			val states = States(entityStateService.getLastStates(node._id).toList())
+
+			val mapped = codecRegistry.encode(states).toJson()
+
+			call.respondText(mapped, ContentType.Application.Json)
+		}
+
+		nodeRouteFactory("clear", method = HttpMethod.Post, verifyUser = true) { node ->
+			entityStateService.delete(node)
+			call.respond(HttpStatusCode.OK)
+		}
+	}
+
 	suspend fun NodeHandleContext.handleStatesAndDiff(slf4jLogger: Logger, node: Node, input: NodeInput, excludedFields: Collection<String>): Pair<Data, States> {
 		val logger = KotlinLogging.logger(slf4jLogger)
 

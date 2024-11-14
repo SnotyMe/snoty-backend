@@ -1,0 +1,16 @@
+{% assign url = config.apiHost | append: "/wiring/node/" | append: node._id %}
+<button onclick="
+        templateAPI.authenticatedFetch('{{ url }}/clear', { method: 'POST' })
+            .then(res => {
+                if (res.ok) {
+                    alert('Successfully cleared states')
+                } else {
+                    alert('Failed to clear states')
+                }
+            })
+    "
+   class="btn preset-filled"
+>
+    Clear States
+</button>
+<small>Warning: this will delete all historic states. All entities will be reset to the status "Created"!</small>

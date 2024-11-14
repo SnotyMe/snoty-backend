@@ -55,4 +55,10 @@ sealed class NodeFieldDetails(
 	data class GenericDetails(
 		val genericType: String
 	) : NodeFieldDetails("Generic")
+
+	@Serializable
+	data class ObjectDetails(
+		val className: String,
+		val schema: ObjectSchema,
+	) : NodeFieldDetails("Object")
 }

@@ -7,13 +7,14 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
 import me.snoty.backend.utils.toTitleCase
 import me.snoty.integration.common.model.metadata.*
 import kotlin.reflect.KClass
 
-fun generateObjectSchema(resolver: Resolver, clazz: KSClassDeclaration): ObjectSchema? {
+fun generateObjectSchema(resolver: Resolver, clazz: KSClassDeclaration, visited: List<ClassName> = emptyList()): ObjectSchema? {
 	when (clazz.toClassName()) {
 		NoSchema::class.asClassName() -> return null
 		EmptySchema::class.asClassName() -> return emptyList()
@@ -27,7 +28,7 @@ fun generateObjectSchema(resolver: Resolver, clazz: KSClassDeclaration): ObjectS
 		val description = prop.getAnnotation<FieldDescription>()?.value
 		val defaultValue = prop.getAnnotation<FieldDefaultValue>()?.value
 
-		val details = resolver.getDetails(prop)
+		val details = resolver.getDetails(prop, visited)
 		NodeField(
 			name = name.asString(),
 			type = details?.valueType ?: prop.type.toString(),
@@ -41,15 +42,31 @@ fun generateObjectSchema(resolver: Resolver, clazz: KSClassDeclaration): ObjectS
 	}.toList()
 }
 
-fun Resolver.getDetails(prop: KSPropertyDeclaration): NodeFieldDetails? {
+@OptIn(KspExperimental::class)
+fun Resolver.getDetails(prop: KSPropertyDeclaration, visited: List<ClassName>): NodeFieldDetails? {
 	val type = prop.type.resolve()
+	val className = type.toClassName()
 	return when {
+		Collection::class.isAssignableFrom(type, this) -> null
+
 		Enum::class.isAssignableFrom(type, this) ->
 			getEnumDetails(prop)
 		String::class.isAssignableFrom(type, this) ->
 			NodeFieldDetails.PlaintextDetails(
 				lines = prop.getAnnotation<Multiline>()?.values ?: Multiline.DEFAULT_LINES,
 			)
+
+		Any::class.isAssignableFrom(type, this) && !className.packageName.startsWith("java") && !className.packageName.startsWith("kotlin") -> {
+			if (visited.contains(className)) {
+				throw IllegalStateException("Circular reference detected: $visited")
+			}
+
+			NodeFieldDetails.ObjectDetails(
+				className = className.canonicalName,
+				schema = generateObjectSchema(resolver = this, clazz = getKotlinClassByName(className.canonicalName)!!, visited = visited + className)!!
+			)
+		}
+
 		else -> null
 	}
 }
