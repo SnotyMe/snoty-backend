@@ -99,7 +99,7 @@ class MongoEntityStateServiceTest {
 			node._id,
 			entity2,
 			DiffResult.Updated(
-				diff = mapOf("date" to Change(old = date, new = date2)),
+				change = mapOf("date" to Change(old = date, new = date2)),
 				checksum = entity2.checksum(),
 			),
 		)

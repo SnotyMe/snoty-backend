@@ -22,7 +22,7 @@ class EntityDiffTest {
 		var document = Document("key", "value")
 		val result = document.diff(Document())
 		assertIs<DiffResult.Updated>(result)
-		result.diff.apply {
+		result.change.apply {
 			assertEquals(1, size)
 			val change = assertIs<Change<*, *>>(values.first())
 			assertEquals("value", change.new)
@@ -33,7 +33,7 @@ class EntityDiffTest {
 		val other = Document("key", "old")
 		val result2 = document.diff(other)
 		assertIs<DiffResult.Updated>(result2)
-		result2.diff.apply {
+		result2.change.apply {
 			assertEquals(1, size)
 			val change = assertIs<Change<*, *>>(values.first())
 			assertEquals("old", change.old)
@@ -44,7 +44,7 @@ class EntityDiffTest {
 		val other2 = Document("key2", "value")
 		val result3 = document.diff(other2)
 		assertIs<DiffResult.Updated>(result3)
-		result3.diff.apply {
+		result3.change.apply {
 			assertEquals(2, size)
 
 			assertAny(values) {

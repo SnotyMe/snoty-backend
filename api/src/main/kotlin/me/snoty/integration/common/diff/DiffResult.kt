@@ -9,7 +9,7 @@ import org.bson.codecs.configuration.CodecRegistry
 sealed class DiffResult {
 	data object Unchanged : DiffResult()
 	data class Created(val checksum: Long, val fields: Document) : DiffResult()
-	data class Updated(val checksum: Long, val diff: Diff) : DiffResult()
+	data class Updated(val checksum: Long, val change: Diff) : DiffResult()
 	data class Deleted(val checksum: Long, val previous: Document) : DiffResult()
 }
 
@@ -30,8 +30,8 @@ class DiffResultCodec(
 			}
 			is DiffResult.Updated -> {
 				writer.writeInt64("checksum", checksum)
-				writer.writeName("diff")
-				codecRegistry.get(diff.javaClass).encode(writer, diff, encoderContext)
+				writer.writeName("change")
+				codecRegistry.get(change.javaClass).encode(writer, change, encoderContext)
 			}
 			is DiffResult.Deleted -> {
 				writer.writeInt64("checksum", checksum)
@@ -54,7 +54,7 @@ class DiffResultCodec(
 			)
 			DiffResult.Updated::class.simpleName -> DiffResult.Updated(
 				document.getLong("checksum"),
-				document.get("diff", Diff::class.java)
+				document.get("change", Diff::class.java)
 			)
 			DiffResult.Deleted::class.simpleName -> DiffResult.Deleted(
 				document.getLong("checksum"),
