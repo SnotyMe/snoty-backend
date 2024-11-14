@@ -25,7 +25,7 @@ enum class MapperEngine(private val templater: Templater) {
 		val mappedData = Document()
 		settings.fields.forEach { (key, value) ->
 			val template = TemplateParser.DEFAULT.parse(value)
-			val rendered = template.render(data as Map<String, Any>)
+			val rendered = template.render(data)
 
 			mappedData.setRecursively(key, rendered)
 		}

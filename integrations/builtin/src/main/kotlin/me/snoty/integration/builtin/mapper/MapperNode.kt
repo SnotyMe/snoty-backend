@@ -1,6 +1,7 @@
 package me.snoty.integration.builtin.mapper
 
 import kotlinx.serialization.Serializable
+import me.snoty.backend.database.mongo.encode
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.EmptySchema
@@ -15,6 +16,7 @@ import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.integration.common.wiring.node.Subsystem
 import me.snoty.integration.common.wiring.structOutput
 import org.bson.Document
+import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Single
 
 @Serializable
@@ -38,13 +40,21 @@ data class MapperSettings(
 	outputType = EmptySchema::class
 )
 @Single
-class MapperNodeHandler : NodeHandler {
+class MapperNodeHandler(
+	private val codecRegistry: CodecRegistry,
+) : NodeHandler {
 	override suspend fun NodeHandleContext.process(
 		node: Node,
 		input: Collection<IntermediateData>,
 	) = mapInputWithSettings<Document, MapperSettings>(input, node) { data, settings ->
-		val mappedData = settings.engine.template(logger, settings, data)
+		val mappedData = Document(data.mapValues { (_, value) ->
+			val packageName = value.javaClass.packageName
+			if (packageName.startsWith("kotlin") || packageName.startsWith("java") || value::class == Document::class) value
+			else codecRegistry.encode(value)
+		})
 
-		structOutput(mappedData)
+		val result = settings.engine.template(logger, settings, mappedData)
+
+		structOutput(result)
 	}
 }
