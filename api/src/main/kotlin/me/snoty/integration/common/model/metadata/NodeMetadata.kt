@@ -47,7 +47,7 @@ sealed class NodeFieldDetails(
 	}
 
 	@Serializable
-	data class PlaintextDetails(
+	data class PlaintextDetails @JvmOverloads constructor(
 		val lines: Int,
 		val language: String? = null,
 	) : NodeFieldDetails("Plaintext")
