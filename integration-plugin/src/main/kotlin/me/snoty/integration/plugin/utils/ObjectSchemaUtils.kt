@@ -1,12 +1,15 @@
 package me.snoty.integration.plugin.utils
 
 import com.google.devtools.ksp.KspExperimental
+import com.google.devtools.ksp.getAnnotationsByType
 import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.getKotlinClassByName
 import com.google.devtools.ksp.processing.Resolver
+import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
+import com.google.devtools.ksp.symbol.KSTypeReference
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
@@ -43,17 +46,31 @@ fun generateObjectSchema(resolver: Resolver, clazz: KSClassDeclaration, visited:
 }
 
 @OptIn(KspExperimental::class)
-fun Resolver.getDetails(prop: KSPropertyDeclaration, visited: List<ClassName>): NodeFieldDetails? {
-	val type = prop.type.resolve()
+fun Resolver.getDetails(
+	prop: KSPropertyDeclaration,
+	visited: List<ClassName>,
+	type: KSType = prop.type.resolve(),
+	annotated: KSAnnotated = prop,
+): NodeFieldDetails? {
 	val className = type.toClassName()
 	return when {
-		Collection::class.isAssignableFrom(type, this) -> null
+		Collection::class.isAssignableFrom(type, this) -> {
+			val typeRef = type.arguments.single().type!!
+			val genericType = typeRef.resolve()
+			// get the details of the generic type
+			// e.g. `List<@Language("json") String>`
+			val fieldDetails = getDetails(prop, visited, genericType, typeRef)
+			// wrap into CollectionDetails to potentially add collection metadata later
+			NodeFieldDetails.CollectionDetails(fieldDetails)
+		}
 
 		Enum::class.isAssignableFrom(type, this) ->
 			getEnumDetails(prop)
+
 		String::class.isAssignableFrom(type, this) ->
 			NodeFieldDetails.PlaintextDetails(
-				lines = prop.getAnnotation<Multiline>()?.values ?: Multiline.DEFAULT_LINES,
+				lines = annotated.getAnnotation<Multiline>()?.values ?: Multiline.DEFAULT_LINES,
+				language = annotated.getAnnotation<Language>()?.value
 			)
 
 		Any::class.isAssignableFrom(type, this) && !className.packageName.startsWith("java") && !className.packageName.startsWith("kotlin") -> {

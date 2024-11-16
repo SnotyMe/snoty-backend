@@ -35,6 +35,11 @@ data class DiffInjectorSettings(
 	val emitUnchanged: Boolean = false,
 ) : NodeSettings
 
+data class HasDiff(
+	val id: String,
+	val diff: DiffResult,
+)
+
 @RegisterNode(
 	type = "diffinjector",
 	subsystem = Subsystem.PROCESSOR,
@@ -73,7 +78,7 @@ class DiffInjectorNodeHandler(
 			.map { (id, ogDoc) ->
 				// clone to avoid referencing self
 				Document(ogDoc)
-					.append("diff", allStates[id]?.diffResult)
+					.append(HasDiff::diff.name, allStates[id]?.diffResult)
 			}
 
 		return iterableStructOutput(items)

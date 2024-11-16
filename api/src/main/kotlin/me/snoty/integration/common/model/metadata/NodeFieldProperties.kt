@@ -19,5 +19,7 @@ annotation class Multiline(
 		const val DEFAULT_LINES = 1
 	}
 }
+@Target(AnnotationTarget.PROPERTY, AnnotationTarget.CLASS, AnnotationTarget.TYPE)
+annotation class Language(val value: String)
 
 annotation class DisplayName(val value: String)

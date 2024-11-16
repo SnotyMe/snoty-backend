@@ -54,7 +54,7 @@ abstract class DiffNodeHandler(
 			.map { Document(it) }
 			.mapNotNull { document ->
 				val id = document.getIdAsString() ?: let {
-					logger.warn { "Document has no _id field, skipping..." }
+					logger.warn { "Document has no id field, skipping..." }
 					return@mapNotNull null
 				}
 				id to document

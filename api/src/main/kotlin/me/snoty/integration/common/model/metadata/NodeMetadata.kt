@@ -48,7 +48,8 @@ sealed class NodeFieldDetails(
 
 	@Serializable
 	data class PlaintextDetails(
-		val lines: Int
+		val lines: Int,
+		val language: String? = null,
 	) : NodeFieldDetails("Plaintext")
 
 	@Serializable
@@ -61,4 +62,9 @@ sealed class NodeFieldDetails(
 		val className: String,
 		val schema: ObjectSchema,
 	) : NodeFieldDetails("Object")
+
+	@Serializable
+	data class CollectionDetails(
+		val elementDetails: NodeFieldDetails?,
+	) : NodeFieldDetails("Collection")
 }
