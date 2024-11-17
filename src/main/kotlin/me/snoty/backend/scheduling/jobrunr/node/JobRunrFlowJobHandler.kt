@@ -2,7 +2,7 @@ package me.snoty.backend.scheduling.jobrunr.node
 
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.slf4j.MDCContext
-import me.snoty.backend.integration.flow.logging.FlowLogService
+import me.snoty.backend.integration.flow.logging.FlowExecutionService
 import me.snoty.backend.integration.flow.logging.NodeLogAppender
 import me.snoty.backend.observability.APPENDER_LOG_LEVEL
 import me.snoty.backend.observability.FLOW_ID
@@ -22,12 +22,12 @@ import ch.qos.logback.classic.Logger as LogbackLogger
 class JobRunrFlowJobHandler(
 	private val flowService: FlowService,
 	private val flowRunner: FlowRunner,
-	flowLogService: FlowLogService,
+	flowExecutionService: FlowExecutionService,
 ) : JobRequestHandler<JobRunrFlowJobRequest> {
 	private val rootLogger = LoggerFactory.getLogger(JobRunrFlowJobHandler::class.java) as LogbackLogger
 
 	init {
-		val nodeLogAppender = NodeLogAppender(flowLogService)
+		val nodeLogAppender = NodeLogAppender(flowExecutionService)
 		nodeLogAppender.start()
 		rootLogger.addAppender(nodeLogAppender)
 	}

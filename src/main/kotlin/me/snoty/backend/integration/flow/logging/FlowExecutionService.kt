@@ -22,7 +22,7 @@ import org.koin.core.annotation.Single
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-interface FlowLogService {
+interface FlowExecutionService {
 	suspend fun create(jobId: String, flowId: NodeId, triggeredBy: FlowTriggerReason)
 	suspend fun record(jobId: String, entry: NodeLogEntry)
 	suspend fun setExecutionStatus(jobId: String, status: FlowExecutionStatus)
@@ -48,7 +48,7 @@ internal data class FlowLogs(
 )
 
 @Single
-class MongoFlowLogService(mongoDB: MongoDatabase, featureFlags: FlowFeatureFlags) : FlowLogService {
+class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatureFlags) : FlowExecutionService {
 	private val logger = KotlinLogging.logger {}
 	private val collection = mongoDB.getCollection<FlowLogs>(FLOW_EXECUTION_COLLECTION_NAME)
 

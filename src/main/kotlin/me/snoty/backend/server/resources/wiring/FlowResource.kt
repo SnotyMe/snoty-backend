@@ -7,7 +7,7 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.flow.toList
 import kotlinx.serialization.Serializable
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.backend.integration.flow.logging.FlowLogService
+import me.snoty.backend.integration.flow.logging.FlowExecutionService
 import me.snoty.backend.scheduling.FlowJobRequest
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.scheduling.FlowTriggerReason
@@ -24,7 +24,7 @@ import org.slf4j.event.Level
 
 fun Route.flowResource() {
 	val flowService: FlowService = get()
-	val flowLogService: FlowLogService = get()
+	val flowExecutionService: FlowExecutionService = get()
 
 	post {
 		val user = call.getUser()
@@ -48,7 +48,7 @@ fun Route.flowResource() {
 
 	get("list/executions") {
 		val user = call.getUser()
-		val executions = flowLogService.query(user.id)
+		val executions = flowExecutionService.query(user.id)
 			.toList()
 
 		call.respond(executions)
@@ -109,7 +109,7 @@ fun Route.flowResource() {
 	get("{id}/logs") {
 		val flow = getPersonalFlowOrNull() ?: return@get
 
-		val logs = flowLogService.retrieve(flowId = flow._id)
+		val logs = flowExecutionService.retrieve(flowId = flow._id)
 
 		call.respond(logs)
 	}
@@ -117,7 +117,7 @@ fun Route.flowResource() {
 	get("{id}/executions") {
 		val flow = getPersonalFlowOrNull() ?: return@get
 
-		val executions = flowLogService.query(flow._id)
+		val executions = flowExecutionService.query(flow._id)
 
 		call.respond(executions)
 	}

@@ -1,7 +1,7 @@
 package me.snoty.backend.wiring.flow
 
 import me.snoty.backend.hooks.HookRegistry
-import me.snoty.backend.integration.flow.logging.FlowLogService
+import me.snoty.backend.integration.flow.logging.FlowExecutionService
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.wiring.flow.FlowManagementService
@@ -13,14 +13,14 @@ import org.koin.core.annotation.Single
 @Single
 class MongoFlowManagementService(
 	private val flowScheduler: FlowScheduler,
-	private val flowLogService: FlowLogService,
+	private val flowExecutionService: FlowExecutionService,
 	private val nodeService: NodeService,
 	private val flowService: FlowService,
 	private val hookRegistry: HookRegistry,
 ) : FlowManagementService {
 	override suspend fun deleteFlowCascading(workflow: Workflow) {
 		flowScheduler.deleteAll(workflow)
-		flowLogService.deleteAll(workflow._id)
+		flowExecutionService.deleteAll(workflow._id)
 		flowService.getWithNodes(workflow._id)?.nodes?.forEach {
 			hookRegistry.executeHooks(NodeDeletedHook::class, it)
 			nodeService.delete(it._id)

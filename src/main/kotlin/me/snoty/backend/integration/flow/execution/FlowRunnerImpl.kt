@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.slf4j.MDCContext
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.FlowExecutionException
-import me.snoty.backend.integration.flow.logging.FlowLogService
+import me.snoty.backend.integration.flow.logging.FlowExecutionService
 import me.snoty.backend.observability.APPENDER_LOG_LEVEL
 import me.snoty.backend.observability.setException
 import me.snoty.backend.observability.subspan
@@ -34,7 +34,7 @@ class FlowRunnerImpl(
 	private val featureFlags: FlowFeatureFlags,
 	private val intermediateDataMapperRegistry: IntermediateDataMapperRegistry,
 	private val flowTracing: FlowTracing,
-	private val flowLogService: FlowLogService,
+	private val flowExecutionService: FlowExecutionService,
 ) : FlowRunner {
 	override suspend fun execute(
 		jobId: String,
@@ -46,7 +46,7 @@ class FlowRunnerImpl(
 	) {
 		val kLogger = KotlinLogging.logger(logger)
 		val rootSpan = flowTracing.createRootSpan(jobId, flow)
-		flowLogService.create(jobId, flow._id, triggeredBy)
+		flowExecutionService.create(jobId, flow._id, triggeredBy)
 
 		if (featureFlags.logFlow) {
 			kLogger.info { "Starting flow ${flow._id}" }
@@ -70,7 +70,7 @@ class FlowRunnerImpl(
 			}
 			.onCompletion {
 				rootSpan.end()
-				flowLogService.setExecutionStatus(
+				flowExecutionService.setExecutionStatus(
 					jobId,
 					if (it == null) FlowExecutionStatus.SUCCESS else FlowExecutionStatus.FAILED,
 				)

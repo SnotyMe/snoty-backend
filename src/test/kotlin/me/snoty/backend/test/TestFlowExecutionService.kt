@@ -2,7 +2,7 @@ package me.snoty.backend.test
 
 import kotlinx.coroutines.flow.Flow
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.backend.integration.flow.logging.FlowLogService
+import me.snoty.backend.integration.flow.logging.FlowExecutionService
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.integration.common.wiring.flow.EnumeratedFlowExecution
 import me.snoty.integration.common.wiring.flow.FlowExecution
@@ -10,7 +10,7 @@ import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
 import me.snoty.integration.common.wiring.flow.NodeLogEntry
 import java.util.*
 
-class TestFlowLogService : FlowLogService {
+class TestFlowExecutionService : FlowExecutionService {
 	data class FlowEntry(val flowId: NodeId, val logs: MutableList<NodeLogEntry>)
 
 	private val logs = mutableMapOf<String, FlowEntry>()
