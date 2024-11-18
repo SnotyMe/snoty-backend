@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import me.snoty.integration.common.model.metadata.FieldCensored
 import me.snoty.integration.common.model.metadata.FieldDefaultValue
 import me.snoty.integration.common.model.metadata.FieldDescription
+import me.snoty.integration.common.model.metadata.FieldHidden
 import me.snoty.integration.common.model.metadata.FieldName
 import me.snoty.integration.common.wiring.node.NodeSettings
 
@@ -21,4 +22,8 @@ data class MoodleSettings(
 	@FieldDefaultValue("true")
 	@FieldDescription("Whether to emit 'closed' assignments (you cannot submit anything)")
 	val emitClosedAssignments: Boolean = true,
+	@FieldDefaultValue("false")
+	@FieldHidden
+	@FieldDescription("Fixes a bug where past assignments are emitted again as if they were new. You probably don't want to enable this.")
+	val emitPastAssignments: Boolean = false,
 ) : NodeSettings

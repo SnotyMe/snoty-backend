@@ -1,8 +1,6 @@
 package me.snoty.backend.test
 
 import io.mockk.mockk
-import kotlinx.datetime.Clock
-import me.snoty.backend.build.BuildInfo
 import me.snoty.backend.config.*
 import me.snoty.backend.database.mongo.apiCodecModule
 import me.snoty.integration.common.model.NodePosition
@@ -59,15 +57,6 @@ class TestConfigBuilder(block: TestConfigBuilder.() -> Unit) {
 
 fun buildTestConfig(block: TestConfigBuilder.() -> Unit)
 	= TestConfigBuilder(block).build()
-
-val TestBuildInfo = BuildInfo(
-	gitBranch = "<test>",
-	gitCommit = "<test>",
-	gitCommitDate = Clock.System.now(),
-	buildDate = Clock.System.now(),
-	version = "<test>",
-	application = "snoty-backend"
-)
 
 val TestCodecRegistry: CodecRegistry = CodecRegistries.fromRegistries(
 	integrationsApiCodecModule(bsonTypeClassMap()),

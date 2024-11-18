@@ -4,7 +4,6 @@ import io.ktor.client.*
 import me.snoty.backend.utils.filterIfNot
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
@@ -26,8 +25,7 @@ import org.slf4j.event.Level
 )
 @Single
 class MoodleIntegration(
-	val metadata: NodeMetadata,
-	private val httpClient: HttpClient,
+	httpClient: HttpClient,
 	private val moodleAPI: MoodleAPI = MoodleAPIImpl(httpClient)
 ) : NodeHandler {
 	override suspend fun NodeHandleContext.process(
@@ -47,6 +45,7 @@ class MoodleIntegration(
 			assignments
 				.filterIfNot(moodleSettings.emitClosedAssignments) { it.state != MoodleAssignmentState.CLOSED }
 				.filterIfNot(moodleSettings.emitDoneAssignments) { it.state != MoodleAssignmentState.DONE }
+				.filterIfNot(moodleSettings.emitPastAssignments) { it.state != MoodleAssignmentState.PAST }
 		)
 	}
 }

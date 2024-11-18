@@ -27,6 +27,10 @@ testing {
 		withType<JvmTestSuite> {
 			useJUnitJupiter()
 
+			dependencies {
+				implementation(testFixtures(project(":api")))
+			}
+
 			tasks.withType<Test>().configureEach {
 				maxParallelForks = (Runtime.getRuntime().availableProcessors()).coerceAtLeast(1)
 				environment("LOG_LEVEL", "TRACE")

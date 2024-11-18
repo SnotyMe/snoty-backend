@@ -35,9 +35,6 @@ val devSourceSet = sourceSets.create("dev") {
 
 testing.suites.withType<JvmTestSuite>().configureEach {
     dependencies { with(libs) {
-        // API (contains things like Config)
-        // for some reason, transitive dependencies aren't included in the test classpath
-        implementation(projects.api)
         implementation(tests.junit.api)
         implementation(tests.ktor.server.testHost)
         implementation(tests.mockk)
