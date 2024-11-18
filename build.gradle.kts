@@ -63,9 +63,7 @@ testing {
             }
 
             dependencies { with(libs) {
-                // API (contains things like Config)
-                // for some reason, transitive dependencies aren't included in the test classpath
-                implementation(projects.api)
+                implementation(testFixtures(projects.api))
                 implementation(tests.junit.api)
                 implementation(tests.ktor.server.testHost)
                 implementation(tests.mockk)
