@@ -29,7 +29,7 @@ interface FlowExecutionService {
 
 	suspend fun retrieve(flowId: NodeId): List<NodeLogEntry>
 	fun query(userId: UUID): Flow<EnumeratedFlowExecution>
-	fun query(flowId: NodeId): Flow<FlowExecution>
+	fun query(flowId: NodeId, startFrom: String?, limit: Int = 15): Flow<FlowExecution>
 
 	suspend fun deleteAll(flowId: NodeId)
 }
@@ -170,11 +170,15 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 		).map { it.toFlowExecution() }
 	}
 
-	override fun query(flowId: NodeId): Flow<FlowExecution> =
-		// TODO: paginate
-		collection.find(Filters.eq(FlowLogs::flowId.name, flowId))
+	override fun query(flowId: NodeId, startFrom: String?, limit: Int): Flow<FlowExecution> =
+		collection.find(
+			Filters.and(
+				Filters.eq(FlowLogs::flowId.name, flowId),
+				if (startFrom != null) Filters.lt(FlowLogs::_id.name, startFrom) else Filters.empty(),
+			)
+		)
 			.sort(Sorts.descending(FlowLogs::creationDate.name))
-			.limit(15)
+			.limit(limit)
 			.map {
 				it.run {
 					FlowExecution(

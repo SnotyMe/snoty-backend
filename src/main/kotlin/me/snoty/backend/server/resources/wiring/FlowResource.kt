@@ -15,6 +15,7 @@ import me.snoty.backend.server.koin.get
 import me.snoty.backend.server.plugins.void
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.letOrNull
+import me.snoty.backend.utils.orNull
 import me.snoty.integration.common.http.flowNotFound
 import me.snoty.integration.common.http.invalidNodeId
 import me.snoty.integration.common.wiring.flow.FlowManagementService
@@ -115,9 +116,12 @@ fun Route.flowResource() {
 	}
 
 	get("{id}/executions") {
+		val startFrom = call.request.queryParameters["startFrom"]?.orNull()
+		val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
+
 		val flow = getPersonalFlowOrNull() ?: return@get
 
-		val executions = flowExecutionService.query(flow._id)
+		val executions = flowExecutionService.query(flowId = flow._id, startFrom = startFrom, limit = limit)
 
 		call.respond(executions)
 	}
