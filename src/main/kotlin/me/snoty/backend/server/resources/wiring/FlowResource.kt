@@ -12,7 +12,8 @@ import me.snoty.backend.scheduling.FlowJobRequest
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.server.koin.get
-import me.snoty.backend.server.plugins.void
+import me.snoty.backend.server.resources.wiring.flow.flowExportImportResource
+import me.snoty.backend.server.resources.wiring.flow.getPersonalFlowOrNull
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.letOrNull
 import me.snoty.backend.utils.orNull
@@ -20,7 +21,6 @@ import me.snoty.integration.common.http.flowNotFound
 import me.snoty.integration.common.http.invalidNodeId
 import me.snoty.integration.common.wiring.flow.FlowManagementService
 import me.snoty.integration.common.wiring.flow.FlowService
-import me.snoty.integration.common.wiring.flow.StandaloneWorkflow
 import org.slf4j.event.Level
 
 fun Route.flowResource() {
@@ -53,19 +53,6 @@ fun Route.flowResource() {
 			.toList()
 
 		call.respond(executions)
-	}
-
-	suspend fun RoutingContext.getPersonalFlowOrNull(): StandaloneWorkflow? {
-		val user = call.getUser()
-		val id = call.parameters["id"]?.letOrNull { NodeId(it) }
-			?: return void { invalidNodeId() }
-
-		val flow = flowService.getStandalone(id)
-		if (flow?.userId != user.id) {
-			return void { flowNotFound(flow) }
-		}
-
-		return flow
 	}
 
 	val flowScheduler: FlowScheduler = get()
@@ -134,4 +121,6 @@ fun Route.flowResource() {
 
 		call.respond(HttpStatusCode.OK)
 	}
+
+	flowExportImportResource()
 }
