@@ -44,3 +44,19 @@ fun Document.getIdAsString(): String? = when (val id = get("id")) {
 	is Int -> id.toString()
 	else -> throw IllegalArgumentException("Unsupported id type: $id")
 }
+
+fun Document.setRecursively(key: String, value: Any?) {
+	val parts = key.split(".")
+	parts.dropLast(1).fold(this) { acc, part ->
+		val next = acc[part] as? Document ?: Document()
+		acc[part] = next
+		next
+	}[parts.last()] = value
+}
+
+fun Document.getRecursively(key: String): Any? {
+	val parts = key.split(".")
+	return parts.dropLast(1).fold(this) { acc, part ->
+		acc.get(part, Document::class.java)
+	}[parts.last()]
+}

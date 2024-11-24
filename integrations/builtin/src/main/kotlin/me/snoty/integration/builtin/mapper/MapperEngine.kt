@@ -1,6 +1,7 @@
 package me.snoty.integration.builtin.mapper
 
 import liqp.TemplateParser
+import me.snoty.backend.database.mongo.setRecursively
 import me.snoty.integration.common.model.metadata.DisplayName
 import org.bson.Document
 import org.slf4j.Logger
@@ -48,13 +49,4 @@ enum class MapperEngine(private val templater: Templater) {
 
 		return mappedData
 	}
-}
-
-private fun Document.setRecursively(key: String, value: Any) {
-	val parts = key.split(".")
-	parts.dropLast(1).fold(this) { acc, part ->
-		val next = acc[part] as? Document ?: Document()
-		acc[part] = next
-		next
-	}[parts.last()] = value
 }
