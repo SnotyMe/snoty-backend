@@ -15,7 +15,7 @@ fun Application.configureHTTP(config: Config) {
 	}
 	install(CORS) {
 		if (config.environment.isDev()) anyHost()
-		hosts += config.corsHosts
+		config.corsHosts.forEach(::allowHost)
 		HttpMethod.DefaultMethods.forEach(::allowMethod)
 		allowHeader(HttpHeaders.Authorization)
 		allowHeader(HttpHeaders.ContentType)
