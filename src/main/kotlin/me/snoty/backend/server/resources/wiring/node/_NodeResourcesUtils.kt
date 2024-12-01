@@ -6,7 +6,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.serializerOrNull
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.backend.server.koin.get
 import me.snoty.backend.server.plugins.void
 import me.snoty.backend.server.resources.wiring.noSerializerFound
 import me.snoty.backend.utils.getUser
@@ -18,6 +17,7 @@ import me.snoty.integration.common.wiring.StandaloneNode
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.NodeSettings
+import org.koin.ktor.ext.get
 
 suspend fun RoutingContext.getPersonalNodeOrNull(): StandaloneNode? {
 	val nodeService: NodeService = get()

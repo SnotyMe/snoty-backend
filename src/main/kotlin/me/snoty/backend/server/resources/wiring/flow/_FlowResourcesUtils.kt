@@ -2,7 +2,7 @@ package me.snoty.backend.server.resources.wiring.flow
 
 import io.ktor.server.routing.*
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.backend.server.koin.get
+import org.koin.ktor.ext.get
 import me.snoty.backend.server.plugins.void
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.letOrNull

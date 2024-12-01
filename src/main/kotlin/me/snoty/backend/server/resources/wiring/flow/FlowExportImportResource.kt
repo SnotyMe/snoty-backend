@@ -4,7 +4,7 @@ import io.ktor.http.*
 import io.ktor.server.request.receive
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import me.snoty.backend.server.koin.get
+import org.koin.ktor.ext.get
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.wiring.flow.export.FlowExportService
 import me.snoty.backend.wiring.flow.import.FlowImportService

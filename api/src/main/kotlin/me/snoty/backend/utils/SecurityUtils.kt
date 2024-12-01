@@ -15,8 +15,8 @@ import kotlinx.serialization.json.jsonPrimitive
 import me.snoty.backend.User
 import me.snoty.backend.config.OidcConfig
 import me.snoty.backend.config.getReverseMapping
-import me.snoty.backend.server.koin.get
 import java.util.*
+import org.koin.ktor.ext.get
 
 fun ApplicationRequest.parseAuthHeader() =
 	call.request.parseAuthorizationHeader()

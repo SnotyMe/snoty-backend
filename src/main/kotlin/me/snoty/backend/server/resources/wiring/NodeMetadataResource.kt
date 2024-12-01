@@ -12,7 +12,7 @@ import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.template.NodeMetadataFeatureFlags
 import me.snoty.integration.common.wiring.node.template.NodeTemplateRegistry
-import me.snoty.backend.server.koin.get as getDependency
+import org.koin.ktor.ext.get as getDependency
 
 fun Route.nodeMetadataResource() {
 	val featureFlags: NodeMetadataFeatureFlags = getDependency()

@@ -11,7 +11,6 @@ import me.snoty.backend.integration.flow.logging.FlowExecutionService
 import me.snoty.backend.scheduling.FlowJobRequest
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.scheduling.FlowTriggerReason
-import me.snoty.backend.server.koin.get
 import me.snoty.backend.server.resources.wiring.flow.flowExportImportResource
 import me.snoty.backend.server.resources.wiring.flow.getPersonalFlowOrNull
 import me.snoty.backend.utils.getUser
@@ -21,6 +20,7 @@ import me.snoty.integration.common.http.flowNotFound
 import me.snoty.integration.common.http.invalidNodeId
 import me.snoty.integration.common.wiring.flow.FlowManagementService
 import me.snoty.integration.common.wiring.flow.FlowService
+import org.koin.ktor.ext.get
 import org.slf4j.event.Level
 
 fun Route.flowResource() {

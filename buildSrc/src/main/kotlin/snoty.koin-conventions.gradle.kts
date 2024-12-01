@@ -35,6 +35,7 @@ dependencies {
 			?: throw IllegalStateException("No koin-annotations version")
 
 	implementation("${libs.getModule("koin-core")}:$koinVersion")
+	implementation("${libs.getModule("koin-ktor")}:$koinVersion")
 	api("${libs.getModule("koin-annotations")}:$koinAnnotationsVersion")
 
 	ksp("${libs.getModule("koin-ksp")}:$koinAnnotationsVersion")
