@@ -59,13 +59,14 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 
 			collection.createIndexes(
 				listOf(
-					IndexModel(Filters.eq(FlowLogs::flowId.name, 1)),
+					IndexModel(Indexes.descending(FlowLogs::flowId.name)),
 					IndexModel(
-						Filters.eq(FlowLogs::creationDate.name, 1),
+						Indexes.descending(FlowLogs::creationDate.name),
 						IndexOptions()
 							.name(expirationIndex)
 							.expireAfter(featureFlags.expirationSeconds, TimeUnit.SECONDS)
 					),
+					IndexModel(Indexes.descending(FlowLogs::flowId.name, FlowLogs::creationDate.name)),
 				),
 			).retryWhen { cause, attempt ->
 				if (attempt > 3) {
@@ -148,7 +149,7 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 		}
 
 		return collection.aggregate<MongoFlowExecution>(
-			Aggregates.sort(Sorts.descending(FlowLogs::creationDate.name)),
+			Aggregates.sort(Sorts.descending(FlowLogs::flowId.name, FlowLogs::creationDate.name)),
 			Aggregates.group(
 				FlowLogs::flowId.mongoField,
 				Accumulators.first(MongoFlowExecution::jobId.name, FlowLogs::_id.mongoField),
