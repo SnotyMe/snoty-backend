@@ -14,10 +14,18 @@ fun Application.configureHTTP(config: Config) {
 		header("X-Engine", "Ktor")
 	}
 	install(CORS) {
+		// hosts
 		if (config.environment.isDev()) anyHost()
 		config.corsHosts.forEach(::allowHost)
+
+		// methods
 		HttpMethod.DefaultMethods.forEach(::allowMethod)
+
+		// headers
 		allowHeader(HttpHeaders.Authorization)
 		allowHeader(HttpHeaders.ContentType)
+
+		// credentials
+		allowCredentials = true
 	}
 }
