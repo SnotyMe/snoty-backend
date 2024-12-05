@@ -1,4 +1,6 @@
 @file:Suppress("UnstableApiUsage")
+import org.gradle.kotlin.dsl.invoke
+
 
 apply(from = "version.gradle.kts")
 
@@ -8,6 +10,7 @@ plugins {
     id("snoty.doctor-conventions")
     id("snoty.kotlin-conventions")
     id("snoty.idea-conventions")
+    id("snoty.testintegration-conventions")
 }
 // plugins applied after version.gradle.kts
 apply(plugin = "snoty.catalog-conventions")
@@ -30,58 +33,30 @@ val devSourceSet = sourceSets.create("dev") {
     runtimeClasspath += main.output
 }
 
-lateinit var testIntegration: NamedDomainObjectProvider<JvmTestSuite>
-testing {
-    suites {
-        val test by getting(JvmTestSuite::class)
-        testIntegration = register<JvmTestSuite>("testIntegration") {
-            dependencies {
-                implementation(project())
-                implementation(sourceSets.test.get().output)
-            }
-            sources.compileClasspath += sourceSets.test.get().compileClasspath
-            sources.runtimeClasspath += sourceSets.test.get().runtimeClasspath
-            targets {
-                all {
-                    testTask.configure {
-                        shouldRunAfter(test)
-                    }
-                }
-            }
+testing.suites.withType<JvmTestSuite>().configureEach {
+    dependencies { with(libs) {
+        // API (contains things like Config)
+        // for some reason, transitive dependencies aren't included in the test classpath
+        implementation(projects.api)
+        implementation(tests.junit.api)
+        implementation(tests.ktor.server.testHost)
+        implementation(tests.mockk)
+        implementation(tests.assertj.core)
+        implementation(tests.json)
+        implementation(tests.testcontainers)
+        implementation(tests.testcontainers.junit)
+        implementation(tests.testcontainers.keycloak) {
+            // explicit dependency, the bundled version is buggy
+            exclude(group = "org.keycloak")
         }
-        withType<JvmTestSuite> {
-            useJUnitJupiter()
+        implementation(dev.keycloak.adminClient)
+        implementation(tests.testcontainers.mongodb)
+        implementation(monitoring.opentelemetry.testing)
+        implementation(devSourceSet.output)
 
-            tasks.withType<Test>().configureEach {
-                maxParallelForks = (Runtime.getRuntime().availableProcessors()).coerceAtLeast(1)
-                environment("LOG_LEVEL", "TRACE")
-            }
-
-            dependencies { with(libs) {
-                // API (contains things like Config)
-                // for some reason, transitive dependencies aren't included in the test classpath
-                implementation(projects.api)
-                implementation(tests.junit.api)
-                implementation(tests.ktor.server.testHost)
-                implementation(tests.mockk)
-                implementation(tests.assertj.core)
-                implementation(tests.json)
-                implementation(tests.testcontainers)
-                implementation(tests.testcontainers.junit)
-                implementation(tests.testcontainers.keycloak) {
-                    // explicit dependency, the bundled version is buggy
-                    exclude(group = "org.keycloak")
-                }
-                implementation(dev.keycloak.adminClient)
-                implementation(tests.testcontainers.mongodb)
-                implementation(monitoring.opentelemetry.testing)
-                implementation(devSourceSet.output)
-
-                runtimeOnly(tests.junit.engine)
-                runtimeOnly(tests.junit.launcher)
-            }}
-        }
-    }
+        runtimeOnly(tests.junit.engine)
+        runtimeOnly(tests.junit.launcher)
+    }}
 }
 
 val devImplementation: Configuration by configurations.getting {
@@ -194,10 +169,6 @@ application {
 
 tasks.test {
     jvmArgs("-Dio.ktor.development=true")
-}
-
-tasks.check {
-    dependsOn(testIntegration)
 }
 
 kover {
