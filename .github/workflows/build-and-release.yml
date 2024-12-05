@@ -40,7 +40,7 @@ jobs:
 
           application_version="$(./gradlew properties -q | awk '/^version:/ {print $2}')"
           # unique version like `2.6.1-69` - immutable
-          full_version="$application_version-${{github.run_number}}"
+          full_version="$application_version-DEV.${{github.run_number}}"
 
           ./gradlew \
             -Pme.snoty.docker.tags="$full_version $additional_tags" \
