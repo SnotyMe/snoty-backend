@@ -31,9 +31,10 @@ class MoodleAPIImpl(private val httpClient: HttpClient) : MoodleAPI {
 		val response = httpClient.post(request.toUri().toASCIIString()) {
 			header("Content-Type", "application/json; charset=UTF-8")
 		}
-		if (logger.isDebugEnabled()) {
+		// TODO: temp info level
+		if (logger.isInfoEnabled()) {
 			val body = response.bodyAsText()
-			logger.debug {
+			logger.info {
 				"Fetched Moodle Data: HTTP ${response.status.value} - $body"
 			}
 		}
