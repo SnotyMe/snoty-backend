@@ -1,32 +1,27 @@
 @file:Suppress("UnstableApiUsage")
 
-import io.github.simulatan.gradle.plugin.buildinfo.configuration.BuildInfoExtension
-import io.github.simulatan.gradle.plugin.buildinfo.configuration.PropertiesOutputLocation
+apply(from = "version.gradle.kts")
 
 plugins {
     application
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.buildinfo)
     id("snoty.doctor-conventions")
     id("snoty.kotlin-conventions")
-    id("snoty.jib-conventions")
     id("snoty.idea-conventions")
-    `maven-publish`
-    `version-catalog`
 }
+// plugins applied after version.gradle.kts
+apply(plugin = "snoty.catalog-conventions")
+apply(plugin = "snoty.jib-conventions")
 
 val isDevelopment: Boolean = project.findProperty("me.snoty.development")?.toString().toBoolean()
 
 subprojects {
     apply(plugin = "snoty.kotlin-conventions")
+    apply(from = "$rootDir/version.gradle.kts")
 }
 
 allprojects {
     apply(plugin = "snoty.koin-conventions")
-}
-
-allprojects {
-    apply(from = "$rootDir/version.gradle.kts")
 }
 
 val devSourceSet = sourceSets.create("dev") {
@@ -209,66 +204,6 @@ kover {
     currentProject {
         sources {
             excludedSourceSets.add(devSourceSet.name)
-        }
-    }
-}
-
-buildInfo {
-    val outputLocation = PropertiesOutputLocation { project ->
-        listOf(project.layout.buildDirectory.get().file("info/buildinfo.properties").asFile)
-    }
-    propertiesOutputs = listOf(outputLocation)
-    this.gitInfoMode = BuildInfoExtension.MODE_ERROR
-    // ISO date
-    committerDateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
-    buildDateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
-    extraAttribute("Version", version)
-    extraAttribute("Application", rootProject.name)
-}
-
-tasks.buildInfo {
-    // prevent circular dependency
-    dependsOn.clear()
-}
-
-tasks.processResources {
-    dependsOn(tasks.buildInfo)
-    from("build/info")
-}
-
-catalog {
-    versionCatalog {
-        versionCatalogs.forEach { catalog ->
-            catalog.versionAliases.forEach { alias ->
-                version(alias, catalog.findVersion(alias).get().displayName)
-            }
-            version("snoty", version.toString())
-
-            // map of version - alias | needed to guess the aliases used
-            val versions = catalog.versionAliases.associate { alias ->
-                val version = catalog.findVersion(alias)
-                version.get().displayName to alias.replace(".", "-")
-            }
-            catalog.libraryAliases.forEach { alias ->
-                val lib = catalog.findLibrary(alias).get().get()
-                library(alias, lib.group, lib.name)
-                    .let {
-                        val libVersion = lib.version!!
-                        when (val version = versions[libVersion]) {
-                            null -> it.version(libVersion)
-                            else -> it.versionRef(version)
-                        }
-                    }
-            }
-        }
-    }
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("versionCatalog") {
-            from(components["versionCatalog"])
-            artifactId = "versions"
         }
     }
 }

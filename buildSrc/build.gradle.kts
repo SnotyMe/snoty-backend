@@ -25,6 +25,9 @@ dependencies {
 	libs.plugins.doctor.get().apply {
 		implementation("com.osacky.doctor:doctor-plugin:$version")
 	}
+	libs.plugins.buildinfo.get().apply {
+		implementation("io.github.simulatan:gradle-buildinfo-plugin:$version")
+	}
 
 	libs.koin.let { koin ->
 		listOf(koin.core, koin.ksp, koin.annotations)
