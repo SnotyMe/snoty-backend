@@ -2,6 +2,7 @@ package me.snoty.integration.todoist
 
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -17,10 +18,12 @@ interface TodoistAPI {
 	suspend fun closeTask(id: String): HttpResponse
 }
 
+private const val TODOIST_BASE_URL = "https://api.todoist.com/rest/v2"
+
 @Factory
 class TodoistAPIImpl(val client: HttpClient, @InjectedParam private val token: String) : TodoistAPI {
 	override suspend fun createTask(taskCreateDTO: TodoistTaskCreateDTO): TodoistTaskCreateResponse =
-		client.post("https://api.todoist.com/rest/v2/tasks") {
+		client.post("$TODOIST_BASE_URL/tasks") {
 			header("Authorization", "Bearer $token")
 			contentType(ContentType.Application.Json)
 			accept(ContentType.Application.Json)
@@ -28,14 +31,22 @@ class TodoistAPIImpl(val client: HttpClient, @InjectedParam private val token: S
 		}.body()
 
 	override suspend fun updateTask(id: String, taskUpdateDTO: TodoistTaskUpdateDTO) =
-		client.post("https://api.todoist.com/rest/v2/tasks/$id") {
+		client.post("$TODOIST_BASE_URL/tasks/$id") {
 			header("Authorization", "Bearer $token")
 			contentType(ContentType.Application.Json)
 			setBody(taskUpdateDTO)
 		}
 
-	override suspend fun closeTask(id: String) =
-		client.post("https://api.todoist.com/rest/v2/tasks/$id/close") {
+	override suspend fun closeTask(id: String) = runCatching {
+		client.post("$TODOIST_BASE_URL/tasks/$id/close") {
 			header("Authorization", "Bearer $token")
 		}
+	}.getOrElse { exception ->
+		// most likely a deleted task => closing is obsolete, consider it done
+		if (exception is ClientRequestException && exception.response.status == HttpStatusCode.NotFound) {
+			exception.response
+		}
+
+		throw exception
+	}
 }
