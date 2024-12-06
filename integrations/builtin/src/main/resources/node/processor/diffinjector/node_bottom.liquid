@@ -1,6 +1,5 @@
-{% assign url = config.apiHost | append: "/wiring/node/" | append: node._id %}
 <button onclick="
-        templateAPI.authenticatedFetch('{{ url }}/clear', { method: 'POST' })
+        templateAPI.getNodeAPI('{{ node._id }}').apiFetch('clear', { method: 'POST' })
             .then(res => {
                 if (res.ok) {
                     alert('Successfully cleared states')
