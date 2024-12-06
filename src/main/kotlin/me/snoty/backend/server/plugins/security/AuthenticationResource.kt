@@ -8,6 +8,7 @@ import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.auth.*
+import io.ktor.server.request.receiveParameters
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import me.snoty.backend.config.OidcConfig
@@ -62,6 +63,24 @@ fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClien
 				call.response.cookies.append("refresh_token", token.refreshToken)
 			call.respond(token)
 		}
+
+		post("/refresh") {
+			val refreshToken = call.receiveParameters()["refresh_token"]
+				?: return@post call.respondStatus(BadRequestException("Refresh token is missing"))
+
+			val response = httpClient.submitForm(
+				url = provider.accessTokenUrl,
+				formParameters = parameters {
+					set("grant_type", "refresh_token")
+					set("refresh_token", refreshToken)
+					set("client_id", authConfig.clientId)
+					set("client_secret", authConfig.clientSecret)
+				}
+			)
+
+			call.respondBytes(contentType = ContentType.Application.Json, bytes = response.bodyAsBytes())
+		}
+
 		authenticate("jwt-auth") {
 			get("/userInfo") {
 				call.respond(call.getUser())
