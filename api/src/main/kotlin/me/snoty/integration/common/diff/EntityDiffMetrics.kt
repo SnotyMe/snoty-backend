@@ -10,7 +10,7 @@ import me.snoty.integration.common.diff.state.getStatistics
 import java.util.concurrent.atomic.AtomicLong
 
 
-private const val NAMESPACE = "${METRIC_PREFIX}_entity.diff"
+private const val NAMESPACE = "${METRIC_PREFIX}.entity_diff"
 
 class EntityDiffMetrics(
 	private val registry: MeterRegistry,
