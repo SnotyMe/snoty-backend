@@ -6,6 +6,7 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.util.reflect.*
+import me.snoty.backend.utils.PublicHttpClient
 import me.snoty.integration.moodle.param.MoodleParam
 import org.apache.http.client.utils.URIBuilder
 import java.net.URI
@@ -24,7 +25,7 @@ suspend inline fun <reified T> MoodleAPI.request(request: MoodleRequest): T = re
 
 const val MOODLE_WS = "/webservice/rest/server.php"
 
-class MoodleAPIImpl(private val httpClient: HttpClient) : MoodleAPI {
+class MoodleAPIImpl(@PublicHttpClient private val httpClient: HttpClient) : MoodleAPI {
 	private val logger = KotlinLogging.logger {}
 
 	override suspend fun <T> request(type: TypeInfo, request: MoodleRequest): T {

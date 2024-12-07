@@ -7,8 +7,8 @@ import me.snoty.backend.config.Config
 import me.snoty.backend.server.plugins.configureRouting
 import me.snoty.backend.server.plugins.configureSecurity
 import me.snoty.backend.server.plugins.configureSerialization
+import me.snoty.backend.utils.provideHttpClient
 import me.snoty.integration.common.BaseSnotyJson
-import me.snoty.integration.common.wiring.httpClient
 
 fun ktorApplicationTest(
 	config: Config = TestConfig,
@@ -18,7 +18,7 @@ fun ktorApplicationTest(
 	testApplication {
 		application {
 			configureSerialization(BaseSnotyJson)
-			configureSecurity(config, httpClient(mockk(relaxed = true)))
+			configureSecurity(config, provideHttpClient(mockk(relaxed = true)))
 			configureRouting(config)
 		}
 
