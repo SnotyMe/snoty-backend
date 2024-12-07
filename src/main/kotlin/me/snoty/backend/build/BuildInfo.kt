@@ -38,12 +38,10 @@ val DevBuildInfo = BuildInfo(
 fun provideBuildInfo(config: Config, configLoader: ApplicationConfigLoader): BuildInfo = try {
 		configLoader.loadBuildInfo()
 	} catch (e: Exception) {
-		// when ran without gradle, the build info is not available
-		// it'll just default to dev build info in this case
-		if (config.environment.isDev()) {
-			KotlinLogging.logger {}.warn { "Failed to load build info: ${e.message}" }
-			DevBuildInfo
-		} else {
-			throw e
+		when {
+			// when ran without gradle, the build info is not available
+			// it'll just default to dev build info in this case
+			config.environment.isDev() -> DevBuildInfo
+			else -> throw e
 		}
 	}
