@@ -11,7 +11,7 @@ import org.testcontainers.junit.jupiter.Container
 
 object MongoTest {
 	@Container
-	val mongoContainer = MongoDBContainer("mongo:8.0-rc")
+	val mongoContainer = MongoDBContainer("mongo:8.0")
 	private val mongoStartup = MongoStartup(mockk(relaxed = true))
 	val config: Config
 
