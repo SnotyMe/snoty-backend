@@ -8,7 +8,7 @@ import me.snoty.backend.server.plugins.configureRouting
 import me.snoty.backend.server.plugins.configureSecurity
 import me.snoty.backend.server.plugins.configureSerialization
 import me.snoty.integration.common.BaseSnotyJson
-import me.snoty.integration.common.wiring.httpClient
+import me.snoty.backend.utils.httpClient
 
 fun ktorApplicationTest(
 	config: Config = TestConfig,

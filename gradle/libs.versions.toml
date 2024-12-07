@@ -7,7 +7,8 @@ jackson = "2.17.0"
 kotlinx-serialization = "1.7.3"
 kotlin = "2.1.0"
 coroutines = "1.9.0"
-opentelemetry = "1.39.0"
+opentelemetry = "1.45.0"
+opentelemetry-instrumentation = "2.10.0-alpha"
 junit = "5.10.2"
 testcontainers = "1.19.7"
 ktor = "3.0.0"
@@ -76,7 +77,7 @@ log-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-s
 log-kotlinLogging = { group = "io.github.oshai", name = "kotlin-logging", version = "7.0.0" }
 log-logback = { group = "ch.qos.logback", name = "logback-classic", version = "1.5.8" }
 
-monitoring-ktor-opentelemetry = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-ktor-3.0", version = "2.5.0-alpha-snoty.3" }
+monitoring-ktor-opentelemetry = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-ktor-3.0", version.ref = "opentelemetry-instrumentation" }
 monitoring-ktor-server-metricsMicrometer = { group = "io.ktor", name = "ktor-server-metrics-micrometer-jvm", version.ref = "ktor" }
 monitoring-micrometer = { group = "io.micrometer", name = "micrometer-core", version = "1.6.3" }
 monitoring-micrometer-prometheus = { group = "io.micrometer", name = "micrometer-registry-prometheus", version = "1.6.3" }
@@ -84,10 +85,10 @@ monitoring-opentelemetry-api = { group = "io.opentelemetry", name = "opentelemet
 monitoring-opentelemetry-context = { group = "io.opentelemetry", name = "opentelemetry-context", version.ref = "opentelemetry" }
 monitoring-opentelemetry-exporter-otlp = { group = "io.opentelemetry", name = "opentelemetry-exporter-otlp", version.ref = "opentelemetry" }
 monitoring-opentelemetry-kotlin = { group = "io.opentelemetry", name = "opentelemetry-extension-kotlin", version.ref = "opentelemetry" }
-monitoring-opentelemetry-logback = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-logback-appender-1.0", version = "2.5.0-alpha" }
+monitoring-opentelemetry-logback = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-logback-appender-1.0", version.ref = "opentelemetry-instrumentation" }
 monitoring-opentelemetry-sdk = { group = "io.opentelemetry", name = "opentelemetry-sdk", version.ref = "opentelemetry" }
 monitoring-opentelemetry-sdk-autoconfigure = { group = "io.opentelemetry", name = "opentelemetry-sdk-extension-autoconfigure", version.ref = "opentelemetry" }
-monitoring-opentelemetry-semconv = { group = "io.opentelemetry.semconv", name = "opentelemetry-semconv", version = "1.25.0-alpha" }
+monitoring-opentelemetry-semconv = { group = "io.opentelemetry.semconv", name = "opentelemetry-semconv", version = "1.28.0-alpha" }
 monitoring-opentelemetry-testing = { group = "io.opentelemetry", name = "opentelemetry-sdk-testing", version.ref = "opentelemetry" }
 
 tests-assertj-core = { group = "org.assertj", name = "assertj-core", version = "3.25.3" }
