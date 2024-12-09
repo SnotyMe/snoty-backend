@@ -74,7 +74,7 @@ libraries-openfeature = { group = "dev.openfeature", name = "sdk", version = "1.
 libraries-openfeature-flagd = { group = "dev.openfeature.contrib.providers", name = "flagd", version = "0.8.9" }
 
 log-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-slf4j", version.ref = "coroutines" }
-log-kotlinLogging = { group = "io.github.oshai", name = "kotlin-logging", version = "7.0.0" }
+log-kotlinLogging = { group = "io.github.oshai", name = "kotlin-logging", version = "7.0.3" }
 log-logback = { group = "ch.qos.logback", name = "logback-classic", version = "1.5.8" }
 
 monitoring-ktor-opentelemetry = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-ktor-3.0", version.ref = "opentelemetry-instrumentation" }
