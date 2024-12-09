@@ -38,7 +38,7 @@ koin-ksp = { group = "io.insert-koin", name = "koin-ksp-compiler", version.ref =
 database-mongodb = { group = "org.mongodb", name = "mongodb-driver-kotlin-coroutine", version = "5.1.0" }
 database-mongodb-sync = { group = "org.mongodb", name = "mongodb-driver-sync", version = "5.1.0" }
 
-dev-keycloak-adminClient = { group = "org.keycloak", name = "keycloak-admin-client", version = "26.0.2" }
+dev-keycloak-adminClient = { group = "org.keycloak", name = "keycloak-admin-client", version = "26.0.3" }
 
 integrationPlugin-ksp-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
 
