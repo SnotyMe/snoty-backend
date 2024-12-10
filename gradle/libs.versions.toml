@@ -2,7 +2,7 @@
 hoplite = "2.8.0"
 koin = "4.1.0-Beta1"
 koin-annotations = "2.0.0-Beta2"
-ksp = "2.1.0-1.0.28"
+ksp = "2.1.0-1.0.29"
 jackson = "2.17.0"
 kotlinx-serialization = "1.7.3"
 kotlin = "2.1.0"
