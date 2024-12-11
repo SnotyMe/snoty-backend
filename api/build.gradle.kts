@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.serialization)
     id("snoty.publish-conventions")
+    `java-test-fixtures`
 }
 
 dependencies { with(libs) {
@@ -35,6 +36,7 @@ dependencies { with(libs) {
 
     testImplementation(tests.junit.api)
     testImplementation(tests.mockk)
+    testFixturesImplementation(tests.mockk)
     testImplementation(kotlin("test"))
 }}
 
