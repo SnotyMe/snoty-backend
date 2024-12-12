@@ -72,7 +72,7 @@ libraries-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 libraries-kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 libraries-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 libraries-openfeature = { group = "dev.openfeature", name = "sdk", version = "1.13.0" }
-libraries-openfeature-flagd = { group = "dev.openfeature.contrib.providers", name = "flagd", version = "0.8.9" }
+libraries-openfeature-flagd = { group = "dev.openfeature.contrib.providers", name = "flagd", version = "0.10.2" }
 
 log-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-slf4j", version.ref = "coroutines" }
 log-kotlinLogging = { group = "io.github.oshai", name = "kotlin-logging", version = "7.0.3" }
