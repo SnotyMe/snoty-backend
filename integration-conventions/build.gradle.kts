@@ -1,6 +1,7 @@
 plugins {
 	alias(libs.plugins.kotlin.dsl)
 	alias(libs.plugins.kotlin.serialization)
+	id("snoty.publish-repo-conventions")
 }
 
 dependencies {

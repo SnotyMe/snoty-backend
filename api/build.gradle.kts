@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.serialization)
     id("snoty.publish-conventions")
+    id("snoty.publish-repo-conventions")
     `java-test-fixtures`
 }
 

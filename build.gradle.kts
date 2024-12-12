@@ -11,6 +11,8 @@ plugins {
     id("snoty.kotlin-conventions")
     id("snoty.idea-conventions")
     id("snoty.testintegration-conventions")
+    id("snoty.publish-repo-conventions")
+    id("snoty.koin-conventions")
 }
 // plugins applied after version.gradle.kts
 apply(plugin = "snoty.catalog-conventions")

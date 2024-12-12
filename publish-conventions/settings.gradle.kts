@@ -7,5 +7,3 @@ dependencyResolutionManagement {
 		}
 	}
 }
-
-includeBuild("../publish-conventions")

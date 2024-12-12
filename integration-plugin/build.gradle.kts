@@ -1,5 +1,6 @@
 plugins {
 	id("snoty.publish-conventions")
+	id("snoty.publish-repo-conventions")
 }
 
 dependencies { with(libs) {

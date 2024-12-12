@@ -19,3 +19,4 @@ include("api")
 include("integration-plugin")
 
 includeBuild("integration-conventions")
+includeBuild("publish-conventions")
