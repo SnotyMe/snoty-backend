@@ -1,5 +1,5 @@
 [versions]
-hoplite = "2.8.0"
+hoplite = "2.9.0"
 koin = "4.1.0-Beta1"
 koin-annotations = "2.0.0-Beta2"
 ksp = "2.1.0-1.0.29"
