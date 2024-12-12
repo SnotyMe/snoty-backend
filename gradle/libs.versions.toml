@@ -79,7 +79,7 @@ log-logback = { group = "ch.qos.logback", name = "logback-classic", version = "1
 
 monitoring-ktor-opentelemetry = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-ktor-3.0", version.ref = "opentelemetry-instrumentation" }
 monitoring-ktor-server-metricsMicrometer = { group = "io.ktor", name = "ktor-server-metrics-micrometer-jvm", version.ref = "ktor" }
-monitoring-micrometer = { group = "io.micrometer", name = "micrometer-core", version = "1.6.3" }
+monitoring-micrometer = { group = "io.micrometer", name = "micrometer-core", version = "1.14.2" }
 monitoring-micrometer-prometheus = { group = "io.micrometer", name = "micrometer-registry-prometheus", version = "1.6.3" }
 monitoring-opentelemetry-api = { group = "io.opentelemetry", name = "opentelemetry-api", version.ref = "opentelemetry" }
 monitoring-opentelemetry-context = { group = "io.opentelemetry", name = "opentelemetry-context", version.ref = "opentelemetry" }
