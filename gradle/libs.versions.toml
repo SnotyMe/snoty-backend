@@ -69,7 +69,7 @@ libraries-ical4j = { group = "org.mnode.ical4j", name = "ical4j", version = "4.0
 libraries-jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson" }
 libraries-jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
 libraries-jackson-kotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version.ref = "jackson" }
-libraries-jobrunr = { group = "org.jobrunr", name = "jobrunr", version = "7.2.3" }
+libraries-jobrunr = { group = "org.jobrunr", name = "jobrunr", version = "7.3.2" }
 libraries-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.6.1" }
 libraries-kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 libraries-openfeature = { group = "dev.openfeature", name = "sdk", version = "1.13.0" }
