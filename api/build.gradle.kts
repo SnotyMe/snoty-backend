@@ -6,7 +6,8 @@ plugins {
 }
 
 dependencies { with(libs) {
-    implementation(configuration.hoplite.core)
+    api(configuration.hoplite.core)
+    api(configuration.hoplite.datetime)
 
     api(libraries.kotlinx.serialization)
     api(libraries.kotlinx.datetime)

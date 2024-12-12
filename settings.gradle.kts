@@ -7,10 +7,13 @@ plugins {
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "snoty-backend"
 
+fun listRootDirsIn(dir: String) =
+	File(rootDir, dir)
+		.listFiles()!!
+		.filter { it.resolve("build.gradle.kts").exists() }
+
 // include all integrations per default
-File(rootDir, "integrations")
-	.listFiles()!!
-	.filter { it.resolve("build.gradle.kts").exists() }
+listRootDirsIn("integrations")
 	.forEach {
 		include(":integrations:${it.name}")
 	}
@@ -18,5 +21,9 @@ File(rootDir, "integrations")
 include("api")
 include("integration-plugin")
 
-includeBuild("integration-conventions")
-includeBuild("publish-conventions")
+listRootDirsIn("conventions")
+	.forEach {
+		includeBuild("conventions/${it.name}") {
+			name = "conventions-${it.name}"
+		}
+	}

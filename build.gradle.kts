@@ -74,9 +74,7 @@ dependencies { with(libs) {
     implementation(libraries.coroutines.core)
 
     // configuration
-    implementation(configuration.hoplite.core)
     implementation(configuration.hoplite.yaml)
-    implementation(configuration.hoplite.datetime)
 
     // ktor
     implementation(ktor.serialization.kotlinx.json)

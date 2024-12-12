@@ -3,7 +3,7 @@ plugins {
 	`maven-publish`
 }
 
-apply(from = "../version.gradle.kts")
+apply(from = "../../version.gradle.kts")
 
 dependencies {
 	libs.plugins.kotlin.jvm.get().apply {
