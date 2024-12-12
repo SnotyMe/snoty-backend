@@ -19,7 +19,7 @@ doctor = { id = "com.osacky.doctor", version = "0.10.0" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 buildinfo = { id = "io.github.simulatan.gradle-buildinfo-plugin", version = "2.1.0" }
 idea = { id = "org.jetbrains.gradle.plugin.idea-ext", version = "1.1.9" }
-jib = { id = "com.google.cloud.tools.jib", version = "3.4.3" }
+jib = { id = "com.google.cloud.tools.jib", version = "3.4.4" }
 kotlin-dsl = { id = "org.gradle.kotlin.kotlin-dsl", version = "5.1.2" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.0-RC" }
