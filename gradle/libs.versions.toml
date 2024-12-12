@@ -9,6 +9,7 @@ kotlin = "2.1.0"
 coroutines = "1.9.0"
 opentelemetry = "1.45.0"
 opentelemetry-instrumentation = "2.10.0-alpha"
+micrometer = "1.14.2"
 junit = "5.10.2"
 testcontainers = "1.19.7"
 ktor = "3.0.2"
@@ -79,8 +80,8 @@ log-logback = { group = "ch.qos.logback", name = "logback-classic", version = "1
 
 monitoring-ktor-opentelemetry = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-ktor-3.0", version.ref = "opentelemetry-instrumentation" }
 monitoring-ktor-server-metricsMicrometer = { group = "io.ktor", name = "ktor-server-metrics-micrometer-jvm", version.ref = "ktor" }
-monitoring-micrometer = { group = "io.micrometer", name = "micrometer-core", version = "1.6.3" }
-monitoring-micrometer-prometheus = { group = "io.micrometer", name = "micrometer-registry-prometheus", version = "1.6.3" }
+monitoring-micrometer = { group = "io.micrometer", name = "micrometer-core", version.ref = "micrometer" }
+monitoring-micrometer-prometheus = { group = "io.micrometer", name = "micrometer-registry-prometheus", version.ref = "micrometer" }
 monitoring-opentelemetry-api = { group = "io.opentelemetry", name = "opentelemetry-api", version.ref = "opentelemetry" }
 monitoring-opentelemetry-context = { group = "io.opentelemetry", name = "opentelemetry-context", version.ref = "opentelemetry" }
 monitoring-opentelemetry-exporter-otlp = { group = "io.opentelemetry", name = "opentelemetry-exporter-otlp", version.ref = "opentelemetry" }

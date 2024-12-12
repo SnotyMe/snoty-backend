@@ -13,7 +13,7 @@ import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.micrometer.core.instrument.MeterRegistry
-import io.micrometer.prometheus.PrometheusMeterRegistry
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import io.opentelemetry.api.OpenTelemetry
 import io.opentelemetry.instrumentation.ktor.v3_0.server.KtorServerTracing
 import me.snoty.backend.config.Config
