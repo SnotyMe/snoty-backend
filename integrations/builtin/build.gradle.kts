@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
 	// liquid for java
-	implementation("nl.big-o:liqp:0.9.0.3")
+	implementation("nl.big-o:liqp:0.9.1.3")
 	implementation("io.github.java-diff-utils:java-diff-utils:4.15")
 
 	implementation(libs.libraries.ical4j)
