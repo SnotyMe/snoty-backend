@@ -29,8 +29,9 @@ dependencies { with(libs) {
 
     implementation(libraries.openfeature)
 
-    api(libraries.bson.kotlinx)
     api(database.mongodb)
+    api(libraries.bson.kotlin)
+    api(libraries.bson.kotlinx)
 
     implementation(monitoring.micrometer)
     api(monitoring.opentelemetry.api)

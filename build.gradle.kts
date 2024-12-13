@@ -116,7 +116,6 @@ dependencies { with(libs) {
     // database
     implementation(database.mongodb)
     implementation(database.mongodb.sync)
-    implementation(libraries.bson.kotlinx)
 
     // logging
     implementation(log.logback)
