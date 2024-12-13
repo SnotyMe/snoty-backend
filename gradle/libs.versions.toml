@@ -92,7 +92,6 @@ monitoring-opentelemetry-sdk-autoconfigure = { group = "io.opentelemetry", name 
 monitoring-opentelemetry-semconv = { group = "io.opentelemetry.semconv", name = "opentelemetry-semconv", version = "1.28.0-alpha" }
 monitoring-opentelemetry-testing = { group = "io.opentelemetry", name = "opentelemetry-sdk-testing", version.ref = "opentelemetry" }
 
-tests-assertj-core = { group = "org.assertj", name = "assertj-core", version = "3.26.3" }
 tests-json = { group = "org.json", name = "json", version = "20240303" }
 tests-junit-api = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit" }
 tests-junit-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit" }

@@ -40,7 +40,6 @@ testing.suites.withType<JvmTestSuite>().configureEach {
         implementation(tests.junit.api)
         implementation(tests.ktor.server.testHost)
         implementation(tests.mockk)
-        implementation(tests.assertj.core)
         implementation(tests.json)
         implementation(tests.testcontainers)
         implementation(tests.testcontainers.junit)

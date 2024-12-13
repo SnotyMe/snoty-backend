@@ -8,12 +8,11 @@ import me.snoty.backend.config.Config
 import me.snoty.backend.config.OidcConfig
 import me.snoty.backend.dev.auth.KeycloakConfigurer
 import me.snoty.backend.dev.auth.REALM_NAME
-import me.snoty.backend.utils.UnauthorizedException
 import me.snoty.backend.test.assertErrorResponse
 import me.snoty.backend.test.buildTestConfig
 import me.snoty.backend.test.createAndLoginUser
 import me.snoty.backend.test.ktorApplicationTest
-import org.assertj.core.api.Assertions.*
+import me.snoty.backend.utils.UnauthorizedException
 import org.json.JSONObject
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -48,8 +47,6 @@ class AuthenticationTest {
 	fun `test unauthorized`() = ktorApplicationTest(config = config) {
 		client.get("/auth/userInfo").apply {
 			assertEquals(HttpStatusCode.Unauthorized, status)
-			assertThat(bodyAsText())
-				.isNotEmpty()
 			val body = JSONObject(bodyAsText())
 
 			assertErrorResponse(body, UnauthorizedException("JWT is invalid"))
@@ -69,11 +66,7 @@ class AuthenticationTest {
 			header("Authorization", "Bearer ${user.accessToken}")
 		}.apply {
 			assertEquals(HttpStatusCode.OK, status)
-			assertThat(bodyAsText()).isNotEmpty()
 			val body = JSONObject(bodyAsText()).toMap()
-
-			assertThat(body)
-				.containsKeys("id", "email", "name")
 
 			assertEquals(user.properties.email, body["email"])
 			assertEquals(user.properties.username, body["name"])

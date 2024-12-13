@@ -9,7 +9,6 @@ import me.snoty.backend.test.TestConfig
 import me.snoty.backend.test.assertErrorResponse
 import me.snoty.backend.test.ktorApplicationTest
 import me.snoty.backend.utils.NotFoundException
-import org.assertj.core.api.Assertions
 import org.json.JSONObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -19,8 +18,6 @@ class ErrorHandlingTest {
 	fun testNotFound() = ktorApplicationTest {
 		client.get("/unknownroute").apply {
 			assertEquals(HttpStatusCode.NotFound, status)
-			Assertions.assertThat(bodyAsText())
-				.isNotEmpty()
 			val body = JSONObject(bodyAsText())
 
 			assertErrorResponse(body, NotFoundException())
@@ -49,13 +46,10 @@ class ErrorHandlingTest {
 
 			client.get(path).apply {
 				assertEquals(HttpStatusCode.InternalServerError, status)
-				Assertions.assertThat(bodyAsText())
-					.isNotEmpty()
-				val body = JSONObject(bodyAsText()).toMap()
+				val body = JSONObject(bodyAsText())
 
-				Assertions.assertThat(body)
-					.containsEntry("code", 500)
-					.containsEntry("message", expected)
+				assertEquals(500, body["code"])
+				assertEquals(expected, body["message"])
 			}
 		}
 
