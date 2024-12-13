@@ -62,7 +62,7 @@ ktor-server-netty = { group = "io.ktor", name = "ktor-server-netty-jvm", version
 ktor-server-statusPages = { group = "io.ktor", name = "ktor-server-status-pages-jvm", version.ref = "ktor" }
 
 libraries-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
-libraries-bson-kotlinx = { group = "org.mongodb", name = "bson-kotlinx", version = "5.1.0" }
+libraries-bson-kotlinx = { group = "org.mongodb", name = "bson-kotlinx", version = "5.2.1" }
 libraries-ical4j = { group = "org.mnode.ical4j", name = "ical4j", version = "4.0.6" }
 libraries-jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson" }
 libraries-jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
