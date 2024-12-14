@@ -11,7 +11,7 @@ mongodb = "5.2.1"
 opentelemetry = "1.45.0"
 opentelemetry-instrumentation = "2.10.0-alpha"
 micrometer = "1.14.2"
-junit = "5.10.2"
+junit = "5.11.3"
 testcontainers = "1.19.7"
 ktor = "3.0.2"
 
