@@ -45,6 +45,6 @@ jobs:
           files: '**build/test-results/**/TEST-*.xml'
 
       - name: Upload Coverage Report
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
