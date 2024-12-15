@@ -29,8 +29,8 @@ data class DiscordSettings(
 ) : NodeSettings
 
 @RegisterNode(
+	name = "discord",
 	displayName = "Discord",
-	type = "discord",
 	position = NodePosition.END,
 	settingsType = DiscordSettings::class,
 	inputType = DiscordWebhook.Message::class

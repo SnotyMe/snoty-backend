@@ -22,7 +22,7 @@ data class EmitJsonSettings(
 ) : NodeSettings
 
 @RegisterNode(
-	type = "emitjson",
+	name = "emitjson",
 	displayName = "Emit JSON",
 	settingsType = EmitJsonSettings::class,
 	position = NodePosition.START,

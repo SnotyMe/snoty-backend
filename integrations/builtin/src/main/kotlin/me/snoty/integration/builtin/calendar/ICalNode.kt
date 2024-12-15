@@ -30,9 +30,8 @@ data class ICalSettings(
 ) : NodeSettings
 
 @RegisterNode(
+	name = "ical",
 	displayName = "ICal",
-	type = "ical",
-	subsystem = Subsystem.INTEGRATION,
 	position = NodePosition.END,
 	settingsType = ICalSettings::class,
 	inputType = CalendarEvent::class,

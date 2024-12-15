@@ -15,7 +15,6 @@ import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
 import me.snoty.integration.common.wiring.get
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
-import me.snoty.integration.common.wiring.node.Subsystem
 import org.bson.Document
 import org.koin.core.annotation.Single
 
@@ -30,8 +29,7 @@ data class UniDiff(
 )
 
 @RegisterNode(
-	subsystem = Subsystem.PROCESSOR,
-	type = "unidiff",
+	name = "unidiff",
 	displayName = "Uni Diff",
 	position = NodePosition.MIDDLE,
 	settingsType = UniDiffSettings::class,

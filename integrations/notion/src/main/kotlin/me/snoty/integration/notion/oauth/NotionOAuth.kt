@@ -25,7 +25,7 @@ class NotionOAuthImpl(
 	config: Config,
 	descriptor: NodeDescriptor,
 ) : NotionOAuth {
-	override val redirectUri = "${config.publicHost}/wiring/node/integration/${descriptor.type}/callback"
+	override val redirectUri = "${config.publicHost}/wiring/node/${descriptor.namespace}/${descriptor.name}/callback"
 
 	@Serializable
 	data class NotionTokenResponse(@SerialName("access_token") val accessToken: String)

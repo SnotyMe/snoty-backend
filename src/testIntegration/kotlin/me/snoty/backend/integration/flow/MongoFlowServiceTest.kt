@@ -14,7 +14,6 @@ import me.snoty.integration.common.wiring.GenericNode
 import me.snoty.integration.common.wiring.StandaloneNode
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
-import me.snoty.integration.common.wiring.node.Subsystem
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -71,7 +70,7 @@ class MongoFlowServiceTest {
 		val newNode = nodeService.create(
 			userID = userId,
 			flowId = flowId,
-			descriptor = NodeDescriptor(Subsystem.INTEGRATION, name),
+			descriptor = NodeDescriptor(javaClass.packageName, name),
 			settings = EmptyNodeSettings(name)
 		)
 

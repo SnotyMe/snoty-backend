@@ -37,9 +37,9 @@ class MongoEntityStateService(
 	@Named(METRICS_POOL) metricsPool: ScheduledExecutorService,
 	@Named(STATE_CODEC_REGISTRY) codecRegistry: CodecRegistry,
 ) : EntityStateService {
-	private val nodeEntityStates: EntityStateCollection = mongoDB.getCollection<NodeEntityStates>("${integration.mongoCollectionPrefix}.entityStates")
+	private val nodeEntityStates: EntityStateCollection = mongoDB.getCollection<NodeEntityStates>("${integration.mongoCollectionPrefix}:entityStates")
 		.withCodecRegistry(codecRegistry)
-	private val entityDiffMetrics = EntityDiffMetrics(meterRegistry, integration.type, nodeEntityStates)
+	private val entityDiffMetrics = EntityDiffMetrics(meterRegistry, integration.name, nodeEntityStates)
 
 	init {
 		metricsPool.scheduleAtFixedRate(entityDiffMetrics.Job(), 0, 30, TimeUnit.SECONDS)

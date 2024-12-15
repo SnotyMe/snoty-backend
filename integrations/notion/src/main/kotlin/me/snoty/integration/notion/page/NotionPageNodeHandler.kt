@@ -24,8 +24,7 @@ import org.bson.Document
 import org.koin.core.annotation.Single
 
 @RegisterNode(
-	subsystem = Subsystem.INTEGRATION,
-	type = "notion_page",
+	name = "notion_page",
 	displayName = "Notion Page",
 	position = NodePosition.END,
 	settingsType = NotionPageSettings::class,

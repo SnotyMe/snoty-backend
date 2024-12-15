@@ -24,8 +24,8 @@ internal fun buildPositionFilter(nodeRegistry: NodeRegistry, position: NodePosit
 			val filters = nodeRegistry.lookupDescriptorsByPosition(position).map {
 				val prefix = MongoNode::descriptor.name + "."
 				Filters.and(
-					Filters.eq(prefix + NodeDescriptor::type.name, it.type),
-					Filters.eq(prefix + NodeDescriptor::subsystem.name, it.subsystem)
+					Filters.eq(prefix + NodeDescriptor::namespace.name, it.namespace),
+					Filters.eq(prefix + NodeDescriptor::name.name, it.name),
 				)
 			}
 

@@ -15,7 +15,6 @@ import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.iterableStructOutput
 import me.snoty.integration.common.wiring.node.NodeRouteFactory
 import me.snoty.integration.common.wiring.node.NodeSettings
-import me.snoty.integration.common.wiring.node.Subsystem
 import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Single
 
@@ -26,8 +25,7 @@ data class UnchangedFilterSettings(
 ) : NodeSettings
 
 @RegisterNode(
-	type = "unchangedfilter",
-	subsystem = Subsystem.FILTER,
+	name = "unchangedfilter",
 	displayName = "Unchanged Filter",
 	position = NodePosition.MIDDLE,
 	settingsType = UnchangedFilterSettings::class,

@@ -33,7 +33,7 @@ class MongoNodePersistenceService<T : Any>(
 	name: String,
 	private val entityClass: KClass<T>,
 ) : NodePersistenceService<T> {
-	private val collection = mongoDB.getCollection("${nodeDescriptor.mongoCollectionPrefix}.$name", NodeEntities::class.java)
+	private val collection = mongoDB.getCollection("${nodeDescriptor.mongoCollectionPrefix}:$name", NodeEntities::class.java)
 
 	override suspend fun persistEntity(node: Node, entityId: String, entity: T) {
 		collection.upsertOne(

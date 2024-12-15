@@ -24,7 +24,7 @@ fun relationalFlow(
 
 object EmitHandler : NodeHandler {
 	val descriptor = NodeDescriptor(
-		Subsystem.INTEGRATION,
+		javaClass.packageName,
 		"emit"
 	)
 	val metadata = nodeMetadata(

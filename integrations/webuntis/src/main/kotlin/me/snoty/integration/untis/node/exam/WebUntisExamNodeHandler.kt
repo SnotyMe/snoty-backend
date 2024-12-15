@@ -20,8 +20,8 @@ import me.snoty.integration.untis.request.getUserAndMasterData
 import org.koin.core.annotation.Single
 
 @RegisterNode(
+	name = "webuntis_exams",
 	displayName = "WebUntis Exams",
-	type = "webuntis_exams",
 	position = NodePosition.START,
 	settingsType = WebUntisExamSettings::class,
 	outputType = MappedUntisExam::class,

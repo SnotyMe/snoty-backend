@@ -83,3 +83,17 @@ fun nodeMetadata(
 	input = null,
 	output = null
 )
+
+fun nodeMetadata(
+	name: String,
+	namespace: String = "me.snoty.backend.test",
+	position: NodePosition = NodePosition.MIDDLE,
+	settingsClass: KClass<out NodeSettings> = EmptyNodeSettings::class,
+) = nodeMetadata(
+	NodeDescriptor(
+		namespace = namespace,
+		name = name
+	),
+	position,
+	settingsClass,
+)
