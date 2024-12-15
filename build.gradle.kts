@@ -7,6 +7,7 @@ apply(from = "version.gradle.kts")
 plugins {
     application
     alias(libs.plugins.kotlin.serialization)
+    id("snoty.buildinfo-conventions")
     id("snoty.doctor-conventions")
     id("snoty.kotlin-conventions")
     id("snoty.idea-conventions")
