@@ -30,6 +30,7 @@ class JobRunrFlowScheduler(
 		}
 		val job = SnotyJob(
 			name = jobName(workflow),
+			retries = jobRequest.retries,
 			request = jobRequest,
 		)
 		return job

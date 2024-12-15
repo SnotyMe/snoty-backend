@@ -9,10 +9,12 @@ typealias JobRequestHandler<R> = JobRunrRequestHandler<R>
 
 data class SnotyJob(
 	val name: String,
+	val retries: Int,
 	val request: JobRequest
 )
 
 data class FlowJobRequest(
+	val retries: Int = 5,
 	val logLevel: Level = Level.INFO,
 	val triggeredBy: FlowTriggerReason,
 )

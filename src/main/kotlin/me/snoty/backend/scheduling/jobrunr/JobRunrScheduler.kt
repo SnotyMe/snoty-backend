@@ -21,7 +21,7 @@ class JobRunrScheduler(jobRunrConfigurer: JobRunrConfigurer) : Scheduler {
 				.withId(id)
 				.withName(job.name)
 				.withDuration(15.minutes.toJavaDuration())
-				.withAmountOfRetries(5)
+				.withAmountOfRetries(job.retries)
 				.withJobRequest(job.request)
 		)
 	}
@@ -30,7 +30,7 @@ class JobRunrScheduler(jobRunrConfigurer: JobRunrConfigurer) : Scheduler {
 		BackgroundJobRequest.create(
 			aJob()
 				.withName(job.name)
-				.withAmountOfRetries(5)
+				.withAmountOfRetries(job.retries)
 				.withJobRequest(job.request)
 		)
 	}
