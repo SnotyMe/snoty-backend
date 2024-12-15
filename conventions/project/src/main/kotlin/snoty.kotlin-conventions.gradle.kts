@@ -15,16 +15,14 @@ kover {
 		allProjects()
 	}
 	currentProject {
-		afterEvaluate {
-			sources {
-				// per default, kover only excludes `test`
-				// since we also have `testIntegration`, we have to exclude it
-				testing.suites
-					.filterIsInstance<JvmTestSuite>()
-					.forEach {
-						excludedSourceSets.add(it.sources.name)
-					}
-			}
+		sources {
+			// per default, kover only excludes `test`
+			// since we also have `testIntegration`, we have to exclude it
+			testing.suites
+				.filterIsInstance<JvmTestSuite>()
+				.forEach {
+					excludedSourceSets.add(it.sources.name)
+				}
 		}
 	}
 }
