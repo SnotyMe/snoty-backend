@@ -49,11 +49,13 @@ class FlowRunnerImplTest {
 		}
 	}
 
+	fun nodeMetadata(name: String) = nodeMetadata(namespace = namespace, name = name)
+
 	private val mapHandler = GlobalMapHandler()
 	private val nodeRegistry = NodeRegistryImpl().apply {
-		registerHandler(nodeMetadata(TYPE_MAP), mapHandler)
-		registerHandler(nodeMetadata(TYPE_QUOTE), QuoteHandler)
-		registerHandler(nodeMetadata(TYPE_EXCEPTION), ExceptionHandler)
+		registerHandler(nodeMetadata(name = TYPE_MAP), mapHandler)
+		registerHandler(nodeMetadata(name = TYPE_QUOTE), QuoteHandler)
+		registerHandler(nodeMetadata(name = TYPE_EXCEPTION), ExceptionHandler)
 		registerEmitHandler()
 	}
 	private val otel = createOpenTelemetry()
