@@ -15,14 +15,17 @@ kover {
 		allProjects()
 	}
 	currentProject {
-		sources {
-			// per default, kover only excludes `test`
-			// since we also have `testIntegration`, we have to exclude it
-			testing.suites
-				.filterIsInstance<JvmTestSuite>()
-				.forEach {
-					excludedSourceSets.add(it.sources.name)
-				}
+		// awaiting implementation of https://github.com/Kotlin/kotlinx-kover/issues/714
+		afterEvaluate {
+			sources {
+				// per default, kover only excludes `test`
+				// since we also have `testIntegration` and `dev`, we have to exclude them
+				sourceSets
+					.filter { it.name != sourceSets.main.name }
+					.forEach {
+						excludedSourceSets.add(it.name)
+					}
+			}
 		}
 	}
 }
