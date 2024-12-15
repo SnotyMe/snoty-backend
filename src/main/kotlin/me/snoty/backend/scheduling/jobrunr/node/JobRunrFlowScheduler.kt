@@ -21,7 +21,7 @@ class JobRunrFlowScheduler(
 	private val logger = KotlinLogging.logger {}
 
 	private fun createJob(workflow: Workflow, jobRequest: FlowJobRequest): SnotyJob {
-		val jobRequest = jobRequest.run {
+		val jobRunrRequest = jobRequest.run {
 			JobRunrFlowJobRequest(
 				flowId = workflow._id,
 				triggeredBy = triggeredBy,
@@ -31,7 +31,7 @@ class JobRunrFlowScheduler(
 		val job = SnotyJob(
 			name = jobName(workflow),
 			retries = jobRequest.retries,
-			request = jobRequest,
+			request = jobRunrRequest,
 		)
 		return job
 	}

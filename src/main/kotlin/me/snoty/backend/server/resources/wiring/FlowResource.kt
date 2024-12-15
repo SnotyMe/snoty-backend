@@ -63,7 +63,8 @@ fun Route.flowResource() {
 		data class FlowJobRequestRequest(val logLevel: Level)
 
 		fun FlowJobRequestRequest?.toFlowJobRequest() = FlowJobRequest(
-			retries = 1,
+			// don't retry (#94)
+			retries = 0,
 			logLevel = this?.logLevel ?: Level.DEBUG,
 			triggeredBy = FlowTriggerReason.Manual,
 		)
