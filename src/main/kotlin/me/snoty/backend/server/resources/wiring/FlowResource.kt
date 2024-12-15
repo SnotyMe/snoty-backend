@@ -62,10 +62,14 @@ fun Route.flowResource() {
 		@Serializable
 		data class FlowJobRequestRequest(val logLevel: Level)
 
-		val jobRequest: FlowJobRequest =
-			call.receiveNullable<FlowJobRequestRequest?>()
-				?.let { any -> FlowJobRequest(logLevel = any.logLevel, triggeredBy = FlowTriggerReason.Manual) }
-				?: FlowJobRequest(logLevel = Level.DEBUG, triggeredBy = FlowTriggerReason.Manual)
+		fun FlowJobRequestRequest?.toFlowJobRequest() = FlowJobRequest(
+			// don't retry (#94)
+			retries = 0,
+			logLevel = this?.logLevel ?: Level.DEBUG,
+			triggeredBy = FlowTriggerReason.Manual,
+		)
+
+		val jobRequest = call.receiveNullable<FlowJobRequestRequest?>().toFlowJobRequest()
 
 		flowScheduler.trigger(flow, jobRequest)
 
