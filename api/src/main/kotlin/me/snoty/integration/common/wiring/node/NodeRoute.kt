@@ -38,7 +38,7 @@ internal class NodeRouteFactoryImpl(
 			fun Route.doRoute() = route("{nodeId}/$route") {
 				method(method) {
 					handle {
-						logger.debug { "Handling route for $nodeDescriptor node: $route"}
+						logger.debug { "Handling route for ${nodeDescriptor.id} nodes: $route"}
 
 						val nodeId = call.parameters["nodeId"]?.toNodeId()
 							?: return@handle call.respondStatus(BadRequestException("nodeId is required"))

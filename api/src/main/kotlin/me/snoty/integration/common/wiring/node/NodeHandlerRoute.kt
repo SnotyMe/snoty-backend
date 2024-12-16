@@ -28,7 +28,7 @@ internal class NodeHandlerRouteFactoryImpl(
 	 */
 	override operator fun invoke(route: String, method: HttpMethod, authenticated: Boolean, block: suspend RoutingContext.() -> Unit) =
 		hookRegistry.register(AddRoutesHook { routing ->
-			logger.debug { "Registering route for $nodeDescriptor node: $route" }
+			logger.debug { "Registering route for ${nodeDescriptor.id} node handler: $route" }
 
 			fun Route.doRoute() = route("${nodeDescriptor.namespace}/${nodeDescriptor.name}/$route") {
 				method(method) {
