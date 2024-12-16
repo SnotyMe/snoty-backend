@@ -2,5 +2,10 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "ignorePaths": [
       "version.gradle.kts"
+  ],
+  "separateMiniorPatch": true,
+  "packageRules": [
+    "updateTypes": ["patch"],
+    "enabled": false
   ]
 }
