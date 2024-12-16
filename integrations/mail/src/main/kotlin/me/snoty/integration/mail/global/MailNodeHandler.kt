@@ -11,7 +11,6 @@ import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.get
 import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.node.NodeHandler
-import me.snoty.integration.common.wiring.node.Subsystem
 import me.snoty.integration.mail.MailInput
 import me.snoty.integration.mail.global.impl.GlobalMailConfigWrapper
 import me.snoty.integration.mail.global.impl.GlobalMailService
@@ -21,9 +20,8 @@ import org.koin.core.annotation.Single
 
 @Single
 @RegisterNode(
+	name = "mail",
 	displayName = "E-Mail",
-	subsystem = Subsystem.INTEGRATION,
-	type = "mail",
 	position = NodePosition.END,
 	inputType = MailInput::class,
 	settingsType = MailSettings::class,

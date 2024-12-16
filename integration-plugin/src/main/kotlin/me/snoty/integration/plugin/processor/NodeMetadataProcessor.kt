@@ -40,7 +40,7 @@ class NodeMetadataProcessor(private val logger: KSPLogger, private val codeGener
 		val outputClass = resolver.resolveClassFromAnnotation(clazz, RegisterNode::outputType)
 
 		val metadata = NodeMetadata(
-			descriptor = NodeDescriptor(subsystem = node.subsystem, type = node.type),
+			descriptor = NodeDescriptor(namespace = clazz.packageName.asString(), name = node.name),
 			displayName = displayName,
 			position = node.position,
 			settingsClass = NodeSettings::class,

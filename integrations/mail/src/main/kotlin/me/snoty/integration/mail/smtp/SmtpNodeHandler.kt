@@ -9,14 +9,12 @@ import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.data.each
 import me.snoty.integration.common.wiring.node.NodeHandler
-import me.snoty.integration.common.wiring.node.Subsystem
 import me.snoty.integration.mail.MailInput
 import org.koin.core.annotation.Single
 
 @RegisterNode(
-	subsystem = Subsystem.INTEGRATION,
+	name = "smtp",
 	displayName = "SMTP",
-	type = "smtp",
 	settingsType = SmtpSettings::class,
 	inputType = MailInput::class,
 	position = NodePosition.END,

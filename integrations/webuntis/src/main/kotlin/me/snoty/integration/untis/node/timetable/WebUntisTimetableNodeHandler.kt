@@ -19,8 +19,8 @@ import me.snoty.integration.untis.request.getTimetable
 import org.koin.core.annotation.Single
 
 @RegisterNode(
+	name = "webuntis_timetable",
 	displayName = "WebUntis Timetable",
-	type = "webuntis_timetable",
 	position = NodePosition.START,
 	settingsType = WebUntisTimetableSettings::class,
 	outputType = MappedUntisPeriod::class,

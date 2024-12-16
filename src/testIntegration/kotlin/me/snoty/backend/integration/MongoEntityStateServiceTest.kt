@@ -20,7 +20,6 @@ import me.snoty.integration.common.utils.bsonTypeClassMap
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
-import me.snoty.integration.common.wiring.node.Subsystem
 import org.bson.Document
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
@@ -30,7 +29,7 @@ import kotlin.test.assertNotNull
 
 class MongoEntityStateServiceTest {
 	private val mongoDB = MongoTest.getMongoDatabase {}
-	private val nodeDescriptor = NodeDescriptor(Subsystem.INTEGRATION, INTEGRATION_NAME)
+	private val nodeDescriptor = NodeDescriptor(javaClass.packageName, INTEGRATION_NAME)
 	private val service = MongoEntityStateService(
 		mongoDB,
 		nodeDescriptor,

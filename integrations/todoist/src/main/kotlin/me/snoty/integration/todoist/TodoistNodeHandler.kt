@@ -31,7 +31,7 @@ data class TodoistSettings(
 ) : NodeSettings
 
 @RegisterNode(
-	type = "todoist",
+	name = "todoist",
 	displayName = "Todoist",
 	position = NodePosition.END,
 	settingsType = TodoistSettings::class,

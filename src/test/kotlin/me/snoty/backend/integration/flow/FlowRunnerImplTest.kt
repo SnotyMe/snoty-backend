@@ -26,7 +26,6 @@ import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings
-import me.snoty.integration.common.wiring.node.Subsystem
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -36,6 +35,8 @@ import org.slf4j.event.Level
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class FlowRunnerImplTest {
+	private val namespace = javaClass.packageName
+
 	@Serializable
 	data class TestNodeSettings(override val name: String) : NodeSettings
 
@@ -48,11 +49,13 @@ class FlowRunnerImplTest {
 		}
 	}
 
+	fun nodeMetadata(name: String) = nodeMetadata(namespace = namespace, name = name)
+
 	private val mapHandler = GlobalMapHandler()
 	private val nodeRegistry = NodeRegistryImpl().apply {
-		registerHandler(nodeMetadata(NodeDescriptor(Subsystem.PROCESSOR, TYPE_MAP)), mapHandler)
-		registerHandler(nodeMetadata(NodeDescriptor(Subsystem.PROCESSOR, TYPE_QUOTE)), QuoteHandler)
-		registerHandler(nodeMetadata(NodeDescriptor(Subsystem.PROCESSOR, TYPE_EXCEPTION)), ExceptionHandler)
+		registerHandler(nodeMetadata(name = TYPE_MAP), mapHandler)
+		registerHandler(nodeMetadata(name = TYPE_QUOTE), QuoteHandler)
+		registerHandler(nodeMetadata(name = TYPE_EXCEPTION), ExceptionHandler)
 		registerEmitHandler()
 	}
 	private val otel = createOpenTelemetry()
@@ -91,7 +94,7 @@ class FlowRunnerImplTest {
 
 	@Test
 	fun `test basic`(): Unit = runBlocking {
-		val node = node(NodeDescriptor(Subsystem.PROCESSOR, TYPE_MAP))
+		val node = node(NodeDescriptor(namespace, TYPE_MAP))
 		val emit = emitNode(node)
 		val flow = relationalFlow(emit, node)
 		val jobId = "basic"
@@ -112,8 +115,8 @@ class FlowRunnerImplTest {
 
 	@Test
 	fun `test basic withQuote`(): Unit = runBlocking {
-		val map = node(NodeDescriptor(Subsystem.PROCESSOR, TYPE_MAP))
-		val processor = node(NodeDescriptor(Subsystem.PROCESSOR, TYPE_QUOTE), next = listOf(map))
+		val map = node(NodeDescriptor(namespace, TYPE_MAP))
+		val processor = node(NodeDescriptor(namespace, TYPE_QUOTE), next = listOf(map))
 		val emit = emitNode(processor)
 		val flow = relationalFlow(emit, processor, map)
 
@@ -131,7 +134,7 @@ class FlowRunnerImplTest {
 	@Test
 	fun `test traces config attribute`() = runBlocking {
 		val config = TestNodeSettings("test")
-		val node = node(NodeDescriptor(Subsystem.PROCESSOR, TYPE_MAP), settings = config)
+		val node = node(NodeDescriptor(namespace, TYPE_MAP), settings = config)
 		val emit = emitNode(node)
 		val flow = relationalFlow(emit, node)
 
@@ -166,8 +169,8 @@ class FlowRunnerImplTest {
 
 	@Test
 	fun `test traces exception attributes`() = runBlocking {
-		val exNode = node(NodeDescriptor(Subsystem.PROCESSOR, TYPE_EXCEPTION))
-		val mapNode = node(NodeDescriptor(Subsystem.PROCESSOR, TYPE_QUOTE), next = listOf(exNode))
+		val exNode = node(NodeDescriptor(namespace, TYPE_EXCEPTION))
+		val mapNode = node(NodeDescriptor(namespace, TYPE_QUOTE), next = listOf(exNode))
 		val emit = emitNode(mapNode)
 		val flow = relationalFlow(emit, mapNode, exNode)
 

@@ -18,13 +18,13 @@ import org.junit.jupiter.api.Test
 
 class MongoNodeServiceTest {
 	private val descriptor = NodeDescriptor(
-		subsystem = "mysystem",
-		type = "mytype"
+		namespace = javaClass.packageName,
+		name = "mytype"
 	)
 
 	private val db = MongoTest.getMongoDatabase {}
 	private val nodeRegistry = NodeRegistryImpl().apply {
-		registerHandler(nodeMetadata(descriptor = descriptor, position = NodePosition.START), NoOpNodeHandler)
+		registerHandler(nodeMetadata(descriptor, position = NodePosition.START), NoOpNodeHandler)
 	}
 	private val service = MongoNodeService(db, nodeRegistry) { _, _ ->
 		EmptyNodeSettings()

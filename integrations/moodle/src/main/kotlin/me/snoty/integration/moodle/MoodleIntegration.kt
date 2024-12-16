@@ -17,8 +17,8 @@ import org.koin.core.annotation.Single
 import org.slf4j.event.Level
 
 @RegisterNode(
+	name = "moodle_assignments",
 	displayName = "Moodle",
-	type = "moodle",
 	position = NodePosition.START,
 	settingsType = MoodleSettings::class,
 	outputType = MoodleAssignment::class

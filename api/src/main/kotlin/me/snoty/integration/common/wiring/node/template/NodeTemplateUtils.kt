@@ -14,7 +14,7 @@ object NodeTemplateUtils {
 
 	@OptIn(ExperimentalPathApi::class)
 	private fun provideNodeTemplates(descriptor: NodeDescriptor): Sequence<Path>? {
-		val nodeDirectory = "/node/${descriptor.subsystem}/${descriptor.type}"
+		val nodeDirectory = "/node/${descriptor.namespace}/${descriptor.name}"
 		val resource = javaClass.getResource(nodeDirectory) ?: return let {
 			logger.trace { "No node directory found for ${descriptor.id}" }
 			null

@@ -13,7 +13,6 @@ import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.mapInputWithSettings
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
-import me.snoty.integration.common.wiring.node.Subsystem
 import me.snoty.integration.common.wiring.structOutput
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
@@ -31,9 +30,8 @@ data class MapperSettings(
 ) : NodeSettings
 
 @RegisterNode(
+	name = "mapper",
 	displayName = "Mapper",
-	type = "mapper",
-	subsystem = Subsystem.PROCESSOR,
 	position = NodePosition.MIDDLE,
 	settingsType = MapperSettings::class,
 	inputType = EmptySchema::class,

@@ -30,7 +30,7 @@ internal class NodeHandlerRouteFactoryImpl(
 		hookRegistry.register(AddRoutesHook { routing ->
 			logger.debug { "Registering route for $nodeDescriptor node: $route" }
 
-			fun Route.doRoute() = route("${nodeDescriptor.subsystem}/${nodeDescriptor.type}/$route") {
+			fun Route.doRoute() = route("${nodeDescriptor.namespace}/${nodeDescriptor.name}/$route") {
 				method(method) {
 					handle {
 						logger.debug { "Handling route for $nodeDescriptor node: $route" }

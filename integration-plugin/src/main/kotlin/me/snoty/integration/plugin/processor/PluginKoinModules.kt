@@ -17,7 +17,7 @@ fun TypeSpec.Builder.addSerializersModule(registerNode: RegisterNode): TypeSpec.
 	val serializationModule = "kotlinx.serialization.modules"
 
 	return addFunction(
-		providerBuilder(registerNode.type, registerNode)
+		providerBuilder(registerNode.name, registerNode)
 			.returns(SerializersModule::class)
 			.addAnnotation(AnnotationSpec.get(OptIn(InternalSerializationApi::class)))
 			.addStatement(
@@ -42,7 +42,7 @@ fun TypeSpec.Builder.addSerializersModule(registerNode: RegisterNode): TypeSpec.
 fun providerBuilder(name: String, registerNode: RegisterNode) = FunSpec.builder("provide$name")
 	.addAnnotation(Single::class)
 	.addAnnotation(Scoped::class)
-	.addAnnotation(AnnotationSpec.get(Scope(name = registerNode.type)))
+	.addAnnotation(AnnotationSpec.get(Scope(name = registerNode.name)))
 
 @OptIn(KspExperimental::class)
 fun <T : Any> gimmeTypeName(get: () -> KClass<T>) = runCatching {

@@ -9,33 +9,26 @@ import org.koin.core.qualifier.named
 @Serializable
 data class NodeDescriptor(
 	/**
-	 * Subsystem of the node, like `integration`, `processor`, possibly `extension`, etc
-	 * @see [Subsystem]
+	 * Namespace of the node. Usually the package name of the node handler.
 	 */
-	val subsystem: String,
-	val type: String
+	val namespace: String,
+	val name: String
 ) {
 	companion object {
-		fun filter(subsystem: String, type: String): Bson = Filters.and(
-			Filters.eq(NodeDescriptor::subsystem.name, subsystem),
-			Filters.eq(NodeDescriptor::type.name, type)
+		fun filter(namespace: String, name: String): Bson = Filters.and(
+			Filters.eq(NodeDescriptor::namespace.name, namespace),
+			Filters.eq(NodeDescriptor::name.name, name)
 		)
 	}
 
 	val id: String
-		get() = "$subsystem:$type"
+		get() = "$namespace:$name"
 }
 
 val NodeDescriptor.scope
 	get() = named(id)
 
 fun SpanBuilder.setAttribute(key: String, value: NodeDescriptor) {
-	this.setAttribute("$key.subsystem", value.subsystem)
-	this.setAttribute("$key.type", value.type)
-}
-
-object Subsystem {
-	const val INTEGRATION = "integration"
-	const val PROCESSOR = "processor"
-	const val FILTER = "filter"
+	this.setAttribute("$key.namespace", value.namespace)
+	this.setAttribute("$key.name", value.name)
 }
