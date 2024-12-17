@@ -5,7 +5,9 @@
   ],
   "separateMiniorPatch": true,
   "packageRules": [
-    "updateTypes": ["patch"],
-    "enabled": false
+    {
+      "updateTypes": ["patch"],
+      "enabled": false
+    }
   ]
 }
