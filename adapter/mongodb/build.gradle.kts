@@ -1,13 +1,14 @@
 plugins {
 	id("snoty.testintegration-conventions")
+	id("snoty.publish-conventions")
 }
 
 dependencies { with(libs) {
 	compileOnly(projects.api)
 	implementation(monitoring.opentelemetry.semconv)
 
-	implementation(database.mongodb)
-	implementation(database.mongodb.sync)
+	api(database.mongodb)
+	api(database.mongodb.sync)
 
 	testIntegrationImplementation(tests.testcontainers.mongodb)
 }}
