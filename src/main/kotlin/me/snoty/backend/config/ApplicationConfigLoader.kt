@@ -34,8 +34,10 @@ class ApplicationConfigLoaderImpl(private val configLoader: ConfigLoader) : Appl
 				setProperty("mongodb.connection.connectionString",
 				            "mongodb://localhost:${it.port}/"
 				)
-				setProperty("mongodb.authentication.username", it.username ?: "")
-				setProperty("mongodb.authentication.password", it.password?.value ?: "")
+				if (!it.username.isNullOrEmpty() || !it.username.isNullOrEmpty()) {
+					setProperty("mongodb.authentication.username", it.username)
+					setProperty("mongodb.authentication.password", it.password?.value)
+				}
 			}
 		}
 

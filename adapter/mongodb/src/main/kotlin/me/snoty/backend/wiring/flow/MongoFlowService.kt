@@ -75,7 +75,7 @@ class MongoFlowService(
 	}
 }
 
-internal data class MongoWorkflow(
+data class MongoWorkflow(
 	@BsonId
 	override val _id: NodeId = NodeId(),
 	override val name: String,
@@ -88,7 +88,7 @@ internal data class MongoWorkflow(
 	)
 }
 
-internal data class MongoWorkflowWithNodes(
+data class MongoWorkflowWithNodes(
 	@BsonId
 	override val _id: NodeId = NodeId(),
 	override val name: String,

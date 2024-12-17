@@ -3,6 +3,8 @@ package me.snoty.backend
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
 import me.snoty.backend.featureflags.FeatureFlagsSetup
+import me.snoty.backend.hooks.HookRegistry
+import me.snoty.backend.hooks.impl.PreBusinessStartupHook
 import me.snoty.backend.integration.NodeHandlerContributorLookup
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.server.KtorServer
@@ -16,8 +18,14 @@ class Application(val koin: Koin) {
 	suspend fun start() = coroutineScope {
 		FeatureFlagsSetup.setup(get(), koin.getAll())
 
+		// register all node handlers
 		get<NodeHandlerContributorLookup>().executeContributors()
 
+		// application is initialized but no business logic is running yet
+		// TODO: verify Jobrunr didn't start in the background
+		get<HookRegistry>().executeHooks(PreBusinessStartupHook::class, koin)
+
+		// schedule missing jobs
 		launch(
 			newSingleThreadContext("FlowScheduler") +
 				SupervisorJob() +
@@ -28,6 +36,7 @@ class Application(val koin: Koin) {
 			get<FlowScheduler>().scheduleMissing(get())
 		}
 
+		// final step: running the ktor server
 		get<KtorServer>().start(wait = false)
 	}
 }
