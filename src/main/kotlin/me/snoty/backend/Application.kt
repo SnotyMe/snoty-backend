@@ -14,7 +14,7 @@ class Application(val koin: Koin) {
 	inline fun <reified T : Any> get() = koin.get<T>()
 
 	suspend fun start() = coroutineScope {
-		FeatureFlagsSetup.setup(get(), get())
+		FeatureFlagsSetup.setup(get(), koin.getAll())
 
 		get<NodeHandlerContributorLookup>().executeContributors()
 

@@ -10,6 +10,7 @@ import me.snoty.backend.observability.JOB_ID
 import me.snoty.backend.observability.USER_ID
 import me.snoty.backend.observability.getTracer
 import me.snoty.backend.observability.setAttribute
+import me.snoty.backend.wiring.flow.FlowFeatureFlags
 import me.snoty.integration.common.wiring.GenericNode
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.data.IntermediateData

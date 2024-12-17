@@ -8,7 +8,6 @@ import io.opentelemetry.api.trace.StatusCode
 import io.opentelemetry.api.trace.Tracer
 import io.opentelemetry.api.trace.TracerProvider
 import io.opentelemetry.context.Context
-import org.bson.Document
 import java.util.UUID
 import kotlin.reflect.KClass
 
@@ -27,7 +26,6 @@ fun Span.subspan(tracer: Tracer, name: String, builder: SpanBuilder.() -> Unit):
 		.startSpan()
 
 
-fun SpanBuilder.setAttribute(key: String, value: Document) = this.setAttribute(key, value.toJson())
 fun SpanBuilder.setAttribute(key: AttributeKey<String>, value: UUID) = this.setAttribute(key, value.toString())
 
 fun Span.setException(e: Throwable) {

@@ -1,6 +1,7 @@
 package me.snoty.backend
 
 import kotlinx.coroutines.runBlocking
+import me.snoty.backend.database.mongo.mongoKoinModule
 import me.snoty.backend.logging.setupLogbackFilters
 import me.snoty.integration.common.integrationApiModule
 import org.koin.core.Koin
@@ -9,6 +10,7 @@ import org.koin.core.logger.Level
 import org.koin.core.module.Module
 import org.koin.dsl.module
 import org.koin.ksp.generated.defaultModule
+import org.koin.ksp.generated.me_snoty_backend_database_mongo_MongoKoinModule
 import org.koin.logger.SLF4JLogger
 
 fun main() = startApplication()
@@ -24,6 +26,8 @@ fun startApplication(vararg extraModules: Module) = runBlocking {
 			apiModule,
 			defaultModule,
 			integrationApiModule,
+
+			mongoKoinModule
 		)
 	}.koin
 	setupLogbackFilters(koin.getAll(), koin.getAll())
