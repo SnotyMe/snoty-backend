@@ -7,7 +7,7 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.flow.toList
 import kotlinx.serialization.Serializable
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.backend.integration.flow.logging.FlowExecutionService
+import me.snoty.backend.wiring.flow.execution.FlowExecutionService
 import me.snoty.backend.scheduling.FlowJobRequest
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.scheduling.FlowTriggerReason

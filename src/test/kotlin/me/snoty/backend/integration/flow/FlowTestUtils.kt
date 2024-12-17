@@ -2,6 +2,7 @@ package me.snoty.backend.integration.flow
 
 import me.snoty.backend.dev.randomString
 import me.snoty.backend.integration.config.flow.NodeId
+import me.snoty.backend.test.node
 import me.snoty.backend.test.nodeMetadata
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.FlowNode
@@ -41,19 +42,4 @@ fun NodeRegistry.registerEmitHandler() {
 fun emitNode(vararg next: FlowNode) = node(
 	descriptor = EmitHandler.descriptor,
 	next = next.toList(),
-)
-
-fun node(
-	descriptor: NodeDescriptor,
-	settings: NodeSettings = EmptyNodeSettings(),
-	next: List<FlowNode> = emptyList(),
-	userId: UUID = UUID.randomUUID(),
-) = FlowNode(
-	_id = NodeId(),
-	flowId = NodeId(),
-	userId = userId,
-	descriptor = descriptor,
-	logLevel = null,
-	settings = settings,
-	next = next.map(FlowNode::_id),
 )

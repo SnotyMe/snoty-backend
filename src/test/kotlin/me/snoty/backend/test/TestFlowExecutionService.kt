@@ -2,7 +2,7 @@ package me.snoty.backend.test
 
 import kotlinx.coroutines.flow.Flow
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.backend.integration.flow.logging.FlowExecutionService
+import me.snoty.backend.wiring.flow.execution.FlowExecutionService
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.integration.common.wiring.flow.EnumeratedFlowExecution
 import me.snoty.integration.common.wiring.flow.FlowExecution

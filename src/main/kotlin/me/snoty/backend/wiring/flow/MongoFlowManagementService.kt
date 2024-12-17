@@ -1,7 +1,7 @@
 package me.snoty.backend.wiring.flow
 
 import me.snoty.backend.hooks.HookRegistry
-import me.snoty.backend.integration.flow.logging.FlowExecutionService
+import me.snoty.backend.wiring.flow.execution.FlowExecutionService
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.wiring.flow.FlowManagementService
