@@ -7,6 +7,7 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import io.github.oshai.kotlinlogging.KotlinLogging
 import me.snoty.backend.config.Config
 import me.snoty.backend.config.MongoConfig
+import me.snoty.backend.database.mongo.migrations.migrationsCodecModule
 import me.snoty.backend.database.mongo.tracing.ContextProvider
 import me.snoty.backend.database.mongo.tracing.MongoTracing
 import me.snoty.integration.common.utils.bsonTypeClassMap
@@ -20,6 +21,7 @@ import com.mongodb.kotlin.client.coroutine.MongoClient as CoroutineMongoClient
 
 data class MongoClients(
 	val coroutinesDatabase: MongoDatabase,
+	val coroutinesClient: CoroutineMongoClient,
 	val syncClient: SyncMongoClient
 )
 
@@ -28,9 +30,9 @@ class MongoStartup(private val mongoTracing: MongoTracing) {
 	fun createMongoClients(config: MongoConfig, dbName: String = MONGO_DB_NAME): MongoClients {
 		val logger = KotlinLogging.logger {}
 		val mongoCodecRegistry = CodecRegistries.fromRegistries(
-			// TODO: extra codecs from integrations
+			migrationsCodecModule(),
 			integrationsApiCodecModule(bsonTypeClassMap()),
-			apiCodecModule()
+			apiCodecModule(),
 		)
 
 		val connectionString = config.connection.buildConnectionString()
@@ -65,7 +67,7 @@ class MongoStartup(private val mongoTracing: MongoTracing) {
 
 		logger.info { "Successfully established MongoDB connection"}
 
-		return MongoClients(mongoDB, syncMongoClient)
+		return MongoClients(mongoDB, mongoClient, syncMongoClient)
 	}
 }
 
@@ -80,6 +82,10 @@ fun provideMongoDatabase(mongoClients: MongoClients): MongoDatabase
 @Single
 fun provideSyncMongoClient(mongoClients: MongoClients): SyncMongoClient
 	= mongoClients.syncClient
+
+@Single
+fun provideCoroutinesMongoClient(mongoClients: MongoClients): CoroutineMongoClient
+	= mongoClients.coroutinesClient
 
 @Single
 fun provideCodecRegistry(mongoDatabase: MongoDatabase): CodecRegistry
