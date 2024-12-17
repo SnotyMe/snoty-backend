@@ -3,6 +3,7 @@ package me.snoty.backend.integration.flow.node
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.backend.test.NoOpNodeHandler
 import me.snoty.backend.test.nodeMetadata
+import me.snoty.backend.wiring.node.NodeRegistryImpl
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance

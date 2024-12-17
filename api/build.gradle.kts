@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.invoke
+
 plugins {
     alias(libs.plugins.kotlin.serialization)
     id("snoty.publish-conventions")
@@ -15,32 +17,35 @@ dependencies { with(libs) {
     api(libraries.jobrunr)
 
     api(log.kotlinLogging)
+    api(log.logback)
 
     api(ktor.client.core)
     api(ktor.client.apache)
     api(ktor.client.contentNegotiation)
 
     api(ktor.server.core)
-    implementation(ktor.server.auth)
-    implementation(ktor.server.auth.jwt)
+    api(ktor.server.auth)
+    api(ktor.server.auth.jwt)
 
     api(ktor.serialization.kotlinx.json)
-    implementation(monitoring.ktor.opentelemetry)
+    api(monitoring.ktor.opentelemetry)
 
-    implementation(libraries.openfeature)
+    api(libraries.openfeature)
 
     api(database.mongodb)
     api(libraries.bson.kotlin)
     api(libraries.bson.kotlinx)
 
-    implementation(monitoring.micrometer)
+    api(monitoring.micrometer)
     api(monitoring.opentelemetry.api)
     api(monitoring.opentelemetry.context)
 
-    testImplementation(tests.junit.api)
-    testImplementation(tests.mockk)
-    testFixturesImplementation(tests.mockk)
-    testImplementation(kotlin("test"))
+    testFixturesImplementation(tests.json)
+    testFixturesApi(tests.junit.api)
+    testFixturesApi(kotlin("test"))
+    testFixturesApi(tests.mockk)
+    testFixturesApi(tests.mockk)
+    testFixturesApi(tests.testcontainers.junit)
 }}
 
 tasks.test {

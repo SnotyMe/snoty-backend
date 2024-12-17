@@ -38,18 +38,13 @@ val devSourceSet = sourceSets.create("dev") {
 
 testing.suites.withType<JvmTestSuite>().configureEach {
     dependencies { with(libs) {
-        implementation(tests.junit.api)
         implementation(tests.ktor.server.testHost)
-        implementation(tests.mockk)
         implementation(tests.json)
-        implementation(tests.testcontainers)
-        implementation(tests.testcontainers.junit)
         implementation(tests.testcontainers.keycloak) {
             // explicit dependency, the bundled version is buggy
             exclude(group = "org.keycloak")
         }
         implementation(dev.keycloak.adminClient)
-        implementation(tests.testcontainers.mongodb)
         implementation(monitoring.opentelemetry.testing)
         implementation(devSourceSet.output)
 
@@ -69,6 +64,7 @@ dependencies { with(libs) {
     }
 
     moduleImplementation(projects.api)
+    implementation(projects.adapter.mongodb)
 
     implementation(koin.slf4j)
     implementation(libraries.coroutines.core)
@@ -112,10 +108,6 @@ dependencies { with(libs) {
     implementation(monitoring.opentelemetry.exporter.otlp)
     implementation(monitoring.opentelemetry.kotlin)
     implementation(monitoring.opentelemetry.logback)
-
-    // database
-    implementation(database.mongodb)
-    implementation(database.mongodb.sync)
 
     // logging
     implementation(log.logback)

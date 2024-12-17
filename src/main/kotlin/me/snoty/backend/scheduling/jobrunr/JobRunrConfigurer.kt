@@ -2,16 +2,12 @@ package me.snoty.backend.scheduling.jobrunr
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import com.mongodb.client.MongoClient
 import io.micrometer.core.instrument.MeterRegistry
-import me.snoty.backend.database.mongo.MONGO_DB_NAME
 import org.jobrunr.configuration.JobRunr
 import org.jobrunr.configuration.JobRunrMicroMeterIntegration
 import org.jobrunr.dashboard.JobRunrDashboardWebServerConfiguration
 import org.jobrunr.server.JobActivator
 import org.jobrunr.storage.StorageProvider
-import org.jobrunr.storage.StorageProviderUtils
-import org.jobrunr.storage.nosql.mongo.MongoDBStorageProvider
 import org.jobrunr.utils.mapper.jackson.JacksonJsonMapper
 import org.koin.core.Koin
 import org.koin.core.annotation.Single
@@ -38,13 +34,3 @@ class JobRunrConfigurer(
 			.initialize()
 	}
 }
-
-@Single
-fun storageProvider(mongoClient: MongoClient): StorageProvider = MongoDBStorageProvider(
-	/* mongoClient = */ mongoClient,
-	/* dbName = */ MONGO_DB_NAME,
-	/* collectionPrefix = */ JOBRUNR_COLLECTION_PREFIX,
-	/* databaseOptions = */ StorageProviderUtils.DatabaseOptions.CREATE
-)
-
-const val JOBRUNR_COLLECTION_PREFIX = "jobrunr:"
