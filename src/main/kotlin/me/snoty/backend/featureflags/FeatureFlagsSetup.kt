@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory
 object FeatureFlagsSetup {
 	private val logger = KotlinLogging.logger {}
 
-	fun setup(featureClient: Client, featureFlags: LogFeatureFlags) {
-		val changeListeners = featureFlags.logLevelFlags.map {
+	fun setup(featureClient: Client, featureFlags: Collection<LogFeatureFlagsContainer>) {
+		val changeListeners = featureFlags.flatMap { it.logLevelFeatureFlags }.map {
 			loggerFeatureFlagListener(featureClient, it)
 		}
 

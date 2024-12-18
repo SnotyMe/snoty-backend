@@ -2,7 +2,7 @@ package me.snoty.backend.scheduling.jobrunr.node
 
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.slf4j.MDCContext
-import me.snoty.backend.integration.flow.logging.FlowExecutionService
+import me.snoty.backend.wiring.flow.execution.FlowExecutionService
 import me.snoty.backend.integration.flow.logging.NodeLogAppender
 import me.snoty.backend.observability.APPENDER_LOG_LEVEL
 import me.snoty.backend.observability.FLOW_ID

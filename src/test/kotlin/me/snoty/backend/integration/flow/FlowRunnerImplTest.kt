@@ -10,11 +10,11 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.plus
 import kotlinx.serialization.modules.polymorphic
-import me.snoty.backend.integration.flow.execution.FlowFeatureFlags
+import me.snoty.backend.wiring.flow.FlowFeatureFlags
 import me.snoty.backend.integration.flow.execution.FlowRunnerImpl
 import me.snoty.backend.integration.flow.execution.FlowTracingImpl
 import me.snoty.backend.integration.flow.logging.NodeLogAppender
-import me.snoty.backend.integration.flow.node.NodeRegistryImpl
+import me.snoty.backend.wiring.node.NodeRegistryImpl
 import me.snoty.backend.observability.JOB_ID
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.test.*
