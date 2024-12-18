@@ -3,7 +3,7 @@
   "ignorePaths": [
       "version.gradle.kts"
   ],
-  "separateMiniorPatch": true,
+  "separateMinorPatch": true,
   "packageRules": [
     {
       "updateTypes": ["patch"],
