@@ -7,6 +7,7 @@ import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.impl.PreBusinessStartupHook
 import me.snoty.backend.integration.NodeHandlerContributorLookup
 import me.snoty.backend.scheduling.FlowScheduler
+import me.snoty.backend.scheduling.Scheduler
 import me.snoty.backend.server.KtorServer
 import org.koin.core.Koin
 
@@ -22,8 +23,10 @@ class Application(val koin: Koin) {
 		get<NodeHandlerContributorLookup>().executeContributors()
 
 		// application is initialized but no business logic is running yet
-		// TODO: verify Jobrunr didn't start in the background
 		get<HookRegistry>().executeHooks(PreBusinessStartupHook::class, koin)
+
+		// now that the application is initialized, start the scheduler
+		get<Scheduler>().start()
 
 		// schedule missing jobs
 		launch(
@@ -37,6 +40,7 @@ class Application(val koin: Koin) {
 		}
 
 		// final step: running the ktor server
+		// this is the last step so health checks only pass once everything is up and running
 		get<KtorServer>().start(wait = false)
 	}
 }

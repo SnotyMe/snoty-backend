@@ -9,7 +9,6 @@ import me.snoty.backend.scheduling.SnotyJob
 import me.snoty.backend.scheduling.jobrunr.JobRunrScheduler
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.flow.Workflow
-import org.jobrunr.scheduling.BackgroundJob
 import org.jobrunr.storage.StorageProvider
 import org.koin.core.annotation.Single
 
@@ -59,6 +58,6 @@ class JobRunrFlowScheduler(
 	}
 
 	override fun deleteAll(workflow: Workflow) {
-		BackgroundJob.deleteRecurringJob(jobId(workflow))
+		jobRunrScheduler.deleteRecurringJob(jobId(workflow))
 	}
 }

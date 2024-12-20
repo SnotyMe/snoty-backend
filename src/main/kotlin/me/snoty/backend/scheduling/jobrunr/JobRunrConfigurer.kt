@@ -18,19 +18,17 @@ class JobRunrConfigurer(
 	private val storageProvider: StorageProvider,
 	private val koin: Koin,
 ) {
-	fun configure() {
-		JobRunr.configure()
-			.useJsonMapper(JacksonJsonMapper(ObjectMapper().registerKotlinModule()))
-			.useStorageProvider(storageProvider)
-			.useJobActivator(object : JobActivator {
-				override fun <T : Any> activateJob(type: Class<T>): T? = koin.getOrNull(type.kotlin)
-			})
-			.useBackgroundJobServer()
-			.useMicroMeter(JobRunrMicroMeterIntegration(meterRegistry))
-			.useDashboard(
-				JobRunrDashboardWebServerConfiguration.usingStandardDashboardConfiguration()
-					.andPort(8082)
-			)
-			.initialize()
-	}
+	fun initialize() = JobRunr.configure()
+		.useJsonMapper(JacksonJsonMapper(ObjectMapper().registerKotlinModule()))
+		.useStorageProvider(storageProvider)
+		.useJobActivator(object : JobActivator {
+			override fun <T : Any> activateJob(type: Class<T>): T? = koin.getOrNull(type.kotlin)
+		})
+		.useBackgroundJobServer()
+		.useMicroMeter(JobRunrMicroMeterIntegration(meterRegistry))
+		.useDashboard(
+			JobRunrDashboardWebServerConfiguration.usingStandardDashboardConfiguration()
+				.andPort(8082)
+		)
+		.initialize()!!
 }
