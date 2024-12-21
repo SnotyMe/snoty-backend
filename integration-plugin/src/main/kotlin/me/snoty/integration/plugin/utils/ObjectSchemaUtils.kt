@@ -1,7 +1,6 @@
 package me.snoty.integration.plugin.utils
 
 import com.google.devtools.ksp.KspExperimental
-import com.google.devtools.ksp.getAnnotationsByType
 import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.getKotlinClassByName
 import com.google.devtools.ksp.processing.Resolver
@@ -9,7 +8,6 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
-import com.google.devtools.ksp.symbol.KSTypeReference
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
@@ -52,7 +50,8 @@ fun Resolver.getDetails(
 	type: KSType = prop.type.resolve(),
 	annotated: KSAnnotated = prop,
 ): NodeFieldDetails? {
-	val className = type.toClassName()
+	// work around `KSType#toClassName` throwing an exception when the type has type parameters
+	val className = (type.declaration as KSClassDeclaration).toClassName()
 	return when {
 		Collection::class.isAssignableFrom(type, this) -> {
 			val typeRef = type.arguments.single().type!!
