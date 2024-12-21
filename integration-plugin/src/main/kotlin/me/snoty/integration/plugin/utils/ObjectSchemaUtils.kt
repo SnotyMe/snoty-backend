@@ -11,6 +11,7 @@ import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
+import com.squareup.kotlinpoet.ksp.toClassNameOrNull
 import me.snoty.backend.utils.toTitleCase
 import me.snoty.integration.common.model.metadata.*
 import kotlin.reflect.KClass
@@ -51,7 +52,7 @@ fun Resolver.getDetails(
 	annotated: KSAnnotated = prop,
 ): NodeFieldDetails? {
 	// work around `KSType#toClassName` throwing an exception when the type has type parameters
-	val className = (type.declaration as KSClassDeclaration).toClassName()
+	val className = type.toClassNameOrNull() ?: (type.declaration as KSClassDeclaration).toClassName()
 	return when {
 		Collection::class.isAssignableFrom(type, this) -> {
 			val typeRef = type.arguments.single().type!!
