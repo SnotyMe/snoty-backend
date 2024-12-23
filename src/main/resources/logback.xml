@@ -15,6 +15,7 @@
         <appender-ref ref="OpenTelemetry"/>
     </root>
 
+    <logger name="me.snoty" level="${LOG_LEVEL:-INFO}"/>
     <logger name="me.snoty.backend.featureflags.FeatureFlagsSetup" level="INFO"/>
 
     <logger name="io.ktor.client" level="${CLIENT_LOG_LEVEL:-WARN}"/>
