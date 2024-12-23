@@ -33,7 +33,7 @@ fun generateObjectSchema(resolver: Resolver, clazz: KSClassDeclaration, visited:
 		val details = resolver.getDetails(prop, visited)
 		NodeField(
 			name = name.asString(),
-			type = details?.valueType ?: prop.type.toString(),
+			type = details?.type ?: prop.type.toString(),
 			defaultValue = defaultValue,
 			displayName = displayName,
 			description = description,
@@ -70,8 +70,19 @@ fun Resolver.getDetails(
 		String::class.isAssignableFrom(type, this) ->
 			NodeFieldDetails.PlaintextDetails(
 				lines = annotated.getAnnotation<Multiline>()?.values ?: Multiline.DEFAULT_LINES,
+				defaultValue = annotated.getAnnotation<FieldDefaultValue>()?.value ?: "",
 				language = annotated.getAnnotation<Language>()?.value
 			)
+
+		Map::class.isAssignableFrom(type, this) -> {
+			val keyType = type.arguments[0].type!!
+			val valueType = type.arguments[1].type!!
+
+			val keyDetails = getDetails(prop, visited, keyType.resolve(), keyType)
+			val valueDetails = getDetails(prop, visited, valueType.resolve(), valueType)
+
+			NodeFieldDetails.MapDetails(keyDetails, valueDetails)
+		}
 
 		Any::class.isAssignableFrom(type, this) && !className.packageName.startsWith("java") && !className.packageName.startsWith("kotlin") -> {
 			if (visited.contains(className)) {
