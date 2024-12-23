@@ -7,6 +7,7 @@ import org.bson.Document
 
 @Serializable
 data class ExportedFlow(
+	val version: String,
 	val templateName: String,
 	val nodes: List<ExportedNode>,
 )

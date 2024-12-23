@@ -20,9 +20,14 @@ class MongoFlowExportService(
 	private val codecRegistry: CodecRegistry,
 	private val nodeRegistry: NodeRegistry,
 ) : FlowExportService {
+	companion object {
+		private const val VERSION = "1.0"
+	}
+
 	override suspend fun export(flowId: NodeId, censor: Boolean): ExportedFlow {
 		val flow = flowService.getWithNodes(flowId) ?: throw IllegalArgumentException("Flow not found")
 		return ExportedFlow(
+			version = VERSION,
 			templateName = flow.name,
 			nodes = flow.nodes.map {
 				val settings = it.settings.encode(it.descriptor, censor)
