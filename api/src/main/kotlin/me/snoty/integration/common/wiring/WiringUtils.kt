@@ -1,5 +1,6 @@
 package me.snoty.integration.common.wiring
 
+import me.snoty.backend.utils.letOrNull
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
 import me.snoty.integration.common.wiring.data.NodeOutput
@@ -37,6 +38,8 @@ private fun <IM : IntermediateData, T : Any> NodeHandleContext.serialize(clazz: 
 	val mapper = intermediateDataMapperRegistry[clazz]
 	return mapper.serialize(data)
 }
+
+inline fun <reified T : Any> NodeHandleContext.getOrNull(intermediateData: IntermediateData) = letOrNull { get<T>(intermediateData) }
 
 inline fun <reified T : Any> NodeHandleContext.get(intermediateData: IntermediateData)
 	= intermediateDataMapperRegistry[intermediateData::class]
