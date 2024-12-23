@@ -7,6 +7,7 @@ import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.EmptySchema
 import me.snoty.integration.common.model.metadata.FieldDefaultValue
 import me.snoty.integration.common.model.metadata.FieldDescription
+import me.snoty.integration.common.model.metadata.Language
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
@@ -23,7 +24,7 @@ data class MapperSettings(
 	override val name: String = "Mapper",
 	val engine: MapperEngine,
 	@FieldDescription("The fields to map - every key will be part of the output object")
-	val fields: Map<String, String>,
+	val fields: Map<String, @Language("liquid") String>,
 	@FieldDescription("If true, the ID of the input object will be preserved in the output object")
 	@FieldDefaultValue("true")
 	val preserveId: Boolean = true

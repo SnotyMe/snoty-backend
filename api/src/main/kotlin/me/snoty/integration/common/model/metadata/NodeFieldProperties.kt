@@ -6,6 +6,7 @@ annotation class FieldHidden
 annotation class FieldCensored
 annotation class FieldName(val value: String)
 annotation class FieldDescription(val value: String)
+@Target(AnnotationTarget.PROPERTY, AnnotationTarget.CLASS, AnnotationTarget.TYPE)
 annotation class FieldDefaultValue(val value: String)
 
 /**
