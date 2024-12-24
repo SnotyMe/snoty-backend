@@ -9,7 +9,6 @@ import kotlin.time.Duration.Companion.days
 
 @Single
 class FlowFeatureFlags(override val client: Client) : FeatureFlagsContainer {
-	val logFlow by FeatureFlagBoolean("flow.logFlow", false)
 	val traceConfig by FeatureFlagBoolean("flow.traceConfig", false)
 	val traceInput by FeatureFlagBoolean("flow.traceInput", false)
 	val expirationSeconds by FeatureFlagLong("flow.expirationSeconds", 7.days.inWholeSeconds)

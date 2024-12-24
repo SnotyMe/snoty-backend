@@ -14,7 +14,6 @@ import me.snoty.backend.observability.APPENDER_LOG_LEVEL
 import me.snoty.backend.observability.setException
 import me.snoty.backend.observability.subspan
 import me.snoty.backend.scheduling.FlowTriggerReason
-import me.snoty.backend.wiring.flow.FlowFeatureFlags
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.NodeHandleContextImpl
@@ -32,7 +31,6 @@ import org.slf4j.event.Level
 @Single
 class FlowRunnerImpl(
 	private val nodeRegistry: NodeRegistry,
-	private val featureFlags: FlowFeatureFlags,
 	private val intermediateDataMapperRegistry: IntermediateDataMapperRegistry,
 	private val flowTracing: FlowTracing,
 	private val flowExecutionService: FlowExecutionService,
@@ -49,9 +47,7 @@ class FlowRunnerImpl(
 		val rootSpan = flowTracing.createRootSpan(jobId, flow)
 		flowExecutionService.create(jobId, flow._id, triggeredBy)
 
-		if (featureFlags.logFlow) {
-			kLogger.info { "Starting flow ${flow._id}" }
-		}
+		kLogger.info { "Running ${flow.name} (${flow._id})" }
 
 		@Suppress("UNCHECKED_CAST")
 		val executionContext = FlowExecutionContext(
