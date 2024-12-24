@@ -5,7 +5,8 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.opentelemetry.api.OpenTelemetry
-import me.snoty.backend.utils.http.tracing.KtorClientTracing
+import io.opentelemetry.instrumentation.api.instrumenter.SpanNameExtractor
+import io.opentelemetry.instrumentation.ktor.v3_0.KtorClientTelemetry
 import me.snoty.integration.common.BaseSnotyJson
 import org.koin.core.annotation.Single
 
@@ -18,9 +19,13 @@ import org.koin.core.annotation.Single
  */
 @Single
 fun httpClient(openTelemetry: OpenTelemetry) = HttpClient {
-	install(KtorClientTracing) {
+	install(KtorClientTelemetry) {
 		setOpenTelemetry(openTelemetry)
-		setSpanNameExtractor { "${it.method.value} ${it.url.hostWithPort}${it.url.encodedPath}" }
+		spanNameExtractor {
+			SpanNameExtractor {
+				"${it.method.value} ${it.url.hostWithPort}${it.url.encodedPath}"
+			}
+		}
 	}
 	install(ContentNegotiation) {
 		json(BaseSnotyJson)
