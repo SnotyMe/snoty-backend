@@ -16,7 +16,7 @@ enum class MapperEngine(private val templater: Templater) {
 				result = result.replace("%${field.key}%", field.value.toString())
 			}
 
-			mappedData.setRecursively(key, result)
+			mappedData.setRecursively(key, result.trim())
 		}
 
 		mappedData
@@ -26,7 +26,7 @@ enum class MapperEngine(private val templater: Templater) {
 		val mappedData = Document()
 		settings.fields.forEach { (key, value) ->
 			val template = TemplateParser.DEFAULT.parse(value)
-			val rendered = template.render(data)
+			val rendered = template.render(data).trim()
 
 			mappedData.setRecursively(key, rendered)
 		}
