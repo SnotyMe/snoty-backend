@@ -17,6 +17,9 @@
 
     <logger name="me.snoty" level="${LOG_LEVEL:-INFO}"/>
     <logger name="me.snoty.backend.featureflags.FeatureFlagsSetup" level="INFO"/>
+    <!-- INFO by default, has to be lowered manually -->
+    <!-- is probably totally useless anyway but creates TONS of noise -->
+    <logger name="me.snoty.backend.database.mongo.tracing" level="INFO"/>
 
     <logger name="io.ktor.client" level="${CLIENT_LOG_LEVEL:-WARN}"/>
     <logger name="io.ktor.server" level="${SERVER_LOG_LEVEL:-WARN}"/>
