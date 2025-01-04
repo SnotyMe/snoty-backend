@@ -12,8 +12,9 @@ import java.time.LocalDate
 suspend fun WebUntisAPI.getTimetable(userSettings: WebUntisSettings): TimetableResponse {
 	val userData = getUserData(userSettings)
 
-	val request = UntisRequest(userSettings) {
-		data = UntisPayload {
+	val request = UntisRequest(
+		userSettings,
+		UntisPayload {
 			method = UntisApiConstants.Method.GET_TIMETABLE
 			val userParams = userSettings.toUserParams()
 			param(TimetableParams(
@@ -25,8 +26,8 @@ suspend fun WebUntisAPI.getTimetable(userSettings: WebUntisSettings): TimetableR
 				endDate = UntisDate(LocalDate.now().plusWeeks(2)),
 				auth = userParams.auth
 			))
-		}
-	}
+		},
+	)
 
 	return request<TimetableResponse>(request)
 }

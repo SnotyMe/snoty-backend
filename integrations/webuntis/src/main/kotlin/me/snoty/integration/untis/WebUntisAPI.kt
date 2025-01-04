@@ -12,8 +12,7 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.reflect.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import me.snoty.integration.common.jsonrpc.JsonRpc
-import me.snoty.integration.common.jsonrpc.JsonRpcResponse
+import me.snoty.integration.common.jsonrpc.*
 import me.snoty.integration.untis.param.UntisParam
 import org.apache.http.client.utils.URIBuilder
 import org.koin.core.annotation.Single
@@ -34,7 +33,7 @@ suspend inline fun <reified T> WebUntisAPI.request(request: UntisRequest): T = r
 @Single
 class WebUntisAPIImpl(client: HttpClient) : WebUntisAPI {
 	private val logger = KotlinLogging.logger {}
-	private val httpClient = client.config {
+	private val httpClient = client.rpcConfig {
 		install(ContentNegotiation) {
 			json()
 			serialization(ContentType.Application.JsonRpc, Json {
@@ -52,7 +51,7 @@ class WebUntisAPIImpl(client: HttpClient) : WebUntisAPI {
 	override suspend fun <T> request(type: TypeInfo, request: UntisRequest): JsonRpcResponse<T> {
 		val response = httpClient.post(request.toUri().toASCIIString()) {
 			header("Content-Type", "application/json; charset=UTF-8")
-			setBody(request.data)
+			setRpcBody(request.data)
 		}
 		if (logger.isDebugEnabled()) {
 			val body = response.bodyAsText()
@@ -65,16 +64,13 @@ class WebUntisAPIImpl(client: HttpClient) : WebUntisAPI {
 	}
 }
 
-class UntisRequest(private val urlBuilder: URIBuilder) {
-	lateinit var data: UntisPayload
-
-	constructor(settings: WebUntisSettings, block: UntisRequest.() -> Unit = {}) : this(
+class UntisRequest(private val urlBuilder: URIBuilder, val data: UntisPayload) : JsonRpcRequest by data {
+	constructor(settings: WebUntisSettings, data: UntisPayload) : this(
 		URIBuilder(settings.baseUrl)
 			.setPath("/WebUntis/jsonrpc_intern.do")
-			.setParameter("school", settings.school)
-	) {
-		block()
-	}
+			.setParameter("school", settings.school),
+		data,
+	)
 
 	fun toUri(): URI = urlBuilder
 		.setParameter("v", "a5.2.3") // required according to BetterUntis
@@ -82,11 +78,13 @@ class UntisRequest(private val urlBuilder: URIBuilder) {
 }
 
 @Serializable
-class UntisPayload() {
+class UntisPayload() : JsonRpcRequest {
 	var id = "-1"
 	val jsonrpc = "2.0"
-	var method = ""
+	override var method = ""
 	val params: MutableList<UntisParam> = mutableListOf()
+
+	override val version get() = jsonrpc
 
 	constructor(block: UntisPayload.() -> Unit) : this() {
 		block(this)

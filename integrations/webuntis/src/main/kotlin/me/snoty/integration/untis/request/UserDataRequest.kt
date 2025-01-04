@@ -13,12 +13,13 @@ suspend fun WebUntisAPI.getUserData(userSettings: WebUntisSettings): UntisUserDa
 data class UserDataResponse(val userData: UntisUserData, val masterData: UntisMasterData)
 
 suspend fun WebUntisAPI.getUserAndMasterData(userSettings: WebUntisSettings): UserDataResponse {
-	val request = UntisRequest(userSettings) {
-		data = UntisPayload {
+	val request = UntisRequest(
+		userSettings,
+		UntisPayload {
 			method = UntisApiConstants.Method.GET_USER_DATA
 			param(userSettings.toUserParams())
-		}
-	}
+		},
+	)
 
 	return request<UserDataResponse>(request)
 }

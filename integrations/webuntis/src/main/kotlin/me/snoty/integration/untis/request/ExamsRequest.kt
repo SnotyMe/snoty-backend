@@ -11,8 +11,9 @@ import java.time.LocalDate
 
 suspend fun WebUntisAPI.getExams(userSettings: WebUntisSettings, userData: UntisUserData): List<UntisExam> {
 	// will be moved to database as this information is static
-	val request = UntisRequest(userSettings) {
-		data = UntisPayload {
+	val request = UntisRequest(
+		userSettings,
+		UntisPayload {
 			method = UntisApiConstants.Method.GET_EXAMS
 			val userParams = userSettings.toUserParams()
 			param(
@@ -24,8 +25,8 @@ suspend fun WebUntisAPI.getExams(userSettings: WebUntisSettings, userData: Untis
 					auth = userParams.auth
 				)
 			)
-		}
-	}
+		},
+	)
 
 	@Serializable
 	data class ExamsResponse(val exams: List<UntisExam>)

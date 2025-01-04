@@ -39,6 +39,8 @@ dependencies { with(libs) {
     api(monitoring.micrometer)
     api(monitoring.opentelemetry.api)
     api(monitoring.opentelemetry.context)
+    api(monitoring.opentelemetry.semconv)
+    implementation(monitoring.opentelemetry.semconv.incubating)
 
     testFixturesImplementation(tests.json)
     testFixturesApi(tests.junit.api)
