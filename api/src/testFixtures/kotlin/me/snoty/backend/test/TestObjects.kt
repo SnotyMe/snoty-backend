@@ -2,11 +2,11 @@ package me.snoty.backend.test
 
 import io.mockk.mockk
 import me.snoty.backend.config.*
-import me.snoty.backend.database.mongo.apiCodecModule
+import me.snoty.backend.utils.bson.provideApiCodec
+import me.snoty.backend.utils.bson.provideCodecRegistry
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.utils.bsonTypeClassMap
-import me.snoty.integration.common.utils.integrationsApiCodecModule
 import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistryImpl
 import me.snoty.integration.common.wiring.data.impl.BsonIntermediateDataMapper
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateDataMapper
@@ -59,8 +59,7 @@ fun buildTestConfig(block: TestConfigBuilder.() -> Unit)
 	= TestConfigBuilder(block).build()
 
 val TestCodecRegistry: CodecRegistry = CodecRegistries.fromRegistries(
-	integrationsApiCodecModule(bsonTypeClassMap()),
-	apiCodecModule()
+	provideCodecRegistry(provideApiCodec(bsonTypeClassMap()))
 )
 
 val IntermediateDataMapperRegistry = IntermediateDataMapperRegistryImpl(

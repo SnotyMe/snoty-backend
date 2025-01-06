@@ -1,6 +1,5 @@
 package me.snoty.integration.common.diff.state
 
-import com.mongodb.kotlin.client.coroutine.MongoCollection
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.integration.common.diff.checksum
 import org.bson.Document
@@ -19,5 +18,3 @@ data class NodeEntityStates(
 	val nodeId: NodeId,
 	val entities: Set<EntityState>
 )
-
-typealias EntityStateCollection = MongoCollection<NodeEntityStates>

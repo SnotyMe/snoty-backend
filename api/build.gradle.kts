@@ -32,7 +32,8 @@ dependencies { with(libs) {
 
     api(libraries.openfeature)
 
-    api(database.mongodb)
+    // DO NOT use in anything but bson-related code
+    implementation(database.mongodb)
     api(libraries.bson.kotlin)
     api(libraries.bson.kotlinx)
 

@@ -6,7 +6,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock.System
 import kotlinx.datetime.Instant
-import me.snoty.backend.database.mongo.getIdAsString
+import me.snoty.backend.utils.bson.getIdAsString
 import me.snoty.backend.test.IntermediateDataMapperRegistry
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContextImpl

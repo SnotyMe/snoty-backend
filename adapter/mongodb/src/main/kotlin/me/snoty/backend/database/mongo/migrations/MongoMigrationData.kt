@@ -4,6 +4,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import me.snoty.backend.utils.bson.CodecRegistryProvider
 import org.bson.codecs.Codec
 import org.bson.codecs.configuration.CodecProvider
 import org.bson.codecs.configuration.CodecRegistries
@@ -11,6 +12,8 @@ import org.bson.codecs.configuration.CodecRegistry
 import org.bson.codecs.kotlinx.BsonConfiguration
 import org.bson.codecs.kotlinx.KotlinSerializerCodec
 import org.bson.types.ObjectId
+import org.koin.core.annotation.Named
+import org.koin.core.annotation.Single
 import kotlin.reflect.full.isSubclassOf
 
 data class MongoMigrationData(
@@ -50,11 +53,16 @@ private val migrationEventCodec = KotlinSerializerCodec.create<MongoMigrationEve
 )
 
 @Suppress("UNCHECKED_CAST")
-fun migrationsCodecModule() = CodecRegistries.fromProviders(
-	object : CodecProvider {
-		override fun <T : Any> get(clazz: Class<T>, registry: CodecRegistry?): Codec<T>? = when {
-			clazz.kotlin.isSubclassOf(MongoMigrationEvent::class) -> migrationEventCodec
-			else -> null
-		} as? Codec<T>
-	}
-)!!
+@Single
+@Named("migrationCodecProvider")
+fun provideMigrationsCodec() = CodecRegistryProvider(
+	CodecRegistries.fromProviders(
+		object : CodecProvider {
+			override fun <T : Any> get(clazz: Class<T>, registry: CodecRegistry?): Codec<T>? = when {
+				clazz.kotlin.isSubclassOf(MongoMigrationEvent::class) -> migrationEventCodec
+				else -> null
+			} as? Codec<T>
+		}
+	),
+	priority = 1000
+)

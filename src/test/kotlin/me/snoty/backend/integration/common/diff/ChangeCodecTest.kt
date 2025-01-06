@@ -1,26 +1,25 @@
-package me.snoty.integration.common.diff
+package me.snoty.backend.integration.common.diff
 
 import io.mockk.mockk
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
-import me.snoty.backend.database.mongo.apiCodecModule
-import me.snoty.backend.database.mongo.decode
+import me.snoty.backend.utils.bson.decode
+import me.snoty.backend.utils.bson.provideApiCodec
+import me.snoty.backend.utils.bson.provideCodecRegistry
+import me.snoty.integration.common.diff.Change
 import me.snoty.integration.common.utils.bsonTypeClassMap
-import me.snoty.integration.common.utils.integrationsApiCodecModule
 import org.bson.BsonDocument
 import org.bson.BsonDocumentReader
 import org.bson.BsonDocumentWriter
-import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.configuration.CodecRegistry
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
 class ChangeCodecTest {
-	private val codecs: CodecRegistry = CodecRegistries.fromRegistries(
-		integrationsApiCodecModule(bsonTypeClassMap()),
-		apiCodecModule()
+	private val codecs: CodecRegistry = provideCodecRegistry(
+		provideApiCodec(bsonTypeClassMap())
 	)
 
 	private fun <T1 : Any, T2: Any> serializeChange(change: Change<T1, T2>): BsonDocument {
@@ -70,7 +69,7 @@ class ChangeCodecTest {
 	fun `test encode String`() {
 		val old = "old"
 		val new = "new"
-		val change = Change( old, new)
+		val change = Change(old, new)
 
 		val document = serializeChange(change)
 		assertEquals(2, document.size)

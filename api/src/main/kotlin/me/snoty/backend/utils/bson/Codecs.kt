@@ -1,18 +1,22 @@
-package me.snoty.backend.database.mongo
+package me.snoty.backend.utils.bson
 
-import com.mongodb.MongoClientSettings
 import kotlinx.datetime.*
+import me.snoty.integration.common.utils.integrationsApiCodecModule
 import me.snoty.integration.common.utils.kotlinxSerializersModule
 import org.bson.BsonDateTime
 import org.bson.BsonReader
 import org.bson.BsonWriter
 import org.bson.UuidRepresentation
+import org.bson.codecs.BsonTypeClassMap
 import org.bson.codecs.Codec
 import org.bson.codecs.DecoderContext
 import org.bson.codecs.EncoderContext
 import org.bson.codecs.UuidCodec
 import org.bson.codecs.configuration.CodecRegistries
+import org.bson.codecs.configuration.CodecRegistry
 import org.bson.codecs.kotlinx.KotlinSerializerCodecProvider
+import org.koin.core.annotation.Named
+import org.koin.core.annotation.Single
 import java.time.LocalDateTime as JavaLocalDateTime
 import java.time.ZoneOffset as JavaZoneOffset
 
@@ -50,9 +54,17 @@ class InstantCodec : Codec<Instant> {
 	}
 }
 
-fun apiCodecModule() =
+data class CodecRegistryProvider(
+	val registry: CodecRegistry,
+	val priority: Int = 0,
+)
+
+@Single
+@Named("apiCodecProvider")
+fun provideApiCodec(bsonTypeMap: BsonTypeClassMap) = CodecRegistryProvider(
 	CodecRegistries.fromRegistries(
 		CodecRegistries.fromCodecs(UuidCodec(UuidRepresentation.STANDARD), LocalDateTimeCodec(), InstantCodec()),
 		CodecRegistries.fromProviders(KotlinSerializerCodecProvider(kotlinxSerializersModule)),
-		MongoClientSettings.getDefaultCodecRegistry()
+		integrationsApiCodecModule(bsonTypeMap),
 	)
+)

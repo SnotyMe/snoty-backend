@@ -1,7 +1,7 @@
 package me.snoty.integration.builtin.mapper
 
 import kotlinx.serialization.Serializable
-import me.snoty.backend.database.mongo.encode
+import me.snoty.backend.utils.bson.encode
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.EmptySchema

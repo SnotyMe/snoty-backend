@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import me.snoty.backend.database.mongo.encode
+import me.snoty.backend.utils.bson.encode
 import me.snoty.backend.errors.ServiceResult
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.wiring.node.MongoSettingsService

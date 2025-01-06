@@ -1,7 +1,7 @@
 package me.snoty.integration.builtin.mapper
 
 import liqp.TemplateParser
-import me.snoty.backend.database.mongo.setRecursively
+import me.snoty.backend.utils.bson.setRecursively
 import me.snoty.integration.common.model.metadata.DisplayName
 import org.bson.Document
 import org.slf4j.Logger

@@ -1,4 +1,4 @@
-package me.snoty.backend.database.mongo
+package me.snoty.backend.utils.bson
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer

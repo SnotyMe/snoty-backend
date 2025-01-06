@@ -1,10 +1,10 @@
 package me.snoty.backend
 
 import kotlinx.coroutines.runBlocking
+import me.snoty.apiModule
 import me.snoty.backend.database.mongo.mongoKoinModule
 import me.snoty.backend.events.EventHandler
 import me.snoty.backend.logging.setupLogbackFilters
-import me.snoty.integration.common.integrationApiModule
 import org.koin.core.Koin
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
@@ -26,7 +26,6 @@ fun startApplication(vararg extraModules: Module) = runBlocking {
 			},
 			apiModule,
 			defaultModule,
-			integrationApiModule,
 
 			mongoKoinModule
 		)

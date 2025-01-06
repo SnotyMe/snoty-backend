@@ -1,7 +1,7 @@
 package me.snoty.backend.wiring.flow.export
 
-import me.snoty.backend.database.mongo.encode
-import me.snoty.backend.database.mongo.setRecursively
+import me.snoty.backend.utils.bson.encode
+import me.snoty.backend.utils.bson.setRecursively
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.integration.common.model.metadata.NodeField
 import me.snoty.integration.common.model.metadata.NodeFieldDetails

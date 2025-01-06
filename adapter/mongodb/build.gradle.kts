@@ -6,6 +6,7 @@ plugins {
 
 dependencies { with(libs) {
 	compileOnly(projects.api)
+
 	implementation(monitoring.opentelemetry.semconv)
 	implementation("com.github.zafarkhaja:java-semver:0.10.2")
 

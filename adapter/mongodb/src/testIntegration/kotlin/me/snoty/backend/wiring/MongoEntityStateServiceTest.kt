@@ -1,17 +1,15 @@
 package me.snoty.backend.wiring
 
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry
-import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Instant
 import me.snoty.backend.database.mongo.MongoTest
-import me.snoty.backend.database.mongo.getIdAsString
 import me.snoty.backend.hooks.HookRegistryImpl
 import me.snoty.backend.integration.MongoEntityStateService
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.test.TestIds.INTEGRATION_NAME
 import me.snoty.backend.test.TestIds.USER_ID_1
 import me.snoty.backend.test.node
+import me.snoty.backend.utils.bson.getIdAsString
 import me.snoty.integration.common.diff.Change
 import me.snoty.integration.common.diff.DiffResult
 import me.snoty.integration.common.diff.checksum
@@ -34,9 +32,7 @@ class MongoEntityStateServiceTest {
 	private val service = MongoEntityStateService(
 		mongoDB,
 		nodeDescriptor,
-		meterRegistry = SimpleMeterRegistry(),
 		hookRegistry = HookRegistryImpl(),
-		metricsPool = mockk(relaxed = true),
 		codecRegistry = provideStateCodecRegistry(bsonTypeClassMap(), mongoDB.codecRegistry),
 	)
 

@@ -1,9 +1,7 @@
 package me.snoty.integration.common.wiring.node
 
-import com.mongodb.client.model.Filters
 import io.opentelemetry.api.trace.SpanBuilder
 import kotlinx.serialization.Serializable
-import org.bson.conversions.Bson
 import org.koin.core.qualifier.named
 
 @Serializable
@@ -14,12 +12,7 @@ data class NodeDescriptor(
 	val namespace: String,
 	val name: String
 ) {
-	companion object {
-		fun filter(namespace: String, name: String): Bson = Filters.and(
-			Filters.eq(NodeDescriptor::namespace.name, namespace),
-			Filters.eq(NodeDescriptor::name.name, name)
-		)
-	}
+	companion object
 
 	val id: String
 		get() = "$namespace:$name"

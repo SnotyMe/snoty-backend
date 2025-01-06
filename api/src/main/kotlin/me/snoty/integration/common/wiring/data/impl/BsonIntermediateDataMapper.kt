@@ -1,7 +1,7 @@
 package me.snoty.integration.common.wiring.data.impl
 
-import me.snoty.backend.database.mongo.decode
-import me.snoty.backend.database.mongo.encode
+import me.snoty.backend.utils.bson.decode
+import me.snoty.backend.utils.bson.encode
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.IntermediateDataMapper
 import org.bson.Document

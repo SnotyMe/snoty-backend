@@ -20,7 +20,10 @@ listRootDirsIn("integrations")
 
 include("api")
 include("integration-plugin")
-include(":adapter:mongodb")
+listRootDirsIn("adapter")
+	.forEach {
+		include(":adapter:${it.name}")
+	}
 
 listRootDirsIn("conventions")
 	.forEach {

@@ -7,12 +7,8 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import io.github.oshai.kotlinlogging.KotlinLogging
 import me.snoty.backend.config.Config
 import me.snoty.backend.config.MongoConfig
-import me.snoty.backend.database.mongo.migrations.migrationsCodecModule
 import me.snoty.backend.database.mongo.tracing.ContextProvider
 import me.snoty.backend.database.mongo.tracing.MongoTracing
-import me.snoty.integration.common.utils.bsonTypeClassMap
-import me.snoty.integration.common.utils.integrationsApiCodecModule
-import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Single
 import com.mongodb.client.MongoClient as SyncMongoClient
@@ -27,20 +23,15 @@ data class MongoClients(
 
 @Single
 class MongoStartup(private val mongoTracing: MongoTracing) {
-	fun createMongoClients(config: MongoConfig, dbName: String = MONGO_DB_NAME): MongoClients {
+	fun createMongoClients(config: MongoConfig, codecRegistry: CodecRegistry, dbName: String = MONGO_DB_NAME): MongoClients {
 		val logger = KotlinLogging.logger {}
-		val mongoCodecRegistry = CodecRegistries.fromRegistries(
-			migrationsCodecModule(),
-			integrationsApiCodecModule(bsonTypeClassMap()),
-			apiCodecModule(),
-		)
 
 		val connectionString = config.connection.buildConnectionString()
 
 		logger.info { "Connecting to MongoDB at $connectionString"}
 
 		fun createClientSettings(configure: MongoClientSettings.Builder.() -> Unit = {}) = MongoClientSettings.builder()
-			.codecRegistry(mongoCodecRegistry)
+			.codecRegistry(codecRegistry)
 			.applyConnectionString(ConnectionString(connectionString))
 			.apply {
 				config.authentication?.let {
@@ -59,9 +50,8 @@ class MongoStartup(private val mongoTracing: MongoTracing) {
 			addCommandListener(mongoTracing)
 		}
 		val mongoClient = CoroutineMongoClient.create(tracedClientSettings)
-		val mongoDB = mongoClient.getDatabase(dbName).withCodecRegistry(
-			mongoCodecRegistry
-		)
+		val mongoDB = mongoClient.getDatabase(dbName)
+			.withCodecRegistry(codecRegistry)
 
 		val syncMongoClient = SyncMongoClients.create(createClientSettings())
 
@@ -72,8 +62,8 @@ class MongoStartup(private val mongoTracing: MongoTracing) {
 }
 
 @Single
-fun provideMongoClients(mongoStartup: MongoStartup, config: Config): MongoClients
-	= mongoStartup.createMongoClients(config.mongodb)
+fun provideMongoClients(mongoStartup: MongoStartup, codecRegistry: CodecRegistry, config: Config): MongoClients
+	= mongoStartup.createMongoClients(config.mongodb, codecRegistry)
 
 @Single
 fun provideMongoDatabase(mongoClients: MongoClients): MongoDatabase
@@ -86,7 +76,3 @@ fun provideSyncMongoClient(mongoClients: MongoClients): SyncMongoClient
 @Single
 fun provideCoroutinesMongoClient(mongoClients: MongoClients): CoroutineMongoClient
 	= mongoClients.coroutinesClient
-
-@Single
-fun provideCodecRegistry(mongoDatabase: MongoDatabase): CodecRegistry
-	= mongoDatabase.codecRegistry

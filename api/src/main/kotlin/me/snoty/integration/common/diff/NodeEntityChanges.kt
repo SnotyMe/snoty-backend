@@ -1,6 +1,5 @@
 package me.snoty.integration.common.diff
 
-import com.mongodb.kotlin.client.coroutine.MongoCollection
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import me.snoty.backend.integration.config.flow.NodeId
@@ -18,5 +17,3 @@ data class UserEntityChanges(
 	@BsonId
 	val changeId: ObjectId = ObjectId()
 )
-
-typealias EntityChangesCollection = MongoCollection<UserEntityChanges>

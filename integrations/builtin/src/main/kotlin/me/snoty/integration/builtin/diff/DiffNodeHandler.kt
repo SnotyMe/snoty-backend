@@ -5,8 +5,8 @@ import io.github.oshai.kotlinlogging.slf4j.logger
 import io.ktor.http.*
 import io.ktor.server.response.*
 import kotlinx.coroutines.flow.toList
-import me.snoty.backend.database.mongo.encode
-import me.snoty.backend.database.mongo.getIdAsString
+import me.snoty.backend.utils.bson.encode
+import me.snoty.backend.utils.bson.getIdAsString
 import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.diff.diff
 import me.snoty.integration.common.diff.state.EntityState

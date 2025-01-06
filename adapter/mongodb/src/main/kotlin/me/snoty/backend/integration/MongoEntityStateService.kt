@@ -4,19 +4,23 @@ import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
-import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapMerge
-import me.snoty.backend.database.mongo.*
+import me.snoty.backend.database.mongo.aggregate
+import me.snoty.backend.database.mongo.mongoCollectionPrefix
+import me.snoty.backend.database.mongo.mongoField
+import me.snoty.backend.database.mongo.upsertOne
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.register
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.backend.observability.METRICS_POOL
-import me.snoty.integration.common.diff.*
+import me.snoty.backend.utils.bson.getIdAsString
+import me.snoty.integration.common.diff.DiffResult
+import me.snoty.integration.common.diff.EntityStateService
+import me.snoty.integration.common.diff.STATE_CODEC_REGISTRY
+import me.snoty.integration.common.diff.checksum
 import me.snoty.integration.common.diff.state.EntityState
-import me.snoty.integration.common.diff.state.EntityStateCollection
 import me.snoty.integration.common.diff.state.NodeEntityStates
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.flow.NodeDeletedHook
@@ -25,25 +29,16 @@ import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Named
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.TimeUnit
 
 @Factory
 class MongoEntityStateService(
 	mongoDB: MongoDatabase,
 	integration: NodeDescriptor,
-	meterRegistry: MeterRegistry,
 	hookRegistry: HookRegistry,
-	@Named(METRICS_POOL) metricsPool: ScheduledExecutorService,
 	@Named(STATE_CODEC_REGISTRY) codecRegistry: CodecRegistry,
 ) : EntityStateService {
-	private val nodeEntityStates: EntityStateCollection = mongoDB.getCollection<NodeEntityStates>("${integration.mongoCollectionPrefix}:entityStates")
+	private val nodeEntityStates = mongoDB.getCollection<NodeEntityStates>("${integration.mongoCollectionPrefix}:entityStates")
 		.withCodecRegistry(codecRegistry)
-	private val entityDiffMetrics = EntityDiffMetrics(meterRegistry, integration.name, nodeEntityStates)
-
-	init {
-		metricsPool.scheduleAtFixedRate(entityDiffMetrics.Job(), 0, 30, TimeUnit.SECONDS)
-	}
 
 	override suspend fun getLastState(nodeId: NodeId, entityId: String): EntityState? =
 		nodeEntityStates.aggregate<EntityState>(
@@ -58,8 +53,6 @@ class MongoEntityStateService(
 			.flatMapMerge { it.entities.asFlow() }
 
 	override suspend fun updateState(nodeId: NodeId, state: Document, diff: DiffResult) {
-		entityDiffMetrics.process(diff)
-
 		val id = state.getIdAsString() ?: return
 		suspend fun upsert() {
 			val entityState = EntityState(id, state, state.checksum())
@@ -89,8 +82,6 @@ class MongoEntityStateService(
 	}
 
 	override suspend fun updateStates(nodeId: NodeId, states: Collection<EntityStateService.EntityStateUpdate>) {
-		entityDiffMetrics.process(states.map { it.diffResult })
-
 		nodeEntityStates.upsertOne(
 			Filters.eq(NodeEntityStates::nodeId.name, nodeId),
 			Updates.set(NodeEntityStates::entities.name, states.map { it.state })
