@@ -5,6 +5,9 @@ import com.mongodb.client.model.Projections
 import com.mongodb.client.model.UpdateOptions
 import com.mongodb.kotlin.client.coroutine.AggregateFlow
 import com.mongodb.kotlin.client.coroutine.MongoCollection
+import me.snoty.backend.wiring.node.MongoNode
+import me.snoty.backend.wiring.node.NodeSettingsSerializationService
+import me.snoty.backend.wiring.node.deserializeOrInvalid
 import org.bson.Document
 import org.bson.conversions.Bson
 import kotlin.reflect.KProperty
@@ -42,3 +45,6 @@ object Accumulations {
 	fun mergeObjects(vararg objects: Any): Bson
 		= Document("\$mergeObjects", objects.toList())
 }
+
+fun NodeSettingsSerializationService.deserializeOrInvalid(node: MongoNode) =
+	deserializeOrInvalid(node.descriptor, node.settings)
