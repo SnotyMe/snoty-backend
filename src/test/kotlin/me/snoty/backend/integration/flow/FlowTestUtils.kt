@@ -1,7 +1,6 @@
 package me.snoty.backend.integration.flow
 
 import me.snoty.backend.dev.randomString
-import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.test.node
 import me.snoty.backend.test.nodeMetadata
 import me.snoty.integration.common.model.NodePosition
@@ -10,14 +9,16 @@ import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.NodeInput
 import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
-import me.snoty.integration.common.wiring.node.*
+import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.NodeHandler
+import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.simpleOutput
 import java.util.*
 
 fun relationalFlow(
 	vararg nodes: FlowNode,
 ) = WorkflowWithNodes(
-	_id = NodeId(),
+	_id = randomString(),
 	userId = UUID.randomUUID(),
 	name = randomString(),
 	nodes = nodes.toList(),
@@ -42,4 +43,5 @@ fun NodeRegistry.registerEmitHandler() {
 fun emitNode(vararg next: FlowNode) = node(
 	descriptor = EmitHandler.descriptor,
 	next = next.toList(),
+	makeId = ::randomString,
 )

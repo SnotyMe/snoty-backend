@@ -48,7 +48,7 @@ class JobRunrFlowScheduler(
 		val existingJobs = storageProvider.recurringJobs
 
 		flowService.getAll()
-			.catch { e -> logger.error(e) { "Failed to schedule flows" } }
+			.catch { e -> logger.error(e) { "Failed to get flows to schedule" } }
 			.filterNot { workflow ->
 				existingJobs.any { job ->
 					job.id == jobId(workflow)

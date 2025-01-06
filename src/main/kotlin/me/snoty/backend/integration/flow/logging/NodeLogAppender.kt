@@ -8,7 +8,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.datetime.Instant
-import me.snoty.backend.integration.config.flow.toNodeId
 import me.snoty.backend.logging.toSLF4JLevel
 import me.snoty.backend.observability.APPENDER_LOG_LEVEL
 import me.snoty.backend.observability.JOB_ID
@@ -48,7 +47,7 @@ class NodeLogAppender(
 				timestamp = Instant.fromEpochMilliseconds(eventObject.timeStamp),
 				level = eventLevel,
 				message = message,
-				node = eventObject.mdcPropertyMap["node.id"]?.toNodeId()
+				node = eventObject.mdcPropertyMap["node.id"]
 			)
 
 			val jobId = eventObject.mdcPropertyMap[JOB_ID.key]

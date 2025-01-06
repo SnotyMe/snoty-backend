@@ -5,11 +5,9 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.serializerOrNull
-import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.server.plugins.void
 import me.snoty.backend.server.resources.wiring.noSerializerFound
 import me.snoty.backend.utils.getUser
-import me.snoty.backend.utils.letOrNull
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.http.invalidNodeId
 import me.snoty.integration.common.http.nodeNotFound
@@ -23,7 +21,7 @@ suspend fun RoutingContext.getPersonalNodeOrNull(): StandaloneNode? {
 	val nodeService: NodeService = get()
 
 	val user = call.getUser()
-	val id = call.parameters["id"]?.letOrNull { NodeId(it) }
+	val id = call.parameters["id"]
 		?: return void { invalidNodeId() }
 
 	val flow = nodeService.get(id)

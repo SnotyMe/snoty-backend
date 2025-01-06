@@ -22,20 +22,21 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.testcontainers.utility.Base58.randomString
 import kotlin.test.assertNotNull
 
-abstract class EntityStateServiceSpec {
+abstract class EntityStateServiceSpec(val makeId: () -> NodeId) {
 	abstract val service: EntityStateService
 
 	protected val nodeDescriptor = NodeDescriptor(javaClass.packageName, INTEGRATION_NAME)
 	private fun flowNode(): Node = node(
 		userId = USER_ID_1,
 		descriptor = nodeDescriptor,
-		settings = EmptyNodeSettings()
+		settings = EmptyNodeSettings(),
+		makeId = makeId,
 	)
 
 	@Test
 	fun `test nothing`() = runBlocking {
 		val test = assertDoesNotThrow {
-			service.getLastState(NodeId(), randomString(32))
+			service.getLastState(makeId(), randomString(32))
 		}
 		assertNull(test)
 	}

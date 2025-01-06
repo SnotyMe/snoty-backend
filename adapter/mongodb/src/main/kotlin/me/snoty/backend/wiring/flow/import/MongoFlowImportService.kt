@@ -7,7 +7,8 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.flow.NODE_COLLECTION_NAME
-import me.snoty.integration.common.wiring.graph.MongoNode
+import me.snoty.backend.wiring.node.MongoNode
+import org.bson.types.ObjectId
 import org.koin.core.annotation.Single
 import java.util.*
 
@@ -20,10 +21,11 @@ class MongoFlowImportService(
 
 	override suspend fun import(userId: UUID, flow: ImportFlow): NodeId {
 		val createdFlow = flowService.create(userId, flow.name)
+		val createdFlowId = ObjectId(createdFlow._id)
 
 		val nodesToInsert = flow.nodes.map {
 			MongoNode(
-				flowId = createdFlow._id,
+				flowId = createdFlowId,
 				userId = userId,
 				descriptor = it.descriptor,
 				settings = it.settings,

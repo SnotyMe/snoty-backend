@@ -7,11 +7,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.retryWhen
-import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -20,40 +16,45 @@ import me.snoty.backend.database.mongo.aggregate
 import me.snoty.backend.database.mongo.mongoField
 import me.snoty.backend.database.mongo.upsertOne
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.backend.wiring.flow.FlowFeatureFlags
 import me.snoty.backend.scheduling.FlowTriggerReason
+import me.snoty.backend.wiring.flow.FlowFeatureFlags
 import me.snoty.backend.wiring.flow.MongoWorkflow
-import me.snoty.integration.common.wiring.flow.EnumeratedFlowExecution
-import me.snoty.integration.common.wiring.flow.FLOW_COLLECTION_NAME
-import me.snoty.integration.common.wiring.flow.FLOW_EXECUTION_COLLECTION_NAME
-import me.snoty.integration.common.wiring.flow.FlowExecution
-import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
-import me.snoty.integration.common.wiring.flow.NodeLogEntry
+import me.snoty.integration.common.wiring.flow.*
 import org.bson.codecs.pojo.annotations.BsonId
+import org.bson.types.ObjectId
 import org.koin.core.annotation.Single
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.TimeUnit
+
+data class MongoFlowLogs(
+	val _id: String,
+	val flowId: ObjectId,
+	val triggeredBy: FlowTriggerReason?,
+	val creationDate: Instant,
+	val status: FlowExecutionStatus? = null,
+	val logs: List<NodeLogEntry>,
+)
 
 @Single
 class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatureFlags) : FlowExecutionService {
 	private val logger = KotlinLogging.logger {}
-	private val collection = mongoDB.getCollection<FlowLogs>(FLOW_EXECUTION_COLLECTION_NAME)
+	private val collection = mongoDB.getCollection<MongoFlowLogs>(FLOW_EXECUTION_COLLECTION_NAME)
 
 	init {
 		@OptIn(DelicateCoroutinesApi::class) // the indexes are non-critical and should just *eventually* be created
 		GlobalScope.launch(Dispatchers.IO) {
-			val expirationIndex = FlowLogs::creationDate.name
+			val expirationIndex = MongoFlowLogs::creationDate.name
 
 			collection.createIndexes(
 				listOf(
-					IndexModel(Indexes.descending(FlowLogs::flowId.name)),
+					IndexModel(Indexes.descending(MongoFlowLogs::flowId.name)),
 					IndexModel(
-						Indexes.descending(FlowLogs::creationDate.name),
+						Indexes.descending(MongoFlowLogs::creationDate.name),
 						IndexOptions()
 							.name(expirationIndex)
 							.expireAfter(featureFlags.expirationSeconds, TimeUnit.SECONDS)
 					),
-					IndexModel(Indexes.descending(FlowLogs::flowId.name, FlowLogs::creationDate.name)),
+					IndexModel(Indexes.descending(MongoFlowLogs::flowId.name, MongoFlowLogs::creationDate.name)),
 				),
 			).retryWhen { cause, attempt ->
 				if (attempt > 3) {
@@ -72,9 +73,9 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 	override suspend fun create(jobId: String, flowId: NodeId, triggeredBy: FlowTriggerReason) {
 		runCatching {
 			collection.insertOne(
-				FlowLogs(
+				MongoFlowLogs(
 					_id = jobId,
-					flowId = flowId,
+					flowId = ObjectId(flowId),
 					triggeredBy = triggeredBy,
 					creationDate = Clock.System.now(),
 					status = FlowExecutionStatus.RUNNING,
@@ -87,10 +88,10 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 
 			// was inserted already (by a previous attempt), let's just update that doc
 			collection.upsertOne(
-				Filters.eq(FlowLogs::_id.name, jobId),
+				Filters.eq(MongoFlowLogs::_id.name, jobId),
 				Updates.combine(
-					Updates.set(FlowLogs::creationDate.name, Clock.System.now()),
-					Updates.set(FlowLogs::status.name, FlowExecutionStatus.RUNNING),
+					Updates.set(MongoFlowLogs::creationDate.name, Clock.System.now()),
+					Updates.set(MongoFlowLogs::status.name, FlowExecutionStatus.RUNNING),
 				)
 			)
 		}
@@ -98,20 +99,20 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 
 	override suspend fun setExecutionStatus(jobId: String, status: FlowExecutionStatus) {
 		collection.updateOne(
-			Filters.eq(FlowLogs::_id.name, jobId),
-			Updates.set(FlowLogs::status.name, status),
+			Filters.eq(MongoFlowLogs::_id.name, jobId),
+			Updates.set(MongoFlowLogs::status.name, status),
 		)
 	}
 
 	override suspend fun record(jobId: String, entry: NodeLogEntry) {
 		collection.updateOne(
-			Filters.eq(FlowLogs::_id.name, jobId),
-			Updates.push(FlowLogs::logs.name, entry),
+			Filters.eq(MongoFlowLogs::_id.name, jobId),
+			Updates.push(MongoFlowLogs::logs.name, entry),
 		)
 	}
 
 	override suspend fun retrieve(flowId: NodeId): List<NodeLogEntry> =
-		collection.find(Filters.eq(FlowLogs::flowId.name, flowId))
+		collection.find(Filters.eq(MongoFlowLogs::flowId.name, ObjectId(flowId)))
 			.toList()
 			.flatMap { it.logs }
 
@@ -121,14 +122,14 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 		data class MongoFlowExecution(
 			val jobId: String,
 			@BsonId
-			val flowId: NodeId,
+			val flowId: ObjectId,
 			val status: FlowExecutionStatus,
 			val triggeredBy: FlowTriggerReason?,
 			val startDate: Instant,
 		) {
 			fun toFlowExecution() = EnumeratedFlowExecution(
 				jobId = jobId,
-				flowId = flowId,
+				flowId = flowId.toHexString(),
 				triggeredBy = triggeredBy ?: FlowTriggerReason.Unknown,
 				startDate = startDate,
 				status = status,
@@ -136,20 +137,20 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 		}
 
 		return collection.aggregate<MongoFlowExecution>(
-			Aggregates.sort(Sorts.descending(FlowLogs::flowId.name, FlowLogs::creationDate.name)),
+			Aggregates.sort(Sorts.descending(MongoFlowLogs::flowId.name, MongoFlowLogs::creationDate.name)),
 			Aggregates.group(
-				FlowLogs::flowId.mongoField,
-				Accumulators.first(MongoFlowExecution::jobId.name, FlowLogs::_id.mongoField),
-				Accumulators.first(MongoFlowExecution::flowId.name, FlowLogs::flowId.mongoField),
-				Accumulators.first(MongoFlowExecution::status.name, FlowLogs::status.mongoField),
-				Accumulators.first(MongoFlowExecution::startDate.name, FlowLogs::creationDate.mongoField),
+				MongoFlowLogs::flowId.mongoField,
+				Accumulators.first(MongoFlowExecution::jobId.name, MongoFlowLogs::_id.mongoField),
+				Accumulators.first(MongoFlowExecution::flowId.name, MongoFlowLogs::flowId.mongoField),
+				Accumulators.first(MongoFlowExecution::status.name, MongoFlowLogs::status.mongoField),
+				Accumulators.first(MongoFlowExecution::startDate.name, MongoFlowLogs::creationDate.mongoField),
 			),
 			Aggregates.lookup(
 				/* from = */ FLOW_COLLECTION_NAME,
 				// _id as the group makes the flowId be the _id
-				/* localField = */ FlowLogs::_id.name,
+				/* localField = */ MongoFlowLogs::_id.name,
 				/* foreignField = */ MongoWorkflow ::_id.name,
-			/* as = */ flow,
+				/* as = */ flow,
 			),
 			Aggregates.match(Filters.elemMatch(flow, Filters.eq(MongoWorkflow::userId.name, userId))),
 			Aggregations.project(
@@ -161,11 +162,11 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 	override fun query(flowId: NodeId, startFrom: String?, limit: Int): Flow<FlowExecution> =
 		collection.find(
 			Filters.and(
-				Filters.eq(FlowLogs::flowId.name, flowId),
-				if (startFrom != null) Filters.lt(FlowLogs::_id.name, startFrom) else Filters.empty(),
+				Filters.eq(MongoFlowLogs::flowId.name, ObjectId(flowId)),
+				if (startFrom != null) Filters.lt(MongoFlowLogs::_id.name, startFrom) else Filters.empty(),
 			)
 		)
-			.sort(Sorts.descending(FlowLogs::creationDate.name))
+			.sort(Sorts.descending(MongoFlowLogs::creationDate.name))
 			.limit(limit)
 			.map {
 				it.run {
@@ -181,6 +182,6 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 			}
 
 	override suspend fun deleteAll(flowId: NodeId) {
-		collection.deleteMany(Filters.eq(FlowLogs::flowId.name, flowId))
+		collection.deleteMany(Filters.eq(MongoFlowLogs::flowId.name, ObjectId(flowId)))
 	}
 }

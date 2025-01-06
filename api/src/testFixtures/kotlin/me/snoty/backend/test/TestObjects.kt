@@ -21,7 +21,6 @@ val TestConfig = Config(
 	port = 8080,
 	environment = Environment.TEST,
 	publicHost = "http://localhost:8080",
-	mongodb = mockk(),
 	featureFlags = FeatureFlagsConfig(ProviderFeatureFlagConfig.InMemory()),
 	authentication = OidcConfig(
 		serverUrl = "http://localhost:8081",
@@ -34,7 +33,6 @@ class TestConfigBuilder(block: TestConfigBuilder.() -> Unit) {
 	var port: Short = 8080
 	var environment: Environment = Environment.TEST
 	var publicHost: String = "http://localhost:8080"
-	var mongodb: MongoConfig = mockk()
 	var authentication: OidcConfig = OidcConfig(
 		serverUrl = "http://localhost:8081",
 		clientId = "",
@@ -49,7 +47,6 @@ class TestConfigBuilder(block: TestConfigBuilder.() -> Unit) {
 		port = port,
 		environment = environment,
 		publicHost = publicHost,
-		mongodb = mongodb,
 		authentication = authentication,
 		featureFlags = FeatureFlagsConfig(ProviderFeatureFlagConfig.InMemory())
 	)

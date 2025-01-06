@@ -1,5 +1,6 @@
-package me.snoty.backend.config
+package me.snoty.backend.database.mongo
 
+import com.sksamuel.hoplite.ConfigAlias
 import com.sksamuel.hoplite.Masked
 
 data class MongoConfig(val connection: MongoConnectionConfig, val authentication: MongoAuthenticationConfig? = null)
@@ -34,4 +35,13 @@ data class MongoAuthenticationConfig(
 	val authDatabase: Masked = Masked("admin"),
 	val username: Masked,
 	val password: Masked,
+)
+
+data class MongoContainerConfig(
+	@ConfigAlias("MONGO_INITDB_ROOT_USERNAME")
+	val username: String?,
+	@ConfigAlias("MONGO_INITDB_ROOT_PASSWORD")
+	val password: Masked?,
+	@ConfigAlias("MONGO_PORT")
+	val port: Int = 27017
 )
