@@ -2,12 +2,11 @@ package me.snoty.integration.common.wiring.flow
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.integration.common.wiring.FlowNode
 import java.util.*
 
 interface Workflow {
-	val _id: NodeId
+	val _id: String
 	val name: String
 	val userId: UUID
 }
@@ -17,10 +16,10 @@ interface Workflow {
  */
 @Serializable
 data class StandaloneWorkflow(
+	override val _id: String,
 	override val name: String,
 	@Contextual
 	override val userId: UUID,
-	override val _id: NodeId,
 ) : Workflow
 
 /**
@@ -28,10 +27,10 @@ data class StandaloneWorkflow(
  */
  @Serializable
 data class WorkflowWithNodes(
+	override val _id: String,
 	override val name: String,
 	@Contextual
 	override val userId: UUID,
-	override val _id: NodeId,
 	/**
 	 * A list of all nodes.
 	 * These nodes are normalized. Can include nodes not connected to anything.

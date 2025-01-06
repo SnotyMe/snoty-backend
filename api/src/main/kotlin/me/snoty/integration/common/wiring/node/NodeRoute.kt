@@ -7,7 +7,6 @@ import io.ktor.server.routing.*
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.impl.AddRoutesHook
 import me.snoty.backend.hooks.register
-import me.snoty.backend.integration.config.flow.toNodeId
 import me.snoty.backend.utils.BadRequestException
 import me.snoty.backend.utils.getUserOrNull
 import me.snoty.backend.utils.respondStatus
@@ -40,7 +39,7 @@ internal class NodeRouteFactoryImpl(
 					handle {
 						logger.debug { "Handling route for ${nodeDescriptor.id} nodes: $route"}
 
-						val nodeId = call.parameters["nodeId"]?.toNodeId()
+						val nodeId = call.parameters["nodeId"]
 							?: return@handle call.respondStatus(BadRequestException("nodeId is required"))
 						val node = nodeService.get(nodeId)
 							?: return@handle nodeNotFound(nodeId)

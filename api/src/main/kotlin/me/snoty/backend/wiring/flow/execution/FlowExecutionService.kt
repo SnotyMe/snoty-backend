@@ -1,11 +1,12 @@
 package me.snoty.backend.wiring.flow.execution
 
-import kotlinx.coroutines.flow.*
-import kotlinx.datetime.Instant
+import kotlinx.coroutines.flow.Flow
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowTriggerReason
-import me.snoty.integration.common.wiring.flow.*
-import org.bson.codecs.pojo.annotations.BsonId
+import me.snoty.integration.common.wiring.flow.EnumeratedFlowExecution
+import me.snoty.integration.common.wiring.flow.FlowExecution
+import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
+import me.snoty.integration.common.wiring.flow.NodeLogEntry
 import java.util.*
 
 interface FlowExecutionService {
@@ -19,16 +20,3 @@ interface FlowExecutionService {
 
 	suspend fun deleteAll(flowId: NodeId)
 }
-
-data class FlowLogs(
-	@BsonId
-	/**
-	 * The execution / job ID. Every flow can have multiple executions.
-	 */
-	val _id: String,
-	val flowId: NodeId,
-	val triggeredBy: FlowTriggerReason?,
-	val creationDate: Instant,
-	val status: FlowExecutionStatus? = null,
-	val logs: List<NodeLogEntry>,
-)

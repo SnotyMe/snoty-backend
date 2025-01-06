@@ -12,9 +12,10 @@ fun node(
 	settings: NodeSettings = EmptyNodeSettings(),
 	next: List<FlowNode> = emptyList(),
 	userId: UUID = UUID.randomUUID(),
+	makeId: () -> NodeId = ::randomString,
 ) = FlowNode(
-	_id = NodeId(),
-	flowId = NodeId(),
+	_id = makeId(),
+	flowId = makeId(),
 	userId = userId,
 	descriptor = descriptor,
 	logLevel = null,

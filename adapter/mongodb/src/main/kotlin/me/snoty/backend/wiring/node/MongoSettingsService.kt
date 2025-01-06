@@ -3,7 +3,6 @@ package me.snoty.backend.wiring.node
 import io.github.oshai.kotlinlogging.KotlinLogging
 import me.snoty.backend.utils.bson.decode
 import me.snoty.backend.wiring.node.MongoSettingsService.Companion.logger
-import me.snoty.integration.common.wiring.graph.MongoNode
 import me.snoty.integration.common.wiring.node.InvalidNodeSettings
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.NodeSettings
