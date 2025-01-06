@@ -6,6 +6,7 @@ import kotlinx.coroutines.runBlocking
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.test.assertAny
+import me.snoty.backend.wiring.node.NodeRegistryImpl
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.GenericNode
@@ -24,6 +25,7 @@ abstract class FlowServiceSpec(private val makeId: () -> NodeId) {
 
 	private val userId = UUID.randomUUID()
 	protected val flowScheduler: FlowScheduler = mockk(relaxed = true)
+	protected val nodeRegistry = NodeRegistryImpl()
 
 	data class FlowTestContext(
 		val flowId: NodeId,

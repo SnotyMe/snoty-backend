@@ -2,7 +2,7 @@ package me.snoty.backend
 
 import kotlinx.coroutines.runBlocking
 import me.snoty.apiModule
-import me.snoty.backend.database.mongo.mongoKoinModule
+import me.snoty.backend.database.sql.sqlKoinModule
 import me.snoty.backend.events.EventHandler
 import me.snoty.backend.logging.setupLogbackFilters
 import org.koin.core.Koin
@@ -27,7 +27,8 @@ fun startApplication(vararg extraModules: Module) = runBlocking {
 			apiModule,
 			defaultModule,
 
-			mongoKoinModule
+			// mongoKoinModule,
+			sqlKoinModule,
 		)
 	}.koin
 	setupLogbackFilters(koin.getAll(), koin.getAll())

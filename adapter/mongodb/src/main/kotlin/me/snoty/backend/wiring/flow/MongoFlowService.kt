@@ -9,10 +9,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import me.snoty.backend.database.mongo.aggregate
+import me.snoty.backend.database.mongo.deserializeOrInvalid
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowScheduler
-import me.snoty.backend.wiring.node.MongoSettingsService
-import me.snoty.backend.wiring.node.lookupOrInvalid
+import me.snoty.backend.wiring.node.NodeSettingsSerializationService
+import me.snoty.backend.wiring.node.deserializeOrInvalid
 import me.snoty.integration.common.wiring.flow.*
 import me.snoty.backend.wiring.node.MongoNode
 import me.snoty.backend.wiring.node.toRelational
@@ -25,7 +26,7 @@ import java.util.*
 class MongoFlowService(
 	db: MongoDatabase,
 	private val flowScheduler: FlowScheduler,
-	private val settingsLookup: MongoSettingsService,
+	private val settingsLookup: NodeSettingsSerializationService,
 ) : FlowService {
 	private val collection = db.getCollection<MongoWorkflow>(FLOW_COLLECTION_NAME)
 
@@ -97,12 +98,12 @@ data class MongoWorkflowWithNodes(
 	val userId: UUID,
 	val nodes: List<MongoNode>,
 ) {
-	fun toRelational(settingsLookup: MongoSettingsService) = WorkflowWithNodes(
+	fun toRelational(settingsLookup: NodeSettingsSerializationService) = WorkflowWithNodes(
 		_id = _id.toHexString(),
 		name = name,
 		userId = userId,
 		nodes = nodes.map {
-			val settings = settingsLookup.lookupOrInvalid(it)
+			val settings = settingsLookup.deserializeOrInvalid(it)
 			it.toRelational(settings)
 		},
 	)

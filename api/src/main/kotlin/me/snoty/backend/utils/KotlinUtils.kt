@@ -1,6 +1,7 @@
 package me.snoty.backend.utils
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.transform
 
 fun <T, C : Collection<T>> C.orNull() = ifEmpty { null }
@@ -19,4 +20,14 @@ fun <T, R> T.letOrNull(block: (T) -> R): R? = try {
 	block(this)
 } catch (e: Exception) {
 	null
+}
+
+fun <T> flowOf(block: suspend () -> T): Flow<T> = flow {
+	emit(block())
+}
+
+fun <T> flowOfEach(block: suspend () -> Collection<T>): Flow<T> = flow {
+	block().forEach {
+		emit(it)
+	}
 }
