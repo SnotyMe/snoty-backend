@@ -2,7 +2,7 @@ package me.snoty.backend.integration.config
 
 import com.mongodb.client.model.Filters
 import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.wiring.graph.MongoNode
+import me.snoty.backend.wiring.node.MongoNode
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import org.bson.conversions.Bson

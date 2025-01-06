@@ -78,8 +78,7 @@ fun Route.flowResource() {
 
 	get("{id}") {
 		val user = call.getUser()
-		val id = call.parameters["id"]?.letOrNull { NodeId(it) }
-			?: return@get invalidNodeId()
+		val id = call.parameters["id"] ?: return@get invalidNodeId()
 
 		val flow = flowService.getWithNodes(id)
 		if (flow?.userId != user.id) {

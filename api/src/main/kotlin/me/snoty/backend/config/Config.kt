@@ -1,7 +1,6 @@
 package me.snoty.backend.config
 
 data class Config(
-	val mongodb: MongoConfig,
 	val server: ServerConfig = ServerConfig(),
 	val port: Short = 8080,
 	val monitoringPort: Short = 9000,

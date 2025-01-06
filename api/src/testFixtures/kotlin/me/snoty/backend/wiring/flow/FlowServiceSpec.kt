@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test
 import java.util.*
 import kotlin.test.assertNotNull
 
-abstract class FlowServiceSpec {
+abstract class FlowServiceSpec(private val makeId: () -> NodeId) {
 	protected abstract val service: FlowService
 	protected abstract val nodeService: NodeService
 
@@ -26,7 +26,7 @@ abstract class FlowServiceSpec {
 	protected val flowScheduler: FlowScheduler = mockk(relaxed = true)
 
 	data class FlowTestContext(
-		val flowId: NodeId = NodeId(),
+		val flowId: NodeId,
 	)
 
 	private fun test(block: suspend FlowTestContext.() -> Unit) = runBlocking {
@@ -59,7 +59,7 @@ abstract class FlowServiceSpec {
 
 	@Test
 	fun testNonExistentFlow() = test {
-		val result = service.getWithNodes(NodeId())
+		val result = service.getWithNodes(makeId())
 		assertEquals(null, result)
 	}
 
