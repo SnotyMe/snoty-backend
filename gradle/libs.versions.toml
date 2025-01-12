@@ -50,6 +50,7 @@ database-exposed-json = { module = "org.jetbrains.exposed:exposed-json", version
 database-exposed-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed" }
 database-hikari = { module = "com.zaxxer:HikariCP", version = "6.2.1" }
 database-postgres = { group = "org.postgresql", name = "postgresql", version = "42.7.4" }
+database-jdbc-opentelemetry = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-jdbc", version.ref = "opentelemetry-instrumentation" }
 
 dev-keycloak-adminClient = { group = "org.keycloak", name = "keycloak-admin-client", version = "26.0.3" }
 

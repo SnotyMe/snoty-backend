@@ -10,8 +10,9 @@ dependencies { with (libs) {
 	implementation(database.exposed.json)
 	implementation(database.exposed.datetime)
 
-	implementation(database.postgres)
 	implementation(database.hikari)
+	implementation(database.postgres)
+	implementation(database.jdbc.opentelemetry)
 
 	implementation(configuration.hoplite.hikari) {
 		exclude(group = "com.zaxxer", module = "HikariCP")
