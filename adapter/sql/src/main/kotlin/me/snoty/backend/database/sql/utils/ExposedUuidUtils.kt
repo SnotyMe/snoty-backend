@@ -45,8 +45,8 @@ class UuidColumnType : ColumnType<Uuid>() {
 fun Table.kotlinUuid(name: String): Column<Uuid> = registerColumn(name, UuidColumnType())
 
 open class UuidTable(name: String = "", columnName: String = "id") : IdTable<Uuid>(name) {
-	/** The identity column of this [UUIDTable], for storing UUIDs wrapped as [EntityID] instances. */
-	final override val id: Column<EntityID<Uuid>> = kotlinUuid(columnName).clientDefault {
+	/** The identity column of this [UuidTable], for storing UUIDs wrapped as [EntityID] instances. */
+	final override val id = kotlinUuid(columnName).clientDefault {
 		// TODO: evaluate using Uuid v7
 		Uuid.random()
 	}.entityId()

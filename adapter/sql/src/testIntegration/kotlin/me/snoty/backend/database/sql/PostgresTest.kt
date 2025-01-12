@@ -1,6 +1,7 @@
 package me.snoty.backend.database.sql
 
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
@@ -32,9 +33,12 @@ object PostgresTest {
 			else -> name
 		}.substringAfterLast(".")
 
-		var dbName = "${name}_${javaClass.hashCode()}"
+		var dbName = "${name}_${javaClass.hashCode()}".lowercase()
 		transaction(adminClient) {
-			exec("CREATE DATABASE $dbName")
+			// autoCommit is required when using postgres
+			connection.autoCommit = true
+			SchemaUtils.createDatabase(dbName)
+			connection.autoCommit = false
 		}
 
 		return Database.connect(

@@ -16,6 +16,7 @@ import org.slf4j.event.Level
 @Single(binds = [Table::class])
 class FlowExecutionTable : IdTable<String>() {
 	override val id = varchar("id", 255).entityId()
+	override val primaryKey = PrimaryKey(id)
 
 	val flowId = reference("flow_id", FlowTable)
 	val triggeredBy = enumerationByName<FlowTriggerReason>("triggered_by", 10)
@@ -23,9 +24,9 @@ class FlowExecutionTable : IdTable<String>() {
 	val status = enumerationByName<FlowExecutionStatus>("status", 15)
 }
 
-@Single
+@Single(binds = [Table::class])
 class FlowExecutionLogTable(flowExecutionTable: FlowExecutionTable) : UuidTable() {
-	val executionId = reference("execution_id", flowExecutionTable.id, onDelete = ReferenceOption.CASCADE)
+	val executionId = reference("execution_id", flowExecutionTable, onDelete = ReferenceOption.CASCADE)
 
 	val timestamp = timestamp("timestamp")
 	val level = enumerationByName("level", 10, Level::class)
