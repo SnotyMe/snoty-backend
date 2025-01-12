@@ -1,9 +1,8 @@
 package me.snoty.backend.database.sql
 
-import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.exposedLogger
 import org.koin.core.annotation.Single
+import javax.sql.DataSource
 
 @Single
-fun provideDatabase(dataSource: HikariDataSource) = Database.connect(dataSource)
+fun provideDatabase(dataSource: DataSource) = Database.connect(dataSource)

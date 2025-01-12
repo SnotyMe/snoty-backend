@@ -5,6 +5,8 @@ import com.sksamuel.hoplite.Masked
 import com.sksamuel.hoplite.fp.getOrElse
 import com.sksamuel.hoplite.parsers.PropsPropertySource
 import com.zaxxer.hikari.HikariDataSource
+import io.opentelemetry.api.OpenTelemetry
+import io.opentelemetry.instrumentation.jdbc.datasource.JdbcTelemetry
 import me.snoty.backend.config.ConfigLoader
 import me.snoty.backend.config.load
 import me.snoty.backend.config.loadContainerConfig
@@ -19,8 +21,8 @@ data class SqlConfigWrapper(
 	val sql: HikariDataSource
 )
 
-@Single(binds = [HikariDataSource::class, DataSource::class])
-fun provideDataSource(configLoader: ConfigLoader): HikariDataSource = configLoader.load<SqlConfigWrapper>(null) {
+@Single
+fun provideDataSource(configLoader: ConfigLoader, openTelemetry: OpenTelemetry): DataSource = configLoader.load<SqlConfigWrapper>(null) {
 	val postgresContainerConfig = loadContainerConfig<PostgresContainerConfig>("database").map {
 		Properties().apply {
 			setProperty("sql.username", it.user)
@@ -32,7 +34,13 @@ fun provideDataSource(configLoader: ConfigLoader): HikariDataSource = configLoad
 	postgresContainerConfig.getOrElse { null }?.let {
 		addSource(PropsPropertySource(it))
 	}
-}.sql
+}
+	.sql
+	.let {
+		JdbcTelemetry
+			.create(openTelemetry)
+			.wrap(it)
+	}
 
 
 /**

@@ -46,9 +46,9 @@ class SqlFlowExecutionService(
 	}
 
 	override suspend fun setExecutionStatus(jobId: String, status: FlowExecutionStatus) = db.newSuspendedTransaction<Unit> {
-		flowExecutionTable.upsert(where = { flowExecutionTable.id eq jobId }) {
+		flowExecutionTable.update(where = { flowExecutionTable.id eq jobId }) {
 			it[this.status] = status
-		}.execute(it)
+		}
 	}
 
 	override suspend fun retrieve(flowId: NodeId): List<NodeLogEntry> = db.newSuspendedTransaction {
@@ -59,11 +59,13 @@ class SqlFlowExecutionService(
 	}
 
 	override fun query(userId: UUID): Flow<EnumeratedFlowExecution> = db.flowTransaction {
+		val lastFlowId = flowExecutionTable.flowId.alias("last_flow_id")
+		val lastTriggeredAt = flowExecutionTable.triggeredAt.max().alias("last_triggered_at")
 		flowExecutionTable
 			.joinQuery(on = {
-				flowExecutionTable.flowId eq flowExecutionTable.alias
+				flowExecutionTable.flowId eq lastFlowId.aliasOnlyExpression() and (flowExecutionTable.triggeredAt eq lastTriggeredAt.aliasOnlyExpression())
 			}) {
-				flowExecutionTable.select(flowExecutionTable.flowId.alias("last_flow_id"), flowExecutionTable.triggeredAt.max().alias("last_triggered_at"))
+				flowExecutionTable.select(lastFlowId, lastTriggeredAt)
 					.where { flowExecutionTable.flowId inSubQuery flowTable.select(flowTable.id).where { flowTable.userId eq userId.toKotlinUuid() } }
 					.groupBy(flowExecutionTable.flowId)
 			}
