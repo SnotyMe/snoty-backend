@@ -7,17 +7,14 @@ import me.snoty.backend.wiring.flow.SqlFlowService
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.snotyJson
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 class SqlNodeServiceTest : NodeServiceSpec() {
 	private val nodeTable = NodeTable()
 	private val nodeConnectionTable = NodeConnectionTable(nodeTable)
 
-	private val db = PostgresTest.getPostgresDatabase {}.apply {
-		transaction(db = this) {
-			SchemaUtils.create(FlowTable, nodeTable, nodeConnectionTable)
-		}
+	private val db = PostgresTest.getPostgresDatabase {
+		SchemaUtils.create(FlowTable, nodeTable, nodeConnectionTable)
 	}
 
 	override val service: NodeService = SqlNodeService(

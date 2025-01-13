@@ -5,13 +5,14 @@ import kotlinx.datetime.Instant
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.test.TestIds.INTEGRATION_NAME
 import me.snoty.backend.test.TestIds.USER_ID_1
-import me.snoty.backend.test.node
 import me.snoty.backend.utils.bson.getIdAsString
+import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.diff.Change
 import me.snoty.integration.common.diff.DiffResult
 import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.diff.checksum
 import me.snoty.integration.common.wiring.Node
+import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import org.bson.Document
@@ -24,14 +25,19 @@ import kotlin.test.assertNotNull
 
 abstract class EntityStateServiceSpec(val makeId: () -> NodeId) {
 	abstract val service: EntityStateService
+	abstract val nodeService: NodeService
+	abstract val flowService: FlowService
 
 	protected val nodeDescriptor = NodeDescriptor(javaClass.packageName, INTEGRATION_NAME)
-	private fun flowNode(): Node = node(
-		userId = USER_ID_1,
-		descriptor = nodeDescriptor,
-		settings = EmptyNodeSettings(),
-		makeId = makeId,
-	)
+	private val flowId by lazy { runBlocking { flowService.create(USER_ID_1, nodeDescriptor.name) }._id }
+	private fun flowNode(): Node = runBlocking {
+		nodeService.create(
+			flowId = flowId,
+			userID = USER_ID_1,
+			descriptor = nodeDescriptor,
+			settings = EmptyNodeSettings(),
+		)
+	}
 
 	@Test
 	fun `test nothing`() = runBlocking {
@@ -44,7 +50,7 @@ abstract class EntityStateServiceSpec(val makeId: () -> NodeId) {
 	@Test
 	fun `test updateStates insert`() = runBlocking {
 		val date = Instant.fromEpochMilliseconds(1000)
-		val entity = Document("id", 10L).append("date", date)
+		val entity = Document("id", 10).append("date", date)
 		val node = flowNode()
 		service.updateState(
 			node._id,
@@ -64,7 +70,7 @@ abstract class EntityStateServiceSpec(val makeId: () -> NodeId) {
 	@Test
 	fun `test updateStates update`() = runBlocking {
 		val date = Instant.fromEpochMilliseconds(1000)
-		val entity = Document("id", 10L).append("date", date)
+		val entity = Document("id", 10).append("date", date)
 		val node = flowNode()
 		service.updateState(
 			node._id,

@@ -24,7 +24,7 @@ object PostgresTest {
 		)
 	}
 
-	fun getPostgresDatabase(block: () -> Unit): Database {
+	fun getPostgresDatabase(block: Database.() -> Unit): Database {
 		val javaClass = block.javaClass
 		var name = javaClass.name
 		name = when {
@@ -41,10 +41,16 @@ object PostgresTest {
 			connection.autoCommit = false
 		}
 
-		return Database.connect(
+		val db = Database.connect(
 			url = postgresContainer.jdbcUrl.replace(ADMIN_DB, dbName),
 			user = postgresContainer.username,
 			password = postgresContainer.password,
 		)
+
+		transaction(db = db) {
+			block(db)
+		}
+
+		return db
 	}
 }

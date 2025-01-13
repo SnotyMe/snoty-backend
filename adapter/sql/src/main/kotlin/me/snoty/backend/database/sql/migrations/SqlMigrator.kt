@@ -13,9 +13,9 @@ class SqlMigrator(private val database: Database, private val tables: List<Table
 
 	suspend fun migrate() {
 		database.newSuspendedTransaction {
-			var tables = tables.toTypedArray()
-			SchemaUtils.createMissingTablesAndColumns(*tables)
-			val migrationsRequired = SchemaUtils.statementsRequiredToActualizeScheme(*tables)
+			val sortedTables = SchemaUtils.sortTablesByReferences(tables).toTypedArray()
+			SchemaUtils.createMissingTablesAndColumns(*sortedTables)
+			val migrationsRequired = SchemaUtils.statementsRequiredToActualizeScheme(*sortedTables)
 			if (migrationsRequired.isNotEmpty()) {
 				logger.error {
 					"""

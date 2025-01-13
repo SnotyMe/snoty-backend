@@ -18,7 +18,7 @@ class FlowExecutionTable : IdTable<String>() {
 	override val id = varchar("id", 255).entityId()
 	override val primaryKey = PrimaryKey(id)
 
-	val flowId = reference("flow_id", FlowTable)
+	val flowId = reference("flow_id", FlowTable, onDelete = ReferenceOption.CASCADE)
 	val triggeredBy = enumerationByName<FlowTriggerReason>("triggered_by", 10)
 	val triggeredAt = timestamp("triggered_at")
 	val status = enumerationByName<FlowExecutionStatus>("status", 15)

@@ -14,6 +14,7 @@ import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.http.nodeNotFound
 import me.snoty.integration.common.wiring.Node
 import org.koin.core.annotation.Factory
+import org.koin.ktor.ext.inject
 
 interface NodeRouteFactory {
 	operator fun invoke(route: String, method: HttpMethod, verifyUser: Boolean = true, block: suspend RoutingContext.(Node) -> Unit)
@@ -23,7 +24,6 @@ interface NodeRouteFactory {
 internal class NodeRouteFactoryImpl(
 	private val nodeDescriptor: NodeDescriptor,
 	private val hookRegistry: HookRegistry,
-	private val nodeService: NodeService,
 ) : NodeRouteFactory {
 	val logger = KotlinLogging.logger {}
 
@@ -35,6 +35,7 @@ internal class NodeRouteFactoryImpl(
 			logger.debug { "Registering route for $nodeDescriptor node: $route"}
 
 			fun Route.doRoute() = route("{nodeId}/$route") {
+				val nodeService: NodeService by inject()
 				method(method) {
 					handle {
 						logger.debug { "Handling route for ${nodeDescriptor.id} nodes: $route"}
