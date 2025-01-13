@@ -8,17 +8,14 @@ import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.snotyJson
 import me.snoty.integration.common.wiring.flow.FlowService
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.uuid.Uuid
 
 class SqlFlowServiceTest : FlowServiceSpec({ Uuid.random().toString() }) {
 	val nodeTable = NodeTable()
 	val nodeConnectionTable = NodeConnectionTable(nodeTable)
 
-	val db = PostgresTest.getPostgresDatabase {}.apply {
-		transaction(db = this) {
-			SchemaUtils.create(nodeTable, nodeConnectionTable)
-		}
+	val db = PostgresTest.getPostgresDatabase {
+		SchemaUtils.create(nodeTable, nodeConnectionTable)
 	}
 
 	override val nodeService: NodeService = SqlNodeService(

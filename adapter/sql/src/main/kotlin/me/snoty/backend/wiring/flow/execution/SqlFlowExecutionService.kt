@@ -32,7 +32,7 @@ class SqlFlowExecutionService(
 			it[this.triggeredBy] = triggeredBy
 			it[this.triggeredAt] = Clock.System.now()
 			it[this.status] = FlowExecutionStatus.RUNNING
-		}.execute(it)
+		}
 	}
 
 	override suspend fun record(jobId: String, entry: NodeLogEntry) = db.newSuspendedTransaction<Unit> {
