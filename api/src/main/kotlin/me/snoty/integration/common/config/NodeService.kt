@@ -8,11 +8,13 @@ import me.snoty.integration.common.wiring.StandaloneNode
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.integration.common.model.NodePosition
+import me.snoty.integration.common.wiring.FlowNode
 import org.slf4j.event.Level
 import java.util.*
 
 interface NodeService {
 	suspend fun get(id: NodeId): StandaloneNode?
+	fun getByFlow(flowId: NodeId): Flow<FlowNode>
 
 	fun query(
 		userID: UUID? = null,

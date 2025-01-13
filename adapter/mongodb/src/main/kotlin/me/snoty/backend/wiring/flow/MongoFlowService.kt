@@ -9,14 +9,16 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import me.snoty.backend.database.mongo.aggregate
+import me.snoty.backend.database.mongo.deserializeOrInvalid
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowScheduler
-import me.snoty.backend.wiring.node.MongoSettingsService
-import me.snoty.backend.wiring.node.lookupOrInvalid
+import me.snoty.backend.wiring.node.NodeSettingsSerializationService
+import me.snoty.backend.wiring.node.deserializeOrInvalid
 import me.snoty.integration.common.wiring.flow.*
-import me.snoty.integration.common.wiring.graph.MongoNode
-import me.snoty.integration.common.wiring.graph.toRelational
+import me.snoty.backend.wiring.node.MongoNode
+import me.snoty.backend.wiring.node.toRelational
 import org.bson.codecs.pojo.annotations.BsonId
+import org.bson.types.ObjectId
 import org.koin.core.annotation.Single
 import java.util.*
 
@@ -24,15 +26,16 @@ import java.util.*
 class MongoFlowService(
 	db: MongoDatabase,
 	private val flowScheduler: FlowScheduler,
-	private val settingsLookup: MongoSettingsService,
+	private val settingsLookup: NodeSettingsSerializationService,
 ) : FlowService {
 	private val collection = db.getCollection<MongoWorkflow>(FLOW_COLLECTION_NAME)
 
 	override suspend fun create(userId: UUID, name: String): StandaloneWorkflow {
-		val workflow = MongoWorkflow(name = name, userId = userId)
-		collection.insertOne(workflow)
+		val mongoWorkflow = MongoWorkflow(name = name, userId = userId)
+		collection.insertOne(mongoWorkflow)
+		var workflow = mongoWorkflow.toStandalone()
 		flowScheduler.schedule(workflow)
-		return workflow.toStandalone()
+		return workflow
 	}
 
 	override fun query(userId: UUID): Flow<StandaloneWorkflow> = collection.find(
@@ -46,13 +49,13 @@ class MongoFlowService(
 	}
 
 	override suspend fun getStandalone(flowId: NodeId) = collection
-		.find(Filters.eq(MongoWorkflow::_id.name, flowId))
+		.find(Filters.eq(MongoWorkflow::_id.name, ObjectId(flowId)))
 		.firstOrNull()
 		?.toStandalone()
 
 	override suspend fun getWithNodes(flowId: NodeId) = collection
 		.aggregate<MongoWorkflowWithNodes>(
-			match(Filters.eq(MongoWorkflow::_id.name, flowId)),
+			match(Filters.eq(MongoWorkflow::_id.name, ObjectId(flowId))),
 			lookup(
 				/* from = */ NODE_COLLECTION_NAME,
 				/* localField = */ Workflow::_id.name,
@@ -65,24 +68,24 @@ class MongoFlowService(
 
 	override suspend fun rename(flowId: NodeId, name: String) {
 		collection.updateOne(
-			Filters.eq(MongoWorkflow::_id.name, flowId),
+			Filters.eq(MongoWorkflow::_id.name, ObjectId(flowId)),
 			Updates.set(MongoWorkflow::name.name, name)
 		)
 	}
 
 	override suspend fun delete(flowId: NodeId) {
-		collection.deleteOne(Filters.eq(MongoWorkflow::_id.name, flowId))
+		collection.deleteOne(Filters.eq(MongoWorkflow::_id.name, ObjectId(flowId)))
 	}
 }
 
 data class MongoWorkflow(
 	@BsonId
-	override val _id: NodeId = NodeId(),
-	override val name: String,
-	override val userId: UUID,
-) : Workflow {
+	val _id: ObjectId = ObjectId(),
+	val name: String,
+	val userId: UUID,
+) {
 	fun toStandalone() = StandaloneWorkflow(
-		_id = _id,
+		_id = _id.toHexString(),
 		name = name,
 		userId = userId,
 	)
@@ -90,17 +93,17 @@ data class MongoWorkflow(
 
 data class MongoWorkflowWithNodes(
 	@BsonId
-	override val _id: NodeId = NodeId(),
-	override val name: String,
-	override val userId: UUID,
+	val _id: ObjectId = ObjectId(),
+	val name: String,
+	val userId: UUID,
 	val nodes: List<MongoNode>,
-) : Workflow {
-	fun toRelational(settingsLookup: MongoSettingsService) = WorkflowWithNodes(
-		_id = _id,
+) {
+	fun toRelational(settingsLookup: NodeSettingsSerializationService) = WorkflowWithNodes(
+		_id = _id.toHexString(),
 		name = name,
 		userId = userId,
 		nodes = nodes.map {
-			val settings = settingsLookup.lookupOrInvalid(it)
+			val settings = settingsLookup.deserializeOrInvalid(it)
 			it.toRelational(settings)
 		},
 	)

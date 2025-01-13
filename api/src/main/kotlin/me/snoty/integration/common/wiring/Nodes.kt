@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings
+import org.bson.types.ObjectId
 import org.slf4j.event.Level
 import java.util.*
 
@@ -54,6 +55,16 @@ data class StandaloneNode(
 	@Contextual
 	override val settings: NodeSettings,
 ) : Node
+
+fun StandaloneNode.toRelational(next: List<NodeId>?) = FlowNode(
+	_id = _id,
+	flowId = flowId,
+	userId = userId,
+	descriptor = descriptor,
+	logLevel = logLevel,
+	settings = settings,
+	next = next ?: emptyList(),
+)
 
 inline fun <reified T : NodeSettings> Node.getConfig(): T {
 	return settings as T

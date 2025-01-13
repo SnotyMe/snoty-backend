@@ -2,11 +2,7 @@ package me.snoty.backend.database.mongo
 
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import io.mockk.mockk
-import me.snoty.backend.config.Config
-import me.snoty.backend.config.MongoConfig
-import me.snoty.backend.config.MongoConnectionConfig
 import me.snoty.backend.database.mongo.migrations.provideMigrationsCodec
-import me.snoty.backend.test.buildTestConfig
 import me.snoty.backend.utils.bson.provideApiCodec
 import me.snoty.backend.utils.bson.provideCodecRegistry
 import me.snoty.integration.common.utils.bsonTypeClassMap
@@ -17,15 +13,13 @@ object MongoTest {
 	@Container
 	val mongoContainer = MongoDBContainer("mongo:8.0")
 	private val mongoStartup = MongoStartup(mockk(relaxed = true))
-	val config: Config
+	val config: MongoConfig
 
 	init {
 		mongoContainer.start()
-		config = buildTestConfig {
-			mongodb = MongoConfig(
-				connection = MongoConnectionConfig.ConnectionString(mongoContainer.connectionString),
-			)
-		}
+		config = MongoConfig(
+			connection = MongoConnectionConfig.ConnectionString(mongoContainer.connectionString),
+		)
 	}
 
 	fun getMongoDatabase(block: () -> Unit): MongoDatabase {
@@ -37,7 +31,7 @@ object MongoTest {
 			else -> name
 		}.substringAfterLast(".")
 		return mongoStartup.createMongoClients(
-			config.mongodb,
+			config,
 			provideCodecRegistry(provideMigrationsCodec(), provideApiCodec(bsonTypeClassMap())),
 			"${name}_${javaClass.hashCode()}",
 		).coroutinesDatabase

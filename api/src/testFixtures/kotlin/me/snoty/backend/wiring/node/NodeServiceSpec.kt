@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test
 
 abstract class NodeServiceSpec {
 	abstract val service: NodeService
+	abstract val makeId: suspend () -> NodeId
 
 	private val descriptor = NodeDescriptor(
 		namespace = javaClass.packageName,
@@ -28,7 +29,7 @@ abstract class NodeServiceSpec {
 
 	@Test
 	fun `test getByUser`(): Unit = runBlocking {
-		val createdNode = service.create(USER_ID_1, NodeId(), descriptor, EmptyNodeSettings())
+		val createdNode = service.create(USER_ID_1, makeId(), descriptor, EmptyNodeSettings())
 
 		val byUser = service.query(USER_ID_1, NodePosition.START).toList()
 		assertEquals(1, byUser.size)
@@ -43,4 +44,6 @@ abstract class NodeServiceSpec {
 		val byWrongUserNotStart = service.query(USER_ID_CONTROL, NodePosition.MIDDLE).toList()
 		assertEquals(0, byWrongUserNotStart.size)
 	}
+
+	// TODO: test other methods
 }

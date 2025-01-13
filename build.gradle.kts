@@ -65,6 +65,7 @@ dependencies { with(libs) {
 
     moduleImplementation(projects.api)
     implementation(projects.adapter.mongodb)
+    implementation(projects.adapter.sql)
 
     implementation(koin.slf4j)
     implementation(libraries.coroutines.core)

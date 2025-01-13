@@ -2,10 +2,8 @@ package me.snoty.integration.common.utils
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.contextual
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
-import me.snoty.backend.integration.config.flow.NodeIdSerializer
 import me.snoty.integration.common.diff.Change
 import me.snoty.integration.common.diff.ChangeCodec
 import me.snoty.integration.common.diff.DiffResult
@@ -37,7 +35,6 @@ fun integrationsApiCodecModule(bsonTypeClassMap: BsonTypeClassMap): CodecRegistr
 	})
 
 val kotlinxSerializersModule = SerializersModule {
-	contextual(NodeIdSerializer)
 	polymorphic(NodeSettings::class) {
 		subclass(EmptyNodeSettings::class)
 		subclass(InvalidNodeSettings::class)
