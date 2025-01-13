@@ -2,6 +2,7 @@ package me.snoty.backend.wiring.node
 
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
+import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.test.NoOpNodeHandler
 import me.snoty.backend.test.TestIds.USER_ID_1
 import me.snoty.backend.test.TestIds.USER_ID_CONTROL
@@ -10,12 +11,12 @@ import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
-import org.bson.types.ObjectId
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 abstract class NodeServiceSpec {
 	abstract val service: NodeService
+	abstract val makeId: suspend () -> NodeId
 
 	private val descriptor = NodeDescriptor(
 		namespace = javaClass.packageName,
@@ -28,7 +29,7 @@ abstract class NodeServiceSpec {
 
 	@Test
 	fun `test getByUser`(): Unit = runBlocking {
-		val createdNode = service.create(USER_ID_1, ObjectId().toHexString(), descriptor, EmptyNodeSettings())
+		val createdNode = service.create(USER_ID_1, makeId(), descriptor, EmptyNodeSettings())
 
 		val byUser = service.query(USER_ID_1, NodePosition.START).toList()
 		assertEquals(1, byUser.size)

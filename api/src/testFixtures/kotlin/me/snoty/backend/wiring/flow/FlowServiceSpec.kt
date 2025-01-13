@@ -1,19 +1,23 @@
 package me.snoty.backend.wiring.flow
 
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.test.assertAny
-import me.snoty.backend.wiring.node.NodeRegistryImpl
+import me.snoty.backend.test.nodeMetadata
 import me.snoty.integration.common.config.NodeService
+import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.GenericNode
 import me.snoty.integration.common.wiring.StandaloneNode
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.NodeRegistry
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -25,7 +29,15 @@ abstract class FlowServiceSpec(private val makeId: () -> NodeId) {
 
 	private val userId = UUID.randomUUID()
 	protected val flowScheduler: FlowScheduler = mockk(relaxed = true)
-	protected val nodeRegistry = NodeRegistryImpl()
+	protected val nodeRegistry: NodeRegistry = mockk(relaxed = true)
+
+	init {
+		val descriptorSlot = slot<NodeDescriptor>()
+		every { nodeRegistry.getMetadata(capture(descriptorSlot)) } answers {
+			val descriptor = descriptorSlot.captured
+			nodeMetadata(name = descriptor.name, settingsClass = EmptyNodeSettings::class)
+		}
+	}
 
 	data class FlowTestContext(
 		val flowId: NodeId,
@@ -72,6 +84,16 @@ abstract class FlowServiceSpec(private val makeId: () -> NodeId) {
 			descriptor = NodeDescriptor(javaClass.packageName, name),
 			settings = EmptyNodeSettings(name)
 		)
+
+		nodeRegistry.registerHandler(NodeMetadata(
+			descriptor = newNode.descriptor,
+			displayName = name,
+			settingsClass = EmptyNodeSettings::class,
+			position = mockk(),
+			settings = mockk(),
+			input = mockk(),
+			output = mockk(),
+		), mockk(relaxed = true))
 
 		next.forEach { nodeService.connect(newNode._id, it._id) }
 

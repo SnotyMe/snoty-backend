@@ -1,13 +1,12 @@
-package me.snoty.backend.wiring.flow
+package me.snoty.backend.wiring.node
 
 import me.snoty.backend.database.mongo.MongoTest
 import me.snoty.backend.integration.config.MongoNodeService
-import me.snoty.backend.wiring.node.NodeServiceSpec
-import me.snoty.backend.wiring.node.NodeSettingsSerializationService
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.Document
+import org.bson.types.ObjectId
 import kotlin.reflect.KClass
 
 class MongoNodeServiceTest : NodeServiceSpec() {
@@ -19,4 +18,6 @@ class MongoNodeServiceTest : NodeServiceSpec() {
 			settingsClassOverride: KClass<out NodeSettings>?
 		): NodeSettings = EmptyNodeSettings()
 	})
+
+	override val makeId = suspend { ObjectId().toHexString() }
 }
