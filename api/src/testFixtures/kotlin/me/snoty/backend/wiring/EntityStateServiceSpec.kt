@@ -50,7 +50,7 @@ abstract class EntityStateServiceSpec(val makeId: () -> NodeId) {
 	@Test
 	fun `test updateStates insert`() = runBlocking {
 		val date = Instant.fromEpochMilliseconds(1000)
-		val entity = Document("id", 10L).append("date", date)
+		val entity = Document("id", 10).append("date", date)
 		val node = flowNode()
 		service.updateState(
 			node._id,
@@ -70,7 +70,7 @@ abstract class EntityStateServiceSpec(val makeId: () -> NodeId) {
 	@Test
 	fun `test updateStates update`() = runBlocking {
 		val date = Instant.fromEpochMilliseconds(1000)
-		val entity = Document("id", 10L).append("date", date)
+		val entity = Document("id", 10).append("date", date)
 		val node = flowNode()
 		service.updateState(
 			node._id,
