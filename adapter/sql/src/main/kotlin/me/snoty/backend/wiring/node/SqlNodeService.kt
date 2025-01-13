@@ -84,8 +84,14 @@ class SqlNodeService(
 			}
 		}
 
-		// attempt to get from DB to ensure the node was created and the settings are correct
-		return get(id.value.toString())!!
+		return StandaloneNode(
+			_id = id.value.toString(),
+			flowId = flowId,
+			userId = userID,
+			descriptor = descriptor,
+			logLevel = null,
+			settings = settings,
+		)
 	}
 
 	override suspend fun connect(

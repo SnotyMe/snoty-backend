@@ -11,3 +11,6 @@ fun String.toTitleCase()
  * @return this string if it is not blank, otherwise null
  */
 fun String?.orNull() = this?.ifBlank { null }
+
+fun String.quoted() = "\"$this\""
+fun String.unquoted() = removeSurrounding("\"")
