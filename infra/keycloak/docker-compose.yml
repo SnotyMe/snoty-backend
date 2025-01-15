@@ -1,6 +1,6 @@
 services:
   keycloak:
-    image: quay.io/keycloak/keycloak:26.0
+    image: quay.io/keycloak/keycloak:26.1
     user: ${UID:-1000}:${GID:-1000}
     env_file:
       - path: .env.default
