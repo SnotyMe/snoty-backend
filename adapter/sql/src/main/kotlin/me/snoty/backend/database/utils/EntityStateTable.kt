@@ -2,6 +2,7 @@ package me.snoty.backend.database.utils
 
 import me.snoty.backend.database.sql.SanitizedPrimaryKey
 import me.snoty.backend.database.sql.sqlTableName
+import me.snoty.backend.wiring.node.NodesScope
 import me.snoty.backend.wiring.node.NodeTable
 import me.snoty.integration.common.diff.state.EntityState
 import me.snoty.integration.common.wiring.node.NodeDescriptor
@@ -10,7 +11,11 @@ import org.bson.codecs.configuration.CodecRegistry
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
+import org.koin.core.annotation.Factory
+import org.koin.core.annotation.Scope
 
+@Factory
+@Scope(NodesScope::class)
 class EntityStateTable(descriptor: NodeDescriptor, nodeTable: NodeTable) : Table(descriptor.sqlTableName("states")) {
 	val nodeId = reference("node_id", nodeTable, onDelete = ReferenceOption.CASCADE)
 	val entityId = varchar("entity_id", 255)

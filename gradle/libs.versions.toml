@@ -1,7 +1,7 @@
 [versions]
 hoplite = "2.9.0"
-koin = "4.1.0-Beta1"
-koin-annotations = "2.0.0-Beta2"
+koin = "4.1.0-Beta5"
+koin-annotations = "2.0.1-Beta1"
 ksp = "2.1.0-1.0.29"
 jackson = "2.18.2"
 kotlinx-serialization = "1.8.0"
@@ -38,6 +38,7 @@ configuration-hoplite-hikari = { group = "com.sksamuel.hoplite", name = "hoplite
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 koin-slf4j = { group = "io.insert-koin", name = "koin-logger-slf4j", version.ref = "koin" }
 koin-ktor = { group = "io.insert-koin", name = "koin-ktor3", version.ref = "koin" }
+koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin" }
 koin-annotations = { group = "io.insert-koin", name = "koin-annotations", version.ref = "koin-annotations" }
 koin-ksp = { group = "io.insert-koin", name = "koin-ksp-compiler", version.ref = "koin-annotations" }
 

@@ -46,7 +46,7 @@ dependencies { with(libs) {
     testFixturesImplementation(tests.json)
     testFixturesApi(tests.junit.api)
     testFixturesApi(kotlin("test"))
-    testFixturesApi(tests.mockk)
+    testFixturesApi(koin.test)
     testFixturesApi(tests.mockk)
     testFixturesApi(tests.testcontainers.junit)
 }}

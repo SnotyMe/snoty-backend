@@ -13,7 +13,8 @@ import org.slf4j.Marker
 
 @Single
 class KoinLogFilterFeatureFlags(override val client: Client) : FeatureFlagsContainer {
-	val muteOverrideLogs by FeatureFlagBoolean("koin.muteOverrideLogs", true)
+	// defaults to false because a log feature flag will take care of it
+	val muteOverrideLogs by FeatureFlagBoolean("koin.muteOverrideLogs", false)
 	// these errors are thrown and will be logged by snoty, don't need them printed twice
 	val muteCreationErrorLogs by FeatureFlagBoolean("koin.muteCreationErrorLogs", true)
 }

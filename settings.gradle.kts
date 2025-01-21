@@ -1,5 +1,13 @@
 apply(from = "gradle/repositories.gradle.kts")
 
+pluginManagement {
+	repositories {
+		mavenCentral()
+		maven("https://maven.simulatan.me/snapshots")
+		gradlePluginPortal()
+	}
+}
+
 plugins {
 	id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"
 }

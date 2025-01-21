@@ -36,5 +36,5 @@ class SqlEntityStateServiceTest : EntityStateServiceSpec({ Uuid.random().toStrin
 		nodeConnectionTable = mockk(),
 	)
 	override val flowService: FlowService = SqlFlowService(db, mockk(relaxed = true), nodeService)
-	override val service: EntityStateService = SqlEntityStateService(db, entityStateTable, codecRegistry)
+	override val service: EntityStateService = SqlEntityStateService(db, codecRegistry, entityStateTable)
 }

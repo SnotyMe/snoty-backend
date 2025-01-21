@@ -23,7 +23,7 @@ class SqlFlowServiceTest : FlowServiceSpec({ Uuid.random().toString() }) {
 		json = snotyJson {},
 		nodeRegistry = nodeRegistry,
 		nodeTable = nodeTable,
-		nodeConnectionTable = nodeConnectionTable
+		nodeConnectionTable = nodeConnectionTable,
 	)
 	override val service: FlowService = SqlFlowService(db, flowScheduler, nodeService)
 }
