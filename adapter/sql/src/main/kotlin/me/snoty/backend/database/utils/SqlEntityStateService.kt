@@ -6,6 +6,7 @@ import me.snoty.backend.database.sql.newSuspendedTransaction
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.utils.bson.getIdAsString
 import me.snoty.backend.utils.toUuid
+import me.snoty.backend.wiring.node.NodesScope
 import me.snoty.integration.common.diff.DiffResult
 import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.diff.checksum
@@ -17,14 +18,17 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.annotation.Factory
+import org.koin.core.annotation.Scope
 import kotlin.uuid.Uuid
 
 @Factory
+@Scope(NodesScope::class)
 class SqlEntityStateService(
 	private val db: Database,
-	private val entityStateTable: EntityStateTable,
 	private val codecRegistry: CodecRegistry,
+	private val entityStateTable: EntityStateTable,
 ) : EntityStateService {
+
 	init {
 		transaction(db = db) {
 			SchemaUtils.create(entityStateTable)

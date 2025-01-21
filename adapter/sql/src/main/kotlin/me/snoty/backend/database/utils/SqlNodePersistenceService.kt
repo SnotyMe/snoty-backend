@@ -77,7 +77,7 @@ class SqlNodePersistenceService<T : Any>(
 }
 
 @Factory
-class MongoNodePersistenceFactory(
+class SqlNodePersistenceFactory(
 	private val database: Database,
 	private val hookRegistry: HookRegistry,
 	private val nodeDescriptor: NodeDescriptor,

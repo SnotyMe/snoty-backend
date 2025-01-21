@@ -1,6 +1,7 @@
 package me.snoty.integration.builtin.diff.injector
 
 import kotlinx.serialization.Serializable
+import me.snoty.backend.wiring.node.NodesScope
 import me.snoty.integration.builtin.diff.DiffNodeHandler
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.diff.DiffResult
@@ -18,6 +19,7 @@ import me.snoty.integration.common.wiring.node.NodeRouteFactory
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
+import org.koin.core.annotation.ScopeId
 import org.koin.core.annotation.Single
 
 @Serializable
@@ -49,7 +51,7 @@ data class HasDiff(
 )
 @Single
 class DiffInjectorNodeHandler(
-	entityStateService: EntityStateService,
+	@ScopeId(NodesScope::class) entityStateService: EntityStateService,
 	nodeRouteFactory: NodeRouteFactory,
 	codecRegistry: CodecRegistry,
 ) : DiffNodeHandler(entityStateService, nodeRouteFactory, codecRegistry) {

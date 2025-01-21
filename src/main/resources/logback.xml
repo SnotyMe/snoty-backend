@@ -25,6 +25,7 @@
     <logger name="io.ktor.server" level="${SERVER_LOG_LEVEL:-WARN}"/>
     <logger name="io.netty" level="${SERVER_LOG_LEVEL:-WARN}"/>
 
+    <logger name="[Koin]" level="WARN"/>
     <logger name="org.jobrunr" level="INFO"/>
     <logger name="io.grpc" level="INFO"/>
     <logger name="dev.openfeature" level="INFO"/>

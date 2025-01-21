@@ -109,7 +109,7 @@ class SqlFlowExecutionService(
 				status = execution[flowExecutionTable.status],
 				logs = logs[execution[flowExecutionTable.id].value]?.map {
 					it.toLogEntry(flowExecutionLogTable)
-				}
+				} ?: emptyList()
 			)
 		}
 	}
