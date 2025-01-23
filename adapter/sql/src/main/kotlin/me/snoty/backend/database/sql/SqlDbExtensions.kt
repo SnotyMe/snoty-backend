@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Table
 
 fun NodeDescriptor.sqlTableName(suffixName: String)
-	= "nodes:${namespace}.${name}:${suffixName}".quoted()
+	= "nodes:${name}:${suffixName}".quoted()
 
 /**
  * [4.1. Lexical Structure - 4.1.1. Identifiers and Key Words](https://www.postgresql.org/docs/current/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS)
