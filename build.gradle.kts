@@ -156,11 +156,3 @@ application {
 tasks.test {
     jvmArgs("-Dio.ktor.development=true")
 }
-
-kover {
-    currentProject {
-        sources {
-            excludedSourceSets.add(devSourceSet.name)
-        }
-    }
-}

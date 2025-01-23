@@ -26,7 +26,7 @@ buildinfo = { id = "io.github.simulatan.gradle-buildinfo-plugin", version = "2.3
 idea = { id = "org.jetbrains.gradle.plugin.idea-ext", version = "1.1.9" }
 jib = { id = "com.google.cloud.tools.jib", version = "3.4.4" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlin-kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.0" }
+kotlin-kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.1" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
 [libraries]
