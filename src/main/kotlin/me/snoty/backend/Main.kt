@@ -4,7 +4,7 @@ import kotlinx.coroutines.runBlocking
 import me.snoty.apiModule
 import me.snoty.backend.database.loadDatabaseModule
 import me.snoty.backend.events.EventHandler
-import me.snoty.backend.featureflags.FeatureFlagsSetup
+import me.snoty.backend.featureflags.setupFeatureFlags
 import me.snoty.backend.logging.setupLogbackFilters
 import org.koin.core.Koin
 import org.koin.core.context.startKoin
@@ -32,7 +32,7 @@ fun startApplication(vararg extraModules: Module) = runBlocking {
 
 	// setup logging related things
 	setupLogbackFilters(koin.getAll(), koin.getAll())
-	FeatureFlagsSetup.setup(koin.get(), koin.getAll())
+	setupFeatureFlags(koin.get(), koin.getAll())
 
 	// boot database koin module
 	koin.loadDatabaseModule()
