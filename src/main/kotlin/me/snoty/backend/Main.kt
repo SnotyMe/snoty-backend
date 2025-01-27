@@ -2,8 +2,9 @@ package me.snoty.backend
 
 import kotlinx.coroutines.runBlocking
 import me.snoty.apiModule
-import me.snoty.backend.database.sql.sqlKoinModule
+import me.snoty.backend.database.loadDatabaseModule
 import me.snoty.backend.events.EventHandler
+import me.snoty.backend.featureflags.FeatureFlagsSetup
 import me.snoty.backend.logging.setupLogbackFilters
 import org.koin.core.Koin
 import org.koin.core.context.startKoin
@@ -26,18 +27,21 @@ fun startApplication(vararg extraModules: Module) = runBlocking {
 			},
 			apiModule,
 			defaultModule,
-
-			// mongoKoinModule,
-			sqlKoinModule,
 		)
 	}.koin
+
+	// setup logging related things
 	setupLogbackFilters(koin.getAll(), koin.getAll())
+	FeatureFlagsSetup.setup(koin.get(), koin.getAll())
+
+	// boot database koin module
+	koin.loadDatabaseModule()
 
 	koin.getAll<EventHandler>()
 		// allows to register hooks that need to be executed in the application lifecycle
 		.forEach { it.handleInitializationEvent(koin.get()) }
 
-	val application = Application(koin)
+	val application: Application = koin.get()
 	try {
 		application.start()
 	} catch (e: Throwable) {

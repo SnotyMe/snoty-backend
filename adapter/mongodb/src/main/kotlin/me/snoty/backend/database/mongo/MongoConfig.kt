@@ -1,7 +1,12 @@
 package me.snoty.backend.database.mongo
 
 import com.sksamuel.hoplite.ConfigAlias
+import com.sksamuel.hoplite.ConfigLoaderBuilder
 import com.sksamuel.hoplite.Masked
+import com.sksamuel.hoplite.fp.getOrElse
+import com.sksamuel.hoplite.parsers.PropsPropertySource
+import me.snoty.backend.config.loadContainerConfig
+import java.util.*
 
 data class MongoConfig(val connection: MongoConnectionConfig, val authentication: MongoAuthenticationConfig? = null)
 
@@ -45,3 +50,21 @@ data class MongoContainerConfig(
 	@ConfigAlias("MONGO_PORT")
 	val port: Int = 27017
 )
+
+const val MONGODB = "mongodb"
+
+fun ConfigLoaderBuilder.autoconfigForMongo() {
+	val mongoContainerConfig = loadContainerConfig<MongoContainerConfig>("database").map {
+		Properties().apply {
+			setProperty("database.type", MONGODB)
+			setProperty("mongodb.connection.type", MongoConnectionConfig.ConnectionString::class.simpleName)
+			setProperty("mongodb.connection.connectionString", "mongodb://localhost:${it.port}/")
+			if (!it.username.isNullOrEmpty() || !it.username.isNullOrEmpty()) {
+				setProperty("mongodb.authentication.username", it.username)
+				setProperty("mongodb.authentication.password", it.password?.value)
+			}
+		}
+	}
+
+	addSource(PropsPropertySource(mongoContainerConfig.getOrElse { Properties() }))
+}

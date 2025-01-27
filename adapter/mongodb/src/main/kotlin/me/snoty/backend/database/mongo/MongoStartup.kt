@@ -67,20 +67,7 @@ class MongoStartup(private val mongoTracing: MongoTracing) {
 
 @Single
 fun provideMongoConfig(configLoader: ConfigLoader): MongoConfig = configLoader.load("mongodb") {
-	val mongoContainerConfig = loadContainerConfig<MongoContainerConfig>("database").map {
-		Properties().apply {
-			setProperty("mongodb.connection.type", MongoConnectionConfig.ConnectionString::class.simpleName)
-			setProperty("mongodb.connection.connectionString",
-			            "mongodb://localhost:${it.port}/"
-			)
-			if (!it.username.isNullOrEmpty() || !it.username.isNullOrEmpty()) {
-				setProperty("mongodb.authentication.username", it.username)
-				setProperty("mongodb.authentication.password", it.password?.value)
-			}
-		}
-	}
-
-	addSource(PropsPropertySource(mongoContainerConfig.getOrElse { Properties() }))
+	autoconfigForMongo()
 }
 
 @Single

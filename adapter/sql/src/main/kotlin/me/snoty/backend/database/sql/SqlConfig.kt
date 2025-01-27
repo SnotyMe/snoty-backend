@@ -1,6 +1,7 @@
 package me.snoty.backend.database.sql
 
 import com.sksamuel.hoplite.ConfigAlias
+import com.sksamuel.hoplite.ConfigLoaderBuilder
 import com.sksamuel.hoplite.Masked
 import com.sksamuel.hoplite.fp.getOrElse
 import com.sksamuel.hoplite.parsers.PropsPropertySource
@@ -23,17 +24,7 @@ data class SqlConfigWrapper(
 
 @Single
 fun provideDataSource(configLoader: ConfigLoader, openTelemetry: OpenTelemetry): DataSource = configLoader.load<SqlConfigWrapper>(null) {
-	val postgresContainerConfig = loadContainerConfig<PostgresContainerConfig>("database").map {
-		Properties().apply {
-			setProperty("sql.username", it.user)
-			setProperty("sql.password", it.password.value)
-			setProperty("sql.jdbcUrl", "jdbc:postgresql://localhost:${it.port}/${it.db}")
-		}
-	}
-
-	postgresContainerConfig.getOrElse { null }?.let {
-		addSource(PropsPropertySource(it))
-	}
+	autoconfigForSql()
 }
 	.sql
 	.let {
@@ -58,3 +49,18 @@ data class PostgresContainerConfig(
 	@ConfigAlias("POSTGRES_PORT")
 	val port: Int = 5432
 )
+
+fun ConfigLoaderBuilder.autoconfigForSql() {
+	val postgresContainerConfig = loadContainerConfig<PostgresContainerConfig>("database").map {
+		Properties().apply {
+			setProperty("database.type", "sql")
+			setProperty("sql.username", it.user)
+			setProperty("sql.password", it.password.value)
+			setProperty("sql.jdbcUrl", "jdbc:postgresql://localhost:${it.port}/${it.db}")
+		}
+	}
+
+	postgresContainerConfig.getOrElse { null }?.let {
+		addSource(PropsPropertySource(it))
+	}
+}
