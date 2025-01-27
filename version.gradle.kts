@@ -1,2 +1,2 @@
 group = "me.snoty"
-version = "0.0.4"
+version = "0.1.0"
