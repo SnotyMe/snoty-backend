@@ -1,7 +1,7 @@
 dependencyResolutionManagement {
 	repositories {
 		mavenCentral()
-		maven("https://maven.simulatan.me/snapshots")
+		maven("https://maven.simulatan.me/releases")
 		gradlePluginPortal()
 	}
 }

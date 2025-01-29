@@ -1,7 +1,7 @@
 [versions]
 hoplite = "2.9.0"
 koin = "4.1.0-Beta5"
-koin-annotations = "2.0.1-Beta1"
+koin-annotations = "2.0.0-RC1"
 ksp = "2.1.0-1.0.29"
 jackson = "2.18.2"
 kotlinx-serialization = "1.8.0"
