@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.toList
 import me.snoty.backend.utils.bson.encode
 import me.snoty.backend.utils.bson.getIdAsString
 import me.snoty.integration.common.diff.EntityStateService
+import me.snoty.integration.common.diff.checksum
 import me.snoty.integration.common.diff.diff
 import me.snoty.integration.common.diff.state.EntityState
 import me.snoty.integration.common.wiring.Node
@@ -19,7 +20,6 @@ import me.snoty.integration.common.wiring.node.NodeRouteFactory
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
 import org.slf4j.Logger
-
 
 abstract class DiffNodeHandler(
 	private val entityStateService: EntityStateService,
@@ -61,22 +61,9 @@ abstract class DiffNodeHandler(
 			}
 			.toMap()
 
-		val oldStates = entityStateService.getLastStates(node._id)
+		val rawOldStates = entityStateService.getLastStates(node._id)
 			.toList()
-			.associateBy { it.id }
-		val newStates = newData
-			// remove excluded fields to not consider them in the diff
-			.onEach { (_, document) ->
-				excludedFields.forEach { field -> document.remove(field) }
-			}
-			.mapValues { (id, newState) ->
-				val oldState = oldStates[id]
-				val diff = newState.diff(oldState)
-
-				logger.debug { "Entity $id was $diff" }
-
-				EntityStateService.EntityStateUpdate(EntityState(id, newState), diff)
-			}
+		val (oldStates, newStates) = processStates(rawOldStates, newData, excludedFields)
 
 		entityStateService.updateStates(node._id, newStates.values)
 		val allStates = newStates + oldStates
@@ -100,4 +87,32 @@ abstract class DiffNodeHandler(
 	@JvmInline
 	value class States(private val states: Map<String, EntityStateService.EntityStateUpdate>)
 		: Map<String, EntityStateService.EntityStateUpdate> by states
+}
+
+private fun Document.removeAll(fields: Collection<String>) {
+	for (field in fields) {
+		this.remove(field)
+	}
+}
+
+internal fun processStates(oldStates: List<EntityState>, newData: Map<String, Document>, excludedFields: Collection<String>):
+	Pair<Map<String, EntityState>, Map<String, EntityStateService.EntityStateUpdate>> {
+	val oldStates = oldStates
+		// remove excluded fields to not consider them in the diff
+		.map {
+			it.state.removeAll(excludedFields)
+			it.copy(checksum = it.state.checksum())
+		}
+		.associateBy { it.id }
+	val newStates = newData
+		// remove excluded fields to not consider them in the diff
+		.onEach { (_, document) -> document.removeAll(excludedFields) }
+		.mapValues { (id, newState) ->
+			val oldState = oldStates[id]
+			val diff = newState.diff(oldState)
+
+			EntityStateService.EntityStateUpdate(EntityState(id, newState), diff)
+		}
+
+	return oldStates to newStates
 }
