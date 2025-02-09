@@ -60,7 +60,7 @@ class SqlNodePersistenceService<T : Any>(
 
 	@OptIn(InternalSerializationApi::class)
 	override fun getEntities(node: Node): Flow<T> = db.flowTransaction {
-		nodePersistenceTable.selectStandalone()
+		nodePersistenceTable.select(nodePersistenceTable.entity)
 			.where { nodePersistenceTable.id eq node._id.toUuid() }
 			.map { json.decodeFromString(entityClass.serializer(), it[nodePersistenceTable.entity]) }
 	}

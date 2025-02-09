@@ -19,6 +19,4 @@ class NodePersistenceTable<T : Any>(
 	override val primaryKey = SanitizedPrimaryKey(id, entityId)
 
 	val entity = rawJsonb<T>("entity")
-
-	fun selectStandalone() = select(entityId)
 }
