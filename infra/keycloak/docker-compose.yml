@@ -12,3 +12,5 @@ services:
       - ${KEYCLOAK_PORT:-8081}:8080
     command:
       - start-dev
+    volumes:
+      - ./data:/opt/keycloak/data
