@@ -1,3 +1,4 @@
+stream_over_http_enabled: true
 server:
   http_listen_port: 3200
 
@@ -12,15 +13,17 @@ distributor:
   receivers:
     otlp:
       protocols:
-        http:
         grpc:
+          endpoint: "tempo:4317"
+        http:
+          endpoint: "tempo:4318"
 
 ingester:
-  max_block_duration: 5m               # cut the headblock when this much time passes. this is being set for demo purposes and should probably be left alone normally
+  max_block_duration: 5m
 
 compactor:
   compaction:
-    block_retention: 24h                # overall Tempo trace retention
+    block_retention: 24h
 
 metrics_generator:
   registry:
@@ -32,6 +35,12 @@ metrics_generator:
     remote_write:
       - url: http://prometheus:9090/api/v1/write
         send_exemplars: true
+  traces_storage:
+    path: /tmp/tempo/generator/traces
+  processor:
+    local_blocks:
+      filter_server_spans: false
+      flush_to_storage: true
 
 storage:
   trace:
@@ -44,4 +53,5 @@ storage:
 overrides:
   defaults:
     metrics_generator:
-      processors: [service-graphs, span-metrics] # enables metrics generator
+      processors: [service-graphs, span-metrics, local-blocks]
+      generate_native_histograms: both

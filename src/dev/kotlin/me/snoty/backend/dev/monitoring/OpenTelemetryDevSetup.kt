@@ -5,7 +5,7 @@ import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator
 import io.opentelemetry.context.propagation.ContextPropagators
 import io.opentelemetry.context.propagation.TextMapPropagator
 import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporter
-import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter
+import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter
 import io.opentelemetry.sdk.OpenTelemetrySdk
 import io.opentelemetry.sdk.logs.SdkLoggerProvider
 import io.opentelemetry.sdk.logs.export.SimpleLogRecordProcessor
@@ -20,9 +20,9 @@ class OpenTelemetryDevSetup : DevRunnable() {
 	override fun run() {
 		val resource = Resource.getDefault().toBuilder().put(ServiceAttributes.SERVICE_NAME, "snoty-backend").build()
 
-		val tracingEndpoint = System.getenv("OTEL_EXPORTER_OTLP_TRACING_ENDPOINT") ?: "http://localhost:4317"
+		val tracingEndpoint = System.getenv("OTEL_EXPORTER_OTLP_TRACING_ENDPOINT") ?: "http://localhost:4318/v1/traces"
 		val sdkTracerProvider = SdkTracerProvider.builder()
-			.addSpanProcessor(SimpleSpanProcessor.create(OtlpGrpcSpanExporter.builder().setEndpoint(tracingEndpoint).build()))
+			.addSpanProcessor(SimpleSpanProcessor.create(OtlpHttpSpanExporter.builder().setEndpoint(tracingEndpoint).build()))
 			.setResource(resource)
 			.build()
 
