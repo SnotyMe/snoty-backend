@@ -12,7 +12,6 @@ object FlagdOpenFeatureProvider : BaseOpenFeatureProvider<ProviderFeatureFlagCon
 		val flagdOptions = FlagdOptions.builder()
 			.host(config.host)
 			.port(config.port.toInt())
-			.maxEventStreamRetries(Int.MAX_VALUE)
 			.build()
 
 		return FlagdProvider(flagdOptions)
