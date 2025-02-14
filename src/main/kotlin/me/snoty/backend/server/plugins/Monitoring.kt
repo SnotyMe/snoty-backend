@@ -13,7 +13,6 @@ import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.micrometer.core.instrument.MeterRegistry
-import io.micrometer.core.instrument.binder.system.UptimeMetrics
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import io.opentelemetry.api.OpenTelemetry
 import io.opentelemetry.instrumentation.ktor.v3_0.server.KtorServerTracing
@@ -25,8 +24,6 @@ import ch.qos.logback.classic.Level as LogbackLevel
 fun Application.configureMonitoring(config: Config, openTelemetry: OpenTelemetry, meterRegistry: MeterRegistry) {
 	install(MicrometerMetrics) {
 		registry = meterRegistry
-		// will be built-in once https://github.com/ktorio/ktor/pull/4579 is merged
-		meterBinders += UptimeMetrics()
 	}
 	install(CallLogging) {
 		level = Level.INFO
