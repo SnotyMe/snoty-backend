@@ -12,7 +12,7 @@ mongodb = "5.3.1"
 exposed = "0.59.0"
 
 opentelemetry = "1.47.0"
-opentelemetry-semconv = "1.29.0-alpha"
+opentelemetry-semconv = "1.30.0"
 opentelemetry-instrumentation = "2.11.0-alpha"
 micrometer = "1.14.2"
 junit = "5.11.3"
