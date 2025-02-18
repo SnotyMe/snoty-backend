@@ -12,7 +12,9 @@ mongodb = "5.3.1"
 exposed = "0.60.0"
 
 opentelemetry = "1.48.0"
-opentelemetry-semconv = "1.29.0-alpha"
+opentelemetry-semconv = "1.30.0"
+# https://github.com/open-telemetry/semantic-conventions-java/pull/53
+opentelemetry-semconv-incubating = "1.30.0-alpha"
 opentelemetry-instrumentation = "2.11.0-alpha"
 micrometer = "1.14.2"
 junit = "5.11.3"
@@ -105,7 +107,7 @@ monitoring-opentelemetry-logback = { group = "io.opentelemetry.instrumentation",
 monitoring-opentelemetry-sdk = { group = "io.opentelemetry", name = "opentelemetry-sdk", version.ref = "opentelemetry" }
 monitoring-opentelemetry-sdk-autoconfigure = { group = "io.opentelemetry", name = "opentelemetry-sdk-extension-autoconfigure", version.ref = "opentelemetry" }
 monitoring-opentelemetry-semconv = { group = "io.opentelemetry.semconv", name = "opentelemetry-semconv", version.ref = "opentelemetry-semconv" }
-monitoring-opentelemetry-semconv-incubating = { group = "io.opentelemetry.semconv", name = "opentelemetry-semconv-incubating", version.ref = "opentelemetry-semconv" }
+monitoring-opentelemetry-semconv-incubating = { group = "io.opentelemetry.semconv", name = "opentelemetry-semconv-incubating", version.ref = "opentelemetry-semconv-incubating" }
 monitoring-opentelemetry-testing = { group = "io.opentelemetry", name = "opentelemetry-sdk-testing", version.ref = "opentelemetry" }
 
 tests-json = { group = "org.json", name = "json", version = "20250107" }
