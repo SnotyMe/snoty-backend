@@ -1,14 +1,14 @@
 package me.snoty.backend.scheduling.jobrunr
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.micrometer.core.instrument.MeterRegistry
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.InternalSerializationApi
 import org.jobrunr.configuration.JobRunr
 import org.jobrunr.configuration.JobRunrMicroMeterIntegration
 import org.jobrunr.dashboard.JobRunrDashboardWebServerConfiguration
+import org.jobrunr.kotlin.utils.mapper.KotlinxSerializationJsonMapper
 import org.jobrunr.server.JobActivator
 import org.jobrunr.storage.StorageProvider
-import org.jobrunr.utils.mapper.jackson.JacksonJsonMapper
 import org.koin.core.Koin
 import org.koin.core.annotation.Single
 
@@ -18,8 +18,9 @@ class JobRunrConfigurer(
 	private val storageProvider: StorageProvider,
 	private val koin: Koin,
 ) {
+	@OptIn(ExperimentalSerializationApi::class, InternalSerializationApi::class)
 	fun initialize() = JobRunr.configure()
-		.useJsonMapper(JacksonJsonMapper(ObjectMapper().registerKotlinModule()))
+		.useJsonMapper(KotlinxSerializationJsonMapper())
 		.useStorageProvider(storageProvider)
 		.useJobActivator(object : JobActivator {
 			override fun <T : Any> activateJob(type: Class<T>): T? = koin.getOrNull(type.kotlin)
