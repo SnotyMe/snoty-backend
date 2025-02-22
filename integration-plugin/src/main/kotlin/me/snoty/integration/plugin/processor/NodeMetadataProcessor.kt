@@ -7,6 +7,7 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.ksp.writeTo
+import me.snoty.backend.utils.orNull
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.node.NodeDescriptor
@@ -34,14 +35,13 @@ class NodeMetadataProcessor(private val logger: KSPLogger, private val codeGener
 	@OptIn(KspExperimental::class)
 	private fun processClass(resolver: Resolver, clazz: KSClassDeclaration) {
 		val node = clazz.getAnnotationsByType(RegisterNode::class).single()
-		val displayName = node.displayName
 		val settingsClass = resolver.resolveClassFromAnnotation(clazz, RegisterNode::settingsType)
 		val inputClass = resolver.resolveClassFromAnnotation(clazz, RegisterNode::inputType)
 		val outputClass = resolver.resolveClassFromAnnotation(clazz, RegisterNode::outputType)
 
 		val metadata = NodeMetadata(
-			descriptor = NodeDescriptor(namespace = clazz.packageName.asString(), name = node.name),
-			displayName = displayName,
+			descriptor = NodeDescriptor(namespace = node.namespace.orNull() ?: clazz.packageName.asString(), name = node.name),
+			displayName = node.displayName,
 			position = node.position,
 			settingsClass = NodeSettings::class,
 			settings = generateObjectSchema(resolver, settingsClass)!!,
