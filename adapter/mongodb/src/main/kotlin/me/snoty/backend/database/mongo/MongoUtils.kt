@@ -6,7 +6,7 @@ import com.mongodb.client.model.UpdateOptions
 import com.mongodb.kotlin.client.coroutine.AggregateFlow
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import me.snoty.backend.wiring.node.MongoNode
-import me.snoty.backend.wiring.node.NodeSettingsSerializationService
+import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
 import me.snoty.backend.wiring.node.deserializeOrInvalid
 import org.bson.Document
 import org.bson.conversions.Bson
@@ -46,5 +46,5 @@ object Accumulations {
 		= Document("\$mergeObjects", objects.toList())
 }
 
-fun NodeSettingsSerializationService.deserializeOrInvalid(node: MongoNode) =
+fun NodeSettingsDeserializationService.deserializeOrInvalid(node: MongoNode) =
 	deserializeOrInvalid(node.descriptor, node.settings)

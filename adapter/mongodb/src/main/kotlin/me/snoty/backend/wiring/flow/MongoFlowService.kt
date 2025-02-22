@@ -12,8 +12,7 @@ import me.snoty.backend.database.mongo.aggregate
 import me.snoty.backend.database.mongo.deserializeOrInvalid
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowScheduler
-import me.snoty.backend.wiring.node.NodeSettingsSerializationService
-import me.snoty.backend.wiring.node.deserializeOrInvalid
+import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
 import me.snoty.integration.common.wiring.flow.*
 import me.snoty.backend.wiring.node.MongoNode
 import me.snoty.backend.wiring.node.toRelational
@@ -26,7 +25,7 @@ import java.util.*
 class MongoFlowService(
 	db: MongoDatabase,
 	private val flowScheduler: FlowScheduler,
-	private val settingsLookup: NodeSettingsSerializationService,
+	private val settingsDeserializationService: NodeSettingsDeserializationService,
 ) : FlowService {
 	private val collection = db.getCollection<MongoWorkflow>(FLOW_COLLECTION_NAME)
 
@@ -64,7 +63,7 @@ class MongoFlowService(
 			),
 		)
 		.firstOrNull()
-		?.toRelational(settingsLookup)
+		?.toRelational(settingsDeserializationService)
 
 	override suspend fun rename(flowId: NodeId, name: String) {
 		collection.updateOne(
@@ -98,7 +97,7 @@ data class MongoWorkflowWithNodes(
 	val userId: UUID,
 	val nodes: List<MongoNode>,
 ) {
-	fun toRelational(settingsLookup: NodeSettingsSerializationService) = WorkflowWithNodes(
+	fun toRelational(settingsLookup: NodeSettingsDeserializationService) = WorkflowWithNodes(
 		_id = _id.toHexString(),
 		name = name,
 		userId = userId,

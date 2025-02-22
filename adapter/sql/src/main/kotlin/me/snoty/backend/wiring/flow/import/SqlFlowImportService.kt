@@ -4,8 +4,7 @@ import me.snoty.backend.database.sql.newSuspendedTransaction
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.utils.toUuid
 import me.snoty.backend.wiring.node.NodeConnectionTable
-import me.snoty.backend.wiring.node.NodeSettingsSerializationService
-import me.snoty.backend.wiring.node.NodeTable
+import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
 import me.snoty.backend.wiring.node.SqlNodeService
 import me.snoty.backend.wiring.node.deserializeOrInvalid
 import me.snoty.integration.common.wiring.flow.FlowService
@@ -20,7 +19,7 @@ class SqlFlowImportService(
 	private val flowService: FlowService,
 	private val nodeConnectionTable: NodeConnectionTable,
 	private val nodeService: SqlNodeService,
-	private val nodeSettingsSerializationService: NodeSettingsSerializationService,
+	private val nodeSettingsDeserializationService: NodeSettingsDeserializationService,
 ) : FlowImportService {
 	override suspend fun import(userId: UUID, flow: ImportFlow): NodeId = db.newSuspendedTransaction {
 		val createdFlow = flowService.create(userId, flow.name)
@@ -30,7 +29,7 @@ class SqlFlowImportService(
 				userID = userId,
 				flowId = createdFlow._id,
 				descriptor = it.descriptor,
-				settings = nodeSettingsSerializationService.deserializeOrInvalid(it.descriptor, it.settings)
+				settings = nodeSettingsDeserializationService.deserializeOrInvalid(it.descriptor, it.settings)
 			)._id
 		}
 		var connections = flow.nodes

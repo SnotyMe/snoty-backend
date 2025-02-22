@@ -11,8 +11,7 @@ import me.snoty.backend.database.mongo.deserializeOrInvalid
 import me.snoty.backend.utils.bson.encode
 import me.snoty.backend.errors.ServiceResult
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.backend.wiring.node.NodeSettingsSerializationService
-import me.snoty.backend.wiring.node.deserializeOrInvalid
+import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.config.NodeServiceResults
 import me.snoty.integration.common.model.NodePosition
@@ -34,7 +33,7 @@ import java.util.*
 class MongoNodeService(
 	db: MongoDatabase,
 	private val nodeRegistry: NodeRegistry,
-	private val settingsService: NodeSettingsSerializationService,
+	private val settingsDeserializationService: NodeSettingsDeserializationService,
 ) : NodeService {
 	private val collection = db.getCollection<MongoNode>(NODE_COLLECTION_NAME)
 
@@ -48,7 +47,7 @@ class MongoNodeService(
 		return collection
 			.find<MongoNode>(Filters.and(filters))
 			.map { node ->
-				val settings = settingsService.deserializeOrInvalid(node)
+				val settings = settingsDeserializationService.deserializeOrInvalid(node)
 				node.toStandalone(settings)
 			}
 	}
@@ -58,14 +57,14 @@ class MongoNodeService(
 			Filters.eq(MongoNode::_id.name, ObjectId(id))
 		).firstOrNull() ?: return null
 
-		val settings = settingsService.deserializeOrInvalid(mongoNode)
+		val settings = settingsDeserializationService.deserializeOrInvalid(mongoNode)
 		return mongoNode.toStandalone(settings)
 	}
 
 	override fun getByFlow(flowId: NodeId): Flow<FlowNode> = collection.find(
 		Filters.eq(MongoNode::flowId.name, ObjectId(flowId))
 	).map { node ->
-		val settings = settingsService.deserializeOrInvalid(node)
+		val settings = settingsDeserializationService.deserializeOrInvalid(node)
 		node.toRelational(settings)
 	}
 
