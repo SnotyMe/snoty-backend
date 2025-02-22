@@ -36,7 +36,7 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 
 		allElements.mapNotNull { handler ->
 			handler.getAnnotation<Single>() ?:
-				logger.error("NodeHandlerContributorProcessor: ${handler.qualifiedName!!.asString()} is missing @Single annotation")
+				logger.error("NodeHandlerContributorProcessor: ${handler.qualifiedName!!.asString()} is missing @Single annotation", handler)
 		}
 
 		val ready = allElements
