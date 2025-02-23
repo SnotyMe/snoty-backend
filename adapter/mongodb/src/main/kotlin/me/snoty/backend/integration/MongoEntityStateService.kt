@@ -99,7 +99,7 @@ class MongoEntityStateService(
 	}
 }
 
-private data class MongoNodeEntityStates(
+data class MongoNodeEntityStates(
 	@BsonId
 	val _id: String,
 	val entities: Set<EntityState>
