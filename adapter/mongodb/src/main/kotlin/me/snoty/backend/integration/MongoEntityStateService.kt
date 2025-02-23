@@ -21,12 +21,12 @@ import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.diff.STATE_CODEC_REGISTRY
 import me.snoty.integration.common.diff.checksum
 import me.snoty.integration.common.diff.state.EntityState
-import me.snoty.integration.common.diff.state.NodeEntityStates
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.flow.NodeDeletedHook
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
+import org.bson.codecs.pojo.annotations.BsonId
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Named
 
@@ -37,19 +37,19 @@ class MongoEntityStateService(
 	hookRegistry: HookRegistry,
 	@Named(STATE_CODEC_REGISTRY) codecRegistry: CodecRegistry,
 ) : EntityStateService {
-	private val nodeEntityStates = mongoDB.getCollection<NodeEntityStates>("${integration.mongoCollectionPrefix}:entityStates")
+	private val nodeEntityStates = mongoDB.getCollection<MongoNodeEntityStates>("${integration.mongoCollectionPrefix}:entityStates")
 		.withCodecRegistry(codecRegistry)
 
 	override suspend fun getLastState(nodeId: NodeId, entityId: String): EntityState? =
 		nodeEntityStates.aggregate<EntityState>(
-			Aggregates.match(Filters.eq(NodeEntityStates::nodeId.name, nodeId)),
-			Aggregates.unwind(NodeEntityStates::entities.mongoField),
-			Aggregates.match(Filters.eq("${NodeEntityStates::entities.name}.${EntityState::id.name}", entityId)),
-			Aggregates.replaceRoot(NodeEntityStates::entities.mongoField)
+			Aggregates.match(Filters.eq(MongoNodeEntityStates::_id.name, nodeId)),
+			Aggregates.unwind(MongoNodeEntityStates::entities.mongoField),
+			Aggregates.match(Filters.eq("${MongoNodeEntityStates::entities.name}.${EntityState::id.name}", entityId)),
+			Aggregates.replaceRoot(MongoNodeEntityStates::entities.mongoField)
 		).firstOrNull()
 
 	override fun getLastStates(nodeId: NodeId): Flow<EntityState> =
-		nodeEntityStates.find(Filters.eq(NodeEntityStates::nodeId.name, nodeId))
+		nodeEntityStates.find(Filters.eq(MongoNodeEntityStates::_id.name, nodeId))
 			.flatMapMerge { it.entities.asFlow() }
 
 	override suspend fun updateState(nodeId: NodeId, state: Document, diff: DiffResult) {
@@ -58,15 +58,15 @@ class MongoEntityStateService(
 			val entityState = EntityState(id, state, state.checksum())
 
 			nodeEntityStates.upsertOne(
-				Filters.eq(NodeEntityStates::nodeId.name, nodeId),
-				Updates.addToSet(NodeEntityStates::entities.name, entityState)
+				Filters.eq(MongoNodeEntityStates::_id.name, nodeId),
+				Updates.addToSet(MongoNodeEntityStates::entities.name, entityState)
 			)
 		}
 
 		suspend fun pull() {
 			nodeEntityStates.updateOne(
-				Filters.eq(NodeEntityStates::nodeId.name, nodeId),
-				Updates.pull(NodeEntityStates::entities.name, Filters.eq(EntityState::id.name, id))
+				Filters.eq(MongoNodeEntityStates::_id.name, nodeId),
+				Updates.pull(MongoNodeEntityStates::entities.name, Filters.eq(EntityState::id.name, id))
 			)
 		}
 
@@ -83,8 +83,8 @@ class MongoEntityStateService(
 
 	override suspend fun updateStates(nodeId: NodeId, states: Collection<EntityStateService.EntityStateUpdate>) {
 		nodeEntityStates.upsertOne(
-			Filters.eq(NodeEntityStates::nodeId.name, nodeId),
-			Updates.set(NodeEntityStates::entities.name, states.map { it.state })
+			Filters.eq(MongoNodeEntityStates::_id.name, nodeId),
+			Updates.set(MongoNodeEntityStates ::entities.name, states.map { it.state })
 		)
 	}
 
@@ -95,6 +95,12 @@ class MongoEntityStateService(
 	}
 
 	override suspend fun delete(node: Node) {
-		nodeEntityStates.deleteOne(Filters.eq(NodeEntityStates::nodeId.name, node._id))
+		nodeEntityStates.deleteOne(Filters.eq(MongoNodeEntityStates::_id.name, node._id))
 	}
 }
+
+private data class MongoNodeEntityStates(
+	@BsonId
+	val _id: String,
+	val entities: Set<EntityState>
+)
