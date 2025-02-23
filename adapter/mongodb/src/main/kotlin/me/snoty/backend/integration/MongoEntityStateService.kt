@@ -27,7 +27,6 @@ import me.snoty.integration.common.wiring.flow.NodeDeletedHook
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
-import org.bson.types.ObjectId
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Named
 
@@ -43,14 +42,14 @@ class MongoEntityStateService(
 
 	override suspend fun getLastState(nodeId: NodeId, entityId: String): EntityState? =
 		nodeEntityStates.aggregate<EntityState>(
-			Aggregates.match(Filters.eq(NodeEntityStates::nodeId.name, ObjectId(nodeId))),
+			Aggregates.match(Filters.eq(NodeEntityStates::nodeId.name, nodeId)),
 			Aggregates.unwind(NodeEntityStates::entities.mongoField),
 			Aggregates.match(Filters.eq("${NodeEntityStates::entities.name}.${EntityState::id.name}", entityId)),
 			Aggregates.replaceRoot(NodeEntityStates::entities.mongoField)
 		).firstOrNull()
 
 	override fun getLastStates(nodeId: NodeId): Flow<EntityState> =
-		nodeEntityStates.find(Filters.eq(NodeEntityStates::nodeId.name, ObjectId(nodeId)))
+		nodeEntityStates.find(Filters.eq(NodeEntityStates::nodeId.name, nodeId))
 			.flatMapMerge { it.entities.asFlow() }
 
 	override suspend fun updateState(nodeId: NodeId, state: Document, diff: DiffResult) {
@@ -59,14 +58,14 @@ class MongoEntityStateService(
 			val entityState = EntityState(id, state, state.checksum())
 
 			nodeEntityStates.upsertOne(
-				Filters.eq(NodeEntityStates::nodeId.name, ObjectId(nodeId)),
+				Filters.eq(NodeEntityStates::nodeId.name, nodeId),
 				Updates.addToSet(NodeEntityStates::entities.name, entityState)
 			)
 		}
 
 		suspend fun pull() {
 			nodeEntityStates.updateOne(
-				Filters.eq(NodeEntityStates::nodeId.name, ObjectId(nodeId)),
+				Filters.eq(NodeEntityStates::nodeId.name, nodeId),
 				Updates.pull(NodeEntityStates::entities.name, Filters.eq(EntityState::id.name, id))
 			)
 		}
@@ -84,7 +83,7 @@ class MongoEntityStateService(
 
 	override suspend fun updateStates(nodeId: NodeId, states: Collection<EntityStateService.EntityStateUpdate>) {
 		nodeEntityStates.upsertOne(
-			Filters.eq(NodeEntityStates::nodeId.name, ObjectId(nodeId)),
+			Filters.eq(NodeEntityStates::nodeId.name, nodeId),
 			Updates.set(NodeEntityStates::entities.name, states.map { it.state })
 		)
 	}
@@ -96,6 +95,6 @@ class MongoEntityStateService(
 	}
 
 	override suspend fun delete(node: Node) {
-		nodeEntityStates.deleteOne(Filters.eq(NodeEntityStates::nodeId.name, ObjectId(node._id)))
+		nodeEntityStates.deleteOne(Filters.eq(NodeEntityStates::nodeId.name, node._id))
 	}
 }
