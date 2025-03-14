@@ -21,19 +21,17 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.annotation.Factory
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import kotlin.reflect.KClass
 
 class SqlNodePersistenceService<T : Any>(
 	private val db: Database,
 	private val entityClass: KClass<T>,
+	private val json: Json,
 	descriptor: NodeDescriptor,
 	name: String,
 	nodeTable: NodeTable,
 ) : NodePersistenceService<T>, KoinComponent {
 	private val nodePersistenceTable = NodePersistenceTable<T>(descriptor, name, nodeTable)
-	// lazy to collect all settings classes before constructing the Json object
-	private val json: Json by inject()
 
 	init {
 		transaction(db = db) {
@@ -82,9 +80,10 @@ class SqlNodePersistenceFactory(
 	private val hookRegistry: HookRegistry,
 	private val nodeDescriptor: NodeDescriptor,
 	private val nodeTable: NodeTable,
+	private val json: Json,
 ) : NodePersistenceFactory, KoinComponent {
 	override fun <T : Any> create(name: String, entityClass: KClass<T>): NodePersistenceService<T> {
-		val service = SqlNodePersistenceService(database, entityClass, nodeDescriptor, name, nodeTable)
+		val service = SqlNodePersistenceService(database, entityClass, json, nodeDescriptor, name, nodeTable)
 		hookRegistry.register(NodeDeletedHook {
 			service.delete(it)
 		})

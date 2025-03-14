@@ -18,7 +18,7 @@ class Application : KoinComponent {
 
 	suspend fun start() = coroutineScope {
 		// register all node handlers
-		get<NodeHandlerContributorLookup>().executeContributors()
+		get<NodeHandlerContributorLookup>().loadAndRegisterNodeHandlers()
 
 		// application is initialized but no business logic is running yet
 		get<HookRegistry>().executeHooks(PreBusinessStartupHook::class, getKoin())
