@@ -9,7 +9,7 @@ kotlin = "2.1.10"
 coroutines = "1.10.1"
 
 mongodb = "5.3.1"
-exposed = "0.59.0"
+exposed = "0.60.0"
 
 opentelemetry = "1.47.0"
 opentelemetry-semconv = "1.29.0-alpha"
