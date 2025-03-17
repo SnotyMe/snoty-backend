@@ -5,6 +5,7 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.runBlocking
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.impl.AddRoutesHook
+import me.snoty.backend.server.resources.wiring.flow.flowExecutionResource
 import me.snoty.backend.server.resources.wiring.flowResource
 import me.snoty.backend.server.resources.wiring.nodeMetadataResource
 import me.snoty.backend.server.resources.wiring.nodeResource
@@ -33,6 +34,7 @@ fun wiringResources(hookRegistry: HookRegistry) = Resource {
 
 			route("flow") {
 				flowResource()
+				flowExecutionResource()
 			}
 		}
 	}

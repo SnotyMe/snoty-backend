@@ -22,11 +22,11 @@ suspend fun RoutingContext.getPersonalNodeOrNull(): StandaloneNode? {
 
 	val user = call.getUser()
 	val id = call.parameters["id"]
-		?: return void { invalidNodeId() }
+		?: return void { call.invalidNodeId() }
 
 	val flow = nodeService.get(id)
 	if (flow?.userId != user.id) {
-		nodeNotFound(flow)
+		call.nodeNotFound(flow)
 		return null
 	}
 

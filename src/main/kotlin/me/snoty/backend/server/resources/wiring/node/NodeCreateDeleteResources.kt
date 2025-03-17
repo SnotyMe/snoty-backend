@@ -38,7 +38,7 @@ fun Route.nodeDelete(nodeService: NodeService) = delete("{id}") {
 
 	val node = nodeService.get(id)
 	if (node?.userId != user.id) {
-		return@delete nodeNotFound(node)
+		return@delete call.nodeNotFound(node)
 	}
 
 	val result = nodeService.delete(id)

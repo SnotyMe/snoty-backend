@@ -24,11 +24,11 @@ fun Route.connectionRoute(
 	val (from, to) = call.receive<ConnectionRequest>()
 	val fromNode = nodeService.get(from)
 	if (fromNode?.userId != user.id) {
-		return@put nodeNotFound(fromNode)
+		return@put call.nodeNotFound(fromNode)
 	}
 	val toNode = nodeService.get(to)
 	if (toNode?.userId != user.id) {
-		return@put nodeNotFound(toNode)
+		return@put call.nodeNotFound(toNode)
 	}
 	val result = nodeService.action(from, to)
 
