@@ -6,16 +6,13 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.flow.toList
 import kotlinx.serialization.Serializable
-import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.backend.wiring.flow.execution.FlowExecutionService
 import me.snoty.backend.scheduling.FlowJobRequest
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.server.resources.wiring.flow.flowExportImportResource
 import me.snoty.backend.server.resources.wiring.flow.getPersonalFlowOrNull
 import me.snoty.backend.utils.getUser
-import me.snoty.backend.utils.letOrNull
-import me.snoty.backend.utils.orNull
+import me.snoty.backend.wiring.flow.execution.FlowExecutionService
 import me.snoty.integration.common.http.flowNotFound
 import me.snoty.integration.common.http.invalidNodeId
 import me.snoty.integration.common.wiring.flow.FlowManagementService
@@ -78,11 +75,11 @@ fun Route.flowResource() {
 
 	get("{id}") {
 		val user = call.getUser()
-		val id = call.parameters["id"] ?: return@get invalidNodeId()
+		val id = call.parameters["id"] ?: return@get call.invalidNodeId()
 
 		val flow = flowService.getWithNodes(id)
 		if (flow?.userId != user.id) {
-			return@get flowNotFound(flow)
+			return@get call.flowNotFound(flow)
 		}
 
 		call.respond(flow)
@@ -103,17 +100,6 @@ fun Route.flowResource() {
 		val logs = flowExecutionService.retrieve(flowId = flow._id)
 
 		call.respond(logs)
-	}
-
-	get("{id}/executions") {
-		val startFrom = call.request.queryParameters["startFrom"]?.orNull()
-		val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
-
-		val flow = getPersonalFlowOrNull() ?: return@get
-
-		val executions = flowExecutionService.query(flowId = flow._id, startFrom = startFrom, limit = limit)
-
-		call.respond(executions)
 	}
 
 	val flowManagement: FlowManagementService = get()
