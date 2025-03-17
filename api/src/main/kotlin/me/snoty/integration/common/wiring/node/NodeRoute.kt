@@ -43,14 +43,14 @@ internal class NodeRouteFactoryImpl(
 						val nodeId = call.parameters["nodeId"]
 							?: return@handle call.respondStatus(BadRequestException("nodeId is required"))
 						val node = nodeService.get(nodeId)
-							?: return@handle nodeNotFound(nodeId)
+							?: return@handle call.nodeNotFound(nodeId)
 
 						if (node.descriptor != nodeDescriptor) {
 							return@handle call.respondStatus(BadRequestException("This node is not a $nodeDescriptor node"))
 						}
 
 						if (verifyUser && node.userId != call.getUserOrNull()?.id) {
-							return@handle nodeNotFound(nodeId)
+							return@handle call.nodeNotFound(nodeId)
 						}
 
 						block(this, node)

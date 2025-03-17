@@ -67,6 +67,7 @@ ktor-server-call-id = { group = "io.ktor", name = "ktor-server-call-id-jvm", ver
 ktor-server-call-logging = { group = "io.ktor", name = "ktor-server-call-logging-jvm", version.ref = "ktor" }
 ktor-server-contentNegotiation = { group = "io.ktor", name = "ktor-server-content-negotiation-jvm", version.ref = "ktor" }
 ktor-server-core = { group = "io.ktor", name = "ktor-server-core-jvm", version.ref = "ktor" }
+ktor-server-sse = { group = "io.ktor", name = "ktor-server-sse-jvm", version.ref = "ktor" }
 ktor-server-cors = { group = "io.ktor", name = "ktor-server-cors-jvm", version.ref = "ktor" }
 ktor-server-defaultHeaders = { group = "io.ktor", name = "ktor-server-default-headers-jvm", version.ref = "ktor" }
 ktor-server-doubleReceive = { group = "io.ktor", name = "ktor-server-double-receive-jvm", version.ref = "ktor" }

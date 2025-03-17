@@ -80,6 +80,7 @@ dependencies { with(libs) {
     implementation(ktor.server.netty)
 
     // ktor plugins
+    implementation(ktor.server.sse)
     implementation(ktor.server.cors)
     implementation(ktor.server.call.logging)
     implementation(ktor.server.call.id)

@@ -10,7 +10,11 @@ import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.datetime.Instant
 import me.snoty.backend.logging.toSLF4JLevel
 import me.snoty.backend.observability.APPENDER_LOG_LEVEL
+import me.snoty.backend.observability.FLOW_ID
 import me.snoty.backend.observability.JOB_ID
+import me.snoty.backend.observability.NODE_ID
+import me.snoty.backend.wiring.flow.execution.FlowExecutionEvent
+import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
 import me.snoty.integration.common.wiring.flow.NodeLogEntry
 import org.slf4j.event.Level
@@ -18,7 +22,8 @@ import org.slf4j.event.Level
 private const val NAME = "NodeLogAppender"
 
 class NodeLogAppender(
-	private val flowExecutionService: FlowExecutionService
+	private val flowExecutionService: FlowExecutionService,
+	private val flowExecutionEventService: FlowExecutionEventService,
 ) : AppenderBase<ILoggingEvent>() {
 	init {
 		setName(NAME)
@@ -47,11 +52,17 @@ class NodeLogAppender(
 				timestamp = Instant.fromEpochMilliseconds(eventObject.timeStamp),
 				level = eventLevel,
 				message = message,
-				node = eventObject.mdcPropertyMap["node.id"]
+				node = eventObject.mdcPropertyMap[NODE_ID.key]
 			)
 
 			val jobId = eventObject.mdcPropertyMap[JOB_ID.key]
 				?: return@launch logger.warn { "No job ID found in log entry with msg='$message'" }
+			
+			flowExecutionEventService.offer(FlowExecutionEvent.FlowLogEvent(
+				jobId = jobId,
+				flowId = eventObject.mdcPropertyMap[FLOW_ID.key] ?: return@launch logger.warn { "No flow ID found in log entry with msg='$message'" },
+				entry = entry,
+			))
 
 			flowExecutionService.record(jobId, entry)
 		}
