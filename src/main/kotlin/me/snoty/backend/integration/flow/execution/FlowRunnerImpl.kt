@@ -14,6 +14,8 @@ import me.snoty.backend.observability.APPENDER_LOG_LEVEL
 import me.snoty.backend.observability.setException
 import me.snoty.backend.observability.subspan
 import me.snoty.backend.scheduling.FlowTriggerReason
+import me.snoty.backend.wiring.flow.execution.FlowExecutionEvent
+import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.NodeHandleContextImpl
@@ -34,6 +36,7 @@ class FlowRunnerImpl(
 	private val intermediateDataMapperRegistry: IntermediateDataMapperRegistry,
 	private val flowTracing: FlowTracing,
 	private val flowExecutionService: FlowExecutionService,
+	private val flowExecutionEventService: FlowExecutionEventService,
 ) : FlowRunner {
 	override suspend fun execute(
 		jobId: String,
@@ -47,6 +50,11 @@ class FlowRunnerImpl(
 		val rootSpan = flowTracing.createRootSpan(jobId, flow)
 		flowExecutionService.create(jobId, flow._id, triggeredBy)
 
+		flowExecutionEventService.offer(FlowExecutionEvent.FlowStartedEvent(
+			flowId = flow._id,
+			jobId = jobId,
+			triggeredBy = triggeredBy,
+		))
 		kLogger.info { "Running ${flow.name} (${flow._id})" }
 
 		@Suppress("UNCHECKED_CAST")
@@ -67,9 +75,15 @@ class FlowRunnerImpl(
 			}
 			.onCompletion {
 				rootSpan.end()
+				val status = if (it == null) FlowExecutionStatus.SUCCESS else FlowExecutionStatus.FAILED
+				flowExecutionEventService.offer(FlowExecutionEvent.FlowEndedEvent(
+					flowId = flow._id,
+					jobId = jobId,
+					status = status,
+				))
 				flowExecutionService.setExecutionStatus(
 					jobId,
-					if (it == null) FlowExecutionStatus.SUCCESS else FlowExecutionStatus.FAILED,
+					status,
 				)
 			}
 			.collect()

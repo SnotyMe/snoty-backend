@@ -1,12 +1,12 @@
 package me.snoty.backend.integration.flow
 
 import ch.qos.logback.classic.Logger
+import io.mockk.mockk
 import io.opentelemetry.api.common.AttributeKey
 import io.opentelemetry.api.trace.SpanId
 import io.opentelemetry.semconv.ExceptionAttributes
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.plus
 import kotlinx.serialization.modules.polymorphic
@@ -18,6 +18,7 @@ import me.snoty.backend.wiring.node.NodeRegistryImpl
 import me.snoty.backend.observability.JOB_ID
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.test.*
+import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
 import me.snoty.integration.common.snotyJson
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
@@ -63,10 +64,11 @@ class FlowRunnerImplTest {
 	private val featureFlags = FlowFeatureFlags(clientAndProvider.client)
 	private val flagsProvider = clientAndProvider.provider
 	private val tracing = FlowTracingImpl(json = json, openTelemetry = otel.openTelemetry, featureFlags = featureFlags)
-	private val runner = FlowRunnerImpl(nodeRegistry, IntermediateDataMapperRegistry, tracing, TestFlowExecutionService())
-	private val testLogService = TestFlowExecutionService()
+	private val testFlowExecutionService = TestFlowExecutionService()
+	private val testFlowExecutionEventService: FlowExecutionEventService = mockk(relaxed = true)
+	private val runner = FlowRunnerImpl(nodeRegistry, IntermediateDataMapperRegistry, tracing, testFlowExecutionService, testFlowExecutionEventService)
 	private val logger = (LoggerFactory.getLogger(FlowRunnerImplTest::class.java) as Logger).apply {
-		val appender = NodeLogAppender(testLogService)
+		val appender = NodeLogAppender(testFlowExecutionService, testFlowExecutionEventService)
 		addAppender(appender)
 		appender.start()
 	}
@@ -75,7 +77,7 @@ class FlowRunnerImplTest {
 		= execute(jobId, FlowTriggerReason.Unknown, logger, Level.DEBUG, flow, input)
 
 	private fun assertNoWarnings(flow: Workflow) = runBlocking {
-		val output = testLogService.retrieve(flow._id)
+		val output = testFlowExecutionService.retrieve(flow._id)
 			.filter {
 				it.level.toInt() >= Level.WARN.toInt()
 			}
@@ -105,7 +107,7 @@ class FlowRunnerImplTest {
 			.sortedBy { it.startEpochNanos }
 
 		assertEquals(3, spans.size)
-		assertTrue(spans[0].name.contains(flow._id.toString()))
+		assertTrue(spans[0].name.contains(flow._id))
 		assertEquals(tracing.traceName(emit), spans[1].name)
 		assertEquals(tracing.traceName(node), spans[2].name)
 		assertAny(spans) {
@@ -147,7 +149,7 @@ class FlowRunnerImplTest {
 
 			assertEquals(3, spans.size)
 			// root node
-			assertTrue(spans[0].name.contains(flow._id.toString()))
+			assertTrue(spans[0].name.contains(flow._id))
 			assertEquals(tracing.traceName(emit), spans[1].name)
 			// execution node (the one with an actual config)
 			assertEquals(tracing.traceName(node), spans[2].name)
@@ -181,11 +183,11 @@ class FlowRunnerImplTest {
 		val spans = otel.spanExporter.finishedSpanItems
 		assertEquals(4, spans.size)
 		val flowSpan = assertAny(spans) {
-			it.name.contains(flow._id.toString())
+			it.name.contains(flow._id)
 		}
 		assertEquals(SpanId.getInvalid(), flowSpan.parentSpanId)
 		assertNull(flowSpan.attributes.get(AttributeKey.stringKey("node.id")))
-		assertEquals(flow._id.toString(), flowSpan.attributes.get(AttributeKey.stringKey("flow.id")))
+		assertEquals(flow._id, flowSpan.attributes.get(AttributeKey.stringKey("flow.id")))
 
 		val emitSpan = assertAny(spans) { it.name.contains(tracing.traceName(emit)) }
 		assertEquals(flowSpan.spanId, emitSpan.parentSpanId)

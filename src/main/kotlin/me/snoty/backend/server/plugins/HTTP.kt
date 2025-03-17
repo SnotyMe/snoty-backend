@@ -5,6 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.plugins.defaultheaders.*
 import io.ktor.server.plugins.forwardedheaders.*
+import io.ktor.server.sse.SSE
 import me.snoty.backend.config.Config
 
 fun Application.configureHTTP(config: Config) {
@@ -28,4 +29,5 @@ fun Application.configureHTTP(config: Config) {
 		// credentials
 		allowCredentials = true
 	}
+	install(SSE)
 }
