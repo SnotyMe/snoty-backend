@@ -23,6 +23,7 @@
 
     <logger name="io.ktor.client" level="${CLIENT_LOG_LEVEL:-WARN}"/>
     <logger name="io.ktor.server" level="${SERVER_LOG_LEVEL:-WARN}"/>
+    <logger name="io.ktor.auth.jwt" level="${SERVER_LOG_LEVEL:-WARN}"/>
     <logger name="io.netty" level="${SERVER_LOG_LEVEL:-WARN}"/>
 
     <logger name="[Koin]" level="WARN"/>
