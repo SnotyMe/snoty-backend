@@ -1,6 +1,6 @@
 services:
   grafana:
-    image: grafana/grafana:11.4.0
+    image: grafana/grafana:11.6.0
     volumes:
       - ./grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yaml
       - ./grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yaml
