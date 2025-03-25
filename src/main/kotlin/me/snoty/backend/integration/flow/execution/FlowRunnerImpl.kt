@@ -144,10 +144,10 @@ class FlowRunnerImpl(
 		MDC.put(APPENDER_LOG_LEVEL.key, (node.logLevel ?: logLevel).name)
 
 		return flow {
-			logger.debug { "Processing ${node.descriptor.id} node \"${node.settings.name}\" (${node._id}) with $input" }
+			logger.debug { "Processing ${node.descriptor.name} node \"${node.settings.name}\" (${node._id}) with $input" }
 			// pls fix Kotlin
 			val data = with(context) { with (handler) { process(node, input) } }
-			logger.debug { "Processed ${node.descriptor.id} node \"${node.settings.name}\" (${node._id})" }
+			logger.debug { "Processed ${node.descriptor.name} node \"${node.settings.name}\" (${node._id})" }
 
 			emit(data)
 		}
