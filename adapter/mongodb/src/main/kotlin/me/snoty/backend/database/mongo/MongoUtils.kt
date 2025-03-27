@@ -13,7 +13,7 @@ import org.bson.conversions.Bson
 import kotlin.reflect.KProperty
 
 val KProperty<*>.mongoField
-	get() = "\$$name"
+	get() = "$$name"
 
 inline fun <reified T : Any> MongoCollection<*>.aggregate(vararg stages: Bson): AggregateFlow<T>
 	= aggregate<T>(stages.toList())
@@ -39,11 +39,6 @@ object Aggregations {
 object Stages {
 	fun objectToArray(name: String): Bson
 		= Document("\$objectToArray", "$$name")
-}
-
-object Accumulations {
-	fun mergeObjects(vararg objects: Any): Bson
-		= Document("\$mergeObjects", objects.toList())
 }
 
 fun NodeSettingsDeserializationService.deserializeOrInvalid(node: MongoNode) =

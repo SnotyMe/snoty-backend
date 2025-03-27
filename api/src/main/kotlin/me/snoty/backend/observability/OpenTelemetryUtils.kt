@@ -6,16 +6,12 @@ import io.opentelemetry.api.trace.Span
 import io.opentelemetry.api.trace.SpanBuilder
 import io.opentelemetry.api.trace.StatusCode
 import io.opentelemetry.api.trace.Tracer
-import io.opentelemetry.api.trace.TracerProvider
 import io.opentelemetry.context.Context
-import java.util.UUID
+import java.util.*
 import kotlin.reflect.KClass
 
 fun OpenTelemetry.getTracer(clazz: KClass<*>): Tracer
 	= getTracer(clazz.java.`package`.specificationTitle)
-
-fun TracerProvider.getTracer(clazz: KClass<*>): Tracer
-	= get(clazz.java.`package`.specificationTitle)
 
 fun Span.subspan(tracer: Tracer, name: String, builder: SpanBuilder.() -> Unit): Span
 	= tracer.spanBuilder(name)

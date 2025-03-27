@@ -13,6 +13,7 @@ import io.opentelemetry.api.trace.SpanBuilder
 import io.opentelemetry.semconv.ServerAttributes
 import me.snoty.backend.database.mongo.tracing.filter.MongoTracingFilter
 import me.snoty.backend.observability.subspan
+import me.snoty.backend.utils.orNull
 import org.bson.BsonValue
 import org.koin.core.annotation.Single
 
@@ -114,7 +115,7 @@ class MongoTracing(openTelemetry: OpenTelemetry, private val featureFlags: Mongo
 				return null
 			}
 			val stringValue = bsonValue.asString().value.trim { it <= ' ' }
-			return stringValue.ifEmpty { null }
+			return stringValue.orNull()
 		}
 
 		fun getSpanName(commandName: String, collectionName: String?): String = when {
