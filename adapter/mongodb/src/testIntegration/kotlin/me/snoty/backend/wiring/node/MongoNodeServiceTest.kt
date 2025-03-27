@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
 
 class MongoNodeServiceTest : NodeServiceSpec() {
 	private val db = MongoTest.getMongoDatabase {}
-	override val service = MongoNodeService(db, nodeRegistry, object : NodeSettingsDeserializationService {
+	override val service = MongoNodeService(db, object : NodeSettingsDeserializationService {
 		override fun deserialize(
 			nodeDescriptor: NodeDescriptor,
 			nodeSettings: Document,

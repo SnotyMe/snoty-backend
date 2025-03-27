@@ -10,7 +10,6 @@ import me.snoty.backend.utils.hackyEncodeToString
 import me.snoty.backend.utils.toUuid
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.config.NodeServiceResults
-import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.StandaloneNode
 import me.snoty.integration.common.wiring.node.NodeDescriptor
@@ -54,18 +53,6 @@ class SqlNodeService(
 					?.map { it.toString() }
 			)
 		}
-	}
-
-	override fun query(
-		userID: UUID?,
-		position: NodePosition?
-	): Flow<StandaloneNode> = db.flowTransaction {
-		val query = nodeTable.selectStandalone()
-
-		if (userID != null) query.andWhere { nodeTable.userId eq userID }
-		if (position != null) query.andWhere { positionFilter(nodeTable, nodeRegistry, position) }
-
-		query.map { it.toStandalone(nodeTable, json, nodeRegistry) }
 	}
 
 	override suspend fun <S : NodeSettings> create(

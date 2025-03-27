@@ -4,25 +4,22 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import me.snoty.backend.database.mongo.deserializeOrInvalid
-import me.snoty.backend.utils.bson.encode
 import me.snoty.backend.errors.ServiceResult
 import me.snoty.backend.integration.config.flow.NodeId
-import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
-import me.snoty.integration.common.config.NodeService
-import me.snoty.integration.common.config.NodeServiceResults
-import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.wiring.StandaloneNode
-import me.snoty.integration.common.wiring.flow.NODE_COLLECTION_NAME
+import me.snoty.backend.utils.bson.encode
 import me.snoty.backend.wiring.node.MongoNode
+import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
 import me.snoty.backend.wiring.node.toRelational
 import me.snoty.backend.wiring.node.toStandalone
+import me.snoty.integration.common.config.NodeService
+import me.snoty.integration.common.config.NodeServiceResults
 import me.snoty.integration.common.wiring.FlowNode
+import me.snoty.integration.common.wiring.StandaloneNode
+import me.snoty.integration.common.wiring.flow.NODE_COLLECTION_NAME
 import me.snoty.integration.common.wiring.node.NodeDescriptor
-import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.types.ObjectId
 import org.koin.core.annotation.Single
@@ -32,25 +29,9 @@ import java.util.*
 @Single
 class MongoNodeService(
 	db: MongoDatabase,
-	private val nodeRegistry: NodeRegistry,
 	private val settingsDeserializationService: NodeSettingsDeserializationService,
 ) : NodeService {
 	private val collection = db.getCollection<MongoNode>(NODE_COLLECTION_NAME)
-
-	override fun query(userID: UUID?, position: NodePosition?): Flow<StandaloneNode> {
-		val filters = listOf(
-			buildUserIDFilter(userID),
-			// pre-filter if no nodes with this position exist
-			buildPositionFilter(nodeRegistry, position) ?: return emptyFlow(),
-		)
-
-		return collection
-			.find<MongoNode>(Filters.and(filters))
-			.map { node ->
-				val settings = settingsDeserializationService.deserializeOrInvalid(node)
-				node.toStandalone(settings)
-			}
-	}
 
 	override suspend fun get(id: NodeId): StandaloneNode? {
 		val mongoNode = collection.find(
