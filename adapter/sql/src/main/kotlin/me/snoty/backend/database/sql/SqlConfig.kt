@@ -9,6 +9,7 @@ import com.zaxxer.hikari.HikariDataSource
 import io.opentelemetry.api.OpenTelemetry
 import io.opentelemetry.instrumentation.jdbc.datasource.JdbcTelemetry
 import me.snoty.backend.config.ConfigLoader
+import me.snoty.backend.config.addProperties
 import me.snoty.backend.config.load
 import me.snoty.backend.config.loadContainerConfig
 import org.koin.core.annotation.Single
@@ -24,6 +25,7 @@ data class SqlConfigWrapper(
 
 @Single
 fun provideDataSource(configLoader: ConfigLoader, openTelemetry: OpenTelemetry): DataSource = configLoader.load<SqlConfigWrapper>(null) {
+	defaultConfig()
 	autoconfigForSql()
 }
 	.sql
@@ -33,6 +35,9 @@ fun provideDataSource(configLoader: ConfigLoader, openTelemetry: OpenTelemetry):
 			.wrap(it)
 	}
 
+fun ConfigLoaderBuilder.defaultConfig() = addProperties(mapOf(
+	"sql.leakDetectionThreshold" to 10000
+))
 
 /**
  * Configuration that resembles the environment variables for the PostgreSQL container.
