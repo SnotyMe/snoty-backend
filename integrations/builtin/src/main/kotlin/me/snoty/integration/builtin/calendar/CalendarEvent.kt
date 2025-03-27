@@ -13,4 +13,6 @@ data class CalendarEvent(
 	val date: Instant?,
 	val startDate: Instant?,
 	val endDate: Instant?,
+	val description: String?,
+	val location: String?,
 )

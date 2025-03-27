@@ -55,7 +55,7 @@ class ICalNodeHandler(
 
 			val events = eventPersistenceService.getEntities(node)
 
-			val calendar = iCalBuilder.build(node._id.toString(), settings.name, events)
+			val calendar = iCalBuilder.build(node._id, settings.name, events)
 
 			val contentType = calendar.getContentType(StandardCharsets.UTF_8)
 			val outputter = CalendarOutputter()
