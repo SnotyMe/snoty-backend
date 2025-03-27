@@ -20,6 +20,6 @@ class MongoEntityStateServiceTest : EntityStateServiceSpec({ ObjectId().toHexStr
 		hookRegistry = HookRegistryImpl(),
 		codecRegistry = provideStateCodecRegistry(bsonTypeClassMap(), mongoDB.codecRegistry),
 	)
-	override val nodeService: NodeService = MongoNodeService(mongoDB, mockk(), mockk())
+	override val nodeService: NodeService = MongoNodeService(mongoDB, mockk())
 	override val flowService: FlowService = MongoFlowService(mongoDB, mockk(relaxed = true), mockk(relaxed = true))
 }
