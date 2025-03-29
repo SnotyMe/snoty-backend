@@ -5,6 +5,7 @@ import io.github.oshai.kotlinlogging.slf4j.logger
 import io.ktor.http.*
 import io.ktor.server.response.*
 import kotlinx.coroutines.flow.toList
+import me.snoty.backend.utils.NULL_UUID
 import me.snoty.backend.utils.bson.encode
 import me.snoty.backend.utils.bson.getIdAsString
 import me.snoty.integration.common.diff.EntityStateService
@@ -20,6 +21,8 @@ import me.snoty.integration.common.wiring.node.NodeRouteFactory
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
 import org.slf4j.Logger
+
+private val SINGLETON_ID = NULL_UUID.toString()
 
 abstract class DiffNodeHandler(
 	private val entityStateService: EntityStateService,
@@ -54,8 +57,15 @@ abstract class DiffNodeHandler(
 			.map { Document(it) }
 			.mapNotNull { document ->
 				val id = document.getIdAsString() ?: let {
-					logger.warn { "Document has no id field, skipping..." }
-					return@mapNotNull null
+					if (input.size == 1) {
+						// if we have only one document, we can assume it's a singleton and use the SINGLETON_ID
+						document["id"] = SINGLETON_ID
+						SINGLETON_ID
+					} else {
+						// if we have multiple documents, we can't use the id of the node so we skip this document
+						logger.warn { "Document has no id field, skipping..." }
+						return@mapNotNull null
+					}
 				}
 				id to document
 			}
