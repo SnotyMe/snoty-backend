@@ -2,6 +2,7 @@ package me.snoty.integration.common.diff
 
 import org.bson.BsonReader
 import org.bson.BsonWriter
+import org.bson.Document
 import org.bson.codecs.*
 import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Single
@@ -10,6 +11,9 @@ data class Change<T1 : Any, T2 : Any>(
 	val old: T1?,
 	val new: T2?,
 )
+
+fun Document.getOld(): String? = getString(Change<String, String>::old.name)
+fun Document.getNew(): String? = getString(Change<String, String>::new.name)
 
 @Single
 class ChangeCodec(private val codecRegistry: CodecRegistry, private val bsonTypeClassMap: BsonTypeClassMap) : Codec<Change<*, *>> {

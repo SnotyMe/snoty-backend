@@ -5,6 +5,8 @@ import me.snoty.integration.builtin.diff.injector.HasDiff
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.diff.Change
 import me.snoty.integration.common.diff.DiffResult
+import me.snoty.integration.common.diff.getNew
+import me.snoty.integration.common.diff.getOld
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.EmptySchema
 import me.snoty.integration.common.wiring.Node
@@ -65,8 +67,8 @@ class UniDiffHandler : NodeHandler {
 					.associateWith { key ->
 						val (old, new) = (diff.change as Document).get(key, Document::class.java).run {
 							Change(
-								old = this.getString(Change<*, *>::old.name),
-								new = this.getString(Change<*, *>::new.name),
+								old = this.getOld(),
+								new = this.getNew(),
 							)
 						}
 						logger.debug("Entity {} is updated, field {} has changed from {} to {}", hasDiff.id, key, old, new)
