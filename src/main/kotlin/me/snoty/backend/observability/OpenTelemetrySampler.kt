@@ -6,11 +6,23 @@ import io.opentelemetry.context.Context
 import io.opentelemetry.sdk.trace.data.LinkData
 import io.opentelemetry.sdk.trace.samplers.Sampler
 import io.opentelemetry.sdk.trace.samplers.SamplingResult
+import me.snoty.backend.featureflags.FeatureFlagChangeListener
 import org.koin.core.Koin
 
 class OpenTelemetrySampler(val og: Sampler, koin: Koin) : Sampler by og {
-	// lazy injection to avoid circular dependency between OpenTelemetry and OpenFeature
-	val featureFlags: OpenTelemetryFeatureFlags by koin.inject()
+	// set using listener to avoid recursion
+	var muteJobRunrQueries = false
+	init {
+		val featureFlags: OpenTelemetryFeatureFlags = koin.get()
+		FeatureFlagChangeListener(
+			client = koin.get(),
+			flag = featureFlags.muteJobRunrQueries,
+			initialFire = true,
+			onChange = { newValue ->
+				muteJobRunrQueries = newValue
+			}
+		)
+	}
 	
 	override fun shouldSample(
 		parentContext: Context,
@@ -20,9 +32,7 @@ class OpenTelemetrySampler(val og: Sampler, koin: Koin) : Sampler by og {
 		attributes: Attributes,
 		parentLinks: List<LinkData?>
 	): SamplingResult? = when {
-		// flagd evaluations are dropped. not doing so will cause a recursive loop due to the feature flag evaluations in this function
-		name == "resolve" -> SamplingResult.drop()
-		featureFlags.muteJobRunrQueries && attributes[DB_SQL_TABLE]?.startsWith("jobrunr") == true -> SamplingResult.drop()
+		muteJobRunrQueries && attributes[DB_SQL_TABLE]?.startsWith("jobrunr") == true -> SamplingResult.drop()
 
 		else -> og.shouldSample(parentContext, traceId, name, spanKind, attributes, parentLinks)
 	}

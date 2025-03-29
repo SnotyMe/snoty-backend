@@ -8,5 +8,5 @@ import org.koin.core.annotation.Single
 @Single
 class OpenTelemetryFeatureFlags(override val client: Client) : FeatureFlagsContainer {
 	// https://github.com/SnotyMe/snoty-backend/issues/169
-	val muteJobRunrQueries by FeatureFlagBoolean("otel.muteJobRunrQueries", true)
+	val muteJobRunrQueries = FeatureFlagBoolean("otel.muteJobRunrQueries", true)
 }
