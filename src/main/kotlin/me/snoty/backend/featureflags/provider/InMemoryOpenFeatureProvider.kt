@@ -4,8 +4,10 @@ import dev.openfeature.sdk.FeatureProvider
 import dev.openfeature.sdk.providers.memory.Flag
 import dev.openfeature.sdk.providers.memory.InMemoryProvider
 import me.snoty.backend.config.ProviderFeatureFlagConfig
+import org.koin.core.annotation.Single
 
-object InMemoryOpenFeatureProvider : BaseOpenFeatureProvider<ProviderFeatureFlagConfig.InMemory>() {
+@Single(binds = [OpenFeatureProvider::class])
+class InMemoryOpenFeatureProvider : BaseOpenFeatureProvider<ProviderFeatureFlagConfig.InMemory>(ProviderFeatureFlagConfig.InMemory::class) {
 	override val name: String = "inmemory"
 
 	override fun createFeatureProvider(config: ProviderFeatureFlagConfig.InMemory): FeatureProvider {

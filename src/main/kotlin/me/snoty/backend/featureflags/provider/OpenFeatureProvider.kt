@@ -4,12 +4,15 @@ import dev.openfeature.sdk.Client
 import dev.openfeature.sdk.FeatureProvider
 import dev.openfeature.sdk.OpenFeatureAPI
 import me.snoty.backend.config.ProviderFeatureFlagConfig
+import kotlin.reflect.KClass
 
 interface OpenFeatureProvider<C : ProviderFeatureFlagConfig> {
+	val configClass: KClass<C>
+	
 	fun createClient(config: C): Client
 }
 
-abstract class BaseOpenFeatureProvider<C : ProviderFeatureFlagConfig> : OpenFeatureProvider<C> {
+abstract class BaseOpenFeatureProvider<C : ProviderFeatureFlagConfig>(override val configClass: KClass<C>) : OpenFeatureProvider<C> {
 	abstract val name: String
 
 	override fun createClient(config: C): Client {
