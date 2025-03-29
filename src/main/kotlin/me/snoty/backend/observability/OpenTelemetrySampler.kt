@@ -6,8 +6,12 @@ import io.opentelemetry.context.Context
 import io.opentelemetry.sdk.trace.data.LinkData
 import io.opentelemetry.sdk.trace.samplers.Sampler
 import io.opentelemetry.sdk.trace.samplers.SamplingResult
+import org.koin.core.Koin
 
-class OpenTelemetrySampler(val og: Sampler, val featureFlags: OpenTelemetryFeatureFlags) : Sampler by og {
+class OpenTelemetrySampler(val og: Sampler, koin: Koin) : Sampler by og {
+	// lazy injection to avoid circular dependency between OpenTelemetry and OpenFeature
+	val featureFlags: OpenTelemetryFeatureFlags by koin.inject()
+	
 	override fun shouldSample(
 		parentContext: Context,
 		traceId: String,

@@ -5,8 +5,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import me.snoty.backend.config.Config
 import me.snoty.backend.config.ProviderFeatureFlagConfig
 import me.snoty.backend.featureflags.FeatureFlagClientProvider.logger
-import me.snoty.backend.featureflags.provider.FlagdOpenFeatureProvider
-import me.snoty.backend.featureflags.provider.InMemoryOpenFeatureProvider
+import me.snoty.backend.featureflags.provider.OpenFeatureProvider
 import org.koin.core.annotation.Single
 
 object FeatureFlagClientProvider {
@@ -14,15 +13,16 @@ object FeatureFlagClientProvider {
 }
 
 @Single
-fun provideClient(config: Config): Client {
+fun provideClient(config: Config, openFeatureProviders: List<OpenFeatureProvider<ProviderFeatureFlagConfig>>): Client {
 	val featureFlagsConfig = config.featureFlags.value
-	val client = when (featureFlagsConfig) {
-		is ProviderFeatureFlagConfig.Flagd -> FlagdOpenFeatureProvider.createClient(featureFlagsConfig)
-		is ProviderFeatureFlagConfig.InMemory -> InMemoryOpenFeatureProvider.createClient(featureFlagsConfig)
-		else -> throw IllegalArgumentException("No provider found for $featureFlagsConfig")
+	
+	for (provider in openFeatureProviders) {
+		if (provider.configClass.isInstance(featureFlagsConfig)) {
+			val client = provider.createClient(featureFlagsConfig)
+			logger.debug { "Provided client $client for $featureFlagsConfig" }
+			return client
+		}
 	}
 
-	logger.debug { "Provided client $client for $featureFlagsConfig" }
-
-	return client
+	throw IllegalStateException("No feature flag provider found for config $featureFlagsConfig")
 }
