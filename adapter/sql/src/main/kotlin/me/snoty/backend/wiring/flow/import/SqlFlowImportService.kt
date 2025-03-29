@@ -6,7 +6,6 @@ import me.snoty.backend.utils.toUuid
 import me.snoty.backend.wiring.node.NodeConnectionTable
 import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
 import me.snoty.backend.wiring.node.SqlNodeService
-import me.snoty.backend.wiring.node.deserializeOrInvalid
 import me.snoty.integration.common.wiring.flow.FlowService
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.batchInsert
@@ -32,7 +31,7 @@ class SqlFlowImportService(
 				settings = nodeSettingsDeserializationService.deserializeOrInvalid(it.descriptor, it.settings)
 			)._id
 		}
-		var connections = flow.nodes
+		val connections = flow.nodes
 			.flatMap { node ->
 				node.next.map { nextNode -> node.id to nextNode }
 			}

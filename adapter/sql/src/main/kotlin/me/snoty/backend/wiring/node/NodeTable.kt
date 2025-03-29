@@ -10,6 +10,7 @@ import me.snoty.integration.common.wiring.StandaloneNode
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.NodeSettings
+import me.snoty.integration.common.wiring.node.tryDeserializeNodeSettings
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
@@ -35,13 +36,16 @@ fun NodeTable.selectStandalone() = select(standaloneColumns)
 @OptIn(InternalSerializationApi::class)
 fun ResultRow.toStandalone(nodeTable: NodeTable, json: Json, nodeRegistry: NodeRegistry): StandaloneNode {
 	val descriptor = NodeDescriptor(namespace = this[nodeTable.descriptor_namespace], name = this[nodeTable.descriptor_name])
+
 	return StandaloneNode(
 		_id = this[nodeTable.id].value.toString(),
 		flowId = this[nodeTable.flowId].value.toString(),
 		userId = this[nodeTable.userId],
 		descriptor = descriptor,
 		logLevel = this[nodeTable.logLevel],
-		settings = json.decodeFromString(nodeRegistry.getMetadata(descriptor).settingsClass.serializer(), this[nodeTable.settings])
+		settings = tryDeserializeNodeSettings(descriptor, nodeRegistry) {
+			json.decodeFromString(it.serializer(), this[nodeTable.settings])
+		}
 	)
 }
 

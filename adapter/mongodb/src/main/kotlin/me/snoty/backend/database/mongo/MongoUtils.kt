@@ -7,7 +7,6 @@ import com.mongodb.kotlin.client.coroutine.AggregateFlow
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import me.snoty.backend.wiring.node.MongoNode
 import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
-import me.snoty.backend.wiring.node.deserializeOrInvalid
 import org.bson.Document
 import org.bson.conversions.Bson
 import kotlin.reflect.KProperty
