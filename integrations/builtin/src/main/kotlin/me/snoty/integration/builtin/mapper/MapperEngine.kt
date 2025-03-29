@@ -2,13 +2,14 @@ package me.snoty.integration.builtin.mapper
 
 import liqp.TemplateParser
 import me.snoty.backend.utils.bson.setRecursively
+import me.snoty.integration.builtin.mapper.filter.UniDiffFilter
 import me.snoty.integration.common.model.metadata.DisplayName
 import org.bson.Document
 import org.slf4j.Logger
 
 enum class MapperEngine(private val templater: Templater) {
 	@DisplayName("Replace")
-	REPLACE({ settings, data ->
+	REPLACE({ logger, settings, data ->
 		val mappedData = Document()
 		settings.fields.forEach { (key, ogValue) ->
 			var result = ogValue
@@ -21,11 +22,15 @@ enum class MapperEngine(private val templater: Templater) {
 
 		mappedData
 	}),
+
 	@DisplayName("Liquid")
-	LIQUID({ settings, data ->
+	LIQUID({ logger, settings, data ->
 		val mappedData = Document()
+		val templateParser = TemplateParser.Builder()
+			.withFilter(UniDiffFilter())
+			.build()
 		settings.fields.forEach { (key, value) ->
-			val template = TemplateParser.DEFAULT.parse(value)
+			val template = templateParser.parse(value)
 			val rendered = template.render(data).trim()
 
 			mappedData.setRecursively(key, rendered)
@@ -35,7 +40,7 @@ enum class MapperEngine(private val templater: Templater) {
 	});
 
 	fun template(logger: Logger, settings: MapperSettings, data: Document): Document {
-		val mappedData = templater(settings, data)
+		val mappedData = templater(logger, settings, data)
 
 		if (settings.preserveId) {
 			val alreadyMapped = mappedData["id"] != null

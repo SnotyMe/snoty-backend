@@ -63,15 +63,15 @@ class UniDiffHandler : NodeHandler {
 						true
 					}
 					.associateWith { key ->
-						val change = (diff.change as Document).get(key, Document::class.java).run {
+						val (old, new) = (diff.change as Document).get(key, Document::class.java).run {
 							Change(
 								old = this.getString(Change<*, *>::old.name),
 								new = this.getString(Change<*, *>::new.name),
 							)
 						}
-						logger.debug("Entity {} is updated, field {} has changed to {}", hasDiff.id, key, change)
+						logger.debug("Entity {} is updated, field {} has changed from {} to {}", hasDiff.id, key, old, new)
 
-						computeDiff(change)
+						computeDiff(old, new)
 					}
 			}
 

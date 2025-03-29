@@ -2,13 +2,15 @@ package me.snoty.integration.builtin.diff.uni
 
 import com.github.difflib.DiffUtils
 import com.github.difflib.UnifiedDiffUtils
-import me.snoty.integration.common.diff.Change
+import me.snoty.backend.utils.skip
 
-fun computeDiff(change: Change<String, String>): String {
-	fun String?.toList() = (this ?: "null").split("\n")
+fun computeDiff(old: String?, new: String?): String {
+	fun String?.toList() = this?.split("\n")
+		?.ifEmpty { emptyList() }
+		?: emptyList()
 
-	val old = change.old.toList()
-	val diff = DiffUtils.diff(old, change.new.toList())
+	val old = old.toList()
+	val diff = DiffUtils.diff(old, new.toList())
 
 	val unifiedDiff = UnifiedDiffUtils.generateUnifiedDiff(
 		/* originalFileName = */ "old",
@@ -18,5 +20,6 @@ fun computeDiff(change: Change<String, String>): String {
 		/* contextSize = */ 2
 	)
 
-	return unifiedDiff.joinToString(separator = "\n")
+	// skip the `--- old` and `+++ new` lines
+	return unifiedDiff.skip(2).joinToString(separator = "\n")
 }

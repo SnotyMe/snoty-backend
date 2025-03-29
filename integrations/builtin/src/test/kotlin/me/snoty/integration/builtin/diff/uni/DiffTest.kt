@@ -1,17 +1,13 @@
 package me.snoty.integration.builtin.diff.uni
 
-import me.snoty.integration.common.diff.Change
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class DiffTest {
 	@Test
 	fun `basic one liner`() {
-		val change = Change("Hello World", "Hallo Welt")
-		val diff = computeDiff(change)
+		val diff = computeDiff("Hello World", "Hallo Welt")
 		assertEquals("""
-			--- old
-			+++ new
 			@@ -1,1 +1,1 @@
 			-Hello World
 			+Hallo Welt
@@ -20,25 +16,24 @@ class DiffTest {
 
 	@Test
 	fun `basic one liner with context`() {
-		val change = Change("""
+		val old ="""
 			First
 			Second
 			Third
 			Fourth
 			Fifth
-		""".trimIndent(), """
+		""".trimIndent()
+		val new = """
 			First
 			Second
 			CHANGED
 			Fourth
 			Fifth
-		""".trimIndent())
+		""".trimIndent()
 
-		val diff = computeDiff(change)
+		val diff = computeDiff(old, new)
 
 		assertEquals("""
-			--- old
-			+++ new
 			@@ -1,5 +1,5 @@
 			 First
 			 Second
@@ -51,27 +46,26 @@ class DiffTest {
 
 	@Test
 	fun `simple multiple lines`() {
-		val change = Change("""
+		val old = """
 			First
 			Second
 			Third
 			Fourth
 			Fifth
 			Sixth
-		""".trimIndent(), """
+		""".trimIndent()
+		val new = """
 			First
 			SeCOnd
 			CHANGED
 			Fourth
 			Fifth
 			Sixth
-		""".trimIndent())
+		""".trimIndent()
 
-		val diff = computeDiff(change)
+		val diff = computeDiff(old, new)
 
 		assertEquals("""
-			--- old
-			+++ new
 			@@ -1,5 +1,5 @@
 			 First
 			-Second
@@ -85,27 +79,26 @@ class DiffTest {
 
 	@Test
 	fun `complex multiple lines`() {
-		val change = Change("""
+		val old = """
 			First
 			Second
 			Third
 			Fourth
 			Fifth
 			Sixth
-		""".trimIndent(), """
+		""".trimIndent()
+		val new = """
 			First
 			SeCOnd
 			Third
 			CHANGED
 			Fifth
 			Sixth
-		""".trimIndent())
+		""".trimIndent()
 
-		val diff = computeDiff(change)
+		val diff = computeDiff(old, new)
 
 		assertEquals("""
-			--- old
-			+++ new
 			@@ -1,6 +1,6 @@
 			 First
 			-Second
