@@ -9,13 +9,13 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.slf4j.MDCContext
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.FlowExecutionException
-import me.snoty.backend.wiring.flow.execution.FlowExecutionService
 import me.snoty.backend.observability.APPENDER_LOG_LEVEL
 import me.snoty.backend.observability.setException
 import me.snoty.backend.observability.subspan
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEvent
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
+import me.snoty.backend.wiring.flow.execution.FlowExecutionService
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.NodeHandleContextImpl
@@ -74,6 +74,7 @@ class FlowRunnerImpl(
 				executionContext.executeStartNode(rootSpan, it, listOf(input))
 			}
 			.onCompletion {
+				logger.info("Flow completed.")
 				rootSpan.end()
 				val status = if (it == null) FlowExecutionStatus.SUCCESS else FlowExecutionStatus.FAILED
 				flowExecutionEventService.offer(FlowExecutionEvent.FlowEndedEvent(
