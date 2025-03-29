@@ -19,9 +19,11 @@ class OpenTelemetrySampler(val og: Sampler, koin: Koin) : Sampler by og {
 		spanKind: SpanKind,
 		attributes: Attributes,
 		parentLinks: List<LinkData?>
-	): SamplingResult? {
-		if (featureFlags.muteJobRunrQueries && attributes[DB_SQL_TABLE]?.startsWith("jobrunr") == true) return SamplingResult.drop()
+	): SamplingResult? = when {
+		// flagd evaluations are dropped. not doing so will cause a recursive loop due to the feature flag evaluations in this function
+		name == "resolve" -> SamplingResult.drop()
+		featureFlags.muteJobRunrQueries && attributes[DB_SQL_TABLE]?.startsWith("jobrunr") == true -> SamplingResult.drop()
 
-		return og.shouldSample(parentContext, traceId, name, spanKind, attributes, parentLinks)
+		else -> og.shouldSample(parentContext, traceId, name, spanKind, attributes, parentLinks)
 	}
 }
