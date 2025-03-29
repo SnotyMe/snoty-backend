@@ -7,7 +7,7 @@ import com.sksamuel.hoplite.fp.Validated
 import com.sksamuel.hoplite.parsers.PropsParser
 import com.sksamuel.hoplite.parsers.PropsPropertySource
 import io.github.oshai.kotlinlogging.KotlinLogging
-import java.util.Properties
+import java.util.*
 
 /**
  * Optionally loads a container config for local container-based development.
@@ -29,7 +29,7 @@ inline fun <reified T : Any> loadContainerConfig(folder: String): Validated<Conf
 		.addFileSource("infra/$folder/.env.default", optional = true, allowEmpty = false)
 		.build()
 		.loadConfig<T>()
-		.onFailure { logger.warn { "Failed to load $configName: ${it.description()}" } }
+		.onFailure { logger.debug { "Failed to load $configName: ${it.description()}" } }
 		.map { logger.debug { "Loaded $configName: $it" }; return@map it }
 }
 
