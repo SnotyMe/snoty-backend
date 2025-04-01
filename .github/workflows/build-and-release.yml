@@ -39,7 +39,7 @@ jobs:
           additional_tags="$(echo "$DOCKER_METADATA_OUTPUT_TAGS" | tr '\n' ' ' | sed 's/dummy://g')"
 
           application_version="$(./gradlew properties -q | awk '/^version:/ {print $2}')"
-          # unique version like `2.6.1-69` - immutable
+          # unique version like `2.6.1-DEV.69` - immutable
           full_version="$application_version-DEV.${{github.run_number}}"
 
           ./gradlew \
@@ -53,6 +53,14 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish maven artifacts
+        if: github.ref_type == 'tag'
+        env:
+          MAVEN_RELEASES_USERNAME: ${{ secrets.MAVEN_RELEASES_USERNAME }}
+          MAVEN_RELEASES_PASSWORD: ${{ secrets.MAVEN_RELEASES_PASSWORD }}
+        run: |
+          ./gradlew {:conventions-integration:,}publishAllPublicationsToSnotyReleasesRepository
 
       - name: Push docker image
         run: docker push --all-tags ghcr.io/snotyme/snoty-backend
