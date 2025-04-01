@@ -25,7 +25,7 @@ inline fun <reified T : Any> loadContainerConfig(folder: String): Validated<Conf
 		// `.env.default` file - WARNING: this assumes all *.default files are .env files
 		.addParser("default", PropsParser())
 		// local configuration takes precedence
-		.addFileSource("infra/$folder/.env", optional = false, allowEmpty = false)
+		.addFileSource("infra/$folder/.env", optional = true, allowEmpty = false)
 		.addFileSource("infra/$folder/.env.default", optional = true, allowEmpty = false)
 		.build()
 		.loadConfig<T>()
