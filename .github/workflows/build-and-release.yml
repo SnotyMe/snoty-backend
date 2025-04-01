@@ -55,7 +55,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish maven artifacts
-        if: github.event_name == 'tag'
+        if: github.ref_type == 'tag'
         env:
           MAVEN_RELEASES_USERNAME: ${MAVEN_RELEASES_USERNAME}
           MAVEN_RELEASES_PASSWORD: ${MAVEN_RELEASES_PASSWORD}
