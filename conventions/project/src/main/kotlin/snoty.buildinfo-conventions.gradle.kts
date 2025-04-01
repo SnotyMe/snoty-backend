@@ -5,6 +5,8 @@ plugins {
 	id("io.github.simulatan.gradle-buildinfo-plugin")
 }
 
+apply(from = "${rootProject.projectDir}/version.gradle.kts")
+
 buildInfo {
 	val outputLocation = PropertiesOutputLocation { project ->
 		listOf(project.layout.buildDirectory.get().file("info/buildinfo.properties").asFile)
