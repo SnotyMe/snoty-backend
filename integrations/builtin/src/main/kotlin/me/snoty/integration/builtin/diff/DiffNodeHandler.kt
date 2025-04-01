@@ -48,7 +48,7 @@ abstract class DiffNodeHandler(
 		}
 	}
 
-	suspend fun NodeHandleContext.handleStatesAndDiff(slf4jLogger: Logger, node: Node, input: NodeInput, excludedFields: Collection<String>): Pair<Data, States> {
+	suspend fun NodeHandleContext.handleStatesAndDiff(slf4jLogger: Logger, node: Node, input: NodeInput, excludedFields: Collection<String>): Pair<Data, Changes> {
 		val logger = KotlinLogging.logger(slf4jLogger)
 
 		val newData = input
@@ -73,30 +73,27 @@ abstract class DiffNodeHandler(
 
 		val rawOldStates = entityStateService.getLastStates(node._id)
 			.toList()
-		val (oldStates, newStates) = processStates(rawOldStates, newData, excludedFields)
+		val (oldStates, changes) = processStates(rawOldStates, Data(newData), excludedFields)
 
-		entityStateService.updateStates(node._id, newStates.values)
-		val allStates = newStates + oldStates
-			// we only care about deleted entities
-			.filterKeys { it !in newData }
-			.mapValues { (id, _) ->
-				val oldState = oldStates[id] ?: error("Old state not found for entity $id")
-				EntityStateService.EntityStateUpdate(oldState, null.diff(oldState))
-			}
+		entityStateService.updateStates(node._id, changes.values)
 		val allData = newData + oldStates
 			.filterKeys { it !in newData }
 			.mapValues { it.value.state }
 
-		return Data(allData) to States(allStates)
+		return Data(allData) to Changes(changes)
 	}
+
+	@JvmInline
+	value class States(private val states: Map<String, EntityState>)
+		: Map<String, EntityState> by states
 
 	@JvmInline
 	value class Data(private val data: Map<String, Document>)
 		: Map<String, Document> by data
 
 	@JvmInline
-	value class States(private val states: Map<String, EntityStateService.EntityStateUpdate>)
-		: Map<String, EntityStateService.EntityStateUpdate> by states
+	value class Changes(private val changes: Map<String, EntityStateService.EntityStateUpdate>)
+		: Map<String, EntityStateService.EntityStateUpdate> by changes
 }
 
 private fun Document.removeAll(fields: Collection<String>) {
@@ -105,8 +102,11 @@ private fun Document.removeAll(fields: Collection<String>) {
 	}
 }
 
-internal fun processStates(oldStates: List<EntityState>, newData: Map<String, Document>, excludedFields: Collection<String>):
-	Pair<Map<String, EntityState>, Map<String, EntityStateService.EntityStateUpdate>> {
+internal fun processStates(
+	oldStates: List<EntityState>,
+	newData: DiffNodeHandler.Data,
+	excludedFields: Collection<String>
+): Pair<DiffNodeHandler.States, DiffNodeHandler.Changes> {
 	val oldStates = oldStates
 		// remove excluded fields to not consider them in the diff
 		.map {
@@ -114,7 +114,8 @@ internal fun processStates(oldStates: List<EntityState>, newData: Map<String, Do
 			it.copy(checksum = it.state.checksum())
 		}
 		.associateBy { it.id }
-	val newStates = newData
+
+	val createAndUpdate = newData
 		// remove excluded fields to not consider them in the diff
 		.onEach { (_, document) -> document.removeAll(excludedFields) }
 		.mapValues { (id, newState) ->
@@ -123,6 +124,16 @@ internal fun processStates(oldStates: List<EntityState>, newData: Map<String, Do
 
 			EntityStateService.EntityStateUpdate(EntityState(id, newState), diff)
 		}
+	val delete = oldStates
+		// we only care about deleted entities
+		.filterKeys { it !in newData }
+		.mapValues { (id, _) ->
+			val oldState = oldStates[id] ?: error("Old state not found for entity $id")
+			// `null.diff` results in `DiffResult.Deleted`
+			EntityStateService.EntityStateUpdate(oldState, null.diff(oldState))
+		}
 
-	return oldStates to newStates
+	val allUpdates = createAndUpdate + delete
+
+	return DiffNodeHandler.States(oldStates) to DiffNodeHandler.Changes(allUpdates)
 }
