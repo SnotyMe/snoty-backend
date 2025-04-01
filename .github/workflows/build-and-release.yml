@@ -60,7 +60,7 @@ jobs:
           MAVEN_RELEASES_USERNAME: ${{ secrets.MAVEN_RELEASES_USERNAME }}
           MAVEN_RELEASES_PASSWORD: ${{ secrets.MAVEN_RELEASES_PASSWORD }}
         run: |
-          ./gradlew publishAllPublicationsToSnotyReleasesRepository
+          ./gradlew {:conventions-integration:,}publishAllPublicationsToSnotyReleasesRepository
 
       - name: Push docker image
         run: docker push --all-tags ghcr.io/snotyme/snoty-backend
