@@ -36,7 +36,7 @@ class HttpNodeHandler(
 		val requests = input.mapNotNull { getOrNull<HttpNodeInput>(it) } + settings.requests
 
 		val output = requests.map {
-			val response = httpClient.request {
+			val response = httpClient.applyConfig(it).request {
 				url(it.url)
 				method = it.method.ktor
 				setBody(it.body)
