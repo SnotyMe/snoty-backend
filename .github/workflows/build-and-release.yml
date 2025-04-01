@@ -57,8 +57,8 @@ jobs:
       - name: Publish maven artifacts
         if: github.ref_type == 'tag'
         env:
-          MAVEN_RELEASES_USERNAME: ${MAVEN_RELEASES_USERNAME}
-          MAVEN_RELEASES_PASSWORD: ${MAVEN_RELEASES_PASSWORD}
+          MAVEN_RELEASES_USERNAME: ${secrets.MAVEN_RELEASES_USERNAME}
+          MAVEN_RELEASES_PASSWORD: ${secrets.MAVEN_RELEASES_PASSWORD}
         run: |
           ./gradlew publishAllPublicationsToSnotyReleasesRepository
 
