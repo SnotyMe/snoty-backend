@@ -3,8 +3,6 @@ package me.snoty.backend.database.sql
 import com.sksamuel.hoplite.ConfigAlias
 import com.sksamuel.hoplite.ConfigLoaderBuilder
 import com.sksamuel.hoplite.Masked
-import com.sksamuel.hoplite.fp.getOrElse
-import com.sksamuel.hoplite.parsers.PropsPropertySource
 import com.zaxxer.hikari.HikariDataSource
 import io.opentelemetry.api.OpenTelemetry
 import io.opentelemetry.instrumentation.jdbc.datasource.JdbcTelemetry
@@ -13,7 +11,6 @@ import me.snoty.backend.config.addProperties
 import me.snoty.backend.config.load
 import me.snoty.backend.config.loadContainerConfig
 import org.koin.core.annotation.Single
-import java.util.*
 import javax.sql.DataSource
 
 /**
@@ -56,16 +53,12 @@ data class PostgresContainerConfig(
 )
 
 fun ConfigLoaderBuilder.autoconfigForSql() {
-	val postgresContainerConfig = loadContainerConfig<PostgresContainerConfig>("database").map {
-		Properties().apply {
-			setProperty("database.type", "sql")
-			setProperty("sql.username", it.user)
-			setProperty("sql.password", it.password.value)
-			setProperty("sql.jdbcUrl", "jdbc:postgresql://localhost:${it.port}/${it.db}")
-		}
-	}
-
-	postgresContainerConfig.getOrElse { null }?.let {
-		addSource(PropsPropertySource(it))
+	loadContainerConfig<PostgresContainerConfig>("database").map {
+		addProperties(mapOf(
+			"database.type" to "sql",
+			"sql.username" to it.user,
+			"sql.password" to it.password.value,
+			"sql.jdbcUrl" to "jdbc:postgresql://localhost:${it.port}/${it.db}",
+		))
 	}
 }

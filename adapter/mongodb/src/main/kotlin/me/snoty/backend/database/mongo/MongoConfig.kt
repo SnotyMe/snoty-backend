@@ -3,10 +3,8 @@ package me.snoty.backend.database.mongo
 import com.sksamuel.hoplite.ConfigAlias
 import com.sksamuel.hoplite.ConfigLoaderBuilder
 import com.sksamuel.hoplite.Masked
-import com.sksamuel.hoplite.fp.getOrElse
-import com.sksamuel.hoplite.parsers.PropsPropertySource
+import me.snoty.backend.config.addProperties
 import me.snoty.backend.config.loadContainerConfig
-import java.util.*
 
 data class MongoConfig(val connection: MongoConnectionConfig, val authentication: MongoAuthenticationConfig? = null)
 
@@ -54,17 +52,21 @@ data class MongoContainerConfig(
 const val MONGODB = "mongodb"
 
 fun ConfigLoaderBuilder.autoconfigForMongo() {
-	val mongoContainerConfig = loadContainerConfig<MongoContainerConfig>("database").map {
-		Properties().apply {
-			setProperty("database.type", MONGODB)
-			setProperty("mongodb.connection.type", MongoConnectionConfig.ConnectionString::class.simpleName)
-			setProperty("mongodb.connection.connectionString", "mongodb://localhost:${it.port}/")
-			if (!it.username.isNullOrEmpty() || !it.username.isNullOrEmpty()) {
-				setProperty("mongodb.authentication.username", it.username)
-				setProperty("mongodb.authentication.password", it.password?.value)
-			}
-		}
-	}
+	loadContainerConfig<MongoContainerConfig>("database").map {
+		val properties = mutableMapOf(
+			"database.type" to MONGODB,
+			"mongodb.connection.type" to MongoConnectionConfig.ConnectionString::class.simpleName!!,
+			"mongodb.connection.connectionString" to "mongodb://localhost:${it.port}/",
+		)
 
-	addSource(PropsPropertySource(mongoContainerConfig.getOrElse { Properties() }))
+		if (it.username != null && it.password != null) {
+			properties += mapOf(
+				"mongodb.authentication.type" to MongoAuthenticationConfig::class.simpleName!!,
+				"mongodb.authentication.username" to it.username,
+				"mongodb.authentication.password" to it.password.value,
+			)
+		}
+
+		addProperties(properties)
+	}
 }

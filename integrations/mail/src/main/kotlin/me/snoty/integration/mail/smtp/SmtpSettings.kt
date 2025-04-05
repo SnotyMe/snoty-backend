@@ -1,12 +1,12 @@
 package me.snoty.integration.mail.smtp
 
 import kotlinx.serialization.Serializable
+import me.snoty.backend.config.toProperties
 import me.snoty.integration.common.model.metadata.FieldCensored
 import me.snoty.integration.common.model.metadata.FieldDefaultValue
 import me.snoty.integration.common.model.metadata.FieldHidden
 import me.snoty.integration.common.model.metadata.FieldName
 import me.snoty.integration.common.wiring.node.NodeSettings
-import java.util.Properties
 
 @Serializable
 data class SmtpSettings(
@@ -25,13 +25,13 @@ data class SmtpSettings(
 	val mimeType: String = TEXT_HTML_UTF8,
 ) : NodeSettings
 
-fun SmtpSettings.toConfiguration() = Properties().apply {
-	put("mail.smtp.auth", "true")
-	put("mail.smtp.starttls.enable", startTls)
-	put("mail.smtp.host", host)
-	put("mail.smtp.port", port)
-	put("mail.smtp.user", username)
-	put("mail.smtp.password", password)
-	put("mail.smtp.from", from)
-	put("mail.smtp.to", to)
-}
+fun SmtpSettings.toConfiguration() = mapOf(
+	"mail.smtp.auth" to "true",
+	"mail.smtp.starttls.enable" to startTls,
+	"mail.smtp.host" to host,
+	"mail.smtp.port" to port,
+	"mail.smtp.user" to username,
+	"mail.smtp.password" to password,
+	"mail.smtp.from" to from,
+	"mail.smtp.to" to to,
+).toProperties()

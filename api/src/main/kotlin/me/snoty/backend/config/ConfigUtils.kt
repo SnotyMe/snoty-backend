@@ -34,12 +34,12 @@ inline fun <reified T : Any> loadContainerConfig(folder: String): Validated<Conf
 }
 
 
-fun ConfigLoaderBuilder.addProperties(properties: Map<String, Any>) = addPropertySource(
+fun ConfigLoaderBuilder.addProperties(properties: Map<String, Any?>) = addPropertySource(
 	PropsPropertySource(
 		properties.toProperties()
 	)
 )
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun Map<String, Any>.toProperties(): Properties =
+inline fun Map<String, Any?>.toProperties(): Properties =
 	Properties().apply { putAll(this@toProperties) }

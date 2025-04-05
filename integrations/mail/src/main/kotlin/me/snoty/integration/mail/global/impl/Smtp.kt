@@ -1,12 +1,11 @@
 package me.snoty.integration.mail.global.impl
 
 import jakarta.mail.Session
+import me.snoty.backend.config.toProperties
 import me.snoty.integration.mail.MailInput
 import me.snoty.integration.mail.global.MailSettings
 import me.snoty.integration.mail.smtp.SmtpSend
 import me.snoty.integration.mail.smtp.createMessage
-import java.util.*
-
 
 data class Smtp(
 	val host: String,
@@ -17,16 +16,16 @@ data class Smtp(
 	val from: String,
 ) : GlobalMailConfig()
 
-fun Smtp.toConfiguration(mailSettings: MailSettings) = Properties().apply {
-	put("mail.smtp.auth", "true")
-	put("mail.smtp.starttls.enable", startTls)
-	put("mail.smtp.host", host)
-	put("mail.smtp.port", port)
-	put("mail.smtp.user", username)
-	put("mail.smtp.password", password)
-	put("mail.smtp.from", from)
-	put("mail.smtp.to", mailSettings.to)
-}
+fun Smtp.toConfiguration(mailSettings: MailSettings) = mapOf(
+	"mail.smtp.auth" to "true",
+	"mail.smtp.starttls.enable" to startTls,
+	"mail.smtp.host" to host,
+	"mail.smtp.port" to port,
+	"mail.smtp.user" to username,
+	"mail.smtp.password" to password,
+	"mail.smtp.from" to from,
+	"mail.smtp.to" to mailSettings.to,
+).toProperties()
 
 class SmtpGlobalMailService(private val config: Smtp) : GlobalMailService {
 	override fun send(mails: Collection<MailInput>, settings: MailSettings) {
