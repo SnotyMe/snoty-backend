@@ -154,6 +154,8 @@ class FlowRunnerImpl(
 			.flowCatching(span)
 			.flowOn(span.asContextElement() + MDCContext())
 			.flatMapConcat { output ->
+				@Suppress("UnusedFlow") // yeah I don't think so
+				if (output.isEmpty()) return@flatMapConcat emptyFlow()
 				node.next
 					.asFlow()
 					.mapNotNull { nextNodeId ->
