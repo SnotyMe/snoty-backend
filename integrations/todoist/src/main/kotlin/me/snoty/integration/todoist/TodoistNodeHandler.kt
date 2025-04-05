@@ -46,6 +46,7 @@ class TodoistNodeHandler(
 	config: TodoistConfig,
 	oauth: TodoistOAuth,
 ) : NodeHandler {
+	@Serializable
 	data class Task(val externalId: String, val todoistId: String)
 
 	private val taskService = persistenceFactory<Task>("tasks")
