@@ -84,7 +84,12 @@ class MongoEntityStateService(
 	override suspend fun updateStates(nodeId: NodeId, states: Collection<EntityStateService.EntityStateUpdate>) {
 		nodeEntityStates.upsertOne(
 			Filters.eq(MongoNodeEntityStates::_id.name, nodeId),
-			Updates.set(MongoNodeEntityStates ::entities.name, states.map { it.state })
+			Updates.set(
+				MongoNodeEntityStates::entities.name,
+				states
+					.filter { it.diffResult !is DiffResult.Deleted }
+					.map { it.state }
+			)
 		)
 	}
 
