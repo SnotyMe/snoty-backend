@@ -9,14 +9,14 @@ import me.snoty.integration.common.wiring.StandaloneNode
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.slf4j.event.Level
-import java.util.*
+import kotlin.uuid.Uuid
 
 interface NodeService {
 	suspend fun get(id: NodeId): StandaloneNode?
 	fun getByFlow(flowId: NodeId): Flow<FlowNode>
 
 	suspend fun <S : NodeSettings> create(
-		userID: UUID,
+		userID: Uuid,
 		flowId: NodeId,
 		descriptor: NodeDescriptor,
 		settings: S,

@@ -6,7 +6,6 @@ import me.snoty.integration.common.wiring.flow.StandaloneWorkflow
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
 import org.koin.core.annotation.Single
-import kotlin.uuid.toJavaUuid
 
 object FlowTable : UuidTable("flow") {
 	val userId = kotlinUuid("user_id")
@@ -20,6 +19,6 @@ fun provideFlowTable() = FlowTable
 
 fun ResultRow.toStandalone() = StandaloneWorkflow(
 	_id = this[FlowTable.id].value.toString(),
-	userId = this[FlowTable.userId].toJavaUuid(),
+	userId = this[FlowTable.userId],
 	name = this[FlowTable.name]
 )

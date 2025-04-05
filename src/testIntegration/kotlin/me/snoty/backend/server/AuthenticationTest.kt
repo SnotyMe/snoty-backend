@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
-import java.util.*
+import kotlin.uuid.Uuid
 
 class AuthenticationTest {
 	companion object {
@@ -71,7 +71,7 @@ class AuthenticationTest {
 			assertEquals(user.properties.email, body["email"])
 			assertEquals(user.properties.username, body["name"])
 			assertDoesNotThrow {
-				UUID.fromString(body["id"] as String)
+				Uuid.parse(body["id"] as String)
 			}
 		}
 	}

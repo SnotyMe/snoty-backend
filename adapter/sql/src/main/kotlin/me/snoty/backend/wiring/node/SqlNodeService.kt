@@ -20,7 +20,7 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.koin.core.annotation.Single
 import org.slf4j.event.Level
-import java.util.*
+import kotlin.uuid.Uuid
 
 @Single
 class SqlNodeService(
@@ -56,7 +56,7 @@ class SqlNodeService(
 	}
 
 	override suspend fun <S : NodeSettings> create(
-		userID: UUID,
+		userID: Uuid,
 		flowId: NodeId,
 		descriptor: NodeDescriptor,
 		settings: S

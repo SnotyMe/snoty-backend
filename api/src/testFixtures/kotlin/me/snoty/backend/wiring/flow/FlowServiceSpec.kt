@@ -9,6 +9,7 @@ import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.test.assertAny
 import me.snoty.backend.test.nodeMetadata
+import me.snoty.backend.utils.randomV7
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.FlowNode
@@ -20,14 +21,14 @@ import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.*
 import kotlin.test.assertNotNull
+import kotlin.uuid.Uuid
 
 abstract class FlowServiceSpec(private val makeId: () -> NodeId) {
 	protected abstract val service: FlowService
 	protected abstract val nodeService: NodeService
 
-	private val userId = UUID.randomUUID()
+	private val userId = Uuid.randomV7()
 	protected val flowScheduler: FlowScheduler = mockk(relaxed = true)
 	protected val nodeRegistry: NodeRegistry = mockk(relaxed = true)
 

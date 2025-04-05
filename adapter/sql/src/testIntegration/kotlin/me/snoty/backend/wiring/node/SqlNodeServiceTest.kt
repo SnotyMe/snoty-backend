@@ -2,12 +2,13 @@ package me.snoty.backend.wiring.node
 
 import io.mockk.mockk
 import me.snoty.backend.database.sql.PostgresTest
+import me.snoty.backend.utils.randomV7
 import me.snoty.backend.wiring.flow.FlowTable
 import me.snoty.backend.wiring.flow.SqlFlowService
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.snotyJson
 import org.jetbrains.exposed.sql.SchemaUtils
-import java.util.*
+import kotlin.uuid.Uuid
 
 class SqlNodeServiceTest : NodeServiceSpec() {
 	private val nodeTable = NodeTable()
@@ -33,7 +34,7 @@ class SqlNodeServiceTest : NodeServiceSpec() {
 
 	override val makeId = suspend  {
 		flowService.create(
-			userId = UUID.randomUUID(),
+			userId = Uuid.randomV7(),
 			name = "test",
 		)._id
 	}

@@ -1,6 +1,5 @@
 package me.snoty.backend.wiring.node
 
-import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.StandaloneNode
 import me.snoty.integration.common.wiring.node.NodeDescriptor
@@ -9,7 +8,7 @@ import org.bson.Document
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
 import org.slf4j.event.Level
-import java.util.*
+import kotlin.uuid.Uuid
 
 /**
  * Low-level representation of a flow graph node gotten using `$graphLookup`
@@ -19,7 +18,7 @@ data class MongoNode(
 	@BsonId
 	val _id: ObjectId = ObjectId(),
 	val flowId: ObjectId,
-	val userId: UUID,
+	val userId: Uuid,
 	val descriptor: NodeDescriptor,
 	val logLevel: Level? = null,
 	val settings: Document,

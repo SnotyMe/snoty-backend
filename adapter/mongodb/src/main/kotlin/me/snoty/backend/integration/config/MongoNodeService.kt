@@ -24,7 +24,7 @@ import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.types.ObjectId
 import org.koin.core.annotation.Single
 import org.slf4j.event.Level
-import java.util.*
+import kotlin.uuid.Uuid
 
 @Single
 class MongoNodeService(
@@ -50,7 +50,7 @@ class MongoNodeService(
 	}
 
 	override suspend fun <S : NodeSettings> create(
-		userID: UUID,
+		userID: Uuid,
 		flowId: NodeId,
 		descriptor: NodeDescriptor,
 		settings: S,

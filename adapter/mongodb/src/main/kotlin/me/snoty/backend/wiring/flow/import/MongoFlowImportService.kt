@@ -5,12 +5,12 @@ import com.mongodb.client.model.UpdateOneModel
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import me.snoty.backend.integration.config.flow.NodeId
+import me.snoty.backend.wiring.node.MongoNode
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.flow.NODE_COLLECTION_NAME
-import me.snoty.backend.wiring.node.MongoNode
 import org.bson.types.ObjectId
 import org.koin.core.annotation.Single
-import java.util.*
+import kotlin.uuid.Uuid
 
 @Single
 class MongoFlowImportService(
@@ -19,7 +19,7 @@ class MongoFlowImportService(
 ) : FlowImportService {
 	private val nodeCollection = db.getCollection<MongoNode>(NODE_COLLECTION_NAME)
 
-	override suspend fun import(userId: UUID, flow: ImportFlow): NodeId {
+	override suspend fun import(userId: Uuid, flow: ImportFlow): NodeId {
 		val createdFlow = flowService.create(userId, flow.name)
 		val createdFlowId = ObjectId(createdFlow._id)
 

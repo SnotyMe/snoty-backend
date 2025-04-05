@@ -1,14 +1,13 @@
 package me.snoty.integration.common.wiring.flow
 
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import me.snoty.integration.common.wiring.FlowNode
-import java.util.*
+import kotlin.uuid.Uuid
 
 interface Workflow {
 	val _id: String
 	val name: String
-	val userId: UUID
+	val userId: Uuid
 }
 
 /**
@@ -18,8 +17,7 @@ interface Workflow {
 data class StandaloneWorkflow(
 	override val _id: String,
 	override val name: String,
-	@Contextual
-	override val userId: UUID,
+	override val userId: Uuid,
 ) : Workflow
 
 /**
@@ -29,8 +27,7 @@ data class StandaloneWorkflow(
 data class WorkflowWithNodes(
 	override val _id: String,
 	override val name: String,
-	@Contextual
-	override val userId: UUID,
+	override val userId: Uuid,
 	/**
 	 * A list of all nodes.
 	 * These nodes are normalized. Can include nodes not connected to anything.

@@ -14,9 +14,7 @@ import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.koin.core.annotation.Single
-import java.util.*
-import kotlin.uuid.toJavaUuid
-import kotlin.uuid.toKotlinUuid
+import kotlin.uuid.Uuid
 
 @Single
 class SqlFlowService(
@@ -24,9 +22,9 @@ class SqlFlowService(
 	private val flowScheduler: FlowScheduler,
 	private val nodeService: NodeService,
 ) : FlowService {
-	override suspend fun create(userId: UUID, name: String): StandaloneWorkflow = db.newSuspendedTransaction {
+	override suspend fun create(userId: Uuid, name: String): StandaloneWorkflow = db.newSuspendedTransaction {
 		val id = FlowTable.insertAndGetId {
-			it[FlowTable.userId] = userId.toKotlinUuid()
+			it[FlowTable.userId] = userId
 			it[FlowTable.name] = name
 		}
 
@@ -36,9 +34,9 @@ class SqlFlowService(
 			}
 	}
 
-	override fun query(userId: UUID): Flow<StandaloneWorkflow> = db.flowTransaction {
+	override fun query(userId: Uuid): Flow<StandaloneWorkflow> = db.flowTransaction {
 		FlowTable.selectStandalone()
-			.where { FlowTable.userId eq userId.toKotlinUuid() }
+			.where { FlowTable.userId eq userId }
 			.map(ResultRow::toStandalone)
 	}
 
@@ -59,7 +57,7 @@ class SqlFlowService(
 		flow.let {
 			WorkflowWithNodes(
 				_id = it[FlowTable.id].value.toString(),
-				userId = it[FlowTable.userId].toJavaUuid(),
+				userId = it[FlowTable.userId],
 				name = it[FlowTable.name],
 				nodes = nodes,
 			)

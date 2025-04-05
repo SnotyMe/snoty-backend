@@ -3,6 +3,7 @@ package me.snoty.backend.integration.flow
 import me.snoty.backend.dev.randomString
 import me.snoty.backend.test.node
 import me.snoty.backend.test.nodeMetadata
+import me.snoty.backend.utils.randomV7
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.Node
@@ -13,13 +14,13 @@ import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.simpleOutput
-import java.util.*
+import kotlin.uuid.Uuid
 
 fun relationalFlow(
 	vararg nodes: FlowNode,
 ) = WorkflowWithNodes(
 	_id = randomString(),
-	userId = UUID.randomUUID(),
+	userId = Uuid.randomV7(),
 	name = randomString(),
 	nodes = nodes.toList(),
 )

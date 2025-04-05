@@ -1,5 +1,5 @@
 package me.snoty.backend.utils
 
-import java.util.UUID
+import kotlin.uuid.Uuid
 
-val NULL_UUID: UUID = UUID(0, 0)
+val NULL_UUID = Uuid.NIL

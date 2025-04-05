@@ -23,8 +23,8 @@ import me.snoty.integration.common.wiring.flow.*
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
 import org.koin.core.annotation.Single
-import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.uuid.Uuid
 
 data class MongoFlowLogs(
 	val _id: String,
@@ -116,7 +116,7 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 			.toList()
 			.flatMap { it.logs }
 
-	override fun query(userId: UUID): Flow<EnumeratedFlowExecution> {
+	override fun query(userId: Uuid): Flow<EnumeratedFlowExecution> {
 		val flow = "flow"
 
 		data class MongoFlowExecution(

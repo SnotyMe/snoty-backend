@@ -2,15 +2,15 @@ package me.snoty.integration.common.wiring.flow
 
 import kotlinx.coroutines.flow.Flow
 import me.snoty.backend.integration.config.flow.NodeId
-import java.util.*
+import kotlin.uuid.Uuid
 
 interface FlowService {
-	suspend fun create(userId: UUID, name: String): StandaloneWorkflow
+	suspend fun create(userId: Uuid, name: String): StandaloneWorkflow
 
 	/**
 	 * @return a list of [Workflow]s for the given [userId]
 	 */
-	fun query(userId: UUID): Flow<StandaloneWorkflow>
+	fun query(userId: Uuid): Flow<StandaloneWorkflow>
 
 	suspend fun getStandalone(flowId: NodeId): StandaloneWorkflow?
 	suspend fun getWithNodes(flowId: NodeId): WorkflowWithNodes?
