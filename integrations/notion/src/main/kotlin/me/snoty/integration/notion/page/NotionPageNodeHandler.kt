@@ -4,6 +4,7 @@ import io.ktor.client.*
 import io.ktor.http.*
 import io.ktor.server.response.*
 import kotlinx.coroutines.flow.toList
+import kotlinx.serialization.Serializable
 import me.snoty.backend.utils.BadRequestException
 import me.snoty.backend.utils.respondStatus
 import me.snoty.integration.common.annotation.RegisterNode
@@ -14,7 +15,10 @@ import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.get
-import me.snoty.integration.common.wiring.node.*
+import me.snoty.integration.common.wiring.node.NodeHandler
+import me.snoty.integration.common.wiring.node.NodeHandlerRouteFactory
+import me.snoty.integration.common.wiring.node.NodePersistenceFactory
+import me.snoty.integration.common.wiring.node.invoke
 import me.snoty.integration.notion.NOTION_BASE_URL
 import me.snoty.integration.notion.NotionAPI
 import me.snoty.integration.notion.NotionAPIImpl
@@ -39,6 +43,7 @@ class NotionPageNodeHandler(
 	private val oauth: NotionOAuth,
 	notionConfig: NotionConfig,
 ) : NodeHandler {
+	@Serializable
 	data class Page(val externalId: String, val notionId: String)
 
 	private val pageService = persistenceFactory<Page>("pages")
