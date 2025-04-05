@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.slf4j.MDCContext
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.FlowExecutionException
+import me.snoty.backend.logging.KMDC
 import me.snoty.backend.observability.APPENDER_LOG_LEVEL
 import me.snoty.backend.observability.setException
 import me.snoty.backend.observability.subspan
@@ -27,7 +28,6 @@ import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import org.koin.core.annotation.Single
 import org.slf4j.Logger
-import org.slf4j.MDC
 import org.slf4j.event.Level
 
 @Single
@@ -141,7 +141,7 @@ class FlowRunnerImpl(
 			logger = logger.underlyingLogger,
 		)
 
-		MDC.put(APPENDER_LOG_LEVEL.key, (node.logLevel ?: logLevel).name)
+		KMDC.put(APPENDER_LOG_LEVEL, (node.logLevel ?: logLevel).name)
 
 		return flow {
 			logger.debug { "Processing ${node.descriptor.name} node \"${node.settings.name}\" (${node._id}) with $input" }

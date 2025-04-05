@@ -3,6 +3,7 @@ package me.snoty.backend.scheduling.jobrunr.node
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.slf4j.MDCContext
 import me.snoty.backend.integration.flow.logging.NodeLogAppender
+import me.snoty.backend.logging.KMDC
 import me.snoty.backend.observability.APPENDER_LOG_LEVEL
 import me.snoty.backend.observability.FLOW_ID
 import me.snoty.backend.observability.JOB_ID
@@ -16,7 +17,6 @@ import me.snoty.integration.common.wiring.flow.FlowService
 import org.jobrunr.jobs.context.JobRunrDashboardLogger
 import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
-import org.slf4j.MDC
 import ch.qos.logback.classic.Logger as LogbackLogger
 
 @Single
@@ -38,9 +38,9 @@ class JobRunrFlowJobHandler(
 		val jobContext = jobContext()
 		val logger = JobRunrDashboardLogger(this.rootLogger)
 
-		MDC.put(JOB_ID.key, jobContext.jobId.toString())
-		MDC.put(FLOW_ID.key, jobRequest.flowId)
-		MDC.put(APPENDER_LOG_LEVEL.key, jobRequest.logLevel.name)
+		KMDC.put(JOB_ID, jobContext.jobId.toString())
+		KMDC.put(FLOW_ID, jobRequest.flowId)
+		KMDC.put(APPENDER_LOG_LEVEL, jobRequest.logLevel.name)
 
 		runBlocking(MDCContext()) {
 			val flow = flowService.getWithNodes(jobRequest.flowId) ?: let {
@@ -48,7 +48,7 @@ class JobRunrFlowJobHandler(
 				return@runBlocking
 			}
 
-			MDC.put(USER_ID.key, flow.userId.toString())
+			KMDC.put(USER_ID, flow.userId.toString())
 
 			logger.debug("Processing flow {}", flow)
 

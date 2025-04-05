@@ -4,12 +4,9 @@ import io.opentelemetry.api.OpenTelemetry
 import io.opentelemetry.api.trace.Span
 import io.opentelemetry.api.trace.SpanBuilder
 import io.opentelemetry.api.trace.Tracer
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import me.snoty.backend.observability.JOB_ID
-import me.snoty.backend.observability.USER_ID
-import me.snoty.backend.observability.getTracer
-import me.snoty.backend.observability.setAttribute
+import me.snoty.backend.logging.KMDC
+import me.snoty.backend.observability.*
 import me.snoty.backend.wiring.flow.FlowFeatureFlags
 import me.snoty.integration.common.wiring.GenericNode
 import me.snoty.integration.common.wiring.Node
@@ -18,7 +15,6 @@ import me.snoty.integration.common.wiring.flow.FlowRunner
 import me.snoty.integration.common.wiring.flow.Workflow
 import me.snoty.integration.common.wiring.node.setAttribute
 import org.koin.core.annotation.Single
-import org.slf4j.MDC
 
 interface FlowTracing : Tracer {
 	fun createRootSpan(jobId: String, flow: Workflow): Span
@@ -33,22 +29,22 @@ class FlowTracingImpl(
 	openTelemetry: OpenTelemetry,
 ) : FlowTracing, Tracer by openTelemetry.getTracer(FlowRunner::class) {
 	override fun createRootSpan(jobId: String, flow: Workflow): Span {
-		val flowId = flow._id.toString()
+		val flowId = flow._id
 
 		val rootSpan = spanBuilder("Flow $flowId")
 			.setAttribute(JOB_ID, jobId)
-			.setAttribute("flow.id", flowId)
+			.setAttribute(FLOW_ID, flowId)
 			.startSpan()
 
 		return rootSpan
 	}
 
 	override fun SpanBuilder.setNodeAttributes(node: Node, input: Collection<IntermediateData>?) = apply {
-		setAttribute("node.id", node._id.toString())
-		MDC.put("node.id", node._id.toString())
+		setAttribute(NODE_ID, node._id)
+		KMDC.put(NODE_ID, node._id)
 		setAttribute("node.descriptor", node.descriptor)
 		setAttribute(USER_ID, node.userId)
-		MDC.put("user.id", node.userId.toString())
+		KMDC.put(USER_ID, node.userId.toString())
 
 		if (featureFlags.traceConfig) {
 			setAttribute("config", json.encodeToString(node.settings))

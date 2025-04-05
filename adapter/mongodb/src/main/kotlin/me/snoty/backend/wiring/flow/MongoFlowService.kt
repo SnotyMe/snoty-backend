@@ -32,7 +32,7 @@ class MongoFlowService(
 	override suspend fun create(userId: Uuid, name: String): StandaloneWorkflow {
 		val mongoWorkflow = MongoWorkflow(name = name, userId = userId)
 		collection.insertOne(mongoWorkflow)
-		var workflow = mongoWorkflow.toStandalone()
+		val workflow = mongoWorkflow.toStandalone()
 		flowScheduler.schedule(workflow)
 		return workflow
 	}
