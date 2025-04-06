@@ -36,7 +36,7 @@ services:
       - "4317:4317"   # otlp grpc
       - "4318:4318"   # otlp http
   loki:
-    image: grafana/loki:3.3.1
+    image: grafana/loki:3.4.3
     command:
       - -config.file=/etc/loki.yml
     volumes:
