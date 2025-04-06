@@ -12,7 +12,7 @@ mongodb = "5.3.1"
 exposed = "0.60.0"
 
 opentelemetry = "1.48.0"
-opentelemetry-semconv = "1.30.0"
+opentelemetry-semconv = "1.32.0"
 # https://github.com/open-telemetry/semantic-conventions-java/pull/53
 opentelemetry-semconv-incubating = "1.30.0-alpha"
 opentelemetry-instrumentation = "2.11.0-alpha"
