@@ -2,6 +2,7 @@ package me.snoty.integration.builtin.mapper
 
 import liqp.TemplateParser
 import me.snoty.backend.utils.bson.setRecursively
+import me.snoty.integration.builtin.mapper.filter.FormatFilter
 import me.snoty.integration.builtin.mapper.filter.UniDiffFilter
 import me.snoty.integration.common.model.metadata.DisplayName
 import org.bson.Document
@@ -28,6 +29,7 @@ enum class MapperEngine(private val templater: Templater) {
 		val mappedData = Document()
 		val templateParser = TemplateParser.Builder()
 			.withFilter(UniDiffFilter())
+			.withFilter(FormatFilter(logger))
 			.build()
 		settings.fields.forEach { (key, value) ->
 			val template = templateParser.parse(value)
