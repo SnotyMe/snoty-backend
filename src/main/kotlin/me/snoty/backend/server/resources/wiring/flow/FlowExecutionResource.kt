@@ -28,8 +28,11 @@ fun Route.flowExecutionResource() = route("{id}") {
 	sse("executions/sse") {
 		val flow = getPersonalFlowOrNull() ?: return@sse
 
+		val eventTypes = call.request.queryParameters["eventTypes"]?.split(",")?.map { it.trim() } ?: emptyList()
+
 		flowExecutionEventService.provideBus()
 			.filter { it.flowId == flow._id }
+			.filter { eventTypes.isEmpty() || it.eventType in eventTypes }
 			.collect {
 				send(
 					data = json.encodeToString(it),
