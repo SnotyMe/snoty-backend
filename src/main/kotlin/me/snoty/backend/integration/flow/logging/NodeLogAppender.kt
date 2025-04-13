@@ -37,27 +37,27 @@ class NodeLogAppender(
 	val logger = KotlinLogging.logger {}
 
 	override fun append(eventObject: ILoggingEvent) {
+		val eventLevel = eventObject.level.toSLF4JLevel()
+		val appenderLevel = eventObject.mdcPropertyMap[APPENDER_LOG_LEVEL.key]?.let { Level.valueOf(it) } ?: Level.INFO
+		if (eventLevel.toInt() < appenderLevel.toInt()) {
+			return
+		}
+
+		val message = eventObject.formattedMessage + (eventObject.throwableProxy?.message?.let {
+			"\n$it"
+		} ?: "")
+
+		val entry = NodeLogEntry(
+			timestamp = Instant.fromEpochMilliseconds(eventObject.timeStamp),
+			level = eventLevel,
+			message = message,
+			node = eventObject.mdcPropertyMap[NODE_ID.key]
+		)
+
+		val jobId = eventObject.mdcPropertyMap[JOB_ID.key]
+			?: return logger.error { "No job ID found in ${eventObject.mdcPropertyMap} with msg='$message'" }
+
 		scope.launch {
-			val eventLevel = eventObject.level.toSLF4JLevel()
-			val appenderLevel = eventObject.mdcPropertyMap[APPENDER_LOG_LEVEL.key]?.let { Level.valueOf(it) } ?: Level.INFO
-			if (eventLevel.toInt() < appenderLevel.toInt()) {
-				return@launch
-			}
-
-			val message = eventObject.formattedMessage + (eventObject.throwableProxy?.message?.let {
-				"\n$it"
-			} ?: "")
-
-			val entry = NodeLogEntry(
-				timestamp = Instant.fromEpochMilliseconds(eventObject.timeStamp),
-				level = eventLevel,
-				message = message,
-				node = eventObject.mdcPropertyMap[NODE_ID.key]
-			)
-
-			val jobId = eventObject.mdcPropertyMap[JOB_ID.key]
-				?: return@launch logger.warn { "No job ID found in log entry with msg='$message'" }
-			
 			flowExecutionEventService.offer(FlowExecutionEvent.FlowLogEvent(
 				jobId = jobId,
 				flowId = eventObject.mdcPropertyMap[FLOW_ID.key] ?: return@launch logger.warn { "No flow ID found in log entry with msg='$message'" },
