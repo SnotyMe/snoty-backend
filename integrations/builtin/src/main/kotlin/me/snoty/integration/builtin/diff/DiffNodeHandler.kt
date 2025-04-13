@@ -116,11 +116,12 @@ internal fun processStates(
 		.associateBy { it.id }
 
 	val createAndUpdate = newData
-		// remove excluded fields to not consider them in the diff
-		.onEach { (_, document) -> document.removeAll(excludedFields) }
 		.mapValues { (id, newState) ->
 			val oldState = oldStates[id]
-			val diff = newState.diff(oldState)
+			val newDocumentCleaned = Document(newState)
+			// remove excluded fields to not consider them in the diff
+			newDocumentCleaned.removeAll(excludedFields)
+			val diff = newDocumentCleaned.diff(oldState)
 
 			EntityStateService.EntityStateUpdate(EntityState(id, newState), diff)
 		}
