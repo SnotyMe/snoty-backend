@@ -118,6 +118,6 @@ tests-ktor-server-testHost = { group = "io.ktor", name = "ktor-server-test-host-
 tests-mockk = { group = "io.mockk", name = "mockk", version = "1.13.13" }
 tests-testcontainers = { group = "org.testcontainers", name = "testcontainers", version.ref = "testcontainers" }
 tests-testcontainers-junit = { group = "org.testcontainers", name = "junit-jupiter", version.ref = "testcontainers" }
-tests-testcontainers-keycloak = { group = "com.github.dasniko", name = "testcontainers-keycloak", version = "3.6.0" }
+tests-testcontainers-keycloak = { group = "com.github.dasniko", name = "testcontainers-keycloak", version = "3.7.0" }
 tests-testcontainers-mongodb = { group = "org.testcontainers", name = "mongodb", version.ref = "testcontainers" }
 tests-testcontainers-postgres = { group = "org.testcontainers", name = "postgresql", version.ref = "testcontainers" }
