@@ -3,6 +3,8 @@ package me.snoty.backend.wiring.flow
 import com.mongodb.client.model.Aggregates.lookup
 import com.mongodb.client.model.Aggregates.match
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.FindOneAndUpdateOptions
+import com.mongodb.client.model.ReturnDocument
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.flow.Flow
@@ -29,8 +31,8 @@ class MongoFlowService(
 ) : FlowService {
 	private val collection = db.getCollection<MongoWorkflow>(FLOW_COLLECTION_NAME)
 
-	override suspend fun create(userId: Uuid, name: String): StandaloneWorkflow {
-		val mongoWorkflow = MongoWorkflow(name = name, userId = userId)
+	override suspend fun create(userId: Uuid, name: String, settings: WorkflowSettings): StandaloneWorkflow {
+		val mongoWorkflow = MongoWorkflow(name = name, userId = userId, settings = settings)
 		collection.insertOne(mongoWorkflow)
 		val workflow = mongoWorkflow.toStandalone()
 		flowScheduler.schedule(workflow)
@@ -72,6 +74,16 @@ class MongoFlowService(
 		)
 	}
 
+	override suspend fun updateSettings(flowId: NodeId, settings: WorkflowSettings) {
+		val workflow = collection.findOneAndUpdate(
+			Filters.eq(MongoWorkflow::_id.name, ObjectId(flowId)),
+			Updates.set(MongoWorkflow::settings.name, settings),
+			FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
+		)!!.toStandalone()
+
+		flowScheduler.reschedule(workflow)
+	}
+
 	override suspend fun delete(flowId: NodeId) {
 		collection.deleteOne(Filters.eq(MongoWorkflow::_id.name, ObjectId(flowId)))
 	}
@@ -82,11 +94,13 @@ data class MongoWorkflow(
 	val _id: ObjectId = ObjectId(),
 	val name: String,
 	val userId: Uuid,
+	val settings: WorkflowSettings?,
 ) {
 	fun toStandalone() = StandaloneWorkflow(
 		_id = _id.toHexString(),
 		name = name,
 		userId = userId,
+		settings = settings ?: WorkflowSettings(),
 	)
 }
 
@@ -95,12 +109,14 @@ data class MongoWorkflowWithNodes(
 	val _id: ObjectId = ObjectId(),
 	val name: String,
 	val userId: Uuid,
+	val settings: WorkflowSettings?,
 	val nodes: List<MongoNode>,
 ) {
 	fun toRelational(settingsLookup: NodeSettingsDeserializationService) = WorkflowWithNodes(
 		_id = _id.toHexString(),
 		name = name,
 		userId = userId,
+		settings = settings ?: WorkflowSettings(),
 		nodes = nodes.map {
 			val settings = settingsLookup.deserializeOrInvalid(it)
 			it.toRelational(settings)

@@ -19,8 +19,8 @@ import org.koin.core.annotation.Single
 import org.slf4j.event.Level
 
 @Single(binds = [Table::class])
-class NodeTable() : UuidTable("node") {
-	val flowId = reference("flow_id", FlowTable)
+class NodeTable(flowTable: FlowTable) : UuidTable("node") {
+	val flowId = reference("flow_id", flowTable)
 	val userId = kotlinUuid("user_id")
 
 	val descriptor_namespace = varchar("descriptor_namespace", 255)

@@ -14,11 +14,11 @@ import org.koin.core.annotation.Single
 import org.slf4j.event.Level
 
 @Single(binds = [Table::class])
-class FlowExecutionTable : IdTable<String>() {
+class FlowExecutionTable(flowTable: FlowTable) : IdTable<String>() {
 	override val id = varchar("id", 255).entityId()
 	override val primaryKey = PrimaryKey(id)
 
-	val flowId = reference("flow_id", FlowTable, onDelete = ReferenceOption.CASCADE)
+	val flowId = reference("flow_id", flowTable, onDelete = ReferenceOption.CASCADE)
 	val triggeredBy = enumerationByName<FlowTriggerReason>("triggered_by", 10)
 	val triggeredAt = timestamp("triggered_at")
 	val status = enumerationByName<FlowExecutionStatus>("status", 15)

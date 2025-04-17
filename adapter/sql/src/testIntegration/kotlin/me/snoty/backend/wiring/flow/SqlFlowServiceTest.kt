@@ -11,7 +11,8 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import kotlin.uuid.Uuid
 
 class SqlFlowServiceTest : FlowServiceSpec({ Uuid.random().toString() }) {
-	val nodeTable = NodeTable()
+	private val flowTable = FlowTable(snotyJson {})
+	val nodeTable = NodeTable(flowTable)
 	val nodeConnectionTable = NodeConnectionTable(nodeTable)
 
 	val db = PostgresTest.getPostgresDatabase {
@@ -25,5 +26,5 @@ class SqlFlowServiceTest : FlowServiceSpec({ Uuid.random().toString() }) {
 		nodeTable = nodeTable,
 		nodeConnectionTable = nodeConnectionTable,
 	)
-	override val service: FlowService = SqlFlowService(db, flowScheduler, nodeService)
+	override val service: FlowService = SqlFlowService(db, flowScheduler, nodeService, flowTable)
 }

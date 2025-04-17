@@ -1,12 +1,12 @@
 package me.snoty.backend.scheduling.jobrunr
 
+import me.snoty.backend.scheduling.JobSchedule
 import me.snoty.backend.scheduling.Scheduler
 import me.snoty.backend.scheduling.SnotyJob
 import org.jobrunr.scheduling.JobBuilder.aJob
 import org.jobrunr.scheduling.JobRequestScheduler
 import org.jobrunr.scheduling.RecurringJobBuilder.aRecurringJob
 import org.koin.core.annotation.Single
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.toJavaDuration
 
 @Single
@@ -22,9 +22,15 @@ class JobRunrScheduler(private val jobRunrConfigurer: JobRunrConfigurer) : Sched
 			aRecurringJob()
 				.withId(id)
 				.withName(job.name)
-				.withDuration(15.minutes.toJavaDuration())
 				.withAmountOfRetries(job.retries)
 				.withJobRequest(job.request)
+				.apply {
+					when (val schedule = job.schedule) {
+						is JobSchedule.Recurring -> withDuration(schedule.interval.toJavaDuration())
+						is JobSchedule.Cron -> withCron(schedule.expression)
+						else -> error("Unsupported schedule type: $schedule")
+					}
+				}
 		)
 	}
 

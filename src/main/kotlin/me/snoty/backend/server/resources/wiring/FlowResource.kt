@@ -17,6 +17,7 @@ import me.snoty.integration.common.http.flowNotFound
 import me.snoty.integration.common.http.invalidNodeId
 import me.snoty.integration.common.wiring.flow.FlowManagementService
 import me.snoty.integration.common.wiring.flow.FlowService
+import me.snoty.integration.common.wiring.flow.WorkflowSettings
 import org.koin.ktor.ext.get
 import org.slf4j.event.Level
 
@@ -28,10 +29,10 @@ fun Route.flowResource() {
 		val user = call.getUser()
 
 		@Serializable
-		data class FlowCreateRequest(val name: String)
+		data class FlowCreateRequest(val name: String, val settings: WorkflowSettings = WorkflowSettings())
 		val request = call.receive<FlowCreateRequest>()
 
-		val flow = flowService.create(user.id, request.name)
+		val flow = flowService.create(user.id, request.name, request.settings)
 
 		call.respond(flow)
 	}
@@ -90,6 +91,15 @@ fun Route.flowResource() {
 
 		val name = call.receiveText()
 		flowService.rename(flow._id, name)
+
+		call.respond(HttpStatusCode.NoContent)
+	}
+
+	put("{id}/settings") {
+		val flow = getPersonalFlowOrNull() ?: return@put
+
+		val settings = call.receive<WorkflowSettings>()
+		flowService.updateSettings(flow._id, settings)
 
 		call.respond(HttpStatusCode.NoContent)
 	}

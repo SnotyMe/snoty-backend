@@ -13,6 +13,7 @@ import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.diff.checksum
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.flow.FlowService
+import me.snoty.integration.common.wiring.flow.WorkflowSettings
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import org.bson.Document
@@ -29,7 +30,7 @@ abstract class EntityStateServiceSpec(val makeId: () -> NodeId) {
 	abstract val flowService: FlowService
 
 	protected val nodeDescriptor = NodeDescriptor(javaClass.packageName, INTEGRATION_NAME)
-	private val flowId by lazy { runBlocking { flowService.create(USER_ID_1, nodeDescriptor.name) }._id }
+	private val flowId by lazy { runBlocking { flowService.create(USER_ID_1, nodeDescriptor.name, WorkflowSettings()) }._id }
 	private fun flowNode(): Node = runBlocking {
 		nodeService.create(
 			flowId = flowId,

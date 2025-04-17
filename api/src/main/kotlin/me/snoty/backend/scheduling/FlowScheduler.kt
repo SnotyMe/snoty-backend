@@ -19,8 +19,12 @@ interface FlowScheduler {
 	 */
 	suspend fun scheduleMissing(flowService: FlowService)
 
+	suspend fun reschedule(workflow: Workflow)
+
 	fun deleteAll(workflow: Workflow)
 
 	fun jobId(workflow: Workflow): String = workflow._id
 	fun jobName(workflow: Workflow): String = workflow.run { "[${_id}] user=$userId flow=\"$name\"" }
 }
+
+val DEFAULT_FLOW_JOB_REQUEST = FlowJobRequest(triggeredBy = FlowTriggerReason.Scheduled)

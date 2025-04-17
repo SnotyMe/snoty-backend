@@ -1,24 +1,28 @@
 package me.snoty.backend.wiring.flow
 
+import kotlinx.serialization.json.Json
 import me.snoty.backend.database.sql.utils.UuidTable
 import me.snoty.backend.database.sql.utils.kotlinUuid
 import me.snoty.integration.common.wiring.flow.StandaloneWorkflow
+import me.snoty.integration.common.wiring.flow.WorkflowSettings
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.json.jsonb
 import org.koin.core.annotation.Single
 
-object FlowTable : UuidTable("flow") {
+@Single(binds = [Table::class])
+class FlowTable(json: Json) : UuidTable("flow") {
 	val userId = kotlinUuid("user_id")
 	val name = varchar("name", 255)
+	val settings = jsonb<WorkflowSettings>("settings", json).nullable() // nullable for backwards compatibility
 
-	fun selectStandalone() = FlowTable.select(id, userId, name)
+	val standaloneColumns = listOf(id, userId, name, settings)
+	fun selectStandalone() = select(standaloneColumns)
 }
 
-@Single(binds = [Table::class])
-fun provideFlowTable() = FlowTable
-
-fun ResultRow.toStandalone() = StandaloneWorkflow(
-	_id = this[FlowTable.id].value.toString(),
-	userId = this[FlowTable.userId],
-	name = this[FlowTable.name]
+fun ResultRow.toStandalone(flowTable: FlowTable) = StandaloneWorkflow(
+	_id = this[flowTable.id].value.toString(),
+	userId = this[flowTable.userId],
+	name = this[flowTable.name],
+	settings = this[flowTable.settings] ?: WorkflowSettings(),
 )

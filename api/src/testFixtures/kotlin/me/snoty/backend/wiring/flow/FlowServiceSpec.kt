@@ -16,6 +16,7 @@ import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.GenericNode
 import me.snoty.integration.common.wiring.StandaloneNode
 import me.snoty.integration.common.wiring.flow.FlowService
+import me.snoty.integration.common.wiring.flow.WorkflowSettings
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRegistry
@@ -45,7 +46,7 @@ abstract class FlowServiceSpec(private val makeId: () -> NodeId) {
 	)
 
 	private fun test(block: suspend FlowTestContext.() -> Unit) = runBlocking {
-		val flow = service.create(userId, "test")
+		val flow = service.create(userId, "test", WorkflowSettings())
 		block(FlowTestContext(flowId = flow._id))
 	}
 

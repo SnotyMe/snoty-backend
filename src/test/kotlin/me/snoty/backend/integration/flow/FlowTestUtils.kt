@@ -9,6 +9,7 @@ import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.NodeInput
+import me.snoty.integration.common.wiring.flow.WorkflowSettings
 import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeHandler
@@ -22,6 +23,7 @@ fun relationalFlow(
 	_id = randomString(),
 	userId = Uuid.randomV7(),
 	name = randomString(),
+	settings = WorkflowSettings(),
 	nodes = nodes.toList(),
 )
 
