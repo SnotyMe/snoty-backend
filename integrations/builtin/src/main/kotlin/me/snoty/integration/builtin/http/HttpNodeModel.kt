@@ -1,10 +1,11 @@
 package me.snoty.integration.builtin.http
 
-import io.ktor.client.HttpClient
+import io.ktor.client.*
 import kotlinx.serialization.Serializable
 import me.snoty.integration.common.model.metadata.FieldDefaultValue
 import me.snoty.integration.common.model.metadata.FieldDescription
 import me.snoty.integration.common.wiring.node.NodeSettings
+import org.bson.Document
 import io.ktor.http.HttpMethod as KtorHttpMethod
 
 enum class HttpNodeSerializer {
@@ -51,6 +52,7 @@ enum class HttpMethod {
 }
 
 data class HttpNodeOutput(
+	val url: String,
 	val statusCode: Int,
 	val headers: Map<String, String>,
 	/**
@@ -59,3 +61,12 @@ data class HttpNodeOutput(
 	 */
 	val body: Any,
 )
+
+fun HttpNodeOutput.toDocument() = Document().apply {
+	this[HttpNodeOutput::url.name] = url
+	this[HttpNodeOutput::statusCode.name] = statusCode
+	this[HttpNodeOutput::headers.name] = headers
+	// the body may be a Document or a String
+	// since bson uses static information to get codecs, it'll try looking up a `java.lang.Object` codec, which obviously doesn't exist
+	this[HttpNodeOutput::body.name] = body
+}

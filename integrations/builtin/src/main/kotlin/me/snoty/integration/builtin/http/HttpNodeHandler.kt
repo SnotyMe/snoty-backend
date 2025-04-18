@@ -55,13 +55,13 @@ class HttpNodeHandler(
 				HttpNodeSerializer.JSON -> Document.parse(bodyText, codecRegistry.get(Document::class.java))
 			}
 
-			Document(
-				mapOf<String, Any>(
-					HttpNodeOutput::statusCode.name to response.status.value,
-					HttpNodeOutput::headers.name to response.headers.flattenEntries().toMap(),
-					HttpNodeOutput::body.name to body,
-				)
-			)
+
+			HttpNodeOutput(
+				it.url,
+				response.status.value,
+				response.headers.flattenEntries().toMap(),
+				body,
+			).toDocument()
 		}
 
 		return output.map { BsonIntermediateData(it) }
