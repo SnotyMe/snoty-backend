@@ -1,8 +1,8 @@
 package me.snoty.backend.wiring.flow.export
 
-import me.snoty.backend.utils.bson.encode
-import me.snoty.backend.utils.bson.setRecursively
 import me.snoty.backend.integration.config.flow.NodeId
+import me.snoty.backend.utils.bson.encode
+import me.snoty.backend.utils.bson.setByPath
 import me.snoty.integration.common.model.metadata.NodeField
 import me.snoty.integration.common.model.metadata.NodeFieldDetails
 import me.snoty.integration.common.model.metadata.ObjectSchema
@@ -59,7 +59,7 @@ class FlowExportServiceImpl(
 			.filter(NodeField::censored)
 			.forEach { field ->
 				val pathKey = (parts + field.name).joinToString(".")
-				this.setRecursively(pathKey, CensoredField(default = field.defaultValue))
+				this.setByPath(pathKey, CensoredField(default = field.defaultValue))
 			}
 
 		fields
