@@ -21,7 +21,7 @@ abstract class MapperEngineTest(val engine: MapperEngine) {
 	}
 
 	@Test
-	fun list() {
+	fun shouldHandleListIndexes() {
 		val output = engine.template(logger, settings("my.key[0]" to "value", "my.key[1]" to "value2"), Document())
 
 		assertTrue(output.containsKey("my"))
@@ -32,9 +32,9 @@ abstract class MapperEngineTest(val engine: MapperEngine) {
 		assertEquals("value", keyList[0])
 		assertEquals("value2", keyList[1])
 
-		val output2 = engine.template(logger, settings("key[0]" to "value", "key[1]" to "value2"), Document())
+		val output2 = engine.template(logger, settings("my_-key[0]" to "value", "my_-key[1]" to "value2"), Document())
 		assertTrue(output2.containsKey("key"))
-		val keyList2 = output2.get("key", List::class.java)
+		val keyList2 = output2.get("my_-key", List::class.java)
 		assertEquals(2, keyList2.size)
 		assertEquals("value", keyList2[0])
 		assertEquals("value2", keyList2[1])
@@ -44,6 +44,15 @@ abstract class MapperEngineTest(val engine: MapperEngine) {
 		val keyList3 = output3.get("key", List::class.java)
 		assertEquals("value3", keyList3[3])
 		assertEquals("value1", keyList3[1])
+	}
+
+	@Test
+	fun shouldNotHandleEscapedListIndexes() {
+		val output = engine.template(logger, settings("my.key\\[0]" to "value", "my.key\\[1]" to "value2"), Document())
+		assertTrue(output.containsKey("my"))
+		val subdoc = output.get("my", Document::class.java)
+		assertEquals("value", subdoc["key\\[0]"])
+		assertEquals("value2", subdoc["key\\[1]"])
 	}
 
 	class Liquid : MapperEngineTest(MapperEngine.LIQUID) {

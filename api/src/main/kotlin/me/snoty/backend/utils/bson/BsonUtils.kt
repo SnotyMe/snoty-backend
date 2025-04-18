@@ -53,16 +53,16 @@ fun Document.setRecursively(key: String, value: Any?) {
 
 	val lastPart = parts.last()
 	when {
-		// array index
-		lastPart.matches("\\w+\\[\\d+]".toRegex())
+		// array index -> matches "key[index]" but not "key\[index]"
+		lastPart.matches("^.*[^\\\\]\\[\\d+]$".toRegex())
 			-> lastParent.setListIndex(lastPart, value)
 		else -> lastParent[lastPart] = value
 	}
 }
 
 private fun Document.setListIndex(specifier: String, value: Any?) {
-	val key = specifier.substringBefore("[")
-	val index = specifier.substringAfter("[").substringBefore("]").toInt()
+	val key = specifier.substringBeforeLast("[")
+	val index = specifier.substringAfterLast("[").substringBefore("]").toInt()
 	val list = when {
 		containsKey(key) -> getList(key, Any::class.java)
 		else -> {
