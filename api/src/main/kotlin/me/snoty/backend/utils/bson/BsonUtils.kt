@@ -46,46 +46,64 @@ fun Document.getIdAsString(): String? = when (val id = get("id")) {
 }
 
 fun Document.setRecursively(key: String, value: Any?) {
-	val parts = key.split(".")
-	if (parts.isEmpty()) throw IllegalArgumentException("Key must not be empty")
+    val parts = key.split(".")
+    if (parts.isEmpty()) throw IllegalArgumentException("Key must not be empty")
 
-	val lastParent = getLastParent(parts)
+    var current: Any = this
 
-	val lastPart = parts.last()
-	when {
-		// array index -> matches "key[index]" but not "key\[index]"
-		lastPart.matches("^.*[^\\\\]\\[\\d+]$".toRegex())
-			-> lastParent.setListIndex(lastPart, value)
-		else -> lastParent[lastPart] = value
-	}
+    for (i in parts.indices) {
+        val part = parts[i]
+        val isLast = i == parts.lastIndex
+
+	    current = when {
+		    part.matches("^.*[^\\\\]\\[\\d+]$".toRegex()) -> current.handleList(part, isLast, value)
+		    else -> current.handleRegularKey(part, isLast, value)
+	    }
+    }
 }
 
-private fun Document.setListIndex(specifier: String, value: Any?) {
-	val key = specifier.substringBeforeLast("[")
-	val index = specifier.substringAfterLast("[").substringBefore("]").toInt()
-	val list = when {
-		containsKey(key) -> getList(key, Any::class.java)
-		else -> {
-			val newList = mutableListOf<Any?>()
-			this[key] = newList
-			newList
-		}
+private fun Any.handleRegularKey(part: String, isLast: Boolean, value: Any?): Any {
+	if (this !is Document) {
+		throw IllegalArgumentException("Expected a Document at '$part', but found: ${this::class.simpleName}")
 	}
 
-	if (index >= list.size) {
-		// list containing nulls until the specified index
-		val fillerList = List(index - list.size) { null }
-		list.addAll(fillerList)
-		list.add(value)
+	return if (isLast) {
+		this[part] = value
+		this
 	} else {
-		list[index] = value
+		this.getOrPut(part) { Document() }
 	}
 }
 
-private fun Document.getLastParent(parts: List<String>): Document = parts
-	.dropLast(1)
-	.fold(this) { acc, part ->
-		val next = acc[part] as? Document ?: Document()
-		acc[part] = next
-		next
+private fun Any.handleList(part: String, isLast: Boolean, value: Any?): Any {
+	val key = part.substringBeforeLast("[")
+	val index = part.substringAfterLast("[").substringBefore("]").toInt()
+
+	@Suppress("UNCHECKED_CAST")
+	val list = when (this) {
+		is Document -> this.getOrPut(key) { mutableListOf<Any?>() }
+		is MutableList<*> -> this
+		else -> throw IllegalArgumentException("Expected a Document or List at '$part', but found: ${this::class.simpleName}")
+	} as MutableList<Any?>
+
+	while (index >= list.size) {
+		list.add(null)
 	}
+
+	return if (isLast) {
+		list[index] = value
+		list
+	} else {
+		when {
+			list[index] == null -> list[index] = Document()
+			list[index] != null && list[index] !is Document ->
+				throw IllegalArgumentException("Expected a Document at '$part[$index]', but found: ${list[index]!!::class.simpleName}")
+		}
+
+		list[index]!!
+	}
+}
+
+private fun Document.getOrPut(key: String, defaultValue: () -> Any): Any {
+    return this[key] ?: defaultValue().also { this[key] = it }
+}

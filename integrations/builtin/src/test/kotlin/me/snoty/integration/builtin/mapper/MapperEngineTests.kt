@@ -15,9 +15,12 @@ abstract class MapperEngineTest(val engine: MapperEngine) {
 	abstract fun dotToMap()
 
 	@Test
-	fun map() {
+	fun shouldHandleNestedIndexes() {
 		val output = engine.template(logger, settings("my.key" to "value"), Document())
 		assertEquals(Document("my", Document("key", "value")), output)
+
+		val output2 = engine.template(logger, settings("my.sub.key" to "value"), Document())
+		assertEquals(Document("my", Document("sub", Document("key", "value"))), output2)
 	}
 
 	@Test
@@ -33,17 +36,38 @@ abstract class MapperEngineTest(val engine: MapperEngine) {
 		assertEquals("value2", keyList[1])
 
 		val output2 = engine.template(logger, settings("my_-key[0]" to "value", "my_-key[1]" to "value2"), Document())
-		assertTrue(output2.containsKey("key"))
-		val keyList2 = output2.get("my_-key", List::class.java)
-		assertEquals(2, keyList2.size)
-		assertEquals("value", keyList2[0])
-		assertEquals("value2", keyList2[1])
+		assertEquals(
+			Document("my_-key", listOf("value", "value2")),
+			output2
+		)
 
 		val output3 = engine.template(logger, settings("key[3]" to "value3", "key[1]" to "value1"), Document())
-		assertTrue(output3.containsKey("key"))
-		val keyList3 = output3.get("key", List::class.java)
-		assertEquals("value3", keyList3[3])
-		assertEquals("value1", keyList3[1])
+		assertEquals(
+			Document("key", listOf(null, "value1", null, "value3")),
+			output3
+		)
+	}
+
+	@Test
+	fun shouldHandleNestedListIndexes() {
+		val output = engine.template(logger, settings("my.key[0].first" to "value", "my.key[0].second" to "value2"), Document())
+		assertEquals(
+			Document("my", Document("key", listOf(Document(mapOf(
+				"first" to "value",
+				"second" to "value2"
+			))))),
+			output
+		)
+	}
+
+	@Test
+	fun shouldHandleDoubleNestedListIndexes() {
+		val output2 = engine.template(logger, settings("my.key[0].key2[0]" to "value", "my.key[1].key2[1]" to "value2"), Document())
+
+		assertEquals(
+			Document("my", Document("key", listOf(Document("key2", listOf("value")), Document("key2", listOf(null, "value2"))))),
+			output2
+		)
 	}
 
 	@Test
