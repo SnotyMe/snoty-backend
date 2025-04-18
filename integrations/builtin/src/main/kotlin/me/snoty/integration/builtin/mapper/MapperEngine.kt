@@ -1,7 +1,7 @@
 package me.snoty.integration.builtin.mapper
 
 import liqp.TemplateParser
-import me.snoty.backend.utils.bson.setRecursively
+import me.snoty.backend.utils.bson.setByPath
 import me.snoty.integration.builtin.mapper.filter.FormatFilter
 import me.snoty.integration.builtin.mapper.filter.UniDiffFilter
 import me.snoty.integration.common.model.metadata.DisplayName
@@ -18,7 +18,7 @@ enum class MapperEngine(private val templater: Templater) {
 				result = result.replace("%${field.key}%", field.value.toString())
 			}
 
-			mappedData.setRecursively(key, result.trim())
+			mappedData.setByPath(key, result.trim())
 		}
 
 		mappedData
@@ -35,7 +35,7 @@ enum class MapperEngine(private val templater: Templater) {
 			val template = templateParser.parse(value)
 			val rendered = template.render(data).trim()
 
-			mappedData.setRecursively(key, rendered)
+			mappedData.setByPath(key, rendered)
 		}
 
 		mappedData
