@@ -15,6 +15,27 @@ abstract class MapperEngineTest(val engine: MapperEngine) {
 	abstract fun dotToMap()
 
 	@Test
+	fun shouldHandleEscaping() {
+		val output = engine.template(logger, settings("my.key\\.value" to "value"), Document())
+		assertEquals(
+			Document("my", Document("key.value", "value")),
+			output
+		)
+
+		val output2 = engine.template(logger, settings("my.key\\[0]" to "value"), Document())
+		assertEquals(
+			Document("my", Document("key[0]", "value")),
+			output2
+		)
+
+		val output3 = engine.template(logger, settings("my.key\\\\[0]" to "value"), Document())
+		assertEquals(
+			Document("my", Document("key\\", listOf("value"))),
+			output3
+		)
+	}
+
+	@Test
 	fun shouldHandleNestedIndexes() {
 		val output = engine.template(logger, settings("my.key" to "value"), Document())
 		assertEquals(Document("my", Document("key", "value")), output)
@@ -73,10 +94,39 @@ abstract class MapperEngineTest(val engine: MapperEngine) {
 	@Test
 	fun shouldNotHandleEscapedListIndexes() {
 		val output = engine.template(logger, settings("my.key\\[0]" to "value", "my.key\\[1]" to "value2"), Document())
-		assertTrue(output.containsKey("my"))
-		val subdoc = output.get("my", Document::class.java)
-		assertEquals("value", subdoc["key\\[0]"])
-		assertEquals("value2", subdoc["key\\[1]"])
+		assertEquals(
+			Document("my", Document("key[0]", "value").append("key[1]", "value2")),
+			output
+		)
+
+		val output2 = engine.template(logger, settings("my-key\\[0]" to "value", "my-key\\[1]" to "value2"), Document())
+		assertEquals(
+			Document("my-key[0]", "value").append("my-key[1]", "value2"),
+			output2
+		)
+	}
+
+	@Test
+	fun shouldHandleListIndexesWithSpecialCharacters() {
+		listOf(
+			"my_-key[3]",
+			"my_-\\[key[3]",
+			"my-----key[3]",
+			"my----key[[3]",
+			"my-hello[3]",
+			"e[3]",
+		).forEach {
+			val output = engine.template(logger, settings(it to "value"), Document())
+			assertEquals(
+				Document(
+					it.substringBeforeLast("[")
+						// escaped characters obviously do not contain the `\` any longer
+						.replace("\\", ""),
+					listOf(null, null, null, "value")
+				),
+				output
+			)
+		}
 	}
 
 	class Liquid : MapperEngineTest(MapperEngine.LIQUID) {

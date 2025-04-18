@@ -45,18 +45,24 @@ fun Document.getIdAsString(): String? = when (val id = get("id")) {
 	else -> throw IllegalArgumentException("Unsupported id type: $id")
 }
 
+private val UNESCAPED_DOT_REGEX = """(?<!\\)\.""".toRegex()
+private val ESCAPE_REGEX = """\\(.)""".toRegex()
+private val ARRAY_INDEX_REGEX = """^.*(?:[^\\]|\\\\)\[\d+]$""".toRegex()
+
 fun Document.setRecursively(key: String, value: Any?) {
-    val parts = key.split(".")
+	val parts = key.split(UNESCAPED_DOT_REGEX)
     if (parts.isEmpty()) throw IllegalArgumentException("Key must not be empty")
 
     var current: Any = this
 
     for (i in parts.indices) {
-        val part = parts[i]
+		// process escapes - `\[` => `[`
+	    val part = parts[i].replace(ESCAPE_REGEX, "$1")
         val isLast = i == parts.lastIndex
-
 	    current = when {
-		    part.matches("^.*[^\\\\]\\[\\d+]$".toRegex()) -> current.handleList(part, isLast, value)
+			// use parts[i] to avoid double escape (`\[` in the part would be replaced by just `[`, resulting in a false positive)
+			// however, `\\[` should match too, therefore, `\\` is an alternative to the `[^\\]`
+		    parts[i].matches(ARRAY_INDEX_REGEX) -> current.handleList(part, isLast, value)
 		    else -> current.handleRegularKey(part, isLast, value)
 	    }
     }
