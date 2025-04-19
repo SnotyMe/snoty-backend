@@ -2,6 +2,7 @@ package me.snoty.backend.scheduling.jobrunr.node
 
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.slf4j.MDCContext
+import kotlinx.coroutines.withContext
 import me.snoty.backend.integration.flow.logging.NodeLogAppender
 import me.snoty.backend.logging.KMDC
 import me.snoty.backend.observability.APPENDER_LOG_LEVEL
@@ -50,16 +51,18 @@ class JobRunrFlowJobHandler(
 
 			KMDC.put(USER_ID, flow.userId.toString())
 
-			logger.debug("Processing flow {}", flow)
+			withContext(MDCContext()) {
+				logger.debug("Processing flow {}", flow)
 
-			flowRunner.execute(
-				jobId = jobContext.jobId.toString(),
-				triggeredBy = jobRequest.triggeredBy,
-				logger = logger,
-				logLevel = jobRequest.logLevel,
-				flow = flow,
-				input = SimpleIntermediateData(jobContext),
-			)
+				flowRunner.execute(
+					jobId = jobContext.jobId.toString(),
+					triggeredBy = jobRequest.triggeredBy,
+					logger = logger,
+					logLevel = jobRequest.logLevel,
+					flow = flow,
+					input = SimpleIntermediateData(jobContext),
+				)
+			}
 		}
 	}
 }

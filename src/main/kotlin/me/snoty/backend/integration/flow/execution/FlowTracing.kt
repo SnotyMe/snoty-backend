@@ -32,9 +32,11 @@ class FlowTracingImpl(
 		val flowId = flow._id
 
 		val rootSpan = spanBuilder("Flow $flowId")
+			.setAttribute(USER_ID, flow.userId)
 			.setAttribute(JOB_ID, jobId)
 			.setAttribute(FLOW_ID, flowId)
 			.startSpan()
+		KMDC.put(USER_ID, flow._id)
 
 		return rootSpan
 	}
@@ -43,8 +45,6 @@ class FlowTracingImpl(
 		setAttribute(NODE_ID, node._id)
 		KMDC.put(NODE_ID, node._id)
 		setAttribute("node.descriptor", node.descriptor)
-		setAttribute(USER_ID, node.userId)
-		KMDC.put(USER_ID, node.userId.toString())
 
 		if (featureFlags.traceConfig) {
 			setAttribute("config", json.encodeToString(node.settings))

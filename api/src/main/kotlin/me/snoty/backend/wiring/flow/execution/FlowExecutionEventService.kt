@@ -7,14 +7,17 @@ import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
 import me.snoty.integration.common.wiring.flow.NodeLogEntry
+import kotlin.uuid.Uuid
 
 @Serializable
-sealed class FlowExecutionEvent(@Transient val eventType: String) {
+sealed class FlowExecutionEvent(val eventType: String) {
+	abstract val userId: Uuid
 	abstract val flowId: NodeId
 	val timestamp = Clock.System.now()
 	
 	@Serializable
 	data class FlowStartedEvent(
+		override val userId: Uuid,
 		override val flowId: String,
 		val jobId: String,
 		val triggeredBy: FlowTriggerReason,
@@ -22,6 +25,7 @@ sealed class FlowExecutionEvent(@Transient val eventType: String) {
 	
 	@Serializable
 	data class FlowLogEvent(
+		override val userId: Uuid,
 		override val flowId: String,
 		val jobId: String,
 		val entry: NodeLogEntry,
@@ -29,6 +33,7 @@ sealed class FlowExecutionEvent(@Transient val eventType: String) {
 
 	@Serializable
 	data class FlowEndedEvent(
+		override val userId: Uuid,
 		override val flowId: String,
 		val jobId: String,
 		val status: FlowExecutionStatus,

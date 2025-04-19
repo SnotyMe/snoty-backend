@@ -51,6 +51,7 @@ class FlowRunnerImpl(
 		flowExecutionService.create(jobId, flow._id, triggeredBy)
 
 		flowExecutionEventService.offer(FlowExecutionEvent.FlowStartedEvent(
+			userId = flow.userId,
 			flowId = flow._id,
 			jobId = jobId,
 			triggeredBy = triggeredBy,
@@ -78,6 +79,7 @@ class FlowRunnerImpl(
 				rootSpan.end()
 				val status = if (it == null) FlowExecutionStatus.SUCCESS else FlowExecutionStatus.FAILED
 				flowExecutionEventService.offer(FlowExecutionEvent.FlowEndedEvent(
+					userId = flow.userId,
 					flowId = flow._id,
 					jobId = jobId,
 					status = status,
