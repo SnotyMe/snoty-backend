@@ -5,7 +5,15 @@ import org.koin.core.module.Module
 import kotlin.reflect.KClass
 
 interface NodeHandlerContributor {
-	val metadata: NodeMetadata
+	@Deprecated("Use NodeHandlerContributor.metadataV2 instead")
+	val metadata: NodeMetadata?
+		get() = null
+
+	val metadataV2: String?
+		get() = null
+	val settingsClass: KClass<out NodeSettings>?
+		get() = null
+
 	val nodeHandlerClass: KClass<out NodeHandler>
 	val koinModules: List<Module>
 }

@@ -16,14 +16,10 @@ import org.koin.core.annotation.Module
 
 class NodeKoinModulesProcessor(private val logger: KSPLogger, private val codeGenerator: CodeGenerator) : SymbolProcessor {
 	override fun process(resolver: Resolver): List<KSAnnotated> {
-		resolver.getSymbolsWithAnnotation(Module::class.qualifiedName!!)
-			.toList()
-			.ifEmpty {
-				resolver.getSymbolsWithAnnotation(RegisterNode::class.qualifiedName!!)
-					.filterIsInstance<KSClassDeclaration>()
-					.forEach { processClass(it) }
-			}
-
+		// no filtering is done as the `Module` filter would only detect stuff from the last round
+		resolver.getSymbolsWithAnnotation(RegisterNode::class.qualifiedName!!)
+			.filterIsInstance<KSClassDeclaration>()
+			.forEach { processClass(it) }
 
 		return emptyList()
 	}
@@ -46,12 +42,14 @@ class NodeKoinModulesProcessor(private val logger: KSPLogger, private val codeGe
 			.addType(defaultModule)
 			.build()
 
-		fileSpec
-			.writeTo(
-				codeGenerator = codeGenerator,
-				aggregating = false,
-				originatingKSFiles = listOf(clazz.containingFile!!)
-			)
+		try {
+			fileSpec
+				.writeTo(
+					codeGenerator = codeGenerator,
+					aggregating = false,
+					originatingKSFiles = listOf(clazz.containingFile!!)
+				)
+		} catch (_: FileAlreadyExistsException) {}
 	}
 
 

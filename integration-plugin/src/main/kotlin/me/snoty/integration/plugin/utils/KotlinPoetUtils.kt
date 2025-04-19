@@ -8,3 +8,7 @@ fun PropertySpec.override() = toBuilder()
 		modifiers -= KModifier.ABSTRACT
 		modifiers += KModifier.OVERRIDE
 	}
+
+fun PropertySpec.Builder.removeModifiers(vararg modifiers: KModifier) = apply {
+	this.modifiers -= modifiers
+}

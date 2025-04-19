@@ -8,6 +8,8 @@ import me.snoty.backend.config.ConfigWrapper
 import me.snoty.backend.featureflags.FeatureFlagBoolean
 import me.snoty.backend.featureflags.FeatureFlagsContainer
 import me.snoty.backend.utils.simpleClassName
+import me.snoty.backend.wiring.node.metadataJson
+import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeHandlerContributor
 import me.snoty.integration.common.wiring.node.NodeRegistry
@@ -36,25 +38,39 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 
 	val nodeRegistry: NodeRegistry by koin.inject()
 
+	data class NodeHandlerContributorData(
+		val contributor: NodeHandlerContributor,
+		val metadata: NodeMetadata,
+		val scope: Scope
+	)
+
 	/**
 	 * Stage 1: loading all Koin DI modules
 	 */
-	private fun loadKoinModules(): List<Pair<NodeHandlerContributor, Scope>> {
+	private fun loadKoinModules(): List<NodeHandlerContributorData> {
 		val loader = ServiceLoader.load(NodeHandlerContributor::class.java)
 		return loader.map { contributor ->
-			val scopeName = contributor.metadata.descriptor.scope
+			@Suppress("DEPRECATION") // still used for backwards compatibility
+			val metadata =
+				contributor.metadataV2
+					?.let { metadataJson.decodeFromString<NodeMetadata>(it) }
+					?.copy(settingsClass = contributor.settingsClass!!)
+				?: contributor.metadata
+				?: throw IllegalStateException("NodeHandlerContributor ${contributor.javaClass.simpleName} has no metadata")
+
+			val scopeName = metadata.descriptor.scope
 			val scope = koin.getOrCreateScope(scopeName.value, scopeName)
 			
 			logger.trace { "Loading modules for $scopeName..." }
 			koin.loadModules(listOf(module {
 				includes(contributor.koinModules)
 				scope(scope.scopeQualifier) {
-					scoped { contributor.metadata }
-					scoped { contributor.metadata.descriptor }
+					scoped { metadata }
+					scoped { metadata.descriptor }
 				}
 			}))
 			
-			contributor to scope
+			NodeHandlerContributorData(contributor, metadata, scope)
 		}
 	}
 
@@ -62,15 +78,15 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 	 * Stage 2: creating the NodeHandler instances and registering them
 	 * This will initialize non-eager services needed. Since all modules are registered, all Koin declarations should be available.
 	 */
-	private fun registerNodeHandler(contributor: NodeHandlerContributor, scope: Scope) = runCatching {
+	private fun registerNodeHandler(contributor: NodeHandlerContributor, metadata: NodeMetadata, scope: Scope) = runCatching {
 		logger.trace { "Adding from ${contributor.javaClass.simpleName}..." }
 
 		val handler: NodeHandler = scope.get(
 			clazz = contributor.nodeHandlerClass,
-			parameters = { parametersOf(contributor.metadata, contributor.metadata.descriptor) }
+			parameters = { parametersOf(metadata, metadata.descriptor) }
 		)
-		nodeRegistry.registerHandler(contributor.metadata, handler)
-		logger.info { "Successfully enabled ${contributor.metadata.descriptor.id}!" }
+		nodeRegistry.registerHandler(metadata, handler)
+		logger.info { "Successfully enabled ${metadata.descriptor.id}!" }
 	}
 
 	fun loadAndRegisterNodeHandlers() {
@@ -80,11 +96,11 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 		logger.debug { "Loaded ${nodeHandlerContributors.size} extension modules." }
 
 		logger.debug { "Registering node handlers..." }
-		val result = nodeHandlerContributors.map { (contributor, scope) ->
-			registerNodeHandler(contributor, scope)
+		val result = nodeHandlerContributors.map { (contributor, metadata, scope) ->
+			registerNodeHandler(contributor, metadata, scope)
 				.onFailure { ex ->
 					val exception = prettify(ex)
-					val isFatal = reportStartupFailure(contributor, exception)
+					val isFatal = reportStartupFailure(metadata, exception)
 
 					if (isFatal && featureFlags.crashOnStartupFailure) {
 						throw exception
@@ -104,8 +120,8 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 		else -> e
 	}
 
-	private fun reportStartupFailure(contributor: NodeHandlerContributor, exception: Throwable?): Boolean {
-		val nodeName = contributor.metadata.descriptor.id
+	private fun reportStartupFailure(metadata: NodeMetadata, exception: Throwable?): Boolean {
+		val nodeName = metadata.descriptor.id
 		if (exception is ConfigException) {
 			var fatal: Boolean? = false
 			when (val fail = exception.fail) {

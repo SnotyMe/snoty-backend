@@ -7,12 +7,11 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.ksp.writeTo
-import me.snoty.backend.utils.orNull
+import me.snoty.backend.wiring.node.metadataJson
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.metadata.NodeMetadata
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings
-import me.snoty.integration.plugin.utils.addDataClassInitializer
+import me.snoty.integration.plugin.utils.descriptor
 import me.snoty.integration.plugin.utils.generateObjectSchema
 import me.snoty.integration.plugin.utils.resolveClassFromAnnotation
 
@@ -40,7 +39,7 @@ class NodeMetadataProcessor(private val logger: KSPLogger, private val codeGener
 		val outputClass = resolver.resolveClassFromAnnotation(clazz, RegisterNode::outputType)
 
 		val metadata = NodeMetadata(
-			descriptor = NodeDescriptor(namespace = node.namespace.orNull() ?: clazz.packageName.asString(), name = node.name),
+			descriptor = node.descriptor(clazz),
 			displayName = node.displayName,
 			position = node.position,
 			settingsClass = NodeSettings::class,
@@ -50,11 +49,10 @@ class NodeMetadataProcessor(private val logger: KSPLogger, private val codeGener
 		)
 
 		val fileSpec = FileSpec.scriptBuilder("${clazz.simpleName.asString()}Metadata", clazz.packageName.asString())
-			.addCode("internal val $NODE_METADATA = %T(\n", NodeMetadata::class)
-			.addDataClassInitializer(metadata, replacements = mapOf(
-				NodeMetadata::settingsClass.name to "${settingsClass.simpleName.asString()}::class",
-			))
-			.addCode(")\n")
+			.addCode(
+				"internal val $NODE_METADATA = %S",
+				metadataJson.encodeToString(metadata)
+			)
 			.build()
 
 		fileSpec

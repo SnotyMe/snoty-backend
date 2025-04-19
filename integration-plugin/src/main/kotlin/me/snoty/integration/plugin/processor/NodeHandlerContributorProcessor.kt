@@ -8,16 +8,13 @@ import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ksp.toClassName
-import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 import com.squareup.kotlinpoet.metadata.specs.toTypeSpec
 import me.snoty.integration.common.annotation.RegisterNode
-import me.snoty.integration.common.model.metadata.NodeMetadata
+import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeHandlerContributor
 import me.snoty.integration.common.wiring.node.template.NodeTemplateUtils
-import me.snoty.integration.plugin.utils.getAnnotation
-import me.snoty.integration.plugin.utils.getMemberName
-import me.snoty.integration.plugin.utils.override
+import me.snoty.integration.plugin.utils.*
 import org.koin.core.annotation.Single
 
 class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGenerator: CodeGenerator) : SymbolProcessor {
@@ -44,13 +41,13 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 				resolver.getDeclarationsFromPackage(it.packageName.asString())
 					.filterIsInstance<KSPropertyDeclaration>()
 					.any { declaration ->
-						declaration.type.toTypeName() == NodeMetadata::class.asTypeName()
+						declaration.simpleName.getShortName() == NodeMetadataProcessor.NODE_METADATA
 					}
 			}
 
 		ready
 			.forEach {
-				val processResult = processClass(it)
+				val processResult = processClass(resolver, it)
 				allProcessingResults.add(processResult)
 			}
 
@@ -80,7 +77,7 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 
 	data class ProcessResult(val contributorClassName: ClassName, val containingFile: KSFile)
 
-	private fun processClass(clazz: KSClassDeclaration): ProcessResult {
+	private fun processClass(resolver: Resolver, clazz: KSClassDeclaration): ProcessResult {
 		val contributorClassName = contributorName(clazz)
 
 		val classBuilder = TypeSpec.classBuilder(contributorClassName)
@@ -88,8 +85,20 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 
 		val contributorSpec = NodeHandlerContributor::class.toTypeSpec(lenient = true)
 
+		val registerNode = clazz.getAnnotation<RegisterNode>()!!
+		val nodeMetadata = registerNode.descriptor(clazz)
 		classBuilder
 			.addSuperinterface(NodeHandlerContributor::class)
+			.addProperty(
+				PropertySpec.builder("descriptor", NodeDescriptor::class)
+					.initializer(
+						"%T(%S, %S)",
+						NodeDescriptor::class,
+						nodeMetadata.namespace,
+						nodeMetadata.name,
+					)
+					.build()
+			)
 			.addProperty(
 				contributorSpec
 					.propertySpecs
@@ -101,9 +110,19 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 			.addProperty(
 				contributorSpec
 					.propertySpecs
-					.single { it.name == NodeHandlerContributor::metadata.name }
+					.single { it.name == NodeHandlerContributor::metadataV2.name }
 					.override()
 					.initializer(NodeMetadataProcessor.NODE_METADATA)
+					.removeModifiers(KModifier.OPEN) // w: 'open' has no effect on a final class
+					.build()
+			)
+			.addProperty(
+				contributorSpec
+					.propertySpecs
+					.single { it.name == NodeHandlerContributor::settingsClass.name }
+					.override()
+					.initializer("%T::class", resolver.resolveClassFromAnnotation(clazz, RegisterNode::settingsType).toClassName())
+					.removeModifiers(KModifier.OPEN) // w: 'open' has no effect on a final class
 					.build()
 			)
 			.addProperty(
@@ -145,8 +164,9 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 				.add("%M,\n", MemberName("org.koin.ksp.generated", "defaultModule"))
 				.addModule(getGeneratedModule(clazz))
 				.add(
-					"%M(${NodeMetadataProcessor.NODE_METADATA}.${NodeMetadata::descriptor.name}),\n",
+					"%M(%N),\n",
 					NodeTemplateUtils::nodeTemplatesModule.getMemberName<NodeTemplateUtils>(),
+					"descriptor",
 				)
 				.add(")")
 				.build()
