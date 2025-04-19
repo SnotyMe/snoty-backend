@@ -12,4 +12,5 @@ val metadataJson = Json {
 	coerceInputValues = true
 	explicitNulls = true
 	allowTrailingComma = true
+	prettyPrint = true
 }
