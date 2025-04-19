@@ -8,6 +8,11 @@
     {
       "updateTypes": ["patch"],
       "enabled": false
+    },
+    {
+      "matchFileNames": ["infra/monitoring/**"],
+      "matchUpdateTypes": ["minor"],
+      "enabled": false
     }
   ]
 }
