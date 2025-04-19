@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.json.JsonClassDiscriminator
 import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings
 import kotlin.reflect.KClass
@@ -17,7 +16,7 @@ data class NodeMetadata(
 	val position: NodePosition,
 	val settings: ObjectSchema,
 	@Transient
-	val settingsClass: KClass<out NodeSettings> = EmptyNodeSettings::class, // previously threw an error, but since we deserialize this AND remain compatible, we need to keep this
+	val settingsClass: KClass<out NodeSettings> = NodeSettings::class, // previously threw an error, but since we deserialize this AND remain compatible, we need to keep this
 	val input: ObjectSchema?,
 	val output: ObjectSchema?
 )
