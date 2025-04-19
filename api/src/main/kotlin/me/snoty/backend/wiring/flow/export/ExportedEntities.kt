@@ -2,6 +2,7 @@ package me.snoty.backend.wiring.flow.export
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import me.snoty.integration.common.wiring.flow.WorkflowSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import org.bson.Document
 
@@ -9,6 +10,7 @@ import org.bson.Document
 data class ExportedFlow(
 	val version: String,
 	val templateName: String,
+	val settings: WorkflowSettings,
 	val nodes: List<ExportedNode>,
 )
 

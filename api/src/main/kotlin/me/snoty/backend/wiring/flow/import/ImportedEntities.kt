@@ -2,12 +2,14 @@ package me.snoty.backend.wiring.flow.import
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import me.snoty.integration.common.wiring.flow.WorkflowSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import org.bson.Document
 
 @Serializable
 data class ImportFlow(
 	val name: String,
+	val settings: WorkflowSettings = WorkflowSettings(), // added in 1.1
 	val nodes: List<ImportNode>,
 )
 

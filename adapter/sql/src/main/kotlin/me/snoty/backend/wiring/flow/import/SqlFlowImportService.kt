@@ -7,7 +7,6 @@ import me.snoty.backend.wiring.node.NodeConnectionTable
 import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
 import me.snoty.backend.wiring.node.SqlNodeService
 import me.snoty.integration.common.wiring.flow.FlowService
-import me.snoty.integration.common.wiring.flow.WorkflowSettings
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.batchInsert
 import org.koin.core.annotation.Single
@@ -22,7 +21,7 @@ class SqlFlowImportService(
 	private val nodeSettingsDeserializationService: NodeSettingsDeserializationService,
 ) : FlowImportService {
 	override suspend fun import(userId: Uuid, flow: ImportFlow): NodeId = db.newSuspendedTransaction {
-		val createdFlow = flowService.create(userId, flow.name, WorkflowSettings())
+		val createdFlow = flowService.create(userId, flow.name, flow.settings)
 
 		val createdNodes = flow.nodes.associate {
 			it.id to nodeService.create(

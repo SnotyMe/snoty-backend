@@ -8,7 +8,6 @@ import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.wiring.node.MongoNode
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.flow.NODE_COLLECTION_NAME
-import me.snoty.integration.common.wiring.flow.WorkflowSettings
 import org.bson.types.ObjectId
 import org.koin.core.annotation.Single
 import kotlin.uuid.Uuid
@@ -21,7 +20,7 @@ class MongoFlowImportService(
 	private val nodeCollection = db.getCollection<MongoNode>(NODE_COLLECTION_NAME)
 
 	override suspend fun import(userId: Uuid, flow: ImportFlow): NodeId {
-		val createdFlow = flowService.create(userId, flow.name, WorkflowSettings())
+		val createdFlow = flowService.create(userId, flow.name, flow.settings)
 		val createdFlowId = ObjectId(createdFlow._id)
 
 		val nodesToInsert = flow.nodes.map {
