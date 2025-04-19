@@ -3,6 +3,7 @@ package me.snoty.backend.wiring.flow.import
 import me.snoty.backend.database.sql.newSuspendedTransaction
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.utils.toUuid
+import me.snoty.backend.wiring.flow.ImportFlow
 import me.snoty.backend.wiring.node.NodeConnectionTable
 import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
 import me.snoty.backend.wiring.node.SqlNodeService

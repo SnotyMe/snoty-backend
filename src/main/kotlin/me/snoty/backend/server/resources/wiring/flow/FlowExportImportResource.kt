@@ -6,9 +6,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import me.snoty.backend.utils.getUser
+import me.snoty.backend.wiring.flow.ImportFlow
 import me.snoty.backend.wiring.flow.export.FlowExportService
 import me.snoty.backend.wiring.flow.import.FlowImportService
-import me.snoty.backend.wiring.flow.import.ImportFlow
 import org.koin.ktor.ext.get
 
 fun Route.flowExportImportResource() {
@@ -51,6 +51,6 @@ fun Route.flowExportImportResource() {
 		val imported: ImportFlow = call.receive()
 		val createdId = importService.import(user.id, imported)
 
-		call.respondText(text = createdId.toString(), status = HttpStatusCode.OK)
+		call.respondText(text = createdId, status = HttpStatusCode.OK)
 	}
 }
