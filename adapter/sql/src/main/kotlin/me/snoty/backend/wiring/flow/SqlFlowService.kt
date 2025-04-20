@@ -28,6 +28,7 @@ class SqlFlowService(
 		val id = flowTable.insertAndGetId {
 			it[flowTable.userId] = userId
 			it[flowTable.name] = name
+			it[flowTable.settings] = settings
 		}
 
 		StandaloneWorkflow(_id = id.value.toString(), userId = userId, name = name, settings = settings)
