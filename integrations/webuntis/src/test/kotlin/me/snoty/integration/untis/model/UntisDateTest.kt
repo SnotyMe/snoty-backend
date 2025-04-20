@@ -1,7 +1,6 @@
 package me.snoty.integration.untis.model
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import me.snoty.backend.utils.DateParseException
 import me.snoty.integration.untis.model.UntisDateTest.DateWrapper.Companion.decode

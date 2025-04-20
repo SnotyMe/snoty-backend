@@ -4,6 +4,4 @@ plugins {
 
 dependencies {
     testImplementation(testFixtures(projects.api))
-    testImplementation(libs.tests.mockk)
-    testImplementation(libs.tests.junit.api)
 }

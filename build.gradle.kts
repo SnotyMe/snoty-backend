@@ -1,5 +1,4 @@
 @file:Suppress("UnstableApiUsage")
-import org.gradle.kotlin.dsl.invoke
 
 
 apply(from = "version.gradle.kts")
@@ -47,9 +46,6 @@ testing.suites.withType<JvmTestSuite>().configureEach {
         implementation(dev.keycloak.adminClient)
         implementation(monitoring.opentelemetry.testing)
         implementation(devSourceSet.output)
-
-        runtimeOnly(tests.junit.engine)
-        runtimeOnly(tests.junit.launcher)
     }}
 }
 

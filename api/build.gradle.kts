@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.invoke
-
 plugins {
     alias(libs.plugins.kotlin.serialization)
     id("snoty.publish-conventions")
@@ -44,7 +42,8 @@ dependencies { with(libs) {
     implementation(monitoring.opentelemetry.semconv.incubating)
 
     testFixturesImplementation(tests.json)
-    testFixturesApi(tests.junit.api)
+    testFixturesApi(tests.junit)
+    testFixturesRuntimeOnly(tests.junit.launcher)
     testFixturesApi(kotlin("test"))
     testFixturesApi(koin.test)
     testFixturesApi(tests.mockk)
