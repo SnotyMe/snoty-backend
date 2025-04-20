@@ -11,7 +11,6 @@ import me.snoty.integration.common.wiring.flow.FlowService
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.batchInsert
 import org.koin.core.annotation.Single
-import kotlin.uuid.Uuid
 
 @Single
 class SqlFlowImportService(
@@ -21,12 +20,12 @@ class SqlFlowImportService(
 	private val nodeService: SqlNodeService,
 	private val nodeSettingsDeserializationService: NodeSettingsDeserializationService,
 ) : FlowImportService {
-	override suspend fun import(userId: Uuid, flow: ImportFlow): NodeId = db.newSuspendedTransaction {
+	override suspend fun import(userId: String, flow: ImportFlow): NodeId = db.newSuspendedTransaction {
 		val createdFlow = flowService.create(userId, flow.name, flow.settings)
 
 		val createdNodes = flow.nodes.associate {
 			it.id to nodeService.create(
-				userID = userId,
+				userId = userId,
 				flowId = createdFlow._id,
 				descriptor = it.descriptor,
 				settings = nodeSettingsDeserializationService.deserializeOrInvalid(it.descriptor, it.settings)

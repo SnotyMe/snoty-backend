@@ -10,12 +10,11 @@ import java.util.*
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
-import kotlin.uuid.Uuid
 
 interface Workflow {
 	val _id: String
 	val name: String
-	val userId: Uuid
+	val userId: String
 	val settings: WorkflowSettings
 }
 
@@ -63,7 +62,7 @@ data class WorkflowSettings(
 data class StandaloneWorkflow(
 	override val _id: String,
 	override val name: String,
-	override val userId: Uuid,
+	override val userId: String,
 	override val settings: WorkflowSettings,
 ) : Workflow
 
@@ -74,7 +73,7 @@ data class StandaloneWorkflow(
 data class WorkflowWithNodes(
 	override val _id: String,
 	override val name: String,
-	override val userId: Uuid,
+	override val userId: String,
 	override val settings: WorkflowSettings,
 	/**
 	 * A list of all nodes.

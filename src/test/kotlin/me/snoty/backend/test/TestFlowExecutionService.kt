@@ -8,7 +8,6 @@ import me.snoty.integration.common.wiring.flow.EnumeratedFlowExecution
 import me.snoty.integration.common.wiring.flow.FlowExecution
 import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
 import me.snoty.integration.common.wiring.flow.NodeLogEntry
-import kotlin.uuid.Uuid
 
 class TestFlowExecutionService : FlowExecutionService {
 	data class FlowEntry(val flowId: NodeId, val logs: MutableList<NodeLogEntry>)
@@ -30,7 +29,7 @@ class TestFlowExecutionService : FlowExecutionService {
 		// NOOP
 	}
 
-	override fun query(userId: Uuid): Flow<EnumeratedFlowExecution> = throw NotImplementedError()
+	override fun query(userId: String): Flow<EnumeratedFlowExecution> = throw NotImplementedError()
 	override fun query(flowId: NodeId, startFromNode: String?, limit: Int): Flow<FlowExecution> = throw NotImplementedError()
 
 	override suspend fun deleteAll(flowId: NodeId) = throw NotImplementedError()

@@ -51,6 +51,7 @@ database-exposed-core = { module = "org.jetbrains.exposed:exposed-core", version
 database-exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
 database-exposed-json = { module = "org.jetbrains.exposed:exposed-json", version.ref = "exposed" }
 database-exposed-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed" }
+database-exposed-migration = { module = "org.jetbrains.exposed:exposed-migration", version.ref = "exposed" }
 database-hikari = { module = "com.zaxxer:HikariCP", version = "6.3.0" }
 database-postgres = { group = "org.postgresql", name = "postgresql", version = "42.7.4" }
 database-jdbc-opentelemetry = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-jdbc", version.ref = "opentelemetry-instrumentation" }

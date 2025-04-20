@@ -8,7 +8,6 @@ import org.bson.Document
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
 import org.slf4j.event.Level
-import kotlin.uuid.Uuid
 
 /**
  * Low-level representation of a flow graph node gotten using `$graphLookup`
@@ -18,7 +17,7 @@ data class MongoNode(
 	@BsonId
 	val _id: ObjectId = ObjectId(),
 	val flowId: ObjectId,
-	val userId: Uuid,
+	val userId: String,
 	val descriptor: NodeDescriptor,
 	val logLevel: Level? = null,
 	val settings: Document,

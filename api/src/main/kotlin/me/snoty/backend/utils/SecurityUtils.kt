@@ -16,8 +16,6 @@ import me.snoty.backend.User
 import me.snoty.backend.config.OidcConfig
 import me.snoty.backend.config.getReverseMapping
 import org.koin.ktor.ext.get
-import java.util.*
-import kotlin.uuid.toKotlinUuid
 
 fun ApplicationRequest.parseAuthHeader() =
 	call.request.parseAuthorizationHeader()
@@ -32,7 +30,7 @@ fun ApplicationCall.getUserOrNull(): User? {
 	val claims = principal.payload.claims
 
 	return User(
-		id = claims["sub"]?.`as`(UUID::class.java)?.toKotlinUuid() ?: NULL_UUID,
+		id = claims["sub"]?.asString()!!,
 		name = claims["preferred_username"]?.asString() ?: "unknown",
 		email = claims["email"]?.asString() ?: "unknown",
 	)

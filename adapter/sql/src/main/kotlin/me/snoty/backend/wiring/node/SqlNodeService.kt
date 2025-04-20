@@ -20,7 +20,6 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.koin.core.annotation.Single
 import org.slf4j.event.Level
-import kotlin.uuid.Uuid
 
 @Single
 class SqlNodeService(
@@ -56,7 +55,7 @@ class SqlNodeService(
 	}
 
 	override suspend fun <S : NodeSettings> create(
-		userID: Uuid,
+		userId: String,
 		flowId: NodeId,
 		descriptor: NodeDescriptor,
 		settings: S
@@ -64,7 +63,7 @@ class SqlNodeService(
 		val id = db.newSuspendedTransaction {
 			nodeTable.insertAndGetId {
 				it[nodeTable.flowId] = flowId.toUuid()
-				it[nodeTable.userId] = userID
+				it[nodeTable.userId] = userId
 				it[nodeTable.descriptor_namespace] = descriptor.namespace
 				it[nodeTable.descriptor_name] = descriptor.name
 				it[nodeTable.settings] = json.hackyEncodeToString(settings)
@@ -74,7 +73,7 @@ class SqlNodeService(
 		return StandaloneNode(
 			_id = id.value.toString(),
 			flowId = flowId,
-			userId = userID,
+			userId = userId,
 			descriptor = descriptor,
 			logLevel = null,
 			settings = settings,

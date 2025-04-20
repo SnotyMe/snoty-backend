@@ -15,7 +15,6 @@ import me.snoty.integration.common.wiring.flow.NodeLogEntry
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.koin.core.annotation.Single
-import kotlin.uuid.Uuid
 
 @Single
 class SqlFlowExecutionService(
@@ -57,7 +56,7 @@ class SqlFlowExecutionService(
 			.map { it.toLogEntry(flowExecutionLogTable) }
 	}
 
-	override fun query(userId: Uuid): Flow<EnumeratedFlowExecution> = db.flowTransaction {
+	override fun query(userId: String): Flow<EnumeratedFlowExecution> = db.flowTransaction {
 		val lastFlowId = flowExecutionTable.flowId.alias("last_flow_id")
 		val lastTriggeredAt = flowExecutionTable.triggeredAt.max().alias("last_triggered_at")
 		flowExecutionTable

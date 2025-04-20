@@ -15,7 +15,6 @@ import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.koin.core.annotation.Single
-import kotlin.uuid.Uuid
 
 @Single
 class SqlFlowService(
@@ -24,7 +23,7 @@ class SqlFlowService(
 	private val nodeService: NodeService,
 	private val flowTable: FlowTable,
 ) : FlowService {
-	override suspend fun create(userId: Uuid, name: String, settings: WorkflowSettings): StandaloneWorkflow = db.newSuspendedTransaction {
+	override suspend fun create(userId: String, name: String, settings: WorkflowSettings): StandaloneWorkflow = db.newSuspendedTransaction {
 		val id = flowTable.insertAndGetId {
 			it[flowTable.userId] = userId
 			it[flowTable.name] = name
@@ -37,7 +36,7 @@ class SqlFlowService(
 			}
 	}
 
-	override fun query(userId: Uuid): Flow<StandaloneWorkflow> = db.flowTransaction {
+	override fun query(userId: String): Flow<StandaloneWorkflow> = db.flowTransaction {
 		flowTable.selectStandalone()
 			.where { flowTable.userId eq userId }
 			.map { it.toStandalone(flowTable) }

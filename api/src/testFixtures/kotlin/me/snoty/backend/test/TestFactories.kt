@@ -12,7 +12,7 @@ fun node(
 	descriptor: NodeDescriptor,
 	settings: NodeSettings = EmptyNodeSettings(),
 	next: List<FlowNode> = emptyList(),
-	userId: Uuid = Uuid.randomV7(),
+	userId: String = Uuid.randomV7().toString(),
 	makeId: () -> NodeId = ::randomString,
 ) = FlowNode(
 	_id = makeId(),

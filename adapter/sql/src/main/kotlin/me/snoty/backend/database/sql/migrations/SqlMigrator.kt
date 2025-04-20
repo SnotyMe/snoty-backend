@@ -1,5 +1,6 @@
 package me.snoty.backend.database.sql.migrations
 
+import MigrationUtils
 import io.github.oshai.kotlinlogging.KotlinLogging
 import me.snoty.backend.database.sql.newSuspendedTransaction
 import org.jetbrains.exposed.sql.Database
@@ -15,7 +16,7 @@ class SqlMigrator(private val database: Database, private val tables: List<Table
 		database.newSuspendedTransaction {
 			val sortedTables = SchemaUtils.sortTablesByReferences(tables).toTypedArray()
 			SchemaUtils.createMissingTablesAndColumns(*sortedTables)
-			val migrationsRequired = SchemaUtils.statementsRequiredToActualizeScheme(*sortedTables)
+			val migrationsRequired = MigrationUtils.statementsRequiredForDatabaseMigration(*sortedTables)
 			if (migrationsRequired.isNotEmpty()) {
 				logger.error {
 					"""

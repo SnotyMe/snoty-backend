@@ -10,7 +10,6 @@ import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.datetime.Instant
 import me.snoty.backend.logging.toSLF4JLevel
 import me.snoty.backend.observability.*
-import me.snoty.backend.utils.toUuid
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEvent
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
@@ -58,7 +57,7 @@ class NodeLogAppender(
 		scope.launch {
 			flowExecutionEventService.offer(FlowExecutionEvent.FlowLogEvent(
 				jobId = jobId,
-				userId = eventObject.mdcPropertyMap[USER_ID.key]?.toUuid() ?: return@launch logger.error { "No User ID found in log entry with msg='$message'" },
+				userId = eventObject.mdcPropertyMap[USER_ID.key] ?: return@launch logger.error { "No User ID found in log entry with msg='$message'" },
 				flowId = eventObject.mdcPropertyMap[FLOW_ID.key] ?: return@launch logger.error { "No Flow ID found in log entry with msg='$message'" },
 				entry = entry,
 			))

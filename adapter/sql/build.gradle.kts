@@ -9,6 +9,7 @@ dependencies { with (libs) {
 	implementation(database.exposed.jdbc)
 	implementation(database.exposed.json)
 	implementation(database.exposed.datetime)
+	implementation(database.exposed.migration)
 
 	implementation(database.hikari)
 	implementation(database.postgres)
