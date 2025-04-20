@@ -17,8 +17,8 @@ opentelemetry-semconv = "1.30.0"
 opentelemetry-semconv-incubating = "1.30.0-alpha"
 opentelemetry-instrumentation = "2.11.0-alpha"
 micrometer = "1.14.2"
-junit = "5.11.3"
-testcontainers = "1.20.4"
+junit = "5.12.2"
+testcontainers = "1.20.6"
 ktor = "3.1.0"
 
 [plugins]
@@ -111,9 +111,8 @@ monitoring-opentelemetry-semconv-incubating = { group = "io.opentelemetry.semcon
 monitoring-opentelemetry-testing = { group = "io.opentelemetry", name = "opentelemetry-sdk-testing", version.ref = "opentelemetry" }
 
 tests-json = { group = "org.json", name = "json", version = "20250107" }
-tests-junit-api = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit" }
-tests-junit-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit" }
-tests-junit-launcher = { group = "org.junit.platform", name = "junit-platform-launcher", version = "1.11.3" }
+tests-junit = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit" }
+tests-junit-launcher = { group = "org.junit.platform", name = "junit-platform-launcher", version = "1.12.2" }
 tests-ktor-server-testHost = { group = "io.ktor", name = "ktor-server-test-host-jvm", version.ref = "ktor" }
 tests-mockk = { group = "io.mockk", name = "mockk", version = "1.13.13" }
 tests-testcontainers = { group = "org.testcontainers", name = "testcontainers", version.ref = "testcontainers" }

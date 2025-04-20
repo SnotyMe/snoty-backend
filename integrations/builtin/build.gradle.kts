@@ -9,6 +9,5 @@ dependencies {
 
 	implementation(libs.libraries.ical4j)
 
-	testImplementation(libs.tests.junit.api)
 	testImplementation(testFixtures(projects.api))
 }
