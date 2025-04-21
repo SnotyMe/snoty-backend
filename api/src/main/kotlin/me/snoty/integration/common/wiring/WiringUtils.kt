@@ -19,6 +19,10 @@ data class NodeHandleContextImpl(
 	override val logger: Logger,
 ) : NodeHandleContext
 
+/**
+ * Serialize arbitrary object into BsonIntermediateData.
+ * Documents will be passed as-is without serialization.
+ */
 fun <T : Any> NodeHandleContext.iterableStructOutput(
 	items: Iterable<T>
 ): Collection<IntermediateData> = items

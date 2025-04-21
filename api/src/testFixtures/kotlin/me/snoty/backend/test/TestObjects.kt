@@ -1,6 +1,5 @@
 package me.snoty.backend.test
 
-import io.mockk.mockk
 import me.snoty.backend.config.*
 import me.snoty.backend.utils.bson.provideApiCodec
 import me.snoty.backend.utils.bson.provideCodecRegistry
@@ -13,6 +12,8 @@ import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateDataMapper
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings
+import org.bson.Document
+import org.bson.codecs.DocumentCodec
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.configuration.CodecRegistry
 import kotlin.reflect.KClass
@@ -61,7 +62,7 @@ val TestCodecRegistry: CodecRegistry = CodecRegistries.fromRegistries(
 
 val IntermediateDataMapperRegistry = IntermediateDataMapperRegistryImpl(
 	listOf(
-		BsonIntermediateDataMapper(TestCodecRegistry),
+		BsonIntermediateDataMapper(TestCodecRegistry, TestCodecRegistry.get(Document::class.java) as DocumentCodec),
 		SimpleIntermediateDataMapper()
 	)
 )

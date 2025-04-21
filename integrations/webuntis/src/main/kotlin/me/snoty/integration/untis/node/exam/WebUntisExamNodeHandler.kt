@@ -7,13 +7,13 @@ import me.snoty.integration.common.model.metadata.FieldCensored
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.data.mapWithSettings
+import me.snoty.integration.common.wiring.data.NodeInput
+import me.snoty.integration.common.wiring.data.NodeOutput
+import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.iterableStructOutput
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.untis.WebUntisAPI
 import me.snoty.integration.untis.WebUntisSettings
-import me.snoty.integration.untis.model.UntisExam
 import me.snoty.integration.untis.model.map
 import me.snoty.integration.untis.request.getExams
 import me.snoty.integration.untis.request.getUserAndMasterData
@@ -31,7 +31,9 @@ class WebUntisExamNodeHandler(
 	val metadata: NodeMetadata,
 	private val untisAPI: WebUntisAPI
 ) : NodeHandler {
-	override suspend fun NodeHandleContext.process(node: Node, input: Collection<IntermediateData>) = input.mapWithSettings<WebUntisSettings>(node) { settings ->
+	override suspend fun NodeHandleContext.process(node: Node, input: NodeInput): NodeOutput {
+		val settings: WebUntisExamSettings = node.getConfig()
+
 		val (userData, masterData) = untisAPI.getUserAndMasterData(settings)
 		val untisExams = untisAPI.getExams(settings, userData)
 
@@ -41,7 +43,7 @@ class WebUntisExamNodeHandler(
 
 		logger.info("Fetched ${mappedExams.size} exams for ${settings.username}")
 
-		iterableStructOutput(mappedExams)
+		return iterableStructOutput(mappedExams)
 	}
 }
 

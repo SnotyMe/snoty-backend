@@ -10,15 +10,15 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.plus
 import kotlinx.serialization.modules.polymorphic
-import me.snoty.backend.wiring.flow.FlowFeatureFlags
 import me.snoty.backend.integration.flow.execution.FlowRunnerImpl
 import me.snoty.backend.integration.flow.execution.FlowTracingImpl
 import me.snoty.backend.integration.flow.logging.NodeLogAppender
-import me.snoty.backend.wiring.node.NodeRegistryImpl
 import me.snoty.backend.observability.JOB_ID
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.test.*
+import me.snoty.backend.wiring.flow.FlowFeatureFlags
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
+import me.snoty.backend.wiring.node.NodeRegistryImpl
 import me.snoty.integration.common.snotyJson
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
@@ -74,7 +74,7 @@ class FlowRunnerImplTest {
 	}
 
 	private suspend fun FlowRunnerImpl.executeStartNode(jobId: String, flow: WorkflowWithNodes, input: IntermediateData)
-		= execute(jobId, FlowTriggerReason.Unknown, logger, Level.DEBUG, flow, input)
+		= execute(jobId, FlowTriggerReason.Unknown, logger, Level.DEBUG, flow, listOf(input))
 
 	private fun assertNoWarnings(flow: Workflow) = runBlocking {
 		val output = testFlowExecutionService.retrieve(flow._id)

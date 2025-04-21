@@ -22,6 +22,7 @@ import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.NodeHandleContextImpl
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
+import me.snoty.integration.common.wiring.data.NodeInput
 import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
 import me.snoty.integration.common.wiring.flow.FlowRunner
 import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
@@ -44,7 +45,7 @@ class FlowRunnerImpl(
 		logger: Logger,
 		logLevel: Level,
 		flow: WorkflowWithNodes,
-		input: IntermediateData,
+		input: NodeInput,
 	) {
 		val kLogger = KotlinLogging.logger(logger)
 		val rootSpan = flowTracing.createRootSpan(jobId, flow)
@@ -72,7 +73,7 @@ class FlowRunnerImpl(
 				nodeRegistry.getMetadataOrNull(it.descriptor)?.position == NodePosition.START
 			}
 			.flatMapConcat {
-				executionContext.executeStartNode(rootSpan, it, listOf(input))
+				executionContext.executeStartNode(rootSpan, it, input)
 			}
 			.onCompletion {
 				logger.info("Flow completed.")

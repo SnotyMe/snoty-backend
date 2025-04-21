@@ -6,13 +6,9 @@ import io.ktor.client.statement.*
 import io.ktor.util.*
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.wiring.Node
-import me.snoty.integration.common.wiring.NodeHandleContext
+import me.snoty.integration.common.wiring.*
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
-import me.snoty.integration.common.wiring.getConfig
-import me.snoty.integration.common.wiring.getOrNull
 import me.snoty.integration.common.wiring.node.NodeHandler
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
@@ -64,6 +60,6 @@ class HttpNodeHandler(
 			).toDocument()
 		}
 
-		return output.map { BsonIntermediateData(it) }
+		return iterableStructOutput(output)
 	}
 }

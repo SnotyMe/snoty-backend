@@ -13,8 +13,8 @@ import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
 import me.snoty.integration.common.wiring.get
+import me.snoty.integration.common.wiring.iterableStructOutput
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.Document
@@ -76,13 +76,13 @@ class UniDiffHandler : NodeHandler {
 						computeDiff(old, new)
 					}
 			}
+			.map { (input, items) ->
+				// clone to avoid interference with other nodes
+				val document = Document(get<Document>(input))
+				document["unidiff"] = Document(items)
+				document
+			}
 
-		return output.map { (input, items) ->
-			// clone to avoid interference with other nodes
-			val document = Document(get<Document>(input))
-			document["unidiff"] = Document(items)
-			// TODO: clone on creation in BsonIntermediateData
-			BsonIntermediateData(document)
-		}
+		return iterableStructOutput(output)
 	}
 }

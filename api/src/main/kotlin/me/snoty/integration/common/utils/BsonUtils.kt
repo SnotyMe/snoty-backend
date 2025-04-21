@@ -29,7 +29,7 @@ fun integrationsApiCodecModule(bsonTypeClassMap: BsonTypeClassMap): CodecRegistr
 				EmptyNodeSettings::class.java -> EmptyNodeSettingsCodec
 				else -> null
 			} as? Codec<T> ?: when {
-				DiffResult::class.java.isAssignableFrom(clazz) -> DiffResultCodec(registry, bsonTypeClassMap)
+				DiffResult::class.java.isAssignableFrom(clazz) -> DiffResultCodec(registry)
 				else -> null
 			} as? Codec<T>
 	})

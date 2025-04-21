@@ -1,7 +1,7 @@
 package me.snoty.integration.common.wiring.flow
 
 import me.snoty.backend.scheduling.FlowTriggerReason
-import me.snoty.integration.common.wiring.data.IntermediateData
+import me.snoty.integration.common.wiring.data.NodeInput
 import org.slf4j.Logger
 import org.slf4j.event.Level
 
@@ -12,6 +12,6 @@ fun interface FlowRunner {
 		logger: Logger,
 		logLevel: Level,
 		flow: WorkflowWithNodes,
-		input: IntermediateData,
+		input: NodeInput,
 	)
 }

@@ -8,7 +8,9 @@ import kotlin.reflect.KClass
 data class SimpleIntermediateData(
 	override val value: Any,
 	val valueType: KClass<*> = value::class
-) : IntermediateData
+) : IntermediateData {
+	override fun toString() = value.toString()
+}
 
 @Single
 class SimpleIntermediateDataMapper : IntermediateDataMapper<SimpleIntermediateData> {

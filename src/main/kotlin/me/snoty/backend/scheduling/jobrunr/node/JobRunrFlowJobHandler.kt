@@ -12,7 +12,6 @@ import me.snoty.backend.observability.USER_ID
 import me.snoty.backend.scheduling.JobRequestHandler
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
-import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
 import me.snoty.integration.common.wiring.flow.FlowRunner
 import me.snoty.integration.common.wiring.flow.FlowService
 import org.jobrunr.jobs.context.JobRunrDashboardLogger
@@ -60,7 +59,7 @@ class JobRunrFlowJobHandler(
 					logger = logger,
 					logLevel = jobRequest.logLevel,
 					flow = flow,
-					input = SimpleIntermediateData(jobContext),
+					input = emptyList(),
 				)
 			}
 		}

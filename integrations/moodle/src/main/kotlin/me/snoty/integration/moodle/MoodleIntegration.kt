@@ -6,7 +6,8 @@ import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.data.IntermediateData
+import me.snoty.integration.common.wiring.data.NodeInput
+import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.iterableStructOutput
 import me.snoty.integration.common.wiring.node.NodeHandler
@@ -30,8 +31,8 @@ class MoodleIntegration(
 ) : NodeHandler {
 	override suspend fun NodeHandleContext.process(
 		node: Node,
-		input: Collection<IntermediateData>,
-	) = input.flatMap { _ ->
+		input: NodeInput,
+	): NodeOutput {
 		val moodleSettings = node.getConfig<MoodleSettings>()
 
 		val assignments = moodleAPI.getCalendarUpcoming(moodleSettings)
@@ -41,7 +42,7 @@ class MoodleIntegration(
 			else Level.INFO
 		).log("Fetched ${assignments.size} assignments for ${moodleSettings.username}")
 
-		iterableStructOutput(
+		return iterableStructOutput(
 			assignments
 				.filterIfNot(moodleSettings.emitClosedAssignments) { it.state != MoodleAssignmentState.CLOSED }
 				.filterIfNot(moodleSettings.emitDoneAssignments) { it.state != MoodleAssignmentState.DONE }

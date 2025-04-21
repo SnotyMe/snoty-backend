@@ -8,13 +8,13 @@ import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.data.mapWithSettings
+import me.snoty.integration.common.wiring.data.NodeOutput
+import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.iterableStructOutput
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.untis.WebUntisAPI
 import me.snoty.integration.untis.WebUntisSettings
 import me.snoty.integration.untis.model.map
-import me.snoty.integration.untis.model.timetable.UntisPeriod
 import me.snoty.integration.untis.request.getTimetable
 import org.koin.core.annotation.Single
 
@@ -30,7 +30,9 @@ class WebUntisTimetableNodeHandler(
 	val metadata: NodeMetadata,
 	private val untisAPI: WebUntisAPI
 ) : NodeHandler {
-	override suspend fun NodeHandleContext.process(node: Node, input: Collection<IntermediateData>) = input.mapWithSettings<WebUntisSettings>(node) { settings ->
+	override suspend fun NodeHandleContext.process(node: Node, input: Collection<IntermediateData>): NodeOutput {
+		val settings: WebUntisTimetableSettings = node.getConfig()
+
 		val (timetable, masterData) = untisAPI.getTimetable(settings)
 		val mappedMasterData = masterData.map()
 
@@ -39,7 +41,7 @@ class WebUntisTimetableNodeHandler(
 		val periods = timetable.periods
 			.map { it.toUntisPeriod(mappedMasterData) }
 
-		iterableStructOutput(periods)
+		return iterableStructOutput(periods)
 	}
 }
 
