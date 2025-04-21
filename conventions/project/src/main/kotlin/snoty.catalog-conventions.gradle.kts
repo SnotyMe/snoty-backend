@@ -35,6 +35,11 @@ publishing {
 	publications {
 		create<MavenPublication>("versionCatalog") {
 			from(components["versionCatalog"])
+			pom {
+				scm {
+					url = "scm:git:https://github.com/SnotyMe/snoty-backend"
+				}
+			}
 			artifactId = "versions"
 		}
 	}
