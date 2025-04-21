@@ -13,11 +13,17 @@ import io.opentelemetry.sdk.resources.Resource
 import io.opentelemetry.sdk.trace.SdkTracerProvider
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor
 import io.opentelemetry.semconv.ServiceAttributes
+import me.snoty.backend.config.ConfigLoaderImpl
 import me.snoty.backend.dev.spi.DevRunnable
-
+import me.snoty.backend.observability.provideOpenTelemetryConfig
 
 class OpenTelemetryDevSetup : DevRunnable() {
 	override fun run() {
+		if (provideOpenTelemetryConfig(ConfigLoaderImpl()).enabled) {
+			logger.info { "OpenTelemetry is configured manually, skipping dev setup..." }
+			return
+		}
+
 		val resource = Resource.getDefault().toBuilder().put(ServiceAttributes.SERVICE_NAME, "snoty-backend").build()
 
 		val tracingEndpoint = System.getenv("OTEL_EXPORTER_OTLP_TRACING_ENDPOINT") ?: "http://localhost:4318/v1/traces"

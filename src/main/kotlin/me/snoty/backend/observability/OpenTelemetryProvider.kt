@@ -9,22 +9,33 @@ import io.opentelemetry.sdk.autoconfigure.AutoConfiguredOpenTelemetrySdk
 import io.opentelemetry.sdk.resources.Resource
 import io.opentelemetry.semconv.ServiceAttributes
 import me.snoty.backend.build.BuildInfo
-import me.snoty.backend.config.Config
-import me.snoty.backend.config.OpenTelemetryConfig
 import org.koin.core.Koin
 import org.koin.core.annotation.Single
-import java.io.FileInputStream
-import java.util.*
 
 
 @Single(binds = [OpenTelemetry::class])
-fun provideOpenTelemetry(config: Config, buildInfo: BuildInfo, koin: Koin): OpenTelemetry {
+fun provideOpenTelemetry(koin: Koin, config: OtelConfig, buildInfo: BuildInfo): OpenTelemetry {
 	val logger = KotlinLogging.logger {}
-	val openTelemetry = (getGlobalOpenTelemetry()
-		?: run {
-			logger.debug { "No global OpenTelemetry instance found, auto configuring..." }
-			getAutoConfiguredOpenTelemetry(config.openTelemetry, buildInfo, koin)
-		})
+
+	val metadata = Resource.create(
+		Attributes.of(
+			ServiceAttributes.SERVICE_NAME, buildInfo.application,
+			ServiceAttributes.SERVICE_VERSION, buildInfo.version,
+		)
+	)
+
+	val openTelemetry =
+		getManualOpenTelemetry(koin, config, metadata)
+			?: run {
+				logger.debug { "Manual OpenTelemetry is disabled, using global instance..." }
+				getGlobalOpenTelemetry()
+			} ?: run {
+				logger.debug { "No global OpenTelemetry instance found, auto configuring..." }
+				getAutoConfiguredOpenTelemetry(koin, metadata)
+			} ?: run {
+				logger.debug { "No OpenTelemetry instance found, using noop instance..." }
+				OpenTelemetry.noop()
+			}
 
 	OpenTelemetryAppender.install(openTelemetry)
 
@@ -33,27 +44,12 @@ fun provideOpenTelemetry(config: Config, buildInfo: BuildInfo, koin: Koin): Open
 	return openTelemetry
 }
 
-private fun getGlobalOpenTelemetry() =
-	GlobalOpenTelemetry.get().takeIf { it != OpenTelemetry.noop() }
+private fun OpenTelemetry.orNull() = takeIf { it != OpenTelemetry.noop() }
 
-private fun getAutoConfiguredOpenTelemetry(config: OpenTelemetryConfig, buildInfo: BuildInfo, koin: Koin) = AutoConfiguredOpenTelemetrySdk.builder()
+private fun getGlobalOpenTelemetry() = GlobalOpenTelemetry.get().orNull()
+
+private fun getAutoConfiguredOpenTelemetry(koin: Koin, metadata: Resource) = AutoConfiguredOpenTelemetrySdk.builder()
 	.addResourceCustomizer { resource, _ ->
-		var metadata = Resource.create(
-			Attributes.of(
-				ServiceAttributes.SERVICE_NAME, buildInfo.application,
-				ServiceAttributes.SERVICE_VERSION, buildInfo.version,
-			)
-		)
-
-		config.resourcePaths.forEach { path ->
-			runCatching {
-				val props = Properties().apply { load(FileInputStream(path)) }
-				val attributes = props.entries.fold(Attributes.builder()) { builder, entry ->
-					builder.put(entry.key.toString(), entry.value.toString())
-				}.build()
-				metadata = metadata.merge(Resource.create(attributes))
-			}
-		}
 		resource.merge(metadata).apply {
 			KotlinLogging.logger {}.debug { "Created resource for OpenTelemetry: $this" }
 		}
@@ -63,4 +59,5 @@ private fun getAutoConfiguredOpenTelemetry(config: OpenTelemetryConfig, buildInf
 	}
 	.build()
 	// will default to NOOP -> non-null
-	.openTelemetrySdk!!
+	.openTelemetrySdk
+	.orNull()

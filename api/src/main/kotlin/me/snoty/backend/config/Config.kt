@@ -9,5 +9,4 @@ data class Config(
 	val environment: Environment,
 	val authentication: OidcConfig,
 	val featureFlags: FeatureFlagsConfig,
-	val openTelemetry: OpenTelemetryConfig = OpenTelemetryConfig(),
 )
