@@ -39,6 +39,7 @@ data class UniDiff(
 	outputType = UniDiff::class,
 )
 @Single
+@Deprecated("Use the Mapper's `unidiff` filter instead", ReplaceWith("Mapper"))
 class UniDiffHandler : NodeHandler {
 	override suspend fun NodeHandleContext.process(
 		node: Node,
