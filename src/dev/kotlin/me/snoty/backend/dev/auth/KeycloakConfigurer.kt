@@ -17,7 +17,7 @@ class KeycloakConfigurer(private var realmsResource: RealmsResource, private var
 	 */
 	fun configure(vararg extraRedirectUris: String): KeycloakConfigurationResult {
 		val realms = realmsResource.findAll()
-		if (realms.stream().noneMatch { realm: RealmRepresentation -> realm.id == realmName }) {
+		if (realms.stream().noneMatch { realm: RealmRepresentation -> realm.realm == realmName }) {
 			logger.info { "Realm $realmName does not exist yet, creating..." }
 			createRealm(realmName, realmsResource)
 		}
