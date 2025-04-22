@@ -9,7 +9,10 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.slf4j.MDCContext
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.FlowExecutionException
+import me.snoty.backend.integration.flow.unwrap
 import me.snoty.backend.logging.KMDC
+import me.snoty.backend.notifications.NotificationAttributes
+import me.snoty.backend.notifications.NotificationService
 import me.snoty.backend.observability.APPENDER_LOG_LEVEL
 import me.snoty.backend.observability.setException
 import me.snoty.backend.observability.subspan
@@ -31,6 +34,8 @@ import org.koin.core.annotation.Single
 import org.slf4j.Logger
 import org.slf4j.event.Level
 
+private const val FLOW_FAILURE = "flow.failure"
+
 @Single
 class FlowRunnerImpl(
 	private val nodeRegistry: NodeRegistry,
@@ -38,6 +43,7 @@ class FlowRunnerImpl(
 	private val flowTracing: FlowTracing,
 	private val flowExecutionService: FlowExecutionService,
 	private val flowExecutionEventService: FlowExecutionEventService,
+	private val notificationService: NotificationService,
 ) : FlowRunner {
 	override suspend fun execute(
 		jobId: String,
@@ -89,6 +95,19 @@ class FlowRunnerImpl(
 					jobId,
 					status,
 				)
+
+				val attributes = NotificationAttributes(FLOW_FAILURE, flowId = flow._id)
+				if (it == null) {
+					notificationService.resolve(flow.userId.toString(), attributes)
+				} else {
+					val exception = it.unwrap()
+					notificationService.send(
+						userId = flow.userId.toString(),
+						attributes = attributes,
+						title = "Flow ${flow.name} failed",
+						description = "Something went wrong during the execution of this Flow!\n$exception",
+					)
+				}
 			}
 			.collect()
 	}

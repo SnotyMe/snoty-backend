@@ -1,5 +1,6 @@
 package me.snoty.backend.database.sql
 
+import kotlinx.datetime.Instant
 import me.snoty.backend.utils.flowOfEach
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.Transaction
@@ -15,3 +16,5 @@ suspend inline fun <T> Database.newSuspendedTransaction(noinline statement: susp
 fun <T> Database.flowTransaction(statement: suspend Transaction.() -> Collection<T>) = flowOfEach {
 	this.newSuspendedTransaction(statement)
 }
+
+val NULL_INSTANT = Instant.fromEpochMilliseconds(0L)
