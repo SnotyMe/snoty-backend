@@ -19,7 +19,10 @@ abstract class NotificationServiceSpec {
 	data class TestScope(
 		val testName: String,
 		val userId: String = randomString(),
-	)
+	) {
+		suspend fun NotificationService.send(attributes: NotificationAttributes, userId: String? = null) =
+			send(userId ?: this@TestScope.userId, attributes, testName, null)
+	}
 
 	protected fun test(block: suspend TestScope.() -> Unit) {
 		val testName = block.javaClass.typeName.substringAfter("$").substringBefore("$")
@@ -34,43 +37,42 @@ abstract class NotificationServiceSpec {
 	@Test
 	fun simpleSend() = test {
 		val attributes = attributes("key" to "value")
-		notificationService.send(userId, attributes)
+		notificationService.send(attributes)
 
-		val notifications = notificationService.findByUser(userId).toList()
-		assertEquals(Notification(
-			userId = userId,
-			attributes = attributes,
-			resolvedAt = null,
-			lastSeenAt = notifications.first().lastSeenAt,
-			count = 1,
-		), notifications.single())
+		val notifications = notificationService.findByUser(userId).single()
+		assertEquals(userId, notifications.userId)
+		assertEquals(attributes, notifications.attributes)
+		assertNull(notifications.resolvedAt)
+		assertNotNull(notifications.lastSeenAt)
+		assertEquals(1, notifications.count)
 	}
 
 	@Test
 	fun simpleSendMultipleTimes() = test {
 		val attributes = attributes("key" to "value")
 
-		val expectedCount = 5
-		repeat(expectedCount) {
-			notificationService.send(userId, attributes)
-		}
+		repeat(5) {
+			val title = "Iteration $it"
+			val description = if (it % 2 == 0) "Even" else null
+			notificationService.send(userId = userId, attributes = attributes, title = title, description = description)
 
-		val notifications = notificationService.findByUser(userId).toList()
-		assertEquals(Notification(
-			userId = userId,
-			attributes = attributes,
-			resolvedAt = null,
-			lastSeenAt = notifications.first().lastSeenAt,
-			count = expectedCount,
-		), notifications.single())
+			val notification = notificationService.findByUser(userId).single()
+			assertEquals(userId, notification.userId)
+			assertEquals(attributes, notification.attributes)
+			assertNull(notification.resolvedAt)
+			assertNotNull(notification.lastSeenAt)
+			assertEquals(it + 1, notification.count)
+			assertEquals(title, notification.title)
+			assertEquals(description, notification.description)
+		}
 	}
 
 	@Test
 	fun simpleResolve() = test {
 		val attributes = attributes("key" to "value")
 
-		notificationService.send(userId, attributes)
-		notificationService.send(userId, attributes)
+		notificationService.send(attributes)
+		notificationService.send(attributes)
 		assertNull(notificationService.findByUser(userId).single().resolvedAt)
 
 		notificationService.resolve(userId, attributes)
@@ -91,9 +93,9 @@ abstract class NotificationServiceSpec {
 		val attributes1 = attributes("key" to "value")
 		val attributes2 = attributes("key" to "value2")
 
-		notificationService.send(userId, attributes1)
-		notificationService.send(userId, attributes1)
-		notificationService.send(userId, attributes2)
+		notificationService.send(attributes1, userId)
+		notificationService.send(attributes1, userId)
+		notificationService.send(attributes2, userId)
 		assertEquals(2, notificationService.findByUser(userId).toList().size)
 
 		notificationService.resolve(userId, attributes1)
@@ -122,7 +124,7 @@ abstract class NotificationServiceSpec {
 	fun resolvedIsRecreated() = test {
 		val attributes = attributes("key" to "value")
 
-		notificationService.send(userId, attributes)
+		notificationService.send(attributes)
 		notificationService.resolve(userId, attributes)
 
 		val notification = notificationService.findByUser(userId).toList()
@@ -135,14 +137,14 @@ abstract class NotificationServiceSpec {
 		assertNotNull(notification1.lastSeenAt)
 
 		// already resolved with these attributes, should be recreated, sent twice without resolving => count = 2
-		notificationService.send(userId, attributes)
+		notificationService.send(attributes)
 		val notification2WithCount1 = notificationService.findByUser(userId).toList().single { it != notification1 }
 		assertEquals(1, notification2WithCount1.count)
 
 		// some artificial delay
 		delay(100.milliseconds)
 
-		notificationService.send(userId, attributes)
+		notificationService.send(attributes)
 		val notifications = notificationService.findByUser(userId).toList()
 		assertEquals(2, notifications.size)
 
