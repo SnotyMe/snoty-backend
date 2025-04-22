@@ -33,7 +33,7 @@ object PostgresTest {
 			else -> name
 		}.substringAfterLast(".")
 
-		var dbName = "${name}_${javaClass.hashCode()}".lowercase()
+		val dbName = "${name}_${javaClass.hashCode()}".lowercase()
 		transaction(adminClient) {
 			// autoCommit is required when using postgres
 			connection.autoCommit = true
