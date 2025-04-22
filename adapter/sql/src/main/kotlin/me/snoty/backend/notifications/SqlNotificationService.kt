@@ -1,6 +1,5 @@
 package me.snoty.backend.notifications
 
-import me.snoty.backend.database.sql.NULL_INSTANT
 import me.snoty.backend.database.sql.flowTransaction
 import me.snoty.backend.database.sql.newSuspendedTransaction
 import org.jetbrains.exposed.sql.*
@@ -12,6 +11,7 @@ import org.koin.core.annotation.Single
 class SqlNotificationService(private val db: Database, private val table: NotificationTable) : NotificationService {
 	override suspend fun send(userId: String, attributes: NotificationAttributes, title: String, description: String?): Unit = db.newSuspendedTransaction {
 		table.upsert(
+			table.userId, table.attributes, table.open,
 			onUpdate = {
 				it[table.count] = table.count + 1
 				it[table.lastSeenAt] = CurrentTimestamp
@@ -22,7 +22,7 @@ class SqlNotificationService(private val db: Database, private val table: Notifi
 		) {
 			it[table.userId] = userId
 			it[table.attributes] = attributes
-			it[table.resolvedAt] = NULL_INSTANT
+			it[table.open] = true
 
 			it[table.title] = title
 			it[table.description] = description
@@ -31,8 +31,9 @@ class SqlNotificationService(private val db: Database, private val table: Notifi
 
 	override suspend fun resolve(userId: String, attributes: NotificationAttributes): Unit = db.newSuspendedTransaction {
 		table.update(where = {
-			(table.resolvedAt eq NULL_INSTANT) and (table.userId eq userId) and (table.attributes eq attributes)
+			(table.open eq true) and (table.userId eq userId) and (table.attributes eq attributes)
 		}) {
+			it[table.open] = null // null, not false, to allow multiple resolved notifications (null != null)
 			it[table.resolvedAt] = CurrentTimestamp
 		}
 	}
@@ -40,12 +41,12 @@ class SqlNotificationService(private val db: Database, private val table: Notifi
 	override fun findByUser(userId: String) = db.flowTransaction {
 		table.selectAll()
 			.where { table.userId eq userId }
-			.orderBy(table.resolvedAt, SortOrder.DESC_NULLS_LAST)
+			.orderBy(table.lastSeenAt, SortOrder.DESC)
 			.map {
 				Notification(
 					userId = it[table.userId],
 					attributes = it[table.attributes],
-					resolvedAt = it[table.resolvedAt].takeIf { i -> i != NULL_INSTANT },
+					resolvedAt = it[table.resolvedAt],
 					lastSeenAt = it[table.lastSeenAt],
 					count = it[table.count],
 					title = it[table.title],
@@ -56,7 +57,7 @@ class SqlNotificationService(private val db: Database, private val table: Notifi
 
 	override suspend fun unresolvedByUser(userId: String): Long = db.newSuspendedTransaction {
 		table.selectAll()
-			.where { table.userId eq userId and (table.resolvedAt eq NULL_INSTANT) }
+			.where { (table.userId eq userId) and (table.open eq true) }
 			.count()
 	}
 }
