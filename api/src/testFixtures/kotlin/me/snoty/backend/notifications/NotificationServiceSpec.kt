@@ -157,4 +157,17 @@ abstract class NotificationServiceSpec {
 
 		assertNotEquals(notification2WithCount1.lastSeenAt, notification2.lastSeenAt)
 	}
+
+	@Test
+	fun multipleResolved() = test {
+		val attributes = attributes("key" to "value")
+
+		repeat(5) {
+			notificationService.send(attributes)
+			notificationService.resolve(userId, attributes)
+
+			val notifications = notificationService.findByUser(userId).toList()
+			assertEquals(it + 1, notifications.size)
+		}
+	}
 }
