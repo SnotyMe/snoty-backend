@@ -6,7 +6,7 @@ plugins {
 kotlin {
 	compilerOptions {
 		freeCompilerArgs.addAll("-Xcontext-receivers", "-Xwhen-guards")
-		optIn.addAll("kotlinx.coroutines.ExperimentalCoroutinesApi", "kotlin.uuid.ExperimentalUuidApi")
+		optIn.addAll("kotlinx.coroutines.ExperimentalCoroutinesApi", "kotlin.uuid.ExperimentalUuidApi", "kotlin.time.ExperimentalTime")
 	}
 }
 
