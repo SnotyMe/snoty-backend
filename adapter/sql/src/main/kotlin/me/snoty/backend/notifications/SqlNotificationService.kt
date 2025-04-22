@@ -22,7 +22,7 @@ class SqlNotificationService(private val db: Database, private val table: Notifi
 		) {
 			it[table.userId] = userId
 			it[table.attributes] = attributes
-			it[open] = true
+			it[table.open] = true
 
 			it[table.title] = title
 			it[table.description] = description
