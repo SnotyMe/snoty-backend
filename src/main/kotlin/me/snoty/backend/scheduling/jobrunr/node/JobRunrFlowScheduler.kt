@@ -30,6 +30,7 @@ class JobRunrFlowScheduler(
 			name = jobName(workflow),
 			retries = jobRequest.retries,
 			schedule = workflow.settings.schedule,
+			recurringJobId = jobId(workflow),
 			request = jobRunrRequest,
 		)
 		return job
@@ -40,7 +41,7 @@ class JobRunrFlowScheduler(
 	}
 
 	override fun trigger(workflow: Workflow, jobRequest: FlowJobRequest) {
-		jobRunrScheduler.scheduleJob(createJob(workflow, jobRequest))
+		jobRunrScheduler.triggerRecurringJobOrSchedule(createJob(workflow, jobRequest))
 	}
 
 	override suspend fun scheduleMissing(flowService: FlowService) {

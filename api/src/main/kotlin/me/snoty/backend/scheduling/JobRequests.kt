@@ -17,6 +17,7 @@ data class SnotyJob(
 	val name: String,
 	val retries: Int,
 	val schedule: JobSchedule = DEFAULT_SCHEDULE,
+	val recurringJobId: String? = null,
 	val request: JobRequest,
 )
 
