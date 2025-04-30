@@ -10,7 +10,7 @@ services:
     volumes:
       - ./data/mariadb:/bitnami/mariadb
   moodle:
-    image: bitnami/moodle:4.5
+    image: bitnami/moodle:5.0
     ports:
       - 21080:8080
       - 21443:8443
