@@ -35,7 +35,7 @@ sealed interface JobSchedule {
 }
 
 data class FlowJobRequest(
-	val retries: Int = 5,
+	val retries: Int = 0,
 	val logLevel: Level = Level.INFO,
 	val triggeredBy: FlowTriggerReason,
 )
