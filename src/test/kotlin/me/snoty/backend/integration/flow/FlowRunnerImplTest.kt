@@ -6,6 +6,8 @@ import io.opentelemetry.api.common.AttributeKey
 import io.opentelemetry.api.trace.SpanId
 import io.opentelemetry.semconv.ExceptionAttributes
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.slf4j.MDCContext
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.plus
@@ -13,6 +15,7 @@ import kotlinx.serialization.modules.polymorphic
 import me.snoty.backend.integration.flow.execution.FlowRunnerImpl
 import me.snoty.backend.integration.flow.execution.FlowTracingImpl
 import me.snoty.backend.integration.flow.logging.NodeLogAppender
+import me.snoty.backend.logging.KMDC
 import me.snoty.backend.observability.JOB_ID
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.test.*
@@ -66,15 +69,20 @@ class FlowRunnerImplTest {
 	private val tracing = FlowTracingImpl(json = json, openTelemetry = otel.openTelemetry, featureFlags = featureFlags)
 	private val testFlowExecutionService = TestFlowExecutionService()
 	private val testFlowExecutionEventService: FlowExecutionEventService = mockk(relaxed = true)
-	private val runner = FlowRunnerImpl(nodeRegistry, IntermediateDataMapperRegistry, tracing, testFlowExecutionService, testFlowExecutionEventService)
+	private val runner = FlowRunnerImpl(nodeRegistry, IntermediateDataMapperRegistry, tracing, testFlowExecutionService, testFlowExecutionEventService, mockk(relaxed = true))
 	private val logger = (LoggerFactory.getLogger(FlowRunnerImplTest::class.java) as Logger).apply {
 		val appender = NodeLogAppender(testFlowExecutionService, testFlowExecutionEventService)
 		addAppender(appender)
 		appender.start()
 	}
 
-	private suspend fun FlowRunnerImpl.executeStartNode(jobId: String, flow: WorkflowWithNodes, input: IntermediateData)
-		= execute(jobId, FlowTriggerReason.Unknown, logger, Level.DEBUG, flow, listOf(input))
+	private suspend fun FlowRunnerImpl.executeStartNode(jobId: String, flow: WorkflowWithNodes, input: IntermediateData) {
+		// set in the scheduler
+		KMDC.put(JOB_ID, jobId)
+		withContext(MDCContext()) {
+			execute(jobId, FlowTriggerReason.Unknown, logger, Level.DEBUG, flow, listOf(input))
+		}
+	}
 
 	private fun assertNoWarnings(flow: Workflow) = runBlocking {
 		val output = testFlowExecutionService.retrieve(flow._id)
