@@ -14,6 +14,7 @@ import org.koin.core.annotation.Single
 
 @Single
 class JobRunrConfigurer(
+	private val reconnecter: JobRunrReconnecter,
 	private val meterRegistry: MeterRegistry,
 	private val storageProvider: StorageProvider,
 	private val koin: Koin,
@@ -31,4 +32,7 @@ class JobRunrConfigurer(
 				.andPort(8082)
 		)
 		.initialize()!!
+		.also {
+			reconnecter.startReconnectLoop()
+		}
 }
