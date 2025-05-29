@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNotNull
 import org.junit.jupiter.api.assertNull
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
@@ -169,5 +170,38 @@ abstract class NotificationServiceSpec {
 			val notifications = notificationService.findByUser(userId).toList()
 			assertEquals(it + 1, notifications.size)
 		}
+	}
+
+	@Test
+	fun deleteMatch() = test {
+		val attributes = attributes("key" to "value")
+		notificationService.send(attributes)
+
+		val notification = notificationService.findByUser(userId).single()
+		assertEquals(userId, notification.userId)
+		assertEquals(attributes, notification.attributes)
+
+		val deleted = notificationService.delete(userId, notification.id)
+		assertTrue(deleted)
+
+		val notifications = notificationService.findByUser(userId).toList()
+		assertTrue(notifications.isEmpty())
+	}
+
+	@Test
+	fun deleteInvalidUser() = test {
+		val attributes = attributes("key" to "value")
+		notificationService.send(attributes)
+
+		val notification = notificationService.findByUser(userId).single()
+		assertEquals(userId, notification.userId)
+		assertEquals(attributes, notification.attributes)
+
+		val deleted = notificationService.delete("invalidUser", notification.id)
+		assertFalse(deleted)
+
+		val notifications = notificationService.findByUser(userId).toList()
+		assertEquals(1, notifications.size)
+		assertEquals(notification, notifications.single())
 	}
 }
