@@ -15,7 +15,7 @@ class NotificationTable(json: Json) : UuidTable("notification") {
 	val userId = varchar("user_id", 255)
 	val attributes = jsonb<NotificationAttributes>("attributes", json)
 	/**
-	 * Set to [null] when the notification is resolved. Due to the fact that null != null (lol), it'll allow multiple resolved notifications.
+	 * Set to null when the notification is resolved. Due to the fact that null != null (lol), it'll allow multiple resolved notifications.
 	 */
 	val open = bool("open").nullable().default(true)
 
@@ -25,7 +25,7 @@ class NotificationTable(json: Json) : UuidTable("notification") {
 	val lastSeenAt = timestamp("last_seen_at").defaultExpression(CurrentTimestamp)
 
 	val title = varchar("title", 255)
-	val description = varchar("description", 255).nullable()
+	val description = text("description").nullable()
 
 	init {
 		uniqueIndex(userId, attributes, open)
