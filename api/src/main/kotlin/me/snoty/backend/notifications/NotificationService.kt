@@ -9,4 +9,9 @@ interface NotificationService {
 
 	fun findByUser(userId: String): Flow<Notification>
 	suspend fun unresolvedByUser(userId: String): Long
+
+	/**
+	 * @return true if the notification was deleted, false if it didn't exist
+	 */
+	suspend fun delete(userId: String, id: String): Boolean
 }

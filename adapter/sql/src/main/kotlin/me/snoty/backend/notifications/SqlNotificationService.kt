@@ -2,7 +2,9 @@ package me.snoty.backend.notifications
 
 import me.snoty.backend.database.sql.flowTransaction
 import me.snoty.backend.database.sql.newSuspendedTransaction
+import me.snoty.backend.utils.toUuid
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
 import org.jetbrains.exposed.sql.kotlin.datetime.CurrentTimestamp
 import org.koin.core.annotation.Single
@@ -44,6 +46,7 @@ class SqlNotificationService(private val db: Database, private val table: Notifi
 			.orderBy(table.lastSeenAt, SortOrder.DESC)
 			.map {
 				Notification(
+					id = it[table.id].toString(),
 					userId = it[table.userId],
 					attributes = it[table.attributes],
 					resolvedAt = it[table.resolvedAt],
@@ -59,5 +62,9 @@ class SqlNotificationService(private val db: Database, private val table: Notifi
 		table.selectAll()
 			.where { (table.userId eq userId) and (table.open eq true) }
 			.count()
+	}
+
+	override suspend fun delete(userId: String, id: String) = db.newSuspendedTransaction {
+		table.deleteWhere { (table.userId eq userId) and (table.id eq id.toUuid()) } > 0
 	}
 }

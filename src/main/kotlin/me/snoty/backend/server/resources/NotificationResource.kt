@@ -37,6 +37,20 @@ fun notificationResource(notificationService: NotificationService) = Resource {
 
 				call.respond(HttpStatusCode.NoContent)
 			}
+
+			delete("{id}") {
+				val user = call.getUser()
+				val notification = call.parameters["id"]
+					?: return@delete call.respond(HttpStatusCode.BadRequest, "Notification ID is required")
+
+				val result = notificationService.delete(user.id.toString(), notification)
+
+				if (result) {
+					call.respond(HttpStatusCode.NoContent)
+				} else {
+					call.respond(HttpStatusCode.NotFound)
+				}
+			}
 		}
 	}
 }
