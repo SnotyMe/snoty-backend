@@ -4,6 +4,7 @@ import kotlinx.datetime.Instant
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
+import me.snoty.backend.utils.bson.provideDocumentCodec
 import me.snoty.integration.common.diff.Change
 import me.snoty.integration.common.diff.ChangeCodec
 import me.snoty.integration.common.diff.DiffResult
@@ -29,7 +30,7 @@ fun integrationsApiCodecModule(bsonTypeClassMap: BsonTypeClassMap): CodecRegistr
 				EmptyNodeSettings::class.java -> EmptyNodeSettingsCodec
 				else -> null
 			} as? Codec<T> ?: when {
-				DiffResult::class.java.isAssignableFrom(clazz) -> DiffResultCodec(registry)
+				DiffResult::class.java.isAssignableFrom(clazz) -> DiffResultCodec(registry, provideDocumentCodec(registry, bsonTypeClassMap))
 				else -> null
 			} as? Codec<T>
 	})

@@ -5,6 +5,7 @@ import org.bson.BsonWriter
 import org.bson.Document
 import org.bson.codecs.Codec
 import org.bson.codecs.DecoderContext
+import org.bson.codecs.DocumentCodec
 import org.bson.codecs.EncoderContext
 import org.bson.codecs.configuration.CodecRegistry
 
@@ -17,9 +18,8 @@ sealed class DiffResult {
 
 class DiffResultCodec(
 	private val codecRegistry: CodecRegistry,
+	private val documentCodec: DocumentCodec,
 ) : Codec<DiffResult> {
-	private val documentCodec = codecRegistry.get(Document::class.java)
-
 	override fun encode(writer: BsonWriter, value: DiffResult, encoderContext: EncoderContext) = value.run {
 		writer.writeStartDocument()
 		writer.writeString("type", value::class.simpleName)
