@@ -5,6 +5,7 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.serialization.*
 import io.ktor.util.reflect.*
 import me.snoty.integration.moodle.param.MoodleParam
 import org.apache.http.client.utils.URIBuilder
@@ -38,7 +39,13 @@ class MoodleAPIImpl(private val httpClient: HttpClient) : MoodleAPI {
 			}
 		}
 
-		return response.body(type)
+		return try {
+			response.body(type)
+		} catch (_: JsonConvertException) {
+			val rpcException: MoodleRpcException = response.body()
+			val exception = rpcException.map()
+			throw exception
+		}
 	}
 }
 
