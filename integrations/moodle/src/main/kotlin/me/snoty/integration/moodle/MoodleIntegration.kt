@@ -1,6 +1,8 @@
 package me.snoty.integration.moodle
 
 import io.ktor.client.*
+import me.snoty.backend.notifications.NotificationAttributes
+import me.snoty.backend.notifications.NotificationService
 import me.snoty.backend.utils.filterIfNot
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
@@ -27,7 +29,8 @@ import org.slf4j.event.Level
 @Single
 class MoodleIntegration(
 	httpClient: HttpClient,
-	private val moodleAPI: MoodleAPI = MoodleAPIImpl(httpClient)
+	private val notificationService: NotificationService,
+	private val moodleAPI: MoodleAPI = MoodleAPIImpl(httpClient),
 ) : NodeHandler {
 	override suspend fun NodeHandleContext.process(
 		node: Node,
@@ -35,7 +38,24 @@ class MoodleIntegration(
 	): NodeOutput {
 		val moodleSettings = node.getConfig<MoodleSettings>()
 
-		val assignments = moodleAPI.getCalendarUpcoming(moodleSettings)
+		val assignments = try {
+			moodleAPI.getCalendarUpcoming(moodleSettings)
+		} catch (e: MoodleException) {
+			when (e) {
+				is MoodleInvalidTokenException -> {
+					val message = "Failed to authenticate with Moodle. Please check your credentials. They may have expired."
+					logger.warn(message)
+					notificationService.send(
+						userId = node.userId.toString(),
+						title = "Moodle Authentication Error",
+						description = message,
+						attributes = NotificationAttributes(type = "moodle.authfailure", flowId = node.flowId, nodeId = node._id),
+					)
+					return emptyList()
+				}
+				else -> throw e
+			}
+		}
 
 		logger.atLevel(
 			if (assignments.isEmpty()) Level.WARN
