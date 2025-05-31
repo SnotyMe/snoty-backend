@@ -5,19 +5,22 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filter
 import me.snoty.backend.scheduling.AdminTasks
 import me.snoty.backend.scheduling.FlowScheduler
+import me.snoty.backend.scheduling.Task
 import me.snoty.integration.common.wiring.flow.FlowService
+import org.jobrunr.jobs.states.StateName
 import org.jobrunr.storage.StorageProvider
 import org.koin.core.annotation.Single
+import java.time.Instant as JavaInstant
 
 @Single
 class JobRunrAdminTasks(private val flowScheduler: FlowScheduler, private val flowService: FlowService, private val storageProvider: StorageProvider) : AdminTasks {
 	private val logger = KotlinLogging.logger {}
 
-	override suspend fun scheduleMissingJobs() {
+	private suspend fun scheduleMissingJobs() {
 		flowScheduler.scheduleMissing(flowService)
 	}
 
-	override suspend fun renameExistingJobs() {
+	private suspend fun renameExistingJobs() {
 		val existingJobs = storageProvider.recurringJobs
 		flowService.getAll()
 			.catch { e -> logger.error(e) { "Failed to schedule flows" } }
@@ -32,4 +35,14 @@ class JobRunrAdminTasks(private val flowScheduler: FlowScheduler, private val fl
 				flowScheduler.schedule(it)
 			}
 	}
+
+	private fun deleteFailedJobs() {
+		storageProvider.deleteJobsPermanently(StateName.FAILED, JavaInstant.now())
+	}
+
+	override fun getTasks() = listOf(
+		Task("Schedule missing jobs", ::scheduleMissingJobs),
+		Task("Rename existing jobs", ::renameExistingJobs),
+		Task("Delete failed jobs", ::deleteFailedJobs)
+	)
 }
