@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.slf4j.MDCContext
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.FlowExecutionException
+import me.snoty.backend.integration.flow.NodeExecutionException
 import me.snoty.backend.integration.flow.unwrap
+import me.snoty.backend.integration.flow.unwrapNodeException
 import me.snoty.backend.logging.KMDC
 import me.snoty.backend.notifications.NotificationAttributes
 import me.snoty.backend.notifications.NotificationService
@@ -96,7 +98,10 @@ class FlowRunnerImpl(
 					status,
 				)
 
-				val attributes = NotificationAttributes(FLOW_FAILURE, flowId = flow._id)
+				val node = it?.unwrapNodeException()?.node
+				val attributes =
+					if (node == null) NotificationAttributes(FLOW_FAILURE, flowId = flow._id)
+					else NotificationAttributes(FLOW_FAILURE, flowId = flow._id, nodeId = node._id)
 				if (it == null) {
 					notificationService.resolve(flow.userId.toString(), attributes)
 				} else {
@@ -168,12 +173,18 @@ class FlowRunnerImpl(
 		return flow {
 			logger.debug { "Processing ${node.descriptor.name} node \"${node.settings.name}\" (${node._id}) with $input" }
 			// pls fix Kotlin
-			val data = with(context) { with (handler) { process(node, input) } }
+			val data = with(context) { with(handler) { process(node, input) } }
 			logger.debug { "Processed ${node.descriptor.name} node \"${node.settings.name}\" (${node._id})" }
 
 			emit(data)
 		}
-			.flowCatching(span)
+			.catch {
+				// exception has already been handled
+				// we rethrow to handle it again at the root
+				if (it is NodeExecutionException) throw it
+				span.setException(it)
+				throw NodeExecutionException(node, it)
+			}
 			.flowOn(span.asContextElement() + MDCContext())
 			.flatMapConcat { output ->
 				@Suppress("UnusedFlow") // yeah I don't think so
