@@ -38,6 +38,7 @@ class MoodleIntegration(
 	): NodeOutput {
 		val moodleSettings = node.getConfig<MoodleSettings>()
 
+		val authFailureAttributes = NotificationAttributes(type = "moodle.authfailure", flowId = node.flowId, nodeId = node._id)
 		val assignments = try {
 			moodleAPI.getCalendarUpcoming(moodleSettings)
 		} catch (e: MoodleException) {
@@ -49,13 +50,14 @@ class MoodleIntegration(
 						userId = node.userId.toString(),
 						title = "Moodle Authentication Error",
 						description = message,
-						attributes = NotificationAttributes(type = "moodle.authfailure", flowId = node.flowId, nodeId = node._id),
+						attributes = authFailureAttributes,
 					)
 					return emptyList()
 				}
 				else -> throw e
 			}
 		}
+		notificationService.resolve(node.userId.toString(), authFailureAttributes)
 
 		logger.atLevel(
 			if (assignments.isEmpty()) Level.WARN
