@@ -28,12 +28,6 @@ dependencies {
 	libs.plugins.buildinfo.get().apply {
 		implementation("io.github.simulatan:gradle-buildinfo-plugin:$version")
 	}
-
-	libs.koin.let { koin ->
-		listOf(koin.core, koin.ksp, koin.annotations)
-	}.forEach {
-		implementation(it)
-	}
 }
 
 publishing {

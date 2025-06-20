@@ -49,7 +49,7 @@ data class WorkflowSettings(
 			"Cron expression must have 5 parts. 6 parts (seconds resolution) are not supported to prevent spam."
 		}
 		try {
-			CronExpression.create(expression)
+			CronExpression(expression)
 		} catch (cronException: InvalidCronExpressionException) {
 			throw IllegalArgumentException("Invalid cron expression: ${cronException.message}", cronException)
 		}

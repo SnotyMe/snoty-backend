@@ -10,7 +10,6 @@ import org.jobrunr.scheduling.JobBuilder
 import org.jobrunr.scheduling.JobBuilder.aJob
 import org.jobrunr.scheduling.JobRequestScheduler
 import org.jobrunr.scheduling.RecurringJobBuilder.aRecurringJob
-import org.jobrunr.storage.StorageProvider
 import org.koin.core.annotation.Single
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.declaredMemberFunctions
@@ -20,7 +19,7 @@ import kotlin.reflect.jvm.isAccessible
 import kotlin.time.toJavaDuration
 
 @Single
-class JobRunrScheduler(private val jobRunrConfigurer: JobRunrConfigurer, private val storageProvider: StorageProvider) : Scheduler {
+class JobRunrScheduler(private val jobRunrConfigurer: JobRunrConfigurer, private val storageProvider: SnotyJobrunrStorageProvider) : Scheduler {
 	private val logger = KotlinLogging.logger {}
 
 	private lateinit var jobRequestScheduler: JobRequestScheduler
@@ -55,7 +54,7 @@ class JobRunrScheduler(private val jobRunrConfigurer: JobRunrConfigurer, private
 				.withJobRequest(job.request)
 				.apply {
 					when (val schedule = job.schedule) {
-						is JobSchedule.Recurring -> withDuration(schedule.interval.toJavaDuration())
+						is JobSchedule.Recurring -> withInterval(schedule.interval.toJavaDuration())
 						is JobSchedule.Cron -> withCron(schedule.expression)
 						else -> error("Unsupported schedule type: $schedule")
 					}
@@ -96,7 +95,5 @@ class JobRunrScheduler(private val jobRunrConfigurer: JobRunrConfigurer, private
 	}
 
 	override fun recurringJobExists(id: String) =
-		// do not check for SCHEDULED jobs
-		// those are created from the RecurringJob and may have a conservative retry delay interfering with the manual trigger
 		storageProvider.recurringJobExists(id, StateName.ENQUEUED, StateName.PROCESSING)
 }
