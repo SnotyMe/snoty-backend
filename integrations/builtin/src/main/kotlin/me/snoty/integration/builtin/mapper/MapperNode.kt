@@ -27,7 +27,10 @@ data class MapperSettings(
 	val fields: Map<String, @Language("liquid") String>,
 	@FieldDescription("If true, the ID of the input object will be preserved in the output object")
 	@FieldDefaultValue("true")
-	val preserveId: Boolean = true
+	val preserveId: Boolean = true,
+	@FieldDescription("If true, every line of the output will be trimmed to remove surrounding non-visible characters. Useful for Liquid templates with indents.")
+	@FieldDefaultValue("true")
+	val trim: Boolean = false, // set to false for backwards compatibility
 ) : NodeSettings
 
 @RegisterNode(
@@ -53,6 +56,9 @@ class MapperNodeHandler(
 		})
 
 		val result = settings.engine.template(logger, settings, mappedData)
+		if (settings.trim) {
+			result.trimAll()
+		}
 
 		structOutput(result)
 	}
