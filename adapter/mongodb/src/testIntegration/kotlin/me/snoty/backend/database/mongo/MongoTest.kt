@@ -22,7 +22,7 @@ object MongoTest {
 		)
 	}
 
-	fun getMongoDatabase(block: () -> Unit): MongoDatabase {
+	fun getMongoClients(block: () -> Unit): MongoClients {
 		val javaClass = block.javaClass
 		var name = javaClass.name
 		name = when {
@@ -34,6 +34,8 @@ object MongoTest {
 			config,
 			provideCodecRegistry(provideMigrationsCodec(), provideApiCodec(bsonTypeClassMap())),
 			"${name}_${javaClass.hashCode()}",
-		).coroutinesDatabase
+		)
 	}
+
+	fun getMongoDatabase(block: () -> Unit): MongoDatabase = getMongoClients(block).coroutinesDatabase
 }

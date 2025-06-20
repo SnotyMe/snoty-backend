@@ -1,10 +1,13 @@
 package me.snoty.backend.database.sql
 
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
+import javax.sql.DataSource
 
 object PostgresTest {
 	const val ADMIN_DB = "admin"
@@ -24,7 +27,7 @@ object PostgresTest {
 		)
 	}
 
-	fun getPostgresDatabase(block: Database.() -> Unit): Database {
+	fun <T> getDb(block: T.() -> Unit): String {
 		val javaClass = block.javaClass
 		var name = javaClass.name
 		name = when {
@@ -40,6 +43,26 @@ object PostgresTest {
 			SchemaUtils.createDatabase(dbName)
 			connection.autoCommit = false
 		}
+
+		return dbName
+	}
+
+	fun getPostgresDataSource(block: DataSource.() -> Unit): DataSource {
+		val dbName = getDb(block)
+
+		val ds = HikariDataSource(HikariConfig().apply {
+			jdbcUrl = postgresContainer.jdbcUrl.replace(ADMIN_DB, dbName)
+			username = postgresContainer.username
+			password = postgresContainer.password
+		})
+
+		block(ds)
+
+		return ds
+	}
+
+	fun getPostgresDatabase(block: Database.() -> Unit): Database {
+		val dbName = getDb(block)
 
 		val db = Database.connect(
 			url = postgresContainer.jdbcUrl.replace(ADMIN_DB, dbName),

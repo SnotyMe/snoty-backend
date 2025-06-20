@@ -12,7 +12,12 @@ dependencies { with(libs) {
     api(libraries.kotlinx.serialization)
     api(libraries.kotlinx.datetime)
 
-    api(libraries.jobrunr)
+    api(libraries.jobrunr) {
+        exclude(group = "io.insert-koin", module = "koin-core")
+    }
+    api(libraries.jobrunr.kotlin) {
+        exclude(group = "io.insert-koin", module = "koin-core")
+    }
 
     api(log.kotlinLogging)
     api(log.logback)

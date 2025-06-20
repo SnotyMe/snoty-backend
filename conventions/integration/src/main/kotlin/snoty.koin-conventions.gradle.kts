@@ -1,5 +1,3 @@
-import org.gradle.api.artifacts.VersionCatalogsExtension
-import org.gradle.kotlin.dsl.getByType
 import kotlin.jvm.optionals.getOrNull
 
 plugins {
@@ -34,7 +32,13 @@ dependencies {
 		?.displayName
 			?: throw IllegalStateException("No koin-annotations version")
 
-	implementation("${libs.getModule("koin-core")}:$koinVersion")
+	constraints {
+		implementation("${libs.getModule("koin-core")}:$koinVersion") {
+			version {
+				strictly(koinVersion) // TODO: remove once Koin 4.1 is fixed (https://github.com/InsertKoinIO/koin/pull/2231)
+			}
+		}
+	}
 	implementation("${libs.getModule("koin-ktor")}:$koinVersion")
 	api("${libs.getModule("koin-annotations")}:$koinAnnotationsVersion")
 

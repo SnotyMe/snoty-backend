@@ -21,6 +21,8 @@ junit = "5.12.2"
 testcontainers = "1.20.6"
 ktor = "3.1.0"
 
+jobrunr = "8.0.0"
+
 [plugins]
 doctor = { id = "com.osacky.doctor", version = "0.10.0" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
@@ -85,7 +87,8 @@ libraries-ical4j = { group = "org.mnode.ical4j", name = "ical4j", version = "4.1
 libraries-jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson" }
 libraries-jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
 libraries-jackson-kotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version.ref = "jackson" }
-libraries-jobrunr = { group = "org.jobrunr", name = "jobrunr", version = "7.5.0" }
+libraries-jobrunr = { group = "org.jobrunr", name = "jobrunr", version.ref = "jobrunr" }
+libraries-jobrunr-kotlin = { group = "org.jobrunr", name = "jobrunr-kotlin-2.2-support", version.ref = "jobrunr" }
 libraries-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.6.1" }
 libraries-kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 libraries-openfeature = { group = "dev.openfeature", name = "sdk", version = "1.14.0" }

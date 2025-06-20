@@ -114,9 +114,6 @@ dependencies { with(libs) {
     implementation(libraries.jackson.databind)
     implementation(libraries.jackson.kotlin)
 
-    // task scheduling
-    implementation(libraries.jobrunr)
-
     // feature flags
     implementation(libraries.openfeature)
     implementation(libraries.openfeature.flagd)
