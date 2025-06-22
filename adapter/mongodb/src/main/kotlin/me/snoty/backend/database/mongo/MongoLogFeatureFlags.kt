@@ -16,15 +16,17 @@ class MongoLogFeatureFlags(override val environment: Environment, override val c
 		ifDev = Level.INFO,
 	)
 	override val logLevelFeatureFlags: List<LogLevelFeatureFlag> = listOf(
+		logLevelFlag(MONGO, MONGO_LOGGER),
 		logLevelFlag(MONGO_COMMANDS, MONGO_COMMANDS_LOGGER),
 		// excessive logging, therefore set to INFO in all environments, can be changed to DEBUG if needed
-		logLevelFlag("$MONGO_FLAG_PREFIX.tracing", "me.snoty.backend.database.mongo.tracing", ifDev = Level.INFO, default = Level.INFO),
+		logLevelFlag("$MONGO.tracing", "me.snoty.backend.database.mongo.tracing", ifDev = Level.INFO, default = Level.INFO),
 		jobRunr
 	)
 
 	companion object {
-		const val MONGO_FLAG_PREFIX = "mongo"
-		const val MONGO_COMMANDS = "$MONGO_FLAG_PREFIX.commands"
-		const val MONGO_COMMANDS_LOGGER = "org.mongodb.driver.protocol.command"
+		const val MONGO = "mongo"
+		const val MONGO_LOGGER = "org.mongodb.driver"
+		const val MONGO_COMMANDS = "$MONGO.commands"
+		const val MONGO_COMMANDS_LOGGER = "$MONGO_LOGGER.protocol.command"
 	}
 }

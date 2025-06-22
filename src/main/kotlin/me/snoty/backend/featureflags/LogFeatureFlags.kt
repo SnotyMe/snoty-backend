@@ -13,7 +13,6 @@ class LogFeatureFlags(override val environment: Environment, override val client
 		logLevelFlag("http.server", "io.netty", "io.ktor.server", "io.ktor.auth.jwt"),
 		logLevelFlag("koin", "[Koin]"),
 		logLevelFlag("jobrunr", "org.jobrunr"),
-		logLevelFlag("mongo", "org.mongodb.driver"),
 		logLevelFlag("ical4j", "net.fortuna.ical4j"),
 	)
 }
