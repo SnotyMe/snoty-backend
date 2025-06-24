@@ -8,6 +8,7 @@ import me.snoty.backend.config.ConfigWrapper
 import me.snoty.backend.featureflags.FeatureFlagBoolean
 import me.snoty.backend.featureflags.FeatureFlagsContainer
 import me.snoty.backend.utils.simpleClassName
+import me.snoty.backend.wiring.node.NodesScope
 import me.snoty.backend.wiring.node.metadataJson
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.node.NodeHandler
@@ -48,6 +49,7 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 	 * Stage 1: loading all Koin DI modules
 	 */
 	private fun loadKoinModules(): List<NodeHandlerContributorData> {
+		val nodesScope = koin.getScope(NodesScope.scopeId)
 		val loader = ServiceLoader.load(NodeHandlerContributor::class.java)
 		return loader.map { contributor ->
 			@Suppress("DEPRECATION") // still used for backwards compatibility
@@ -60,7 +62,8 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 
 			val scopeName = metadata.descriptor.scope
 			val scope = koin.getOrCreateScope(scopeName.value, scopeName)
-			
+			nodesScope.linkTo(scope) // link to discover node scoped services without explicit @ScopeId on usage
+
 			logger.trace { "Loading modules for $scopeName..." }
 			koin.loadModules(listOf(module {
 				includes(contributor.koinModules)

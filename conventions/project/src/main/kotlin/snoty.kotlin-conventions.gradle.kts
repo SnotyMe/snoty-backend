@@ -5,7 +5,7 @@ plugins {
 
 kotlin {
 	compilerOptions {
-		freeCompilerArgs.addAll("-Xcontext-parameters", "-Xwhen-guards")
+		freeCompilerArgs.addAll("-Xcontext-parameters")
 		optIn.addAll("kotlinx.coroutines.ExperimentalCoroutinesApi", "kotlin.uuid.ExperimentalUuidApi", "kotlin.time.ExperimentalTime")
 	}
 }

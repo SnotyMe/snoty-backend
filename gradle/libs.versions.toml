@@ -1,11 +1,11 @@
 [versions]
 hoplite = "2.9.0"
-koin = "4.1.0-Beta5"
-koin-annotations = "2.0.0-RC1"
-ksp = "2.2.0-Beta1-2.0.0"
+koin = "4.1.0"
+koin-annotations = "2.1.0"
+ksp = "2.2.0-2.0.2"
 kotlinx-serialization = "1.8.0"
-kotlin = "2.2.0-Beta1"
-coroutines = "1.10.1"
+kotlin = "2.2.0"
+coroutines = "1.10.2"
 
 mongodb = "5.3.1"
 exposed = "0.60.0"
@@ -18,7 +18,7 @@ opentelemetry-instrumentation = "2.11.0-alpha"
 micrometer = "1.14.2"
 junit = "5.12.2"
 testcontainers = "1.20.6"
-ktor = "3.1.0"
+ktor = "3.2.0" # TODO: bump to 3.2.1 once available (https://youtrack.jetbrains.com/issue/KTOR-8606)
 
 jobrunr = "8.0.0"
 
@@ -40,7 +40,7 @@ configuration-hoplite-hikari = { group = "com.sksamuel.hoplite", name = "hoplite
 
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 koin-slf4j = { group = "io.insert-koin", name = "koin-logger-slf4j", version.ref = "koin" }
-koin-ktor = { group = "io.insert-koin", name = "koin-ktor3", version.ref = "koin" }
+koin-ktor = { group = "io.insert-koin", name = "koin-ktor", version.ref = "koin" }
 koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin" }
 koin-annotations = { group = "io.insert-koin", name = "koin-annotations", version.ref = "koin-annotations" }
 koin-ksp = { group = "io.insert-koin", name = "koin-ksp-compiler", version.ref = "koin-annotations" }
