@@ -20,7 +20,7 @@ fun main() = startApplication()
 
 fun startApplication(vararg extraModules: Module) = runBlocking {
 	val koin = startKoin {
-		logger(SLF4JLogger(level = Level.INFO))
+		logger(SLF4JLogger(level = Level.DEBUG))
 		modules(
 			*extraModules,
 			module {
