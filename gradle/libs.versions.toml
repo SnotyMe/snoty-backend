@@ -2,7 +2,7 @@
 hoplite = "2.9.0"
 koin = "4.1.0" # TODO: bump to 4.1.1 once available (https://github.com/InsertKoinIO/koin/issues/2231)
 koin-annotations = "2.1.0"
-ksp = "2.2.0-RC3-2.0.2" # TODO: bump to stable once available
+ksp = "2.2.0-2.0.2"
 jackson = "2.18.2"
 kotlinx-serialization = "1.8.0"
 kotlin = "2.2.0"
