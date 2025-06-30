@@ -1,6 +1,6 @@
 services:
   mariadb:
-    image: bitnami/mariadb:11.6
+    image: bitnami/mariadb:11.8
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
       - MARIADB_USER=moodle
