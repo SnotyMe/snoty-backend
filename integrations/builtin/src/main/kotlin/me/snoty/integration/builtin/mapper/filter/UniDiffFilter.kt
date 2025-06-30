@@ -18,7 +18,7 @@ class UniDiffFilter : Filter("unidiff") {
 				old to new
 			}
 
-			else -> {
+			is String -> {
 				val old = asString(value, context).orNull()
 				if (params.isEmpty()) {
 					throw IllegalArgumentException("UniDiff filter requires the new value as a parameter")
@@ -27,6 +27,8 @@ class UniDiffFilter : Filter("unidiff") {
 
 				old to new
 			}
+
+			else -> throw IllegalArgumentException("UniDiff filter requires a Document or String as input, got ${value?.javaClass?.name ?: "null"}")
 		}
 
 		return computeDiff(old, new)
