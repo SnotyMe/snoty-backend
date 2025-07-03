@@ -3,7 +3,6 @@ hoplite = "2.9.0"
 koin = "4.1.0-Beta5"
 koin-annotations = "2.0.0-RC1"
 ksp = "2.2.0-Beta1-2.0.0"
-jackson = "2.18.2"
 kotlinx-serialization = "1.8.0"
 kotlin = "2.2.0-Beta1"
 coroutines = "1.10.1"
@@ -84,9 +83,6 @@ libraries-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-c
 libraries-bson-kotlin = { group = "org.mongodb", name = "bson-kotlin", version.ref = "mongodb" }
 libraries-bson-kotlinx = { group = "org.mongodb", name = "bson-kotlinx", version.ref = "mongodb" }
 libraries-ical4j = { group = "org.mnode.ical4j", name = "ical4j", version = "4.1.0" }
-libraries-jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson" }
-libraries-jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
-libraries-jackson-kotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version.ref = "jackson" }
 libraries-jobrunr = { group = "org.jobrunr", name = "jobrunr", version.ref = "jobrunr" }
 libraries-jobrunr-kotlin = { group = "org.jobrunr", name = "jobrunr-kotlin-2.2-support", version.ref = "jobrunr" }
 libraries-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.6.1" }

@@ -109,11 +109,6 @@ dependencies { with(libs) {
     implementation(log.kotlinLogging)
     implementation(log.coroutines)
 
-    // serialization
-    implementation(libraries.jackson.core)
-    implementation(libraries.jackson.databind)
-    implementation(libraries.jackson.kotlin)
-
     // feature flags
     implementation(libraries.openfeature)
     implementation(libraries.openfeature.flagd)
