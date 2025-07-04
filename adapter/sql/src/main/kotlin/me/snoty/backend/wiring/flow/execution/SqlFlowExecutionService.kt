@@ -1,7 +1,8 @@
 package me.snoty.backend.wiring.flow.execution
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.Clock
+import kotlinx.datetime.toDeprecatedInstant
+import kotlinx.datetime.toStdlibInstant
 import me.snoty.backend.database.sql.flowTransaction
 import me.snoty.backend.database.sql.newSuspendedTransaction
 import me.snoty.backend.integration.config.flow.NodeId
@@ -15,6 +16,7 @@ import me.snoty.integration.common.wiring.flow.NodeLogEntry
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.koin.core.annotation.Single
+import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
 @Single
@@ -29,7 +31,7 @@ class SqlFlowExecutionService(
 			it[id] = jobId
 			it[this.flowId] = flowId.toUuid()
 			it[this.triggeredBy] = triggeredBy
-			it[this.triggeredAt] = Clock.System.now()
+			it[this.triggeredAt] = Clock.System.now().toDeprecatedInstant()
 			it[this.status] = FlowExecutionStatus.RUNNING
 		}
 	}
@@ -37,7 +39,7 @@ class SqlFlowExecutionService(
 	override suspend fun record(jobId: String, entry: NodeLogEntry) = db.newSuspendedTransaction<Unit> {
 		flowExecutionLogTable.insert {
 			it[executionId] = jobId
-			it[timestamp] = entry.timestamp
+			it[timestamp] = entry.timestamp.toDeprecatedInstant()
 			it[level] = entry.level
 			it[message] = entry.message
 			it[node] = entry.node
@@ -74,7 +76,7 @@ class SqlFlowExecutionService(
 					jobId = it[flowExecutionTable.id].value,
 					flowId = it[flowExecutionTable.flowId].value.toString(),
 					triggeredBy = it[flowExecutionTable.triggeredBy],
-					startDate = it[flowExecutionTable.triggeredAt],
+					startDate = it[flowExecutionTable.triggeredAt].toStdlibInstant(),
 					status = it[flowExecutionTable.status]
 				)
 			}
@@ -104,7 +106,7 @@ class SqlFlowExecutionService(
 				jobId = execution[flowExecutionTable.id].value,
 				flowId = execution[flowExecutionTable.flowId].value.toString(),
 				triggeredBy = execution[flowExecutionTable.triggeredBy],
-				startDate = execution[flowExecutionTable.triggeredAt],
+				startDate = execution[flowExecutionTable.triggeredAt].toStdlibInstant(),
 				status = execution[flowExecutionTable.status],
 				logs = logs[execution[flowExecutionTable.id].value]?.map {
 					it.toLogEntry(flowExecutionLogTable)

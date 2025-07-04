@@ -9,13 +9,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import me.snoty.backend.notifications.Notification
 import me.snoty.backend.notifications.NotificationAttributes
 import me.snoty.backend.notifications.NotificationService
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.koin.core.annotation.Single
+import kotlin.time.Clock
 
 @Single
 class MongoNotificationService(

@@ -1,9 +1,9 @@
 package me.snoty.integration.moodle.model
 
-import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import me.snoty.integration.moodle.model.raw.MoodleCourse
 import me.snoty.integration.moodle.model.raw.MoodleEvent
+import kotlin.time.Instant
 
 @Serializable
 data class MoodleAssignment(

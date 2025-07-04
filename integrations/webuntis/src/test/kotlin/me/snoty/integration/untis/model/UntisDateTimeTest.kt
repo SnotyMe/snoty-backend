@@ -1,11 +1,9 @@
 package me.snoty.integration.untis.model
 
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import me.snoty.backend.utils.DateTimeParseException
 import me.snoty.integration.untis.model.UntisDateTimeTest.DateWrapper.Companion.decode
@@ -13,6 +11,7 @@ import me.snoty.integration.untis.model.UntisDateTimeTest.DateWrapper.Companion.
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import kotlin.time.Instant
 
 class UntisDateTimeTest {
 	@Serializable

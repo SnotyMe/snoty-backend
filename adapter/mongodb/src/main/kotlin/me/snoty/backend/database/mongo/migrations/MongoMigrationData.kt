@@ -1,7 +1,5 @@
 package me.snoty.backend.database.mongo.migrations
 
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import me.snoty.backend.utils.bson.CodecRegistryProvider
@@ -15,6 +13,8 @@ import org.bson.types.ObjectId
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 import kotlin.reflect.full.isSubclassOf
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 data class MongoMigrationData(
 	val _id: ObjectId,

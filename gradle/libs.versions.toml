@@ -3,7 +3,7 @@ hoplite = "2.9.0"
 koin = "4.1.0"
 koin-annotations = "2.1.0"
 ksp = "2.2.0-2.0.2"
-kotlinx-serialization = "1.8.0"
+kotlinx-serialization = "1.9.0"
 kotlin = "2.2.0"
 coroutines = "1.10.2"
 
@@ -85,7 +85,7 @@ libraries-bson-kotlinx = { group = "org.mongodb", name = "bson-kotlinx", version
 libraries-ical4j = { group = "org.mnode.ical4j", name = "ical4j", version = "4.1.0" }
 libraries-jobrunr = { group = "org.jobrunr", name = "jobrunr", version.ref = "jobrunr" }
 libraries-jobrunr-kotlin = { group = "org.jobrunr", name = "jobrunr-kotlin-2.2-support", version.ref = "jobrunr" }
-libraries-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.6.1" }
+libraries-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.7.0-0.6.x-compat" }
 libraries-kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 libraries-openfeature = { group = "dev.openfeature", name = "sdk", version = "1.14.0" }
 libraries-openfeature-flagd = { group = "dev.openfeature.contrib.providers", name = "flagd", version = "0.11.2" }

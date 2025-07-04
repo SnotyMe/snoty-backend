@@ -6,7 +6,6 @@ import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.toList
-import kotlinx.datetime.Clock.System
 import me.snoty.backend.utils.errors.CaughtException
 import me.snoty.backend.utils.errors.causeIfCaught
 import me.snoty.backend.utils.errors.nullIfCaught
@@ -14,6 +13,7 @@ import org.bson.types.ObjectId
 import org.koin.core.annotation.Property
 import org.koin.core.annotation.PropertyValue
 import org.koin.core.annotation.Single
+import kotlin.time.Clock
 
 @Single
 class MongoMigrator(
@@ -81,7 +81,7 @@ class MongoMigrator(
 			_id = migrationId,
 			namespace = migration.namespace,
 			name = migration.name,
-			createdAt = System.now(),
+			createdAt = Clock.System.now(),
 			events = listOf(MongoMigrationEvent.Running()),
 		))
 		// we'll add it so it can rollback even if it fails
