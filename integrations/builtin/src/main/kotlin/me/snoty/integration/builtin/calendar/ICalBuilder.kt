@@ -1,13 +1,13 @@
 package me.snoty.integration.builtin.calendar
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.toJavaInstant
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.*
 import net.fortuna.ical4j.model.property.immutable.ImmutableVersion
 import org.koin.core.annotation.Single
+import kotlin.time.toJavaInstant
 
 @Single
 class ICalBuilder(private val config: ICalConfig) {

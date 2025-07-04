@@ -1,8 +1,8 @@
 package me.snoty.backend.utils
 
-import kotlinx.datetime.Clock
 import me.snoty.backend.integration.config.flow.NodeId
 import java.security.SecureRandom
+import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
 private val random = SecureRandom()

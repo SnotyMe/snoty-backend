@@ -1,10 +1,10 @@
 package me.snoty.integration.notion.page
 
-import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import me.snoty.integration.notion.model.NotionParent
 import me.snoty.integration.notion.page.MappedNotionPageProperties.*
+import kotlin.time.Instant
 
 @Serializable
 data class NotionPage(

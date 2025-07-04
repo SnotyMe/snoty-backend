@@ -1,7 +1,6 @@
 package me.snoty.backend.wiring
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Instant
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.test.TestIds.INTEGRATION_NAME
 import me.snoty.backend.test.TestIds.USER_ID_1
@@ -23,6 +22,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.testcontainers.utility.Base58.randomString
 import kotlin.test.assertNotNull
+import kotlin.time.Instant
 
 abstract class EntityStateServiceSpec(val makeId: () -> NodeId) {
 	abstract val service: EntityStateService

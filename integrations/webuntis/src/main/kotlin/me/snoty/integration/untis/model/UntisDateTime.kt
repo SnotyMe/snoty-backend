@@ -15,6 +15,7 @@ import org.bson.codecs.Codec
 import org.bson.codecs.DecoderContext
 import org.bson.codecs.EncoderContext
 import java.time.LocalDateTime
+import kotlin.time.Instant
 
 @Serializable(with = UntisDateTime.Companion::class)
 data class UntisDateTime(
