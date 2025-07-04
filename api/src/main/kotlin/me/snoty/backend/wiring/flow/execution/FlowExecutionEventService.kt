@@ -1,12 +1,12 @@
 package me.snoty.backend.wiring.flow.execution
 
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.datetime.Clock
 import kotlinx.serialization.Serializable
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
 import me.snoty.integration.common.wiring.flow.NodeLogEntry
+import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
 @Serializable

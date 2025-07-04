@@ -1,13 +1,12 @@
 package me.snoty.backend.build
 
 import com.sksamuel.hoplite.ConfigAlias
-import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import me.snoty.backend.config.ApplicationConfigLoader
 import me.snoty.backend.config.Config
 import org.koin.core.annotation.Single
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 @Serializable
 data class BuildInfo(

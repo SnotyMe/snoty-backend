@@ -1,9 +1,9 @@
 package me.snoty.integration.common.wiring.flow
 
-import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import me.snoty.backend.integration.config.flow.NodeId
 import org.slf4j.event.Level
+import kotlin.time.Instant
 
 @Serializable
 data class NodeLogEntry(

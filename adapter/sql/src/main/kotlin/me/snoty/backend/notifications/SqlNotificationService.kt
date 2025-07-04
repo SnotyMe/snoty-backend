@@ -1,5 +1,6 @@
 package me.snoty.backend.notifications
 
+import kotlinx.datetime.toStdlibInstant
 import me.snoty.backend.database.sql.flowTransaction
 import me.snoty.backend.database.sql.newSuspendedTransaction
 import me.snoty.backend.utils.toUuid
@@ -49,8 +50,8 @@ class SqlNotificationService(private val db: Database, private val table: Notifi
 					id = it[table.id].toString(),
 					userId = it[table.userId],
 					attributes = it[table.attributes],
-					resolvedAt = it[table.resolvedAt],
-					lastSeenAt = it[table.lastSeenAt],
+					resolvedAt = it[table.resolvedAt]?.toStdlibInstant(),
+					lastSeenAt = it[table.lastSeenAt].toStdlibInstant(),
 					count = it[table.count],
 					title = it[table.title],
 					description = it[table.description],

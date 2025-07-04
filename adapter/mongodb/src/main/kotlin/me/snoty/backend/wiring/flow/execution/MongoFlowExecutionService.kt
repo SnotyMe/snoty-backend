@@ -9,8 +9,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import me.snoty.backend.database.mongo.Aggregations
 import me.snoty.backend.database.mongo.aggregate
 import me.snoty.backend.database.mongo.mongoField
@@ -24,6 +22,8 @@ import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
 import org.koin.core.annotation.Single
 import java.util.concurrent.TimeUnit
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 data class MongoFlowLogs(
