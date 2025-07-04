@@ -18,7 +18,7 @@ opentelemetry-instrumentation = "2.11.0-alpha"
 micrometer = "1.14.2"
 junit = "5.12.2"
 testcontainers = "1.20.6"
-ktor = "3.2.0" # TODO: bump to 3.2.1 once available (https://youtrack.jetbrains.com/issue/KTOR-8606)
+ktor = "3.2.1"
 
 jobrunr = "8.0.0"
 
