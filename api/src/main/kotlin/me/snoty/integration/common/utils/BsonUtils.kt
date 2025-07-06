@@ -1,6 +1,5 @@
 package me.snoty.integration.common.utils
 
-import kotlinx.datetime.Instant
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
@@ -20,6 +19,7 @@ import org.bson.codecs.configuration.CodecProvider
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Single
+import kotlin.time.Instant
 
 @Suppress("UNCHECKED_CAST")
 fun integrationsApiCodecModule(bsonTypeClassMap: BsonTypeClassMap): CodecRegistry =

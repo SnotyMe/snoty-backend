@@ -1,7 +1,7 @@
 package me.snoty.integration.builtin.calendar
 
-import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import kotlin.time.Instant
 
 @Serializable
 data class CalendarEvent(

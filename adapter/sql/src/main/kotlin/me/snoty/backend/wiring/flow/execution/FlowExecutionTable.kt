@@ -1,5 +1,6 @@
 package me.snoty.backend.wiring.flow.execution
 
+import kotlinx.datetime.toStdlibInstant
 import me.snoty.backend.database.sql.utils.UuidTable
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.wiring.flow.FlowTable
@@ -35,7 +36,7 @@ class FlowExecutionLogTable(flowExecutionTable: FlowExecutionTable) : UuidTable(
 }
 
 fun ResultRow.toLogEntry(flowExecutionLogTable: FlowExecutionLogTable) = NodeLogEntry(
-	timestamp = this[flowExecutionLogTable.timestamp],
+	timestamp = this[flowExecutionLogTable.timestamp].toStdlibInstant(),
 	level = this[flowExecutionLogTable.level],
 	message = this[flowExecutionLogTable.message],
 	node = this[flowExecutionLogTable.node]

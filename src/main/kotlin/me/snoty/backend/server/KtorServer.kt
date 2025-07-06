@@ -12,6 +12,7 @@ import me.snoty.backend.server.plugins.*
 import me.snoty.backend.server.routing.addResources
 import org.koin.core.Koin
 import org.koin.core.annotation.Single
+import org.koin.ktor.plugin.setKoin
 
 @Single
 class KtorServer(

@@ -1,7 +1,7 @@
 package me.snoty.backend.test
 
-import kotlinx.datetime.Clock
 import me.snoty.backend.build.BuildInfo
+import kotlin.time.Clock
 
 val TestBuildInfo = BuildInfo(
 	gitBranch = "<test>",
