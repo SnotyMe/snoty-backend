@@ -51,8 +51,6 @@ class JobRunrFlowJobHandler(
 			KMDC.put(USER_ID, flow.userId.toString())
 
 			withContext(MDCContext()) {
-				logger.debug("Processing flow {}", flow)
-
 				flowRunner.execute(
 					jobId = jobContext.jobId.toString(),
 					triggeredBy = jobRequest.triggeredBy,

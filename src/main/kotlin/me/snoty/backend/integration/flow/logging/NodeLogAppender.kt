@@ -36,10 +36,10 @@ class NodeLogAppender(
 
 	override fun append(eventObject: ILoggingEvent) {
 		val eventLevel = eventObject.level.toSLF4JLevel()
+		if (eventLevel == Level.TRACE) return
+
 		val appenderLevel = eventObject.mdcPropertyMap[APPENDER_LOG_LEVEL.key]?.let { Level.valueOf(it) } ?: Level.INFO
-		if (eventLevel.toInt() < appenderLevel.toInt()) {
-			return
-		}
+		if (eventLevel.toInt() < appenderLevel.toInt()) return
 
 		val message = eventObject.formattedMessage + (eventObject.throwableProxy?.message?.let {
 			"\n$it"

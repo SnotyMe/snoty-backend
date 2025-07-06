@@ -59,6 +59,8 @@ class FlowRunnerImpl(
 		val rootSpan = flowTracing.createRootSpan(jobId, flow)
 		flowExecutionService.create(jobId, flow._id, triggeredBy)
 
+		logger.trace("Processing flow {}", flow)
+
 		flowExecutionEventService.offer(FlowExecutionEvent.FlowStartedEvent(
 			userId = flow.userId,
 			flowId = flow._id,
