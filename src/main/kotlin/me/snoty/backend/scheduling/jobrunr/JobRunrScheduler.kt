@@ -19,7 +19,7 @@ import kotlin.reflect.jvm.isAccessible
 import kotlin.time.toJavaDuration
 
 @Single
-class JobRunrScheduler(private val jobRunrConfigurer: JobRunrConfigurer, private val storageProvider: SnotyJobrunrStorageProvider) : Scheduler {
+class JobRunrScheduler(private val jobRunrConfigurer: JobRunrConfigurer, private val storageProvider: SnotyJobRunrStorageProvider) : Scheduler {
 	private val logger = KotlinLogging.logger {}
 
 	private lateinit var jobRequestScheduler: JobRequestScheduler

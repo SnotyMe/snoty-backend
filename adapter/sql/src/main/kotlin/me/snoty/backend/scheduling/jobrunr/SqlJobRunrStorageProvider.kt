@@ -12,13 +12,13 @@ import javax.sql.DataSource
 
 const val JOBRUNR_TABLE_PREFIX = "jobrunr$"
 
-@Single(binds = [SnotyJobrunrStorageProvider::class, StorageProvider::class])
-fun provideStorageProvider(dataSource: DataSource): SnotyJobrunrStorageProvider = SqlJobrunrStorageProvider(dataSource)
+@Single(binds = [SnotyJobRunrStorageProvider::class, StorageProvider::class])
+fun provideStorageProvider(dataSource: DataSource): SnotyJobRunrStorageProvider = SqlJobRunrStorageProvider(dataSource)
 
-class SqlJobrunrStorageProvider(dataSource: DataSource) : PostgresStorageProvider(
+class SqlJobRunrStorageProvider(dataSource: DataSource) : PostgresStorageProvider(
 	/* dataSource = */ dataSource,
 	/* tablePrefix = */ JOBRUNR_TABLE_PREFIX
-), SnotyJobrunrStorageProvider {
+), SnotyJobRunrStorageProvider {
 	override fun recurringJobExists(recurringJobId: String, vararg states: StateName): Boolean {
 		try {
 			dataSource.connection.use { conn ->

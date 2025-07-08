@@ -10,7 +10,7 @@ import org.koin.core.annotation.Single
 import org.slf4j.Marker
 
 @Single
-class MongoJobrunrQueryFilter(private val mongoLogFeatureFlags: MongoLogFeatureFlags) : TurboFilter() {
+class MongoJobRunrQueryFilter(private val mongoLogFeatureFlags: MongoLogFeatureFlags) : TurboFilter() {
 	override fun decide(marker: Marker?, logger: Logger?, level: Level?, format: String?, params: Array<out Any>?, t: Throwable?): FilterReply = when {
 		logger == null || level == null || format == null -> FilterReply.NEUTRAL
 		logger.name.startsWith(MongoLogFeatureFlags.MONGO_COMMANDS_LOGGER)
