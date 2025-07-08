@@ -2,7 +2,7 @@ package me.snoty.backend.scheduling.jobrunr
 
 import me.snoty.backend.database.mongo.MongoTest
 
-class MongoJobrunrStorageProviderTest : JobrunrStorageProviderSpec() {
+class MongoJobRunrStorageProviderTest : JobRunrStorageProviderSpec() {
 	private val mongoClient = MongoTest.getMongoClients {}.syncClient
-	override val storageProvider = MongoJobrunrStorageProvider(mongoClient)
+	override val storageProvider = MongoJobRunrStorageProvider(mongoClient)
 }

@@ -15,15 +15,15 @@ import org.koin.core.annotation.Single
 
 const val JOBRUNR_COLLECTION_PREFIX = "jobrunr:"
 
-@Single(binds = [SnotyJobrunrStorageProvider::class, StorageProvider::class])
-fun provideStorageProvider(mongoClient: MongoClient) = MongoJobrunrStorageProvider(mongoClient)
+@Single(binds = [SnotyJobRunrStorageProvider::class, StorageProvider::class])
+fun provideStorageProvider(mongoClient: MongoClient) = MongoJobRunrStorageProvider(mongoClient)
 
-class MongoJobrunrStorageProvider(mongoClient: MongoClient) : MongoDBStorageProvider(
+class MongoJobRunrStorageProvider(mongoClient: MongoClient) : MongoDBStorageProvider(
 	/* mongoClient = */ mongoClient,
 	/* dbName = */ MONGO_DB_NAME,
 	/* collectionPrefix = */ JOBRUNR_COLLECTION_PREFIX,
 	/* databaseOptions = */ StorageProviderUtils.DatabaseOptions.CREATE
-), SnotyJobrunrStorageProvider {
+), SnotyJobRunrStorageProvider {
 	@Suppress("UNCHECKED_CAST")
 	private val jobCollection = ReflectionUtils.getValueFromField(
 		ReflectionUtils.findField(this.javaClass.superclass, "jobCollection").get(), this

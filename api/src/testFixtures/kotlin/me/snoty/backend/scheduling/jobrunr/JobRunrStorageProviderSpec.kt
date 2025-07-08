@@ -15,8 +15,8 @@ import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
 import kotlin.uuid.toJavaUuid
 
-abstract class JobrunrStorageProviderSpec {
-	abstract val storageProvider: SnotyJobrunrStorageProvider
+abstract class JobRunrStorageProviderSpec {
+	abstract val storageProvider: SnotyJobRunrStorageProvider
 
 	@OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
 	@BeforeAll
