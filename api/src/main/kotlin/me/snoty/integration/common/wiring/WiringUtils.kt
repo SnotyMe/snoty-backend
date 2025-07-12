@@ -31,12 +31,15 @@ fun <T : Any> NodeHandleContext.iterableStructOutput(
 
 fun <T : Any> NodeHandleContext.structOutput(vararg data: T) = data.map { serializeBson(it) }
 
-private fun NodeHandleContext.serializeBson(data: Any) = serialize(BsonIntermediateData::class, data)
+fun NodeHandleContext.serializeBson(data: Any) = serialize(BsonIntermediateData::class, data)
 
 
 fun <T : Any> NodeHandleContext.simpleOutput(vararg items: T): NodeOutput = items
 	.map { serialize(SimpleIntermediateData::class, it) }
 
+fun NodeHandleContext.polymorphicOutput(vararg data: Any) = data.map { serializePolymorphic(it) }
+
+fun NodeHandleContext.serializePolymorphic(data: Any) = intermediateDataMapperRegistry.getFirstCompatibleMapper(data::class).serialize(data)
 
 private fun <IM : IntermediateData, T : Any> NodeHandleContext.serialize(clazz: KClass<IM>, data: T): IM {
 	val mapper = intermediateDataMapperRegistry[clazz]

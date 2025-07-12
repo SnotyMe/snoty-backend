@@ -16,6 +16,8 @@ data class BsonIntermediateData(override val value: Document, val documentCodec:
 
 @Single
 class BsonIntermediateDataMapper(private val codecRegistry: CodecRegistry, private val documentCodec: DocumentCodec) : IntermediateDataMapper<BsonIntermediateData> {
+	override val priority = 1000
+	override fun supports(clazz: KClass<*>) = clazz == Document::class
 	override val intermediateDataClass = BsonIntermediateData::class
 
 	override fun <R : Any> deserialize(intermediateData: BsonIntermediateData, clazz: KClass<R>): R {

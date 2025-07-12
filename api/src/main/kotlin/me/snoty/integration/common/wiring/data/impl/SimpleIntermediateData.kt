@@ -14,6 +14,8 @@ data class SimpleIntermediateData(
 
 @Single
 class SimpleIntermediateDataMapper : IntermediateDataMapper<SimpleIntermediateData> {
+	override val priority = 0
+	override fun supports(clazz: KClass<*>) = true // technically, we can store everything, but we shouldn't, so other mappers take priority
 	override val intermediateDataClass = SimpleIntermediateData::class
 
 	@Suppress("UNCHECKED_CAST")
