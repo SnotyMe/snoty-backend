@@ -4,10 +4,7 @@ import kotlinx.serialization.Serializable
 import me.snoty.backend.utils.bson.encode
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.model.metadata.EmptySchema
-import me.snoty.integration.common.model.metadata.FieldDefaultValue
-import me.snoty.integration.common.model.metadata.FieldDescription
-import me.snoty.integration.common.model.metadata.Language
+import me.snoty.integration.common.model.metadata.*
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
@@ -31,6 +28,8 @@ data class MapperSettings(
 	@FieldDescription("If true, every line of the output will be trimmed to remove surrounding non-visible characters. Useful for Liquid templates with indents.")
 	@FieldDefaultValue("true")
 	val trim: Boolean = false, // set to false for backwards compatibility
+	@FieldHidden
+	val preserveFields: List<String> = emptyList(),
 ) : NodeSettings
 
 @RegisterNode(

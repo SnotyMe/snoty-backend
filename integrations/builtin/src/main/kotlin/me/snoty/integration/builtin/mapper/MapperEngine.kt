@@ -53,6 +53,13 @@ enum class MapperEngine(private val templater: Templater) {
 				else -> logger.warn("Configured to preserve ID, but input does not contain an ID")
 			}
 		}
+		settings.preserveFields.forEach {
+			if (data.containsKey(it)) {
+				mappedData[it] = data[it]
+			} else {
+				logger.warn("Configured to preserve field '$it', but input does not contain this field")
+			}
+		}
 
 		return mappedData
 	}
