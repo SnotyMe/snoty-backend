@@ -4,6 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.util.*
+import me.snoty.backend.utils.bson.parseArray
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.*
@@ -11,7 +12,9 @@ import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.node.NodeHandler
 import org.bson.Document
+import org.bson.codecs.BsonTypeClassMap
 import org.bson.codecs.configuration.CodecRegistry
+import org.bson.json.JsonParseException
 import org.koin.core.annotation.Single
 
 @RegisterNode(
@@ -26,6 +29,7 @@ import org.koin.core.annotation.Single
 class HttpNodeHandler(
 	private val httpClient: HttpClient,
 	private val codecRegistry: CodecRegistry,
+	private val bsonTypeClassMap: BsonTypeClassMap,
 ) : NodeHandler {
 	override suspend fun NodeHandleContext.process(
 		node: Node,
@@ -34,26 +38,28 @@ class HttpNodeHandler(
 		val settings = node.getConfig<HttpNodeSettings>()
 		val requests = input.mapNotNull { getOrNull<HttpNodeInput>(it) } + settings.requests
 
-		val output = requests.map {
-			val response = httpClient.applyConfig(it).request {
-				url(it.url)
-				method = it.method.ktor
-				it.headers.forEach { (key, value) ->
+		val output = requests.map { request ->
+			val response = httpClient.applyConfig(request).request {
+				url(request.url)
+				method = request.method.ktor
+				request.headers.forEach { (key, value) ->
 					header(key, value)
 				}
-				setBody(it.body)
+				setBody(request.body)
 			}
 
 			val bodyText = response.bodyAsText()
-
 			val body = when (settings.serializeOutputAs) {
 				HttpNodeSerializer.TEXT -> bodyText
-				HttpNodeSerializer.JSON -> Document.parse(bodyText, codecRegistry.get(Document::class.java))
+				HttpNodeSerializer.JSON -> when ("${bodyText.first()}${bodyText.last()}") {
+					"{}" -> Document.parse(bodyText, codecRegistry.get(Document::class.java))
+					"[]" -> parseArray(bodyText, codecRegistry, bsonTypeClassMap)
+					else -> throw JsonParseException("Invalid JSON response: $bodyText")
+				}
 			}
 
-
 			HttpNodeOutput(
-				it.url,
+				request.url,
 				response.status.value,
 				response.headers.flattenEntries().toMap(),
 				body,

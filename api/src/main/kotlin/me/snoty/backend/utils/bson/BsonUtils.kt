@@ -1,14 +1,9 @@
 package me.snoty.backend.utils.bson
 
-import org.bson.BsonDocument
-import org.bson.BsonDocumentReader
-import org.bson.BsonDocumentWriter
-import org.bson.Document
-import org.bson.codecs.Codec
-import org.bson.codecs.DecoderContext
-import org.bson.codecs.DocumentCodec
-import org.bson.codecs.EncoderContext
+import org.bson.*
+import org.bson.codecs.*
 import org.bson.codecs.configuration.CodecRegistry
+import org.bson.json.JsonReader
 import org.bson.types.ObjectId
 import kotlin.reflect.KClass
 
@@ -47,4 +42,21 @@ fun Document.getIdAsString(): String? = when (val id = get("id")) {
 
 fun Document.getOrPut(key: String, defaultValue: () -> Any): Any {
 	return this[key] ?: defaultValue().also { this[key] = it }
+}
+
+fun parseArray(json: String, codecRegistry: CodecRegistry, bsonTypeClassMap: BsonTypeClassMap): List<Any> {
+	val decoderContext = DecoderContext.builder().build()
+
+	val reader = JsonReader(json)
+	reader.readStartArray()
+
+	val result = mutableListOf<Any>()
+	while (reader.readBsonType() != BsonType.END_OF_DOCUMENT) {
+		val value = codecRegistry[bsonTypeClassMap.get(reader.currentBsonType)].decode(reader, decoderContext)
+		result += value
+	}
+
+	reader.readEndArray()
+
+	return result
 }
