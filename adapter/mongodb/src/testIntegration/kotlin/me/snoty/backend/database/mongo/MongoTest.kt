@@ -3,6 +3,7 @@ package me.snoty.backend.database.mongo
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import io.mockk.mockk
 import me.snoty.backend.database.mongo.migrations.provideMigrationsCodec
+import me.snoty.backend.test.getClassNameFromBlock
 import me.snoty.backend.utils.bson.provideApiCodec
 import me.snoty.backend.utils.bson.provideCodecRegistry
 import me.snoty.integration.common.utils.bsonTypeClassMap
@@ -23,17 +24,11 @@ object MongoTest {
 	}
 
 	fun getMongoClients(block: () -> Unit): MongoClients {
-		val javaClass = block.javaClass
-		var name = javaClass.name
-		name = when {
-			name.contains("Kt$") -> name.substringBefore("Kt$")
-			name.contains("$") -> name.substringBefore("$")
-			else -> name
-		}.substringAfterLast(".")
+		val name = getClassNameFromBlock(block)
 		return mongoStartup.createMongoClients(
 			config,
 			provideCodecRegistry(provideMigrationsCodec(), provideApiCodec(bsonTypeClassMap())),
-			"${name}_${javaClass.hashCode()}",
+			"${name}_${block.javaClass.hashCode()}",
 		)
 	}
 

@@ -2,6 +2,7 @@ package me.snoty.backend.database.sql
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import me.snoty.backend.test.getClassNameFromBlock
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -28,15 +29,9 @@ object PostgresTest {
 	}
 
 	fun <T> getDb(block: T.() -> Unit): String {
-		val javaClass = block.javaClass
-		var name = javaClass.name
-		name = when {
-			name.contains("Kt$") -> name.substringBefore("Kt$")
-			name.contains("$") -> name.substringBefore("$")
-			else -> name
-		}.substringAfterLast(".")
+		val name = getClassNameFromBlock(block)
 
-		val dbName = "${name}_${javaClass.hashCode()}".lowercase()
+		val dbName = "${name}_${block.javaClass.hashCode()}".lowercase()
 		transaction(adminClient) {
 			// autoCommit is required when using postgres
 			connection.autoCommit = true
