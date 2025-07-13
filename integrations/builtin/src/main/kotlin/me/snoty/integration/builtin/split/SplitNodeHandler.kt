@@ -3,7 +3,10 @@ package me.snoty.integration.builtin.split
 import kotlinx.serialization.Serializable
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.model.metadata.*
+import me.snoty.integration.common.model.metadata.EmptySchema
+import me.snoty.integration.common.model.metadata.FieldDefaultValue
+import me.snoty.integration.common.model.metadata.FieldDescription
+import me.snoty.integration.common.model.metadata.FieldHidden
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
@@ -27,11 +30,9 @@ data class SplitSettings(
 ) : NodeSettings
 
 enum class SplitBehavior {
-	@DisplayName("Replace Root")
 	@FieldDescription("Creates a new output object only consisting of the list item.")
 	REPLACE_ROOT,
 
-	@DisplayName("Replace Key")
 	@FieldDescription("Replaces the specified key with the list item, keeping other elements in the output object.")
 	REPLACE_KEY
 }

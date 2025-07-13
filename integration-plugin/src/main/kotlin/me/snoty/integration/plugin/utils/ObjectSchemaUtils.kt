@@ -116,7 +116,7 @@ private fun Resolver.getEnumDetails(prop: KSPropertyDeclaration): NodeFieldDetai
 		.map {
 			val value = it.simpleName.asString()
 			val displayName = it.getAnnotation<DisplayName>()?.value
-			NodeFieldDetails.EnumDetails.EnumConstant(value, displayName ?: value)
+			NodeFieldDetails.EnumDetails.EnumConstant(value, displayName ?: value.toTitleCase())
 		}
 		.toList()
 	return NodeFieldDetails.EnumDetails(elements)

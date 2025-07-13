@@ -4,12 +4,10 @@ import liqp.TemplateParser
 import me.snoty.backend.utils.bson.setByPath
 import me.snoty.integration.builtin.mapper.filter.FormatFilter
 import me.snoty.integration.builtin.mapper.filter.UniDiffFilter
-import me.snoty.integration.common.model.metadata.DisplayName
 import org.bson.Document
 import org.slf4j.Logger
 
 enum class MapperEngine(private val templater: Templater) {
-	@DisplayName("Replace")
 	REPLACE({ logger, settings, data ->
 		val mappedData = Document()
 		settings.fields.forEach { (key, ogValue) ->
@@ -24,7 +22,6 @@ enum class MapperEngine(private val templater: Templater) {
 		mappedData
 	}),
 
-	@DisplayName("Liquid")
 	LIQUID({ logger, settings, data ->
 		val mappedData = Document()
 		val templateParser = TemplateParser.Builder()
