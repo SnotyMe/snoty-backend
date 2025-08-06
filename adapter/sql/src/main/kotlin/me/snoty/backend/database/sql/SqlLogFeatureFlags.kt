@@ -11,5 +11,6 @@ import org.koin.core.annotation.Single
 class SqlLogFeatureFlags(override val environment: Environment, override val client: Client) : LogFeatureFlagsContainer {
 	override val logLevelFeatureFlags: List<LogLevelFeatureFlag> = listOf(
 		logLevelFlag("exposed", "Exposed"),
+		logLevelFlag("hikaricp", "com.zaxxer.hikari"),
 	)
 }
