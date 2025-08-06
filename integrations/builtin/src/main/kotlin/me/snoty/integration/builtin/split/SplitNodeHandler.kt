@@ -24,6 +24,9 @@ data class SplitSettings(
 	override val name: String = "Split",
 	@FieldDescription("The key on which to split the input data. Other elements will be shared between the individual outputs.")
 	val key: String,
+	@FieldDescription("If false, the Node will throw an error instead of looping through object values.")
+	@FieldDefaultValue("true")
+	val loopThroughObjectKeys: Boolean = true,
 	@FieldHidden
 	@FieldDefaultValue("REPLACE_ROOT")
 	val behavior: SplitBehavior = SplitBehavior.REPLACE_ROOT,
@@ -54,11 +57,13 @@ class SplitNodeHandler : NodeHandler {
 		val key = settings.key
 		val splitData = data[key] ?: throw IllegalArgumentException("Key '$key' not found in input data")
 
-		if (splitData !is List<*>) {
-			throw IllegalArgumentException("Data at key '$key' must be a list")
+		val list = when (splitData) {
+			is List<*> -> splitData.filterNotNull()
+			is Document if settings.loopThroughObjectKeys -> splitData.values
+			else -> throw IllegalArgumentException("Data at key '$key' must be a list or loopThroughObjectKeys must be true")
 		}
 
-		splitData.filterNotNull().map { item ->
+		list.map { item ->
 			when (settings.behavior) {
 				SplitBehavior.REPLACE_ROOT -> serializePolymorphic(item)
 				SplitBehavior.REPLACE_KEY -> {
