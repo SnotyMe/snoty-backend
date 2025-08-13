@@ -27,6 +27,7 @@ data class MapperSettings(
 	val preserveId: Boolean = true,
 	@FieldDescription("If true, every line of the output will be trimmed to remove surrounding non-visible characters. Useful for Liquid templates with indents.")
 	@FieldDefaultValue("true")
+	@FieldHidden
 	val trim: Boolean = false, // set to false for backwards compatibility
 	@FieldHidden
 	val preserveFields: List<String> = emptyList(),
