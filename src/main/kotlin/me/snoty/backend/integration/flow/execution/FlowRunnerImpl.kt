@@ -177,7 +177,7 @@ class FlowRunnerImpl(
 			// pls fix Kotlin
 			val data = with(context) { with(handler) { process(node, input) } }
 			logger.debug { "Processed ${node.descriptor.name} node \"${node.settings.name}\" (${node._id})" }
-			if (nodeRegistry.getMetadata(node.descriptor).position == NodePosition.MIDDLE && node.next.isEmpty()) {
+			if (nodeRegistry.getMetadata(node.descriptor).position.logOutput && node.next.isEmpty()) {
 				logger.debug { "Node \"${node.settings.name}\" (${node._id}) has no output nodes, would have emitted $data" }
 			}
 
