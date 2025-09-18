@@ -87,7 +87,7 @@ libraries-jobrunr = { group = "org.jobrunr", name = "jobrunr", version.ref = "jo
 libraries-jobrunr-kotlin = { group = "org.jobrunr", name = "jobrunr-kotlin-2.2-support", version.ref = "jobrunr" }
 libraries-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.7.0-0.6.x-compat" }
 libraries-kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
-libraries-openfeature = { group = "dev.openfeature", name = "sdk", version = "1.14.0" }
+libraries-openfeature = { group = "dev.openfeature", name = "sdk", version = "1.18.1" }
 libraries-openfeature-flagd = { group = "dev.openfeature.contrib.providers", name = "flagd", version = "0.11.2" }
 
 log-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-slf4j", version.ref = "coroutines" }
