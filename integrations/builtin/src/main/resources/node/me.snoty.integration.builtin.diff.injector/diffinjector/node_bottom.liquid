@@ -1,15 +1,17 @@
-<button onclick="
-        templateAPI.getNodeAPI('{{ node._id }}').apiFetch('clear', { method: 'POST' })
-            .then(res => {
-                if (res.ok) {
-                    alert('Successfully cleared states')
-                } else {
-                    alert('Failed to clear states')
-                }
-            })
-    "
-   class="btn preset-filled"
+<a class="anchor" href="{{ node.apiUrl }}state">View states</a>
+
+<button style="margin-top: 2em" onclick="
+    templateAPI.getNodeAPI('{{ node._id }}').apiFetch('clear', { method: 'POST' })
+        .then(res => {
+            if (res.ok) {
+                alert('Successfully cleared states')
+            } else {
+                alert('Failed to clear states')
+            }
+        })
+"
+        class="btn preset-filled block"
 >
     Clear States
 </button>
-<small>Warning: this will delete all historic states. All entities will be reset to the status "Created"!</small>
+<small class="block">Warning: this will delete all historic states. All entities will be reset to the status "Created"!</small>

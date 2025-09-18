@@ -25,7 +25,7 @@ class DiffNodeHandlerTest {
 		val (old, new) = getDocs()
 
 		val (_, newStates) = processStates(
-			oldStates = listOf(EntityState(id, old)),
+			oldStates = mapOf(id to EntityState(id, old)),
 			newData = DiffNodeHandler.Data(mapOf(id to new)),
 			excludedFields = listOf(excluded),
 		)
@@ -43,7 +43,7 @@ class DiffNodeHandlerTest {
 		new[key] = value
 
 		val (_, newStates) = processStates(
-			oldStates = listOf(EntityState(id, old)),
+			oldStates = mapOf(id to EntityState(id, old)),
 			newData = DiffNodeHandler.Data(mapOf(id to new)),
 			excludedFields = listOf(excluded),
 		)

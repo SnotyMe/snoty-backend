@@ -3,6 +3,7 @@ package me.snoty.integration.builtin.diff.injector
 import kotlinx.serialization.Serializable
 import me.snoty.backend.wiring.node.NodesScope
 import me.snoty.integration.builtin.diff.DiffNodeHandler
+import me.snoty.integration.common.annotation.ReceiveEmptyInput
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.diff.DiffResult
 import me.snoty.integration.common.diff.EntityStateService
@@ -49,6 +50,7 @@ data class HasDiff(
 	inputType = EmptySchema::class,
 	outputType = EmptySchema::class,
 )
+@ReceiveEmptyInput
 @Single
 class DiffInjectorNodeHandler(
 	@ScopeId(NodesScope::class) entityStateService: EntityStateService,

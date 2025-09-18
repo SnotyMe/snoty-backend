@@ -4,6 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.oshai.kotlinlogging.slf4j.logger
 import io.ktor.http.*
 import io.ktor.server.response.*
+import kotlinx.coroutines.flow.fold
 import kotlinx.coroutines.flow.toList
 import me.snoty.backend.utils.NULL_UUID
 import me.snoty.backend.utils.bson.encode
@@ -71,8 +72,12 @@ abstract class DiffNodeHandler(
 			}
 			.toMap()
 
-		val rawOldStates = entityStateService.getLastStates(node._id)
-			.toList()
+		val rawOldStates: Map<String, EntityState> = entityStateService.getLastStates(node._id)
+			.fold(mutableMapOf()) { acc, state ->
+				acc[state.id] = state
+				acc
+			}
+		
 		val (oldStates, changes) = processStates(rawOldStates, Data(newData), excludedFields)
 
 		entityStateService.updateStates(node._id, changes.values)
@@ -103,17 +108,21 @@ private fun Document.removeAll(fields: Collection<String>) {
 }
 
 internal fun processStates(
-	oldStates: List<EntityState>,
+	oldStates: Map<String, EntityState>,
 	newData: DiffNodeHandler.Data,
 	excludedFields: Collection<String>
 ): Pair<DiffNodeHandler.States, DiffNodeHandler.Changes> {
+	val fullOldStates = oldStates
 	val oldStates = oldStates
 		// remove excluded fields to not consider them in the diff
-		.map {
-			it.state.removeAll(excludedFields)
-			it.copy(checksum = it.state.checksum())
+		.mapValues { (_, it) ->
+			val newState = Document(it.state)
+			newState.removeAll(excludedFields)
+			it.copy(
+				state = newState,
+				checksum = newState.checksum()
+			)
 		}
-		.associateBy { it.id }
 
 	val createAndUpdate = newData
 		.mapValues { (id, newState) ->
@@ -125,16 +134,15 @@ internal fun processStates(
 
 			EntityStateService.EntityStateUpdate(EntityState(id, newState), diff)
 		}
-	val delete = oldStates
+	val delete = fullOldStates
 		// we only care about deleted entities
 		.filterKeys { it !in newData }
-		.mapValues { (id, _) ->
-			val oldState = oldStates[id] ?: error("Old state not found for entity $id")
+		.mapValues { (_, oldState) ->
 			// `null.diff` results in `DiffResult.Deleted`
 			EntityStateService.EntityStateUpdate(oldState, null.diff(oldState))
 		}
 
 	val allUpdates = createAndUpdate + delete
 
-	return DiffNodeHandler.States(oldStates) to DiffNodeHandler.Changes(allUpdates)
+	return DiffNodeHandler.States(fullOldStates) to DiffNodeHandler.Changes(allUpdates)
 }
