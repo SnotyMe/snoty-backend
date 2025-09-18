@@ -4,9 +4,11 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
+import me.snoty.backend.config.Config
 import me.snoty.backend.hooks.HookRegistry
-import me.snoty.backend.hooks.impl.AddRoutesHook
+import me.snoty.backend.hooks.impl.NodeapiRoutesHook
 import me.snoty.backend.hooks.register
+import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.utils.BadRequestException
 import me.snoty.backend.utils.getUserOrNull
 import me.snoty.backend.utils.respondStatus
@@ -20,6 +22,9 @@ interface NodeRouteFactory {
 	operator fun invoke(route: String, method: HttpMethod, verifyUser: Boolean = true, block: suspend RoutingContext.(Node) -> Unit)
 }
 
+fun buildNodeApiUrl(config: Config, descriptor: NodeDescriptor, nodeId: NodeId, route: String) =
+	"${config.publicHost}/nodeapi/${descriptor.name}/$nodeId/$route"
+
 @Factory
 internal class NodeRouteFactoryImpl(
 	private val nodeDescriptor: NodeDescriptor,
@@ -31,10 +36,10 @@ internal class NodeRouteFactoryImpl(
 	 * @param verifyUser whether to verify that the user is the owner of the node
 	 */
 	override operator fun invoke(route: String, method: HttpMethod, verifyUser: Boolean, block: suspend RoutingContext.(Node) -> Unit) =
-		hookRegistry.register(AddRoutesHook { routing ->
+		hookRegistry.register(NodeapiRoutesHook { routing ->
 			logger.debug { "Registering route for $nodeDescriptor node: $route"}
 
-			fun Route.doRoute() = route("{nodeId}/$route") {
+			fun Route.doRoute() = route("${nodeDescriptor.name}/{nodeId}/$route") {
 				val nodeService: NodeService by inject()
 				method(method) {
 					handle {

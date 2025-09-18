@@ -4,7 +4,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.runBlocking
 import me.snoty.backend.hooks.HookRegistry
-import me.snoty.backend.hooks.impl.AddRoutesHook
+import me.snoty.backend.hooks.impl.NodeapiRoutesHook
 import me.snoty.backend.server.resources.wiring.flow.flowExecutionResource
 import me.snoty.backend.server.resources.wiring.flowResource
 import me.snoty.backend.server.resources.wiring.nodeMetadataResource
@@ -16,13 +16,17 @@ import org.koin.core.annotation.Single
 @Single
 @Named("wiring")
 fun wiringResources(hookRegistry: HookRegistry) = Resource {
-	route("wiring/node") {
-		runBlocking {
-			hookRegistry.executeHooks(AddRoutesHook::class, this@route)
+	route("wiring") {
+		route("node") {
+			route("metadata") {
+				nodeMetadataResource()
+			}
 		}
-
-		route("metadata") {
-			nodeMetadataResource()
+		
+		route("nodeapi") innerRoute@{
+			runBlocking {
+				hookRegistry.executeHooks(NodeapiRoutesHook::class, this@innerRoute)
+			}
 		}
 	}
 

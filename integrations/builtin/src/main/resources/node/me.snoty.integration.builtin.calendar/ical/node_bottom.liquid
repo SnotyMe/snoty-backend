@@ -1,4 +1,4 @@
-{% assign url = config.apiHost | append: "/wiring/node/" | append: node._id | append: "/calendar.ics" %}
+{% assign url = node.apiUrl | append: "calendar.ics" %}
 {% if settings.secret != blank %}
     {% assign url = url | append: "?secret=" | append: settings.secret %}
 {% endif %}

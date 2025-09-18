@@ -8,6 +8,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import me.snoty.backend.config.Config
 import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.buildHandlerNodeApiUrl
 import me.snoty.integration.notion.NOTION_BASE_URL
 import me.snoty.integration.notion.NotionConfig
 import org.koin.core.annotation.Factory
@@ -25,7 +26,7 @@ class NotionOAuthImpl(
 	config: Config,
 	descriptor: NodeDescriptor,
 ) : NotionOAuth {
-	override val redirectUri = "${config.publicHost}/wiring/node/${descriptor.namespace}/${descriptor.name}/callback"
+	override val redirectUri = buildHandlerNodeApiUrl(config, descriptor, "callback")
 
 	@Serializable
 	data class NotionTokenResponse(@SerialName("access_token") val accessToken: String)

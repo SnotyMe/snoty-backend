@@ -4,8 +4,9 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
+import me.snoty.backend.config.Config
 import me.snoty.backend.hooks.HookRegistry
-import me.snoty.backend.hooks.impl.AddRoutesHook
+import me.snoty.backend.hooks.impl.NodeapiRoutesHook
 import me.snoty.backend.hooks.register
 import me.snoty.backend.utils.UnauthorizedException
 import me.snoty.backend.utils.getUserOrNull
@@ -15,6 +16,9 @@ import org.koin.core.annotation.Factory
 interface NodeHandlerRouteFactory {
 	operator fun invoke(route: String, method: HttpMethod, authenticated: Boolean = true, block: suspend RoutingContext.() -> Unit)
 }
+
+fun buildHandlerNodeApiUrl(config: Config, descriptor: NodeDescriptor, route: String) =
+	"${config.publicHost}/nodeapi/${descriptor.name}/$route"
 
 @Factory
 internal class NodeHandlerRouteFactoryImpl(
@@ -27,10 +31,10 @@ internal class NodeHandlerRouteFactoryImpl(
 	 * @param authenticated whether to verify that the user is authenticated
 	 */
 	override operator fun invoke(route: String, method: HttpMethod, authenticated: Boolean, block: suspend RoutingContext.() -> Unit) =
-		hookRegistry.register(AddRoutesHook { routing ->
+		hookRegistry.register(NodeapiRoutesHook { routing ->
 			logger.debug { "Registering route for ${nodeDescriptor.id} node handler: $route" }
 
-			fun Route.doRoute() = route("${nodeDescriptor.namespace}/${nodeDescriptor.name}/$route") {
+			fun Route.doRoute() = route("${nodeDescriptor.name}/$route") {
 				method(method) {
 					handle {
 						logger.debug { "Handling route for $nodeDescriptor node: $route" }
