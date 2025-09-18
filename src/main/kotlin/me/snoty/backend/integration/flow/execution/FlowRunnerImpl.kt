@@ -192,8 +192,6 @@ class FlowRunnerImpl(
 			}
 			.flowOn(span.asContextElement() + MDCContext())
 			.flatMapConcat { output ->
-				@Suppress("UnusedFlow") // yeah I don't think so
-				if (output.isEmpty()) return@flatMapConcat emptyFlow()
 				node.next
 					.asFlow()
 					.mapNotNull { nextNodeId ->
@@ -202,6 +200,7 @@ class FlowRunnerImpl(
 							null
 						}
 					}
+					.filter { nextNode -> !output.isEmpty() || nodeRegistry.getMetadata(nextNode.descriptor).receiveEmptyInput }
 					.flatMapConcat { nextNode ->
 						val subspan = span.subspan(flowTracing, traceName(nextNode)) {
 							setNodeAttributes(nextNode, output)

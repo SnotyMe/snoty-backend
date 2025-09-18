@@ -4,6 +4,7 @@ import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import me.snoty.backend.wiring.node.metadataJson
+import me.snoty.integration.common.annotation.ReceiveEmptyInput
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.node.NodeSettings
@@ -20,7 +21,8 @@ fun generateMetadata(resolver: Resolver, clazz: KSClassDeclaration, node: Regist
 		settingsClass = NodeSettings::class,
 		settings = generateObjectSchema(resolver, settingsClass)!!,
 		input = generateObjectSchema(resolver, inputClass),
-		output = generateObjectSchema(resolver, outputClass)
+		receiveEmptyInput = clazz.hasAnnotation<ReceiveEmptyInput>(),
+		output = generateObjectSchema(resolver, outputClass),
 	)
 
 	return metadataJson.encodeToString(metadata)

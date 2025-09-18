@@ -24,3 +24,8 @@ annotation class RegisterNode(
 	val inputType: KClass<out Any> = NoSchema::class,
 	val outputType: KClass<out Any> = NoSchema::class,
 )
+
+/**
+ * Marks that the node wants to receive empty input. Otherwise, following nodes will not be executed at all if no input element was produced by the prior node.
+ */
+annotation class ReceiveEmptyInput

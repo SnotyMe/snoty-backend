@@ -18,6 +18,7 @@ data class NodeMetadata(
 	@Transient
 	val settingsClass: KClass<out NodeSettings> = NodeSettings::class, // previously threw an error, but since we deserialize this AND remain compatible, we need to keep this
 	val input: ObjectSchema?,
+	val receiveEmptyInput: Boolean = false,
 	val output: ObjectSchema?
 )
 
