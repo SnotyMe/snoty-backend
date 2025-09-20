@@ -1,5 +1,7 @@
 package me.snoty.backend.observability
 
+import com.sksamuel.hoplite.ConfigFailure
+import com.sksamuel.hoplite.fp.getOrElse
 import io.opentelemetry.context.propagation.ContextPropagators
 import io.opentelemetry.context.propagation.TextMapPropagator
 import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporter
@@ -15,14 +17,18 @@ import io.opentelemetry.sdk.trace.SdkTracerProvider
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor
 import io.opentelemetry.sdk.trace.samplers.Sampler
+import me.snoty.backend.config.ConfigException
 import me.snoty.backend.config.ConfigLoader
-import me.snoty.backend.config.load
+import me.snoty.backend.config.loadConfig
 import org.koin.core.Koin
 import org.koin.core.annotation.Single
 
 @Single
 fun provideOpenTelemetryConfig(configLoader: ConfigLoader) =
-	configLoader.load<OtelConfig>(prefix = "opentelemetry")
+	configLoader.loadConfig<OtelConfig>(prefix = "opentelemetry").getOrElse { failure ->
+		if (failure is ConfigFailure.MissingConfigValue) return@getOrElse OtelConfig()
+		throw ConfigException(failure)
+	}
 
 internal fun getManualOpenTelemetry(koin: Koin, config: OtelConfig, metadata: Resource): OpenTelemetrySdk? {
 	if (!config.enabled) return null

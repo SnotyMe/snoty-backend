@@ -18,8 +18,12 @@ annotation class ConfigWrapper
 
 class ConfigException(val fail: ConfigFailure) : RuntimeException(fail.description())
 
+
+inline fun <reified C : Any> SnotyConfigLoader.loadConfig(prefix: String?, noinline configure: ConfigLoaderBuilder.() -> Unit = {})
+	= build(configure).loadConfig<C>(prefix = prefix)
+
 inline fun <reified C : Any> SnotyConfigLoader.load(prefix: String?, noinline configure: ConfigLoaderBuilder.() -> Unit = {}): C
-	= build(configure).loadConfig<C>(prefix = prefix).getOrElse { failure ->
+	= loadConfig<C>(prefix = prefix, configure).getOrElse { failure ->
 		throw ConfigException(failure)
 	}
 
