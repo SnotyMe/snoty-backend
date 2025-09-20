@@ -2,10 +2,6 @@ package me.snoty.backend.utils.bson
 
 import org.bson.Document
 
-private val UNESCAPED_DOT_REGEX = """(?<!\\)\.""".toRegex()
-private val ESCAPE_REGEX = """\\(.)""".toRegex()
-private val ARRAY_INDEX_REGEX = """^.*(?:[^\\]|\\\\)\[\d+]$""".toRegex()
-
 fun Document.setByPath(key: String, value: Any?) {
 	val parts = key.split(UNESCAPED_DOT_REGEX)
 	if (parts.isEmpty()) throw IllegalArgumentException("Key must not be empty")
