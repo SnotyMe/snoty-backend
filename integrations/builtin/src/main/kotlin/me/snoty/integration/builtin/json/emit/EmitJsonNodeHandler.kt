@@ -1,4 +1,4 @@
-package me.snoty.integration.builtin.emitjson
+package me.snoty.integration.builtin.json.emit
 
 import kotlinx.serialization.Serializable
 import me.snoty.integration.common.annotation.RegisterNode
@@ -24,6 +24,7 @@ data class EmitJsonSettings(
 
 @RegisterNode(
 	name = "emitjson",
+	namespace = "me.snoty.integration.builtin.emitjson",
 	displayName = "Emit JSON",
 	settingsType = EmitJsonSettings::class,
 	position = NodePosition.START,
