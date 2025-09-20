@@ -100,7 +100,7 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 			.addProperty(
 				contributorSpec
 					.propertySpecs
-					.single { it.name == NodeHandlerContributor::metadataV2.name }
+					.single { it.name == NodeHandlerContributor::metadata.name }
 					.override()
 					.initializer("%S", generateMetadata(resolver, clazz, registerNode))
 					.removeModifiers(KModifier.OPEN) // w: 'open' has no effect on a final class

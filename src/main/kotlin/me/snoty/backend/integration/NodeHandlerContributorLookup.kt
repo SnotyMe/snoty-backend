@@ -52,13 +52,10 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 		val nodesScope = koin.getScope(NodesScope.scopeId)
 		val loader = ServiceLoader.load(NodeHandlerContributor::class.java)
 		return loader.map { contributor ->
-			@Suppress("DEPRECATION") // still used for backwards compatibility
 			val metadata =
-				contributor.metadataV2
-					?.let { metadataJson.decodeFromString<NodeMetadata>(it) }
-					?.copy(settingsClass = contributor.settingsClass!!)
-				?: contributor.metadata
-				?: throw IllegalStateException("NodeHandlerContributor ${contributor.javaClass.simpleName} has no metadata")
+				contributor.metadata
+					.let { metadataJson.decodeFromString<NodeMetadata>(it) }
+					.copy(settingsClass = contributor.settingsClass!!)
 
 			val scopeName = metadata.descriptor.scope
 			val scope = koin.getOrCreateScope(scopeName.value, scopeName)
