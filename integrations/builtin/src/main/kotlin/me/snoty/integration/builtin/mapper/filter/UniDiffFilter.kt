@@ -4,9 +4,17 @@ import liqp.TemplateContext
 import liqp.filters.Filter
 import me.snoty.backend.utils.orNull
 import me.snoty.integration.builtin.diff.uni.computeDiff
+import me.snoty.integration.builtin.mapper.FilterFactory
 import me.snoty.integration.common.diff.getNew
 import me.snoty.integration.common.diff.getOld
 import org.bson.Document
+import org.koin.core.annotation.Single
+import org.slf4j.Logger
+
+@Single
+class UniDiffFilterFactory : FilterFactory {
+	override fun createFilter(logger: Logger) = UniDiffFilter()
+}
 
 class UniDiffFilter : Filter("unidiff") {
 	override fun apply(value: Any?, context: TemplateContext, vararg params: Any): String {

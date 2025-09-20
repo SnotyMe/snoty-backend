@@ -1,10 +1,10 @@
 package me.snoty.integration.builtin.mapper
 
 import liqp.TemplateParser
+import me.snoty.backend.injection.getFromAllScopes
 import me.snoty.backend.utils.bson.setByPath
-import me.snoty.integration.builtin.mapper.filter.FormatFilter
-import me.snoty.integration.builtin.mapper.filter.UniDiffFilter
 import org.bson.Document
+import org.koin.core.component.KoinComponent
 import org.slf4j.Logger
 
 enum class MapperEngine(private val templater: Templater) {
@@ -25,9 +25,15 @@ enum class MapperEngine(private val templater: Templater) {
 	LIQUID({ logger, settings, data ->
 		val mappedData = Document()
 		val templateParser = TemplateParser.Builder()
-			.withFilter(UniDiffFilter())
-			.withFilter(FormatFilter(logger))
+			.apply {
+				getKoin()
+					.getFromAllScopes<FilterFactory>()
+					.forEach {
+						withFilter(it.createFilter(logger))
+					}
+			}
 			.build()
+
 		settings.fields.forEach { (key, value) ->
 			val template = templateParser.parse(value)
 			val rendered = template.render(data).trim()
@@ -38,8 +44,8 @@ enum class MapperEngine(private val templater: Templater) {
 		mappedData
 	});
 
-	fun template(logger: Logger, settings: MapperSettings, data: Document): Document {
-		val mappedData = templater(logger, settings, data)
+	fun template(logger: Logger, koinComponent: KoinComponent, settings: MapperSettings, data: Document): Document {
+		val mappedData = koinComponent.templater(logger, settings, data)
 
 		if (settings.preserveId) {
 			val alreadyMapped = mappedData["id"] != null

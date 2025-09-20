@@ -2,7 +2,14 @@ package me.snoty.integration.builtin.mapper.filter
 
 import liqp.TemplateContext
 import liqp.filters.Filter
+import me.snoty.integration.builtin.mapper.FilterFactory
+import org.koin.core.annotation.Single
 import org.slf4j.Logger
+
+@Single
+class FormatFilterFactory : FilterFactory {
+	override fun createFilter(logger: Logger) = FormatFilter(logger)
+}
 
 class FormatFilter(private val logger: Logger) : Filter("format") {
 	override fun apply(value: Any?, context: TemplateContext, vararg params: Any): Any? {

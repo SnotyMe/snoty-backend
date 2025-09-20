@@ -15,6 +15,7 @@ import me.snoty.integration.common.wiring.structOutput
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Single
+import org.koin.core.component.KoinComponent
 
 @Serializable
 data class MapperSettings(
@@ -44,7 +45,7 @@ data class MapperSettings(
 @Single
 class MapperNodeHandler(
 	private val codecRegistry: CodecRegistry,
-) : NodeHandler {
+) : NodeHandler, KoinComponent {
 	override suspend fun NodeHandleContext.process(
 		node: Node,
 		input: Collection<IntermediateData>,
@@ -55,7 +56,7 @@ class MapperNodeHandler(
 			else codecRegistry.encode(value)
 		})
 
-		val result = settings.engine.template(logger, settings, mappedData)
+		val result = settings.engine.template(logger, this@MapperNodeHandler, settings, mappedData)
 		if (settings.trim) {
 			result.trimAll()
 		}
