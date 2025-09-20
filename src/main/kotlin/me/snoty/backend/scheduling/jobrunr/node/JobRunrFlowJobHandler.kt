@@ -1,5 +1,6 @@
 package me.snoty.backend.scheduling.jobrunr.node
 
+import ch.qos.logback.classic.Level
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.slf4j.MDCContext
 import kotlinx.coroutines.withContext
@@ -32,6 +33,8 @@ class JobRunrFlowJobHandler(
 		val nodeLogAppender = NodeLogAppender(flowExecutionService, flowExecutionEventService)
 		nodeLogAppender.start()
 		rootLogger.addAppender(nodeLogAppender)
+		// set to debug to allow filtering in the appender. Otherwise, the application log level would be inherited and block debug logs during node execution
+		rootLogger.level = Level.DEBUG
 	}
 
 	override fun run(jobRequest: JobRunrFlowJobRequest) {
