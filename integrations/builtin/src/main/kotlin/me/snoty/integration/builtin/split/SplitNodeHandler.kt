@@ -1,6 +1,8 @@
 package me.snoty.integration.builtin.split
 
 import kotlinx.serialization.Serializable
+import me.snoty.backend.utils.bson.getByPath
+import me.snoty.backend.utils.bson.setByPath
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.EmptySchema
@@ -55,7 +57,7 @@ class SplitNodeHandler : NodeHandler {
 		input: Collection<IntermediateData>
 	): NodeOutput = mapInputWithSettings<Document, SplitSettings>(input, node) { data, settings ->
 		val key = settings.key
-		val splitData = data[key] ?: throw IllegalArgumentException("Key '$key' not found in input data")
+		val splitData = data.getByPath(key) ?: throw IllegalArgumentException("Key '$key' not found in input data")
 
 		val list = when (splitData) {
 			is List<*> -> splitData.filterNotNull()
@@ -68,7 +70,7 @@ class SplitNodeHandler : NodeHandler {
 				SplitBehavior.REPLACE_ROOT -> serializePolymorphic(item)
 				SplitBehavior.REPLACE_KEY -> {
 					val document = Document(data)
-					document.put(key, item)
+					document.setByPath(key, item)
 					serializeBson(document)
 				}
 			}
