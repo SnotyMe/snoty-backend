@@ -18,7 +18,7 @@ dependencies {
 	libs.plugins.ksp.get().apply {
 		implementation("com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:$version")
 	}
-	implementation("org.eclipse.jgit:org.eclipse.jgit:7.1.0.202411261347-r")
+	implementation("org.eclipse.jgit:org.eclipse.jgit:7.3.0.202506031305-r")
 	libs.plugins.idea.get().apply {
 		implementation("gradle.plugin.org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext:$version")
 	}
