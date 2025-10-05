@@ -71,12 +71,14 @@ fun nodeMetadata(
 	descriptor: NodeDescriptor,
 	position: NodePosition = NodePosition.MIDDLE,
 	settingsClass: KClass<out NodeSettings> = EmptyNodeSettings::class,
+	receiveEmptyInput: Boolean = false,
 ) = NodeMetadata(
 	descriptor = descriptor,
 	displayName = "Test Node",
 	position = position,
 	settings = emptyList(),
 	settingsClass = settingsClass,
+	receiveEmptyInput = receiveEmptyInput,
 	input = null,
 	output = null
 )
@@ -86,6 +88,7 @@ fun nodeMetadata(
 	namespace: String = "me.snoty.backend.test",
 	position: NodePosition = NodePosition.MIDDLE,
 	settingsClass: KClass<out NodeSettings> = EmptyNodeSettings::class,
+	receiveEmptyInput: Boolean = false,
 ) = nodeMetadata(
 	NodeDescriptor(
 		namespace = namespace,
@@ -93,4 +96,5 @@ fun nodeMetadata(
 	),
 	position,
 	settingsClass,
+	receiveEmptyInput,
 )

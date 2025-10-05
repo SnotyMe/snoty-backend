@@ -24,6 +24,7 @@ import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
 import me.snoty.backend.wiring.node.NodeRegistryImpl
 import me.snoty.integration.common.snotyJson
 import me.snoty.integration.common.wiring.data.IntermediateData
+import me.snoty.integration.common.wiring.data.NodeInput
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
 import me.snoty.integration.common.wiring.flow.Workflow
 import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
@@ -53,13 +54,17 @@ class FlowRunnerImplTest {
 		}
 	}
 
-	fun nodeMetadata(name: String) = nodeMetadata(namespace = namespace, name = name)
+	fun nodeMetadata(name: String, receiveEmptyInput: Boolean) = nodeMetadata(namespace = namespace, name = name, receiveEmptyInput = receiveEmptyInput)
 
 	private val mapHandler = GlobalMapHandler()
+	private val wantsEmptyProvidesNonEmptyHandler = WantsEmptyProvidesNonEmptyHandler()
+	private val wantsNonEmptyProvidesEmptyHandler = WantsNonEmptyProvidesEmptyHandler()
 	private val nodeRegistry = NodeRegistryImpl().apply {
-		registerHandler(nodeMetadata(name = TYPE_MAP), mapHandler)
-		registerHandler(nodeMetadata(name = TYPE_QUOTE), QuoteHandler)
-		registerHandler(nodeMetadata(name = TYPE_EXCEPTION), ExceptionHandler)
+		registerHandler(nodeMetadata(name = TYPE_MAP, false), mapHandler)
+		registerHandler(nodeMetadata(name = TYPE_QUOTE, false), QuoteHandler)
+		registerHandler(nodeMetadata(name = TYPE_EXCEPTION, false), ExceptionHandler)
+		registerHandler(nodeMetadata(name = TYPE_WANTS_EMPTY_PROVIDES_NONEMPTY, true), wantsEmptyProvidesNonEmptyHandler)
+		registerHandler(nodeMetadata(name = TYPE_WANTS_NONEMPTY_PROVIDES_EMPTY, false), wantsNonEmptyProvidesEmptyHandler)
 		registerEmitHandler()
 	}
 	private val otel = createOpenTelemetry()
@@ -76,11 +81,11 @@ class FlowRunnerImplTest {
 		appender.start()
 	}
 
-	private suspend fun FlowRunnerImpl.executeStartNode(jobId: String, flow: WorkflowWithNodes, input: IntermediateData) {
+	private suspend fun FlowRunnerImpl.executeStartNode(jobId: String, flow: WorkflowWithNodes, input: NodeInput) {
 		// set in the scheduler
 		KMDC.put(JOB_ID, jobId)
 		withContext(MDCContext()) {
-			execute(jobId, FlowTriggerReason.Unknown, logger, Level.DEBUG, flow, listOf(input))
+			execute(jobId, FlowTriggerReason.Unknown, logger, Level.DEBUG, flow, input)
 		}
 	}
 
@@ -108,9 +113,9 @@ class FlowRunnerImplTest {
 		val emit = emitNode(node)
 		val flow = relationalFlow(emit, node)
 		val jobId = "basic"
-		runner.executeStartNode(jobId, flow, intermediateData)
+		runner.executeStartNode(jobId, flow, listOf(intermediateData))
 		assertNoWarnings(flow)
-		assertEquals(intermediateDataRaw, mapHandler[node._id])
+		assertEquals(listOf(intermediateData), mapHandler[node._id])
 		val spans = otel.spanExporter.finishedSpanItems
 			.sortedBy { it.startEpochNanos }
 
@@ -130,9 +135,9 @@ class FlowRunnerImplTest {
 		val emit = emitNode(processor)
 		val flow = relationalFlow(emit, processor, map)
 
-		runner.executeStartNode("basic withQuote", flow, intermediateData)
+		runner.executeStartNode("basic withQuote", flow, listOf(intermediateData))
 		assertNoWarnings(flow)
-		assertEquals("'test'", mapHandler[map._id])
+		assertEquals("'test'", mapHandler[map._id]?.single()?.value)
 
 		val spans = otel.spanExporter.finishedSpanItems
 		assertEquals(4, spans.size)
@@ -149,9 +154,9 @@ class FlowRunnerImplTest {
 		val flow = relationalFlow(emit, node)
 
 		suspend fun verifyTrace(flow: WorkflowWithNodes, input: IntermediateData, withConfig: Boolean) {
-			runner.executeStartNode("traces config attribute", flow, input)
+			runner.executeStartNode("traces config attribute", flow, listOf(input))
 			assertNoWarnings(flow)
-			assertEquals(input.value, mapHandler[node._id])
+			assertEquals(input, mapHandler[node._id]?.single())
 			val spans = otel.spanExporter.finishedSpanItems
 				.sortedBy { it.startEpochNanos }
 
@@ -185,7 +190,7 @@ class FlowRunnerImplTest {
 		val flow = relationalFlow(emit, mapNode, exNode)
 
 		assertThrows<FlowExecutionException> {
-			runner.executeStartNode("traces exception attributes", flow, intermediateData)
+			runner.executeStartNode("traces exception attributes", flow, listOf(intermediateData))
 		}
 		assertNull(mapHandler[exNode._id])
 		val spans = otel.spanExporter.finishedSpanItems
@@ -219,5 +224,29 @@ class FlowRunnerImplTest {
 		assertNotNull(rootExceptionEvent.attributes.get(ExceptionAttributes.EXCEPTION_TYPE))
 		assertEquals(FlowExecutionException::class.qualifiedName, rootExceptionEvent.attributes.get(ExceptionAttributes.EXCEPTION_TYPE))
 		assertNotNull(rootExceptionEvent.attributes.get(ExceptionAttributes.EXCEPTION_MESSAGE))
+	}
+	
+	@Test
+	fun `test receive empty input transitively - #225`() = runBlocking {
+		val nodex = node(NodeDescriptor(namespace, TYPE_WANTS_EMPTY_PROVIDES_NONEMPTY))
+		val nodex1 = node(NodeDescriptor(namespace, TYPE_QUOTE), next = listOf(nodex))
+		val nodex2 = node(NodeDescriptor(namespace, TYPE_WANTS_EMPTY_PROVIDES_NONEMPTY), next = listOf(nodex1))
+		val nodex3 = node(NodeDescriptor(namespace, TYPE_WANTS_NONEMPTY_PROVIDES_EMPTY), next = listOf(nodex2)) // also skipped
+		val nodex4 = node(NodeDescriptor(namespace, TYPE_WANTS_NONEMPTY_PROVIDES_EMPTY), next = listOf(nodex3)) // skipped
+		val emit = emitNode(nodex4) // won't emit anything
+
+		val flow = relationalFlow(emit, nodex4, nodex3, nodex2, nodex1, nodex)
+		println(flow.nodes.joinToString("\n") { "${it._id}: ${it.descriptor.name}" })
+
+		runner.executeStartNode("receive empty input transitively", flow, emptyList())
+
+		assertNoWarnings(flow)
+		assertFalse(nodex4._id in wantsNonEmptyProvidesEmptyHandler)
+		assertFalse(nodex3._id in wantsNonEmptyProvidesEmptyHandler)
+		assertEquals(emptyList<SimpleIntermediateData>(), wantsEmptyProvidesNonEmptyHandler[nodex2._id])
+		assertEquals(
+			listOf(SimpleIntermediateData("'${WantsEmptyProvidesNonEmptyHandler.OUTPUT}'")),
+			wantsEmptyProvidesNonEmptyHandler[nodex._id]
+		)
 	}
 }

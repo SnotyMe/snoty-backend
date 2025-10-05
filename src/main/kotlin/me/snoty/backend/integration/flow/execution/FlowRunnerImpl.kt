@@ -24,10 +24,12 @@ import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.FlowNode
+import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContextImpl
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
 import me.snoty.integration.common.wiring.data.NodeInput
+import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
 import me.snoty.integration.common.wiring.flow.FlowRunner
 import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
@@ -152,17 +154,41 @@ class FlowRunnerImpl(
 		visited: List<NodeId>,
 		depth: Int,
 	): Flow<Unit> {
-		val handler = nodeRegistry.lookupHandler(node.descriptor)
-			?: let {
-				logger.error { "No handler found for node ${node.descriptor}" }
-				return emptyFlow()
-			}
-
 		if (node._id in visited) {
 			val referencingNodes = visited
 				.filter { nodeMap[it]?.next?.contains(node._id) == true }
 			logger.error { "Cycle detected at node ${node.descriptor} (${node._id}, referenced by $referencingNodes)" }
 			return emptyFlow()
+		}
+
+		val nodeLogName = "${node.descriptor.name} node \"${node.settings.name}\" (${node._id})"
+
+		val handler = nodeRegistry.lookupHandler(node.descriptor)
+			?: let {
+				logger.error { "No handler found for $nodeLogName" }
+				return emptyFlow()
+			}
+		
+		val metadata = nodeRegistry.getMetadata(node.descriptor)
+
+		fun Node.executeNextNodes(input: NodeOutput) = node.next
+			.asFlow()
+			.mapNotNull { nextNodeId ->
+				nodeMap[nextNodeId] ?: let {
+					logger.error { "Next node $nextNodeId not found" }
+					null
+				}
+			}
+			.flatMapConcat { nextNode ->
+				val subspan = span.subspan(flowTracing, traceName(nextNode)) {
+					setNodeAttributes(nextNode, input)
+				}
+				executeImpl(subspan, nextNode, input, visited + node._id, depth + 1)
+			}
+
+		if (metadata.position != NodePosition.START && input.isEmpty() && !metadata.receiveEmptyInput) {
+			logger.debug { "Skipping $nodeLogName because it does not receive empty input." }
+			return node.executeNextNodes(emptyList()).onCompletion { span.end() }
 		}
 
 		val context = NodeHandleContextImpl(
@@ -173,11 +199,11 @@ class FlowRunnerImpl(
 		KMDC.put(APPENDER_LOG_LEVEL, (node.logLevel ?: logLevel).name)
 
 		return flow {
-			logger.debug { "Processing ${node.descriptor.name} node \"${node.settings.name}\" (${node._id}) with $input" }
+			logger.debug { "Processing $nodeLogName with $input" }
 			// pls fix Kotlin
 			val data = with(context) { with(handler) { process(node, input) } }
-			logger.debug { "Processed ${node.descriptor.name} node \"${node.settings.name}\" (${node._id})" }
-			if (nodeRegistry.getMetadata(node.descriptor).position.logOutput && node.next.isEmpty()) {
+			logger.debug { "Processed $nodeLogName" }
+			if (metadata.position.logOutput && node.next.isEmpty()) {
 				logger.debug { "Node \"${node.settings.name}\" (${node._id}) has no output nodes, would have emitted $data" }
 			}
 
@@ -192,21 +218,7 @@ class FlowRunnerImpl(
 			}
 			.flowOn(span.asContextElement() + MDCContext())
 			.flatMapConcat { output ->
-				node.next
-					.asFlow()
-					.mapNotNull { nextNodeId ->
-						nodeMap[nextNodeId] ?: let {
-							logger.error { "Next node $nextNodeId not found" }
-							null
-						}
-					}
-					.filter { nextNode -> !output.isEmpty() || nodeRegistry.getMetadata(nextNode.descriptor).receiveEmptyInput }
-					.flatMapConcat { nextNode ->
-						val subspan = span.subspan(flowTracing, traceName(nextNode)) {
-							setNodeAttributes(nextNode, output)
-						}
-						executeImpl(subspan, nextNode, output, visited + node._id, depth + 1)
-					}
+				node.executeNextNodes(output) // current Node's output is the next Node's input
 			}
 			.onCompletion {
 				span.end()

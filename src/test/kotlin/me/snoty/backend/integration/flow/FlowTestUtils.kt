@@ -14,7 +14,6 @@ import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeRegistry
-import me.snoty.integration.common.wiring.simpleOutput
 import kotlin.uuid.Uuid
 
 fun relationalFlow(
@@ -37,8 +36,7 @@ object EmitHandler : NodeHandler {
 		NodePosition.START,
 	)
 
-	override suspend fun NodeHandleContext.process(node: Node, input: NodeInput)
-		= simpleOutput("test")
+	override suspend fun NodeHandleContext.process(node: Node, input: NodeInput) = input
 }
 fun NodeRegistry.registerEmitHandler() {
 	registerHandler(EmitHandler.metadata, EmitHandler)
