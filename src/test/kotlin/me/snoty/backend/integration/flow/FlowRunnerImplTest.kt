@@ -74,7 +74,7 @@ class FlowRunnerImplTest {
 	private val tracing = FlowTracingImpl(json = json, openTelemetry = otel.openTelemetry, featureFlags = featureFlags)
 	private val testFlowExecutionService = TestFlowExecutionService()
 	private val testFlowExecutionEventService: FlowExecutionEventService = mockk(relaxed = true)
-	private val runner = FlowRunnerImpl(nodeRegistry, IntermediateDataMapperRegistry, tracing, testFlowExecutionService, testFlowExecutionEventService, mockk(relaxed = true))
+	private val runner = FlowRunnerImpl(nodeRegistry, TestCredentialService, IntermediateDataMapperRegistry, tracing, testFlowExecutionService, testFlowExecutionEventService, mockk(relaxed = true))
 	private val logger = (LoggerFactory.getLogger(FlowRunnerImplTest::class.java) as Logger).apply {
 		val appender = NodeLogAppender(testFlowExecutionService, testFlowExecutionEventService)
 		addAppender(appender)

@@ -3,3 +3,5 @@ port: 8080
 publicHost: http://localhost:{{port}}
 database:
   type: sql
+authentication:
+  type: keycloak

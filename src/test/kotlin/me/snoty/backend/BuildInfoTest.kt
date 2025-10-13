@@ -18,7 +18,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class BuildInfoTest {
 	@Test
-	fun testBuildInfoEndpoint() = ktorApplicationTest(configure = { AboutResource(TestBuildInfo).register(this) }) {
+	fun testBuildInfoEndpoint() = ktorApplicationTest(routes = { AboutResource(TestBuildInfo).register(this) }) {
 		client.get("/info").apply {
 			assertEquals(HttpStatusCode.OK, status)
 			val body = JSONObject(bodyAsText())

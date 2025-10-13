@@ -9,9 +9,10 @@ import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.mapInputWithSettings
+import me.snoty.integration.common.wiring.data.structOutput
+import me.snoty.integration.common.wiring.logger
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
-import me.snoty.integration.common.wiring.structOutput
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Single
@@ -46,7 +47,8 @@ data class MapperSettings(
 class MapperNodeHandler(
 	private val codecRegistry: CodecRegistry,
 ) : NodeHandler, KoinComponent {
-	override suspend fun NodeHandleContext.process(
+	context(_: NodeHandleContext)
+	override suspend fun process(
 		node: Node,
 		input: Collection<IntermediateData>,
 	) = mapInputWithSettings<Document, MapperSettings>(input, node) { data, settings ->

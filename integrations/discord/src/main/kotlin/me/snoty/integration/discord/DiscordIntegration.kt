@@ -13,6 +13,7 @@ import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.eachWithSettings
+import me.snoty.integration.common.wiring.logger
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.koin.core.annotation.Single
@@ -39,7 +40,8 @@ data class DiscordSettings(
 class DiscordNodeHandler(
 	private val client: HttpClient,
 ) : NodeHandler {
-	override suspend fun NodeHandleContext.process(
+	context(_: NodeHandleContext)
+	override suspend fun process(
 		node: Node,
 		input: Collection<IntermediateData>,
 	) = eachWithSettings<DiscordWebhook.Message, DiscordSettings>(input, node) { data, config ->

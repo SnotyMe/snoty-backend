@@ -21,7 +21,8 @@ import org.koin.core.annotation.Single
 )
 @Single
 class SmtpNodeHandler : NodeHandler {
-	override suspend fun NodeHandleContext.process(node: Node, input: Collection<IntermediateData>): NodeOutput {
+	context(_: NodeHandleContext)
+	override suspend fun process(node: Node, input: Collection<IntermediateData>): NodeOutput {
 		val settings = node.settings as SmtpSettings
 		val properties = settings.toConfiguration()
 		val session = Session.getInstance(properties)

@@ -7,9 +7,13 @@ import io.ktor.util.*
 import me.snoty.integration.builtin.utils.parseJson
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.wiring.*
+import me.snoty.integration.common.wiring.Node
+import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
+import me.snoty.integration.common.wiring.data.getOrNull
+import me.snoty.integration.common.wiring.data.iterableStructOutput
+import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.node.NodeHandler
 import org.bson.codecs.BsonTypeClassMap
 import org.bson.codecs.configuration.CodecRegistry
@@ -29,12 +33,13 @@ class HttpNodeHandler(
 	private val codecRegistry: CodecRegistry,
 	private val bsonTypeClassMap: BsonTypeClassMap,
 ) : NodeHandler {
-	override suspend fun NodeHandleContext.process(
+	context(_: NodeHandleContext)
+	override suspend fun process(
 		node: Node,
 		input: Collection<IntermediateData>,
 	): NodeOutput {
 		val settings = node.getConfig<HttpNodeSettings>()
-		val requests = input.mapNotNull { getOrNull<HttpNodeInput>(it) } + settings.requests
+		val requests = input.mapNotNull { it.getOrNull<HttpNodeInput>() } + settings.requests
 
 		val output = requests.map { request ->
 			val response = httpClient.applyConfig(request).request {

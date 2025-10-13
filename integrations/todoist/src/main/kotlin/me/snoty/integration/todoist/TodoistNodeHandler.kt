@@ -15,7 +15,8 @@ import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.get
+import me.snoty.integration.common.wiring.data.get
+import me.snoty.integration.common.wiring.logger
 import me.snoty.integration.common.wiring.node.*
 import me.snoty.integration.todoist.oauth.TodoistOAuth
 import org.bson.Document
@@ -71,14 +72,15 @@ class TodoistNodeHandler(
 		}
 	}
 
-	override suspend fun NodeHandleContext.process(node: Node, input: Collection<IntermediateData>): NodeOutput {
+	context(_: NodeHandleContext)
+	override suspend fun process(node: Node, input: Collection<IntermediateData>): NodeOutput {
 		val settings = node.settings as TodoistSettings
 		val api = apiFactory(settings.token)
 
 		val tasks = taskService.getEntities(node).toList()
 		input.forEach {
-			val data = get<TodoistInput>(it)
-			val diff = get<Document>(it)["diff"] as? DiffResult
+			val data = it.get<TodoistInput>()
+			val diff = it.get<Document>()["diff"] as? DiffResult
 				?: return@forEach error("No diff included in the input for ${data.id} - did you forget to add a DiffInjector node?")
 
 			suspend fun create() {

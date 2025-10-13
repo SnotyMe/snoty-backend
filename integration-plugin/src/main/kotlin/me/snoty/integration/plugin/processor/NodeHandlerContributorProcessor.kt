@@ -5,7 +5,6 @@ import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSFile
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.writeTo
@@ -18,8 +17,7 @@ import me.snoty.integration.plugin.utils.*
 import org.koin.core.annotation.Single
 
 class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGenerator: CodeGenerator) : SymbolProcessor {
-
-	private val allProcessingResults = mutableListOf<ProcessResult>()
+	private val allProcessingResults = mutableListOf<SpiContributor>()
 
 	private fun contributorName(clazz: KSClassDeclaration)
 		= ClassName(clazz.packageName.asString(), "${clazz.simpleName.asString()}Contributor")
@@ -48,26 +46,12 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 		logger.info("NodeHandlerContributorProcessor: newly processed: $newlyProcessed")
 		if (newlyProcessed.isEmpty()) return emptyList()
 
-		// write SPI file
-		codeGenerator.createNewFileByPath(
-			dependencies = Dependencies(
-				aggregating = true,
-				*(allProcessingResults.map { it.containingFile }.toTypedArray())
-			),
-			path = "META-INF/services/${NodeHandlerContributor::class.qualifiedName}",
-			extensionName = ""
-		).writer().use {
-			allProcessingResults.forEach { contributor ->
-				it.appendLine(contributor.contributorClassName.canonicalName)
-			}
-		}
+		codeGenerator.writeSpiFile(serviceQualifiedName = NodeHandlerContributor::class.qualifiedName!!, services = allProcessingResults)
 
 		return emptyList()
 	}
 
-	data class ProcessResult(val contributorClassName: ClassName, val containingFile: KSFile)
-
-	private fun processClass(resolver: Resolver, clazz: KSClassDeclaration): ProcessResult {
+	private fun processClass(resolver: Resolver, clazz: KSClassDeclaration): SpiContributor {
 		val contributorClassName = contributorName(clazz)
 
 		val classBuilder = TypeSpec.classBuilder(contributorClassName)
@@ -134,7 +118,7 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 				originatingKSFiles = listOf(clazz.containingFile!!)
 			)
 
-		return ProcessResult(contributorClassName = contributorClassName, containingFile = clazz.containingFile!!)
+		return SpiContributor(contributorClassName = contributorClassName, containingFile = clazz.containingFile!!)
 	}
 
 	private fun PropertySpec.Builder.buildKoinInitializer(clazz: KSClassDeclaration) = apply {

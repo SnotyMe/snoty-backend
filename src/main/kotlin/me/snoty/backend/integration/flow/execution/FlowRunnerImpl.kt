@@ -19,6 +19,7 @@ import me.snoty.backend.observability.APPENDER_LOG_LEVEL
 import me.snoty.backend.observability.setException
 import me.snoty.backend.observability.subspan
 import me.snoty.backend.scheduling.FlowTriggerReason
+import me.snoty.backend.wiring.credential.CredentialService
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEvent
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
@@ -43,6 +44,7 @@ private const val FLOW_FAILURE = "flow.failure"
 @Single
 class FlowRunnerImpl(
 	private val nodeRegistry: NodeRegistry,
+	private val credentialService: CredentialService,
 	private val intermediateDataMapperRegistry: IntermediateDataMapperRegistry,
 	private val flowTracing: FlowTracing,
 	private val flowExecutionService: FlowExecutionService,
@@ -193,6 +195,7 @@ class FlowRunnerImpl(
 
 		val context = NodeHandleContextImpl(
 			intermediateDataMapperRegistry = intermediateDataMapperRegistry,
+			credentialService = credentialService,
 			logger = logger.underlyingLogger,
 		)
 

@@ -9,8 +9,9 @@ import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.NodeInput
 import me.snoty.integration.common.wiring.data.NodeOutput
+import me.snoty.integration.common.wiring.data.iterableStructOutput
 import me.snoty.integration.common.wiring.getConfig
-import me.snoty.integration.common.wiring.iterableStructOutput
+import me.snoty.integration.common.wiring.logger
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.untis.WebUntisAPI
 import me.snoty.integration.untis.WebUntisSettings
@@ -31,7 +32,8 @@ class WebUntisExamNodeHandler(
 	val metadata: NodeMetadata,
 	private val untisAPI: WebUntisAPI
 ) : NodeHandler {
-	override suspend fun NodeHandleContext.process(node: Node, input: NodeInput): NodeOutput {
+	context(_: NodeHandleContext)
+	override suspend fun process(node: Node, input: NodeInput): NodeOutput {
 		val settings: WebUntisExamSettings = node.getConfig()
 
 		val (userData, masterData) = untisAPI.getUserAndMasterData(settings)

@@ -16,7 +16,7 @@ import me.snoty.integration.common.diff.state.EntityState
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.NodeInput
-import me.snoty.integration.common.wiring.get
+import me.snoty.integration.common.wiring.data.get
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeRouteFactory
 import org.bson.Document
@@ -49,11 +49,12 @@ abstract class DiffNodeHandler(
 		}
 	}
 
-	suspend fun NodeHandleContext.handleStatesAndDiff(slf4jLogger: Logger, node: Node, input: NodeInput, excludedFields: Collection<String>): Pair<Data, Changes> {
+	context(_: NodeHandleContext)
+	suspend fun handleStatesAndDiff(slf4jLogger: Logger, node: Node, input: NodeInput, excludedFields: Collection<String>): Pair<Data, Changes> {
 		val logger = KotlinLogging.logger(slf4jLogger)
 
 		val newData = input
-			.map { get<Document>(it) }
+			.map { it.get<Document>() }
 			// clone the document to avoid modifying the original
 			.map { Document(it) }
 			.mapNotNull { document ->

@@ -8,7 +8,7 @@ import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.get
+import me.snoty.integration.common.wiring.data.get
 import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.mail.MailInput
@@ -27,14 +27,15 @@ import org.koin.core.annotation.Single
 	settingsType = MailSettings::class,
 )
 class MailNodeHandler(private val mailService: GlobalMailService) : NodeHandler {
-	override suspend fun NodeHandleContext.process(
+	context(_: NodeHandleContext)
+	override suspend fun process(
 		node: Node,
 		input: Collection<IntermediateData>
 	): NodeOutput {
 		val settings: MailSettings = node.getConfig()
 
 		val mails: List<MailInput> = input.map {
-			get(it)
+			it.get()
 		}
 
 		mailService.send(mails, settings)

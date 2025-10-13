@@ -2,7 +2,6 @@ package me.snoty.integration.builtin.split
 
 import io.mockk.mockk
 import me.snoty.backend.test.node
-import me.snoty.backend.test.process
 import me.snoty.integration.common.runNodeHandlerTest
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
@@ -22,7 +21,7 @@ class SplitNodeHandlerTest {
 			mapOf("key" to listOf(Document("value1", true), "value2"), "other" to "sharedValue")
 		).map { context.intermediateDataMapperRegistry[BsonIntermediateData::class].serialize(it) }
 
-		val output = process(node, input)
+		val output = handler.process(node, input)
 
 		val expectedOutput = listOf(
 			context.intermediateDataMapperRegistry[BsonIntermediateData::class].serialize(Document("value1", true)),
@@ -42,7 +41,7 @@ class SplitNodeHandlerTest {
 			mapOf("key" to listOf(Document("value1", true), "value2"), "other" to "sharedValue")
 		).map { context.intermediateDataMapperRegistry[BsonIntermediateData::class].serialize(it) }
 
-		val output = process(node, input)
+		val output = handler.process(node, input)
 
 		val expectedOutput = listOf(
 			mapOf("key" to Document("value1", true), "other" to "sharedValue"),

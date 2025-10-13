@@ -5,6 +5,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import me.snoty.backend.test.IntermediateDataMapperRegistry
+import me.snoty.backend.test.TestCredentialService
 import me.snoty.backend.utils.bson.getIdAsString
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContextImpl
@@ -55,8 +56,10 @@ class MoodleIntegrationTest {
 
 	val baseSettings = MoodleSettings(
 		baseUrl = randomString(),
-		username = randomString(),
-		appSecret = randomString()
+		credentials = TestCredentialService.create(MoodleCredential(
+			username = randomString(),
+			appSecret = randomString()
+		)),
 	)
 
 	@TestFactory
@@ -92,15 +95,16 @@ class MoodleIntegrationTest {
 				)
 
 				val integration = integration(moodleAPI)
-				val output = with(integration) {
-					val ctx = NodeHandleContextImpl(
-						intermediateDataMapperRegistry = IntermediateDataMapperRegistry,
-						logger = mockk(relaxed = true),
-					)
+				val ctx = NodeHandleContextImpl(
+					intermediateDataMapperRegistry = IntermediateDataMapperRegistry,
+					logger = mockk(relaxed = true),
+					credentialService = TestCredentialService,
+				)
+				val output = context(ctx) {
 					val node: Node = mockk(relaxed = true)
 					every { node.settings } returns settings
 
-					ctx.process(node, listOf(mockk()))
+					integration.process(node, listOf(mockk()))
 				}
 				assertEquals(shouldPass.sorted(), output.map { (it as BsonIntermediateData).value.getIdAsString()!!.toInt() }.sorted())
 			}
