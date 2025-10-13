@@ -1,6 +1,5 @@
 package me.snoty.backend.wiring.node
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import me.snoty.backend.utils.bson.decode
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRegistry
@@ -12,10 +11,6 @@ import org.koin.core.annotation.Single
 
 interface NodeSettingsDeserializationService {
 	fun deserializeOrInvalid(nodeDescriptor: NodeDescriptor, nodeSettings: Document): NodeSettings
-
-	companion object {
-		val logger = KotlinLogging.logger {}
-	}
 }
 
 @Single

@@ -14,8 +14,9 @@ import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.get
+import me.snoty.integration.common.wiring.data.get
 import me.snoty.integration.common.wiring.getConfig
+import me.snoty.integration.common.wiring.logger
 import me.snoty.integration.common.wiring.node.*
 import net.fortuna.ical4j.data.CalendarOutputter
 import org.koin.core.annotation.Single
@@ -65,9 +66,10 @@ class ICalNodeHandler(
 		}
 	}
 
-	override suspend fun NodeHandleContext.process(node: Node, input: Collection<IntermediateData>): NodeOutput {
+	context(_: NodeHandleContext)
+	override suspend fun process(node: Node, input: Collection<IntermediateData>): NodeOutput {
 		val events = input
-			.map { get<CalendarEvent>(it) }
+			.map { it.get<CalendarEvent>() }
 			.filterNot(
 				predicate = { it.date == null && (it.startDate == null || it.endDate == null) },
 				ifTrue = { logger.error("Event has no date or start/end date") }

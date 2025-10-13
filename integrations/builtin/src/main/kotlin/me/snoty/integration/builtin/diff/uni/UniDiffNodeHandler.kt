@@ -13,8 +13,9 @@ import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.get
-import me.snoty.integration.common.wiring.iterableStructOutput
+import me.snoty.integration.common.wiring.data.get
+import me.snoty.integration.common.wiring.data.iterableStructOutput
+import me.snoty.integration.common.wiring.logger
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.Document
@@ -41,14 +42,15 @@ data class UniDiff(
 @Single
 @Deprecated("Use the Mapper's `unidiff` filter instead", ReplaceWith("Mapper"))
 class UniDiffHandler : NodeHandler {
-	override suspend fun NodeHandleContext.process(
+	context(_: NodeHandleContext)
+	override suspend fun process(
 		node: Node,
 		input: Collection<IntermediateData>
 	): NodeOutput {
 		val settings = node.settings as UniDiffSettings
 		val output = input
 			.associateWith {
-				val hasDiff = get<HasDiff>(it)
+				val hasDiff = it.get<HasDiff>()
 
 				val diff = hasDiff.diff
 
@@ -79,7 +81,7 @@ class UniDiffHandler : NodeHandler {
 			}
 			.map { (input, items) ->
 				// clone to avoid interference with other nodes
-				val document = Document(get<Document>(input))
+				val document = Document(input.get<Document>())
 				document["unidiff"] = Document(items)
 				document
 			}

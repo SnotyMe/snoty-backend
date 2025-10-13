@@ -39,11 +39,6 @@ testing.suites.withType<JvmTestSuite>().configureEach {
     dependencies { with(libs) {
         implementation(tests.ktor.server.testHost)
         implementation(tests.json)
-        implementation(tests.testcontainers.keycloak) {
-            // explicit dependency, the bundled version is buggy
-            exclude(group = "org.keycloak")
-        }
-        implementation(dev.keycloak.adminClient)
         implementation(monitoring.opentelemetry.testing)
         implementation(devSourceSet.output)
     }}
@@ -60,8 +55,14 @@ dependencies { with(libs) {
     }
 
     moduleImplementation(projects.api)
+
+	// database
     implementation(projects.adapter.mongodb)
     implementation(projects.adapter.sql)
+
+	// authentication
+	implementation(projects.adapter.oidc)
+	implementation(projects.adapter.keycloak)
 
     implementation(koin.slf4j)
     implementation(libraries.coroutines.core)
@@ -114,7 +115,7 @@ dependencies { with(libs) {
     implementation(libraries.openfeature.flagd)
 
     // dev
-    devImplementation(dev.keycloak.adminClient)
+    devImplementation(authentication.keycloak.adminClient)
     devImplementation(monitoring.opentelemetry.sdk)
     file("dist/integrations").listFiles()?.let {
         implementation(files(it))

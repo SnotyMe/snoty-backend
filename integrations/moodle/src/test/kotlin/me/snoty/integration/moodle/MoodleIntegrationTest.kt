@@ -6,6 +6,9 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import me.snoty.backend.test.IntermediateDataMapperRegistry
 import me.snoty.backend.utils.bson.getIdAsString
+import me.snoty.backend.wiring.credential.CredentialRef
+import me.snoty.backend.wiring.credential.CredentialService
+import me.snoty.backend.wiring.credential.ResolvedCredential
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContextImpl
 import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
@@ -16,6 +19,7 @@ import me.snoty.integration.moodle.request.CalendarUpcomingResponse
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestFactory
+import org.koin.core.Koin
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
@@ -53,10 +57,24 @@ class MoodleIntegrationTest {
 		)
 	}
 
-	val baseSettings = MoodleSettings(
+	val credential = MoodleCredential(
 		baseUrl = randomString(),
 		username = randomString(),
 		appSecret = randomString()
+	)
+	val credentialRef = CredentialRef<MoodleCredential>(randomString())
+	val credentialService = mockk<CredentialService>().also {
+		coEvery {
+			it.resolve(any(), credentialRef.credentialId!!, MoodleCredential::class)
+		} returns ResolvedCredential(
+			id = credentialRef.credentialId!!,
+			type = "Moodle",
+			data = credential,
+		)
+	}
+
+	val baseSettings = MoodleSettings(
+		credentials = credentialRef,
 	)
 
 	@TestFactory
@@ -92,15 +110,17 @@ class MoodleIntegrationTest {
 				)
 
 				val integration = integration(moodleAPI)
-				val output = with(integration) {
-					val ctx = NodeHandleContextImpl(
-						intermediateDataMapperRegistry = IntermediateDataMapperRegistry,
-						logger = mockk(relaxed = true),
-					)
+				val ctx = NodeHandleContextImpl(
+					intermediateDataMapperRegistry = IntermediateDataMapperRegistry,
+					logger = mockk(relaxed = true),
+					credentialService = credentialService,
+					koin = Koin(),
+				)
+				val output = context(ctx) {
 					val node: Node = mockk(relaxed = true)
 					every { node.settings } returns settings
 
-					ctx.process(node, listOf(mockk()))
+					integration.process(node, listOf(mockk()))
 				}
 				assertEquals(shouldPass.sorted(), output.map { (it as BsonIntermediateData).value.getIdAsString()!!.toInt() }.sorted())
 			}

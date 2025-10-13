@@ -1,20 +1,13 @@
 package me.snoty.backend.utils
 
-import io.github.oshai.kotlinlogging.KotlinLogging
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.request.*
 import io.ktor.http.auth.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonPrimitive
-import me.snoty.backend.User
-import me.snoty.backend.config.OidcConfig
-import me.snoty.backend.config.getReverseMapping
+import me.snoty.backend.authentication.AuthenticationProvider
+import me.snoty.backend.authentication.Role
+import me.snoty.backend.authentication.User
 import org.koin.ktor.ext.get
 import java.util.*
 import kotlin.uuid.toKotlinUuid
@@ -38,42 +31,22 @@ fun ApplicationCall.getUserOrNull(): User? {
 	)
 }
 
-/**
- * Gets mapped user groups
- */
-suspend fun ApplicationCall.getUserGroups(): List<String> {
-	val oidcConfig: OidcConfig = get()
-
+suspend fun ApplicationCall.getUserRoles(): List<Role> {
 	val token = request.parseAuthHeader() as? HttpAuthHeader.Single
 		?: throw UnauthorizedException("Invalid token")
-	val groups = getGroups(token.blob)
-	return groups.mapNotNull {
-		oidcConfig.groupMappings.getReverseMapping(it)
-	}
+
+	val authenticationProvider: AuthenticationProvider = get()
+	return authenticationProvider.getRolesByToken(token.blob)
 }
 
-suspend fun ApplicationCall.requireAnyGroup(vararg groups: String) {
-	val userGroups = getUserGroups()
+suspend fun ApplicationCall.requireAnyRole(vararg roles: Role) {
+	val userRoles = getUserRoles()
 
-	if (!groups.any(userGroups::contains)) {
-		throw ForbiddenException("Missing groups '$groups'")
-	}
+	if (userRoles.hasAnyRole(*roles)) return
+
+	val rolesFormatted = roles.joinToString(", ") { it.name }
+	throw ForbiddenException("Missing roles '$rolesFormatted'")
 }
 
-private suspend fun ApplicationCall.getGroups(token: String): List<String> {
-	val httpClient: HttpClient = get()
-	val oidcConfig: OidcConfig = get()
-	val response = httpClient.get(oidcConfig.userInfoUrl) {
-		bearerAuth(token)
-	}
-		.body<JsonObject>()
-
-	return runCatching {
-		response[oidcConfig.groupsClaim]?.jsonArray?.toList()?.map { it.jsonPrimitive.content }
-	}
-		.onFailure { exception ->
-			KotlinLogging.logger {}.error(exception) { "Couldn't get user groups" }
-		}
-		.getOrNull()
-		?: emptyList()
-}
+fun List<Role>.hasAnyRole(vararg needsAnyOf: Role): Boolean =
+	needsAnyOf.any { this.contains(it) }

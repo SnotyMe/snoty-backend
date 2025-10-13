@@ -36,7 +36,8 @@ object EmitHandler : NodeHandler {
 		NodePosition.START,
 	)
 
-	override suspend fun NodeHandleContext.process(node: Node, input: NodeInput) = input
+	context(_: NodeHandleContext)
+	override suspend fun process(node: Node, input: NodeInput) = input
 }
 fun NodeRegistry.registerEmitHandler() {
 	registerHandler(EmitHandler.metadata, EmitHandler)

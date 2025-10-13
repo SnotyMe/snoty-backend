@@ -11,7 +11,7 @@ import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.get
+import me.snoty.integration.common.wiring.data.get
 import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
@@ -40,7 +40,8 @@ data class FilterSettings(
 class FilterNodeHandler(
 	private val codecRegistry: CodecRegistry,
 ) : NodeHandler {
-	override suspend fun NodeHandleContext.process(
+	context(_: NodeHandleContext)
+	override suspend fun process(
 		node: Node,
 		input: Collection<IntermediateData>
 	): NodeOutput {
@@ -49,7 +50,7 @@ class FilterNodeHandler(
 		
 		// no modifications happen to the original data
 		val result = input.filter {
-			val data = get<Document>(it).encodeObjects(codecRegistry)
+			val data = it.get<Document>().encodeObjects(codecRegistry)
 			val rendered = template.render(data).trim()
 			rendered.trim().toBooleanStrict()
 		}

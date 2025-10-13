@@ -1,7 +1,6 @@
 plugins {
-	alias(libs.plugins.kotlin.serialization)
+	id("snoty.integration-conventions")
 	id("snoty.testintegration-conventions")
-	id("snoty.publish-conventions")
 }
 
 dependencies { with(libs) {

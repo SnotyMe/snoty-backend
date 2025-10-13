@@ -12,8 +12,9 @@ import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
+import me.snoty.integration.common.wiring.data.iterableStructOutput
 import me.snoty.integration.common.wiring.getConfig
-import me.snoty.integration.common.wiring.iterableStructOutput
+import me.snoty.integration.common.wiring.logger
 import me.snoty.integration.common.wiring.node.NodeRouteFactory
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.codecs.configuration.CodecRegistry
@@ -40,7 +41,8 @@ class UnchangedFilterNodeHandler(
 	nodeRouteFactory: NodeRouteFactory,
 	codecRegistry: CodecRegistry,
 ) : DiffNodeHandler(entityStateService, nodeRouteFactory, codecRegistry) {
-	override suspend fun NodeHandleContext.process(
+	context(_: NodeHandleContext)
+	override suspend fun process(
 		node: Node,
 		input: Collection<IntermediateData>,
 	): NodeOutput {

@@ -9,8 +9,8 @@ import me.snoty.integration.moodle.model.toMoodleAssignment
 @Serializable
 data class CalendarUpcomingResponse(val events: List<MoodleEvent>)
 
-suspend fun MoodleAPI.getCalendarUpcoming(userSettings: MoodleSettings): List<MoodleAssignment> {
-	val request = MoodleRequest(userSettings) {
+suspend fun MoodleAPI.getCalendarUpcoming(credential: MoodleCredential): List<MoodleAssignment> {
+	val request = MoodleRequest(credential) {
 		method = MoodleApiConstants.Function.Core.Calendar.GET_UPCOMING_VIEW
 	}
 

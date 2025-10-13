@@ -7,8 +7,12 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.netty.handler.codec.http.HttpServerCodec
 import io.opentelemetry.api.OpenTelemetry
 import kotlinx.serialization.json.Json
+import me.snoty.backend.authentication.AuthenticationProvider
 import me.snoty.backend.config.Config
-import me.snoty.backend.server.plugins.*
+import me.snoty.backend.server.plugins.configureHTTP
+import me.snoty.backend.server.plugins.configureMonitoring
+import me.snoty.backend.server.plugins.configureRouting
+import me.snoty.backend.server.plugins.configureSerialization
 import me.snoty.backend.server.routing.addResources
 import org.koin.core.Koin
 import org.koin.core.annotation.Single
@@ -21,6 +25,7 @@ class KtorServer(
 	private val openTelemetry: OpenTelemetry,
 	private val metricsRegistry: MeterRegistry,
 	private val json: Json,
+	private val authenticationProvider: AuthenticationProvider,
 ) {
 	fun start(wait: Boolean) {
 		embeddedServer(
@@ -48,7 +53,7 @@ class KtorServer(
 		setKoin(koin)
 		configureMonitoring(config, openTelemetry, metricsRegistry)
 		configureHTTP(config)
-		configureSecurity(config, koin.get())
+		authenticationProvider.configureKtor(this)
 		configureSerialization(json)
 		configureRouting(config)
 		addResources(koin.getAll())
