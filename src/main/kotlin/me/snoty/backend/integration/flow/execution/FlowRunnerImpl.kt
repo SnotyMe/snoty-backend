@@ -19,6 +19,7 @@ import me.snoty.backend.observability.APPENDER_LOG_LEVEL
 import me.snoty.backend.observability.setException
 import me.snoty.backend.observability.subspan
 import me.snoty.backend.scheduling.FlowTriggerReason
+import me.snoty.backend.wiring.credential.CredentialService
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEvent
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
@@ -34,6 +35,7 @@ import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
 import me.snoty.integration.common.wiring.flow.FlowRunner
 import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
 import me.snoty.integration.common.wiring.node.NodeRegistry
+import org.koin.core.Koin
 import org.koin.core.annotation.Single
 import org.slf4j.Logger
 import org.slf4j.event.Level
@@ -42,7 +44,9 @@ private const val FLOW_FAILURE = "flow.failure"
 
 @Single
 class FlowRunnerImpl(
+	private val koin: Koin,
 	private val nodeRegistry: NodeRegistry,
+	private val credentialService: CredentialService,
 	private val intermediateDataMapperRegistry: IntermediateDataMapperRegistry,
 	private val flowTracing: FlowTracing,
 	private val flowExecutionService: FlowExecutionService,
@@ -192,7 +196,9 @@ class FlowRunnerImpl(
 		}
 
 		val context = NodeHandleContextImpl(
+			koin = koin,
 			intermediateDataMapperRegistry = intermediateDataMapperRegistry,
+			credentialService = credentialService,
 			logger = logger.underlyingLogger,
 		)
 

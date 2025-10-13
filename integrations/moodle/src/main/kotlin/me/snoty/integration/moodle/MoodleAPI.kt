@@ -49,13 +49,13 @@ class MoodleAPIImpl(private val httpClient: HttpClient) : MoodleAPI {
 	}
 }
 
-class MoodleRequest(private val urlBuilder: URIBuilder, private val settings: MoodleSettings) {
+class MoodleRequest(private val urlBuilder: URIBuilder, private val credential: MoodleCredential) {
 	lateinit var method: String
 	val params: MutableList<MoodleParam> = mutableListOf()
 
-	constructor(settings: MoodleSettings, block: MoodleRequest.() -> Unit = {}) : this(
-		URIBuilder(settings.baseUrl + MOODLE_WS),
-		settings
+	constructor(credential: MoodleCredential, block: MoodleRequest.() -> Unit = {}) : this(
+		urlBuilder = URIBuilder(credential.baseUrl + MOODLE_WS),
+		credential = credential,
 	) {
 		block()
 	}
@@ -74,7 +74,7 @@ class MoodleRequest(private val urlBuilder: URIBuilder, private val settings: Mo
 
 	fun toUri(): URI = urlBuilder
 		.setParameter("moodlewsrestformat", "json")
-		.setParameter("wstoken", settings.appSecret)
+		.setParameter("wstoken", credential.appSecret)
 		.setParameter("wsfunction", method)
 		.setParameters(params)
 		.build()

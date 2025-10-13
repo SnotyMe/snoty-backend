@@ -12,5 +12,6 @@ import me.snoty.integration.common.wiring.data.NodeOutput
  * This can be fetching data from an LMS, mapping data, publishing results, etc.
  */
 interface NodeHandler {
-	suspend fun NodeHandleContext.process(node: Node, input: Collection<IntermediateData>): NodeOutput
+	context(_: NodeHandleContext)
+	suspend fun process(node: Node, input: Collection<IntermediateData>): NodeOutput
 }

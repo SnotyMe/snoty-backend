@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
+import org.koin.core.Koin
 import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
 
@@ -74,7 +75,16 @@ class FlowRunnerImplTest {
 	private val tracing = FlowTracingImpl(json = json, openTelemetry = otel.openTelemetry, featureFlags = featureFlags)
 	private val testFlowExecutionService = TestFlowExecutionService()
 	private val testFlowExecutionEventService: FlowExecutionEventService = mockk(relaxed = true)
-	private val runner = FlowRunnerImpl(nodeRegistry, IntermediateDataMapperRegistry, tracing, testFlowExecutionService, testFlowExecutionEventService, mockk(relaxed = true))
+	private val runner = FlowRunnerImpl(
+		Koin(),
+		nodeRegistry,
+		TestCredentialService,
+		IntermediateDataMapperRegistry,
+		tracing,
+		testFlowExecutionService,
+		testFlowExecutionEventService,
+		mockk(relaxed = true),
+	)
 	private val logger = (LoggerFactory.getLogger(FlowRunnerImplTest::class.java) as Logger).apply {
 		val appender = NodeLogAppender(testFlowExecutionService, testFlowExecutionEventService)
 		addAppender(appender)

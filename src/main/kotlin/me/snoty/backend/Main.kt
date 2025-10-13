@@ -2,7 +2,9 @@ package me.snoty.backend
 
 import kotlinx.coroutines.runBlocking
 import me.snoty.apiModule
-import me.snoty.backend.database.loadDatabaseModule
+import me.snoty.backend.adapter.AdapterSelector
+import me.snoty.backend.authentication.AuthenticationAdapter
+import me.snoty.backend.database.DatabaseAdapter
 import me.snoty.backend.events.EventHandler
 import me.snoty.backend.featureflags.setupFeatureFlags
 import me.snoty.backend.injection.getFromAllScopes
@@ -31,8 +33,9 @@ fun startApplication(vararg extraModules: Module) = runBlocking {
 		)
 	}.koin
 
-	// load database modules - should not eager initialize
-	koin.loadDatabaseModule()
+	val adapterSelector: AdapterSelector = koin.get()
+	adapterSelector.load(DatabaseAdapter::class, DatabaseAdapter.CONFIG_KEY)
+	adapterSelector.load(AuthenticationAdapter::class, AuthenticationAdapter.CONFIG_KEY)
 
 	// setup logging related things
 	setupLogbackFilters(koin.getAll(), koin.getFromAllScopes())

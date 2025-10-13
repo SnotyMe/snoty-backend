@@ -2,14 +2,18 @@ package me.snoty.backend.database.sql.migrations
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import me.snoty.backend.database.sql.newSuspendedTransaction
+import me.snoty.backend.injection.getFromAllScopes
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Table
+import org.koin.core.Koin
 import org.koin.core.annotation.Single
 
 @Single
-class SqlMigrator(private val database: Database, private val tables: List<Table>) {
+class SqlMigrator(private val database: Database, koin: Koin) {
 	private val logger = KotlinLogging.logger {}
+
+	private val tables: List<Table> = koin.getFromAllScopes()
 
 	suspend fun migrate() {
 		database.newSuspendedTransaction {

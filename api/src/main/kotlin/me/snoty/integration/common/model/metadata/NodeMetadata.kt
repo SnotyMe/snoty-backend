@@ -79,4 +79,10 @@ sealed class NodeFieldDetails(
 		val keyDetails: NodeFieldDetails?,
 		val valueDetails: NodeFieldDetails?,
 	) : NodeFieldDetails("Map")
+
+	@Serializable
+	data class CredentialDetails(
+		val credentialType: String,
+		val schema: ObjectSchema,
+	) : NodeFieldDetails("Credential")
 }

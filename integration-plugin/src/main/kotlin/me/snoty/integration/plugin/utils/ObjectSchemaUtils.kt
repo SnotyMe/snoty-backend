@@ -2,6 +2,7 @@ package me.snoty.integration.plugin.utils
 
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getDeclaredProperties
+import com.google.devtools.ksp.getJavaClassByName
 import com.google.devtools.ksp.getKotlinClassByName
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.KSAnnotated
@@ -12,7 +13,10 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toClassNameOrNull
+import com.squareup.kotlinpoet.ksp.toTypeName
 import me.snoty.backend.utils.toTitleCase
+import me.snoty.backend.wiring.credential.CredentialRef
+import me.snoty.backend.wiring.credential.RegisterCredential
 import me.snoty.integration.common.model.metadata.*
 import kotlin.reflect.KClass
 
@@ -51,6 +55,8 @@ fun Resolver.getDetails(
 	type: KSType = prop.type.resolve(),
 	annotated: KSAnnotated = prop,
 ): NodeFieldDetails? {
+	val propertyFqdn = "${prop.parentDeclaration?.qualifiedName?.asString()}#${prop.simpleName.asString()}"
+
 	// work around `KSType#toClassName` throwing an exception when the type has type parameters
 	val className = type.toClassNameOrNull() ?: (type.declaration as KSClassDeclaration).toClassName()
 	return when {
@@ -82,6 +88,21 @@ fun Resolver.getDetails(
 			val valueDetails = getDetails(prop, visited, valueType.resolve(), valueType)
 
 			NodeFieldDetails.MapDetails(keyDetails, valueDetails)
+		}
+
+		CredentialRef::class.isAssignableFrom(type, this) -> {
+			val credentialType = (((prop.type
+				.element ?: error("Cannot resolve element of type ${prop.type}"))
+				.typeArguments.singleOrNull() ?: error("Expected single type parameter for CredentialRef, got ${prop.type.element?.typeArguments?.size ?: 0}"))
+				.type ?: error("Cannot resolve type parameter of CredentialRef in property $propertyFqdn"))
+			val credentialClass = getJavaClassByName(credentialType.resolve().toClassName().canonicalName) ?: error("${credentialType.toTypeName()} is not a valid class")
+			val registerCredential = credentialClass.getAnnotation<RegisterCredential>()
+				?: error("Missing @${RegisterCredential::class.simpleName} on credential type ${credentialType.toTypeName()} used in property $propertyFqdn")
+
+			NodeFieldDetails.CredentialDetails(
+				credentialType = registerCredential.type,
+				schema = generateObjectSchema(resolver = this, clazz = credentialClass, visited = visited + className)!!
+			)
 		}
 
 		Any::class.isAssignableFrom(type, this) && !className.packageName.startsWith("java") && !className.packageName.startsWith("kotlin") -> {

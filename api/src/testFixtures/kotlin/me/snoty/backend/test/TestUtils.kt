@@ -1,10 +1,5 @@
 package me.snoty.backend.test
 
-import me.snoty.integration.common.wiring.Node
-import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.data.NodeInput
-import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.node.NodeHandler
 import kotlin.random.Random
 
 private val charPool : List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
@@ -21,11 +16,4 @@ fun getClassNameFromBlock(block: Function<*>): String {
 		name.contains("$") -> name.substringBefore("$")
 		else -> name
 	}.substringAfterLast(".")
-}
-
-context(context: NodeHandleContext, handler: NodeHandler)
-suspend fun process(node: Node, input: NodeInput): NodeOutput = with (context) {
-	with (handler) {
-		return process(node, input)
-	}
 }
