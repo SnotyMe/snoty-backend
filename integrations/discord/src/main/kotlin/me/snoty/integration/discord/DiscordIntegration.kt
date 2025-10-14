@@ -4,9 +4,12 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
+import me.snoty.backend.wiring.credential.Credential
+import me.snoty.backend.wiring.credential.CredentialRef
+import me.snoty.backend.wiring.credential.RegisterCredential
+import me.snoty.backend.wiring.credential.resolve
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.model.metadata.FieldCensored
 import me.snoty.integration.common.model.metadata.FieldDescription
 import me.snoty.integration.common.model.metadata.FieldName
 import me.snoty.integration.common.wiring.Node
@@ -19,11 +22,16 @@ import me.snoty.integration.common.wiring.node.NodeSettings
 import org.koin.core.annotation.Single
 
 @Serializable
+@RegisterCredential("DiscordWebhook")
+data class DiscordWebhookCredential(
+	@FieldName("Webhook URL")
+	val webhookUrl: String,
+) : Credential()
+
+@Serializable
 data class DiscordSettings(
 	override val name: String = "Discord",
-	@FieldName("Webhook URL")
-	@FieldCensored
-	val webhookUrl: String,
+	val credentials: CredentialRef<DiscordWebhookCredential>,
 	@FieldName("Empty is Error")
 	@FieldDescription("If enabled, no message content will result in an error")
 	val emptyIsError: Boolean = true
@@ -56,7 +64,8 @@ class DiscordNodeHandler(
 
 		logger.info("Sending message {} to Discord webhook...", data)
 
-		client.post(config.webhookUrl) {
+		val credentials = config.credentials.resolve(node.userId.toString())
+		client.post(credentials.webhookUrl) {
 			contentType(ContentType.Application.Json)
 			setBody(data)
 		}

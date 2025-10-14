@@ -26,4 +26,9 @@ class CredentialDefinitionRegistryImpl : CredentialDefinitionRegistry {
 
 	override fun lookupByType(credentialType: String) = registry[credentialType]
 		?: throw IllegalArgumentException("Credential type $credentialType is not registered")
+
+	override fun lookupByClass(credentialClass: Class<out Credential>) = registry.values.find { it.clazz == credentialClass }
+		?: throw IllegalArgumentException("Credential class ${credentialClass.canonicalName} is not registered")
+
+	override fun getAll() = registry.values.toList()
 }

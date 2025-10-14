@@ -17,10 +17,18 @@ fun Route.credentialResource() {
 		val user = call.getUser()
 		val credentialId = call.parameters["id"] ?: return@get call.respondStatus(BadRequestException("Missing credential ID"))
 
-		val credential = credentialService.resolve(credentialId = credentialId, userId = user.id.toString())
+		val credential = credentialService.resolve(userId = user.id.toString(), credentialId = credentialId)
 			?: call.respondStatus(NotFoundException("Credential not found"))
 
 		call.respond(credential)
+	}
+
+	get("overview") {
+		val user = call.getUser()
+
+		val credentials = credentialService.listDefinitionsWithStatistics(userId = user.id.toString())
+
+		call.respond(credentials)
 	}
 
 	route("{credentialType}") {
@@ -29,6 +37,15 @@ fun Route.credentialResource() {
 			val credentialType = call.parameters["credentialType"] ?: return@get call.respondStatus(BadRequestException("Missing credential type"))
 
 			val credentials = credentialService.enumerateCredentials(userId = user.id.toString(), credentialType = credentialType)
+
+			call.respond(credentials)
+		}
+
+		get("list") {
+			val user = call.getUser()
+			val credentialType = call.parameters["credentialType"] ?: return@get call.respondStatus(BadRequestException("Missing credential type"))
+
+			val credentials = credentialService.listCredentials(userId = user.id.toString(), credentialType = credentialType)
 
 			call.respond(credentials)
 		}
