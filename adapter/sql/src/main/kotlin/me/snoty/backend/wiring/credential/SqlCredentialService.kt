@@ -29,12 +29,30 @@ class SqlCredentialService(
 	private val credentialTable: CredentialTable,
 	private val authenticationProvider: AuthenticationProvider,
 ) : CredentialService {
+	fun ResultRow.access(userId: String) =
+		if (this[credentialTable.userId] == userId) CredentialAccess.USER
+		else CredentialAccess.SYSTEM
+
+	private fun ResultRow.toCredentialDto(userId: String, definition: CredentialDefinition): CredentialDto {
+		@Suppress("UNCHECKED_CAST")
+		val serializer = definition.clazz.kotlin.serializer() as KSerializer<Credential>
+		val data = json.decodeFromString(serializer, this[credentialTable.data])
+		val dataJson = json.encodeToJsonElement(serializer, data).jsonObject
+
+		return CredentialDto(
+			id = this[credentialTable.id].value.toString(),
+			name = this[credentialTable.name],
+			access = this.access(userId),
+			data = dataJson,
+		)
+	}
+
 	override suspend fun create(userId: String, name: String, credentialType: String, data: Credential) = db.newSuspendedTransaction {
 		val definition = registry.lookupByType(credentialType)
 		@Suppress("UNCHECKED_CAST")
 		val data = json.encodeToString(definition.clazz.kotlin.serializer() as SerializationStrategy<Credential>, data)
 
-		val result = credentialTable.insertReturning(listOf(credentialTable.id)) {
+		val result = credentialTable.insertReturning {
 			it[credentialTable.userId] = userId
 			it[credentialTable.name] = name
 			it[credentialTable.roleRequired] = null
@@ -42,12 +60,12 @@ class SqlCredentialService(
 			it[credentialTable.data] = data
 		}
 
-		result.single()[credentialTable.id].value.toString()
+		result.single().toCredentialDto(userId, definition)
 	}
 
 	override suspend fun listDefinitionsWithStatistics(userId: String): List<CredentialDefinitionWithStatisticsDto> {
 		val userRoles = authenticationProvider.getRolesById(userId)
-		val types = registry.getAll().map { it.type }
+		val definitions = registry.getAll()
 
 		// TODO: replace `id.count` with `COUNT(*)`
 		val count = credentialTable.id.count()
@@ -56,48 +74,40 @@ class SqlCredentialService(
 				.select(credentialTable.type, count)
 				.groupBy(credentialTable.type)
 				.where {
-					(credentialTable.type inList types) and (
+					(credentialTable.type inList definitions.map { it.type }) and (
 						(credentialTable.userId eq userId) or (credentialTable.roleRequired inList userRoles.map(Role::name))
 						)
 				}
-				.map {
-					CredentialDefinitionWithStatisticsDto(
-						type = it[credentialTable.type],
-						count = it[count],
-					)
+				.associate {
+					it[credentialTable.type] to it[count]
 				}
-		}.associateBy { it.type }
+		}
 
-		return types.map { type ->
-			byType[type] ?: CredentialDefinitionWithStatisticsDto(type = type, count = 0)
+		return definitions.map { definition ->
+			CredentialDefinitionWithStatisticsDto(
+				type = definition.type,
+				displayName = definition.displayName,
+				schema = definition.schema,
+				count = byType[definition.type] ?: 0,
+			)
 		}.sortedByDescending { it.count }
 	}
 
 	override suspend fun enumerateCredentials(userId: String, credentialType: String) =
-		listCredentialsRaw(userId = userId, credentialType = credentialType) { it, _, access ->
+		listCredentialsRaw(userId = userId, credentialType = credentialType) { it, _ ->
 			EnumeratedCredentialDto(
-				access = access,
+				access = it.access(userId),
 				id = it[credentialTable.id].value.toString(),
 				name = it[credentialTable.name],
 			)
 		}
 
 	override suspend fun listCredentials(userId: String, credentialType: String) =
-		listCredentialsRaw(userId = userId, credentialType = credentialType) { it, definition, access ->
-			@Suppress("UNCHECKED_CAST")
-			val serializer = definition.clazz.kotlin.serializer() as KSerializer<Credential>
-			val data = json.decodeFromString(serializer, it[credentialTable.data])
-			val dataJson = json.encodeToJsonElement(serializer, data).jsonObject
-
-			CredentialDto(
-				id = it[credentialTable.id].value.toString(),
-				name = it[credentialTable.name],
-				access = access,
-				data = dataJson,
-			)
+		listCredentialsRaw(userId = userId, credentialType = credentialType) { it, definition ->
+			it.toCredentialDto(userId, definition)
 		}
 
-	private suspend fun <DTO> listCredentialsRaw(userId: String, credentialType: String, mapResultRow: (ResultRow, CredentialDefinition, CredentialAccess) -> DTO): Flow<DTO> {
+	private suspend fun <DTO> listCredentialsRaw(userId: String, credentialType: String, mapResultRow: (ResultRow, CredentialDefinition) -> DTO): Flow<DTO> {
 		val userRoles = authenticationProvider.getRolesById(userId)
 		val definition = registry.lookupByType(credentialType)
 
@@ -109,20 +119,16 @@ class SqlCredentialService(
 					)
 				}
 				.map {
-					val access =
-						if (it[credentialTable.userId] == userId) CredentialAccess.USER
-						else CredentialAccess.SYSTEM
-
-					mapResultRow(it, definition, access)
+					mapResultRow(it, definition)
 				}
 		}
 	}
 
-	override suspend fun resolve(userId: String, credentialId: String): Credential? = resolveImpl(credentialId, userId) {
+	override suspend fun resolve(userId: String, credentialId: String): ResolvedCredential<out Credential>? = resolveImpl(credentialId, userId) {
 		registry.lookupByType(this[credentialTable.type]).clazz.kotlin
 	}
 
-	override suspend fun <T : Credential> resolve(userId: String, credentialId: String, type: KClass<T>): T? = resolveImpl(userId = userId, credentialId = credentialId) {
+	override suspend fun <T : Credential> resolve(userId: String, credentialId: String, type: KClass<T>): ResolvedCredential<T>? = resolveImpl(userId = userId, credentialId = credentialId) {
 		val definition = registry.lookupByType(this[credentialTable.type])
 
 		if (definition.clazz != type.java) {
@@ -132,7 +138,7 @@ class SqlCredentialService(
 		type
 	}
 
-	private suspend fun <T : Credential> resolveImpl(userId: String, credentialId: String, typeResolver: ResultRow.() -> KClass<T>): T? {
+	private suspend fun <T : Credential> resolveImpl(userId: String, credentialId: String, typeResolver: ResultRow.() -> KClass<T>): ResolvedCredential<T>? {
 		val userRoles = authenticationProvider.getRolesById(userId)
 
 		return db.newSuspendedTransaction {
@@ -147,7 +153,10 @@ class SqlCredentialService(
 				?: return@newSuspendedTransaction null
 			val type = typeResolver(row)
 
-			json.decodeFromString(type.serializer(), row[credentialTable.data])
+			ResolvedCredential(
+				type = row[credentialTable.type],
+				value = json.decodeFromString(type.serializer(), row[credentialTable.data])
+			)
 		}
 	}
 }

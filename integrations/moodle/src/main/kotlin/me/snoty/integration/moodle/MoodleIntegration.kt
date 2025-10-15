@@ -46,7 +46,7 @@ class MoodleIntegration(
 
 		val authFailureAttributes = NotificationAttributes(type = "moodle.authfailure", flowId = node.flowId, nodeId = node._id)
 		val assignments = try {
-			moodleAPI.getCalendarUpcoming(moodleSettings, credentials)
+			moodleAPI.getCalendarUpcoming(credentials)
 		} catch (e: MoodleException) {
 			when (e) {
 				is MoodleInvalidTokenException -> {

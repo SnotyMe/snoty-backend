@@ -13,6 +13,6 @@ suspend inline fun <reified T : Credential> CredentialRef<T>.resolve(userId: Str
 	)
 
 context(context: NodeHandleContext)
-suspend inline fun <reified T : Credential> CredentialRef<T>.resolveOrNull(userId: String) =
+suspend inline fun <reified T : Credential> CredentialRef<T>.resolveOrNull(userId: String): T? =
 	if (this.credentialId == null) null
-	else context.credentialService.resolve(userId, this.credentialId, T::class)
+	else context.credentialService.resolve(userId, this.credentialId, T::class)?.value

@@ -1,5 +1,6 @@
 package me.snoty.backend.wiring.credential
 
+import me.snoty.backend.wiring.node.metadataJson
 import org.koin.core.annotation.Single
 import java.util.*
 
@@ -13,7 +14,9 @@ class CredentialDefinitionRegistryImpl : CredentialDefinitionRegistry {
 		contributors.map {
 			val definition = CredentialDefinition(
 				type = it.type,
+				displayName = it.displayName,
 				clazz = it.clazz,
+				schema = metadataJson.decodeFromString(it.schema),
 			)
 
 			if (registry.containsKey(definition.type) && registry[definition.type] != definition) {

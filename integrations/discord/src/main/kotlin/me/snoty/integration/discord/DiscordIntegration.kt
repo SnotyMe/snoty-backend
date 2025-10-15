@@ -10,6 +10,7 @@ import me.snoty.backend.wiring.credential.RegisterCredential
 import me.snoty.backend.wiring.credential.resolve
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
+import me.snoty.integration.common.model.metadata.FieldCensored
 import me.snoty.integration.common.model.metadata.FieldDescription
 import me.snoty.integration.common.model.metadata.FieldName
 import me.snoty.integration.common.wiring.Node
@@ -25,6 +26,7 @@ import org.koin.core.annotation.Single
 @RegisterCredential("DiscordWebhook")
 data class DiscordWebhookCredential(
 	@FieldName("Webhook URL")
+	@FieldCensored
 	val webhookUrl: String,
 ) : Credential()
 

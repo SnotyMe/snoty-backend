@@ -49,13 +49,12 @@ class MoodleAPIImpl(private val httpClient: HttpClient) : MoodleAPI {
 	}
 }
 
-class MoodleRequest(private val urlBuilder: URIBuilder, private val settings: MoodleSettings, private val credential: MoodleCredential) {
+class MoodleRequest(private val urlBuilder: URIBuilder, private val credential: MoodleCredential) {
 	lateinit var method: String
 	val params: MutableList<MoodleParam> = mutableListOf()
 
-	constructor(settings: MoodleSettings, credential: MoodleCredential, block: MoodleRequest.() -> Unit = {}) : this(
-		urlBuilder = URIBuilder(settings.baseUrl + MOODLE_WS),
-		settings = settings,
+	constructor(credential: MoodleCredential, block: MoodleRequest.() -> Unit = {}) : this(
+		urlBuilder = URIBuilder(credential.baseUrl + MOODLE_WS),
 		credential = credential,
 	) {
 		block()
