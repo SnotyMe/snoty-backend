@@ -22,7 +22,7 @@ dependencies { with(libs) {
     api(log.logback)
 
     api(ktor.client.core)
-    api(ktor.client.apache)
+    api(ktor.client.okhttp)
     api(ktor.client.contentNegotiation)
 
     api(ktor.server.core)
