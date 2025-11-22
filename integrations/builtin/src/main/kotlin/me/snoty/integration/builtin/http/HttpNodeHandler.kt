@@ -4,6 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.util.*
+import me.snoty.backend.wiring.credential.resolve
 import me.snoty.integration.builtin.utils.parseJson
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
@@ -15,6 +16,7 @@ import me.snoty.integration.common.wiring.data.getOrNull
 import me.snoty.integration.common.wiring.data.iterableStructOutput
 import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.node.NodeHandler
+import me.snoty.integration.utils.proxy.withProxy
 import org.bson.codecs.BsonTypeClassMap
 import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Single
@@ -39,17 +41,24 @@ class HttpNodeHandler(
 		input: Collection<IntermediateData>,
 	): NodeOutput {
 		val settings = node.getConfig<HttpNodeSettings>()
+		val proxy = settings.proxy?.resolve(node.userId.toString())
 		val requests = input.mapNotNull { it.getOrNull<HttpNodeInput>() } + settings.requests
 
 		val output = requests.map { request ->
-			val response = httpClient.applyConfig(request).request {
-				url(request.url)
-				method = request.method.ktor
-				request.headers.forEach { (key, value) ->
-					header(key, value)
+			val response = httpClient
+				.run {
+					if (proxy != null) withProxy(proxy)
+					else this
 				}
-				setBody(request.body)
-			}
+				.applyConfig(request)
+				.request {
+					url(request.url)
+					method = request.method.ktor
+					request.headers.forEach { (key, value) ->
+						header(key, value)
+					}
+					setBody(request.body)
+				}
 
 			val bodyText = response.bodyAsText()
 			val body = when (settings.serializeOutputAs) {

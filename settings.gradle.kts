@@ -20,6 +20,7 @@ listRootDirsIn("integrations")
 
 include("api")
 include("integration-plugin")
+include("integration-utils")
 listRootDirsIn("adapter")
 	.forEach {
 		include(":adapter:${it.name}")
