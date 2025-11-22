@@ -8,6 +8,7 @@ dependencies {
 	implementation("io.github.java-diff-utils:java-diff-utils:4.15")
 
 	implementation(libs.libraries.ical4j)
+	implementation(projects.integrationUtils)
 
 	testImplementation(testFixtures(projects.api))
 }

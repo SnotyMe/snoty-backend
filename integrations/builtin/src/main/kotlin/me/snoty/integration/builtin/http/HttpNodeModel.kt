@@ -2,9 +2,11 @@ package me.snoty.integration.builtin.http
 
 import io.ktor.client.*
 import kotlinx.serialization.Serializable
+import me.snoty.backend.wiring.credential.CredentialRef
 import me.snoty.integration.common.model.metadata.FieldDefaultValue
 import me.snoty.integration.common.model.metadata.FieldDescription
 import me.snoty.integration.common.wiring.node.NodeSettings
+import me.snoty.integration.utils.proxy.ProxyCredential
 import org.bson.Document
 import io.ktor.http.HttpMethod as KtorHttpMethod
 
@@ -19,6 +21,8 @@ data class HttpNodeSettings(
 
 	val serializeOutputAs: HttpNodeSerializer,
 	val requests: List<HttpNodeInput>,
+
+	val proxy: CredentialRef<ProxyCredential>? = null,
 ) : NodeSettings
 
 @Serializable
