@@ -14,9 +14,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import me.snoty.integration.common.jsonrpc.*
 import me.snoty.integration.untis.param.UntisParam
-import org.apache.http.client.utils.URIBuilder
 import org.koin.core.annotation.Single
-import java.net.URI
 
 interface WebUntisAPI {
 	suspend fun <T> request(type: TypeInfo, request: UntisRequest): JsonRpcResponse<T>
@@ -49,7 +47,7 @@ class WebUntisAPIImpl(client: HttpClient) : WebUntisAPI {
 	}
 
 	override suspend fun <T> request(type: TypeInfo, request: UntisRequest): JsonRpcResponse<T> {
-		val response = httpClient.post(request.toUri().toASCIIString()) {
+		val response = httpClient.post(request.toUrl()) {
 			header("Content-Type", "application/json; charset=UTF-8")
 			setRpcBody(request.data)
 		}
@@ -64,17 +62,17 @@ class WebUntisAPIImpl(client: HttpClient) : WebUntisAPI {
 	}
 }
 
-class UntisRequest(private val urlBuilder: URIBuilder, val data: UntisPayload) : JsonRpcRequest by data {
+class UntisRequest(private val urlBuilder: URLBuilder, val data: UntisPayload) : JsonRpcRequest by data {
 	constructor(settings: WebUntisSettings, data: UntisPayload) : this(
-		URIBuilder(settings.baseUrl)
-			.setPath("/WebUntis/jsonrpc_intern.do")
-			.setParameter("school", settings.school),
+		URLBuilder(settings.baseUrl).apply {
+			path("WebUntis", "jsonrpc_intern.do")
+			parameters["school"] = settings.school
+			parameters["v"] = "a5.2.3" // required according to BetterUntis
+		},
 		data,
 	)
 
-	fun toUri(): URI = urlBuilder
-		.setParameter("v", "a5.2.3") // required according to BetterUntis
-		.build()
+	fun toUrl() = urlBuilder.build()
 }
 
 @Serializable

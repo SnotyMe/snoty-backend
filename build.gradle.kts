@@ -70,7 +70,7 @@ dependencies { with(libs) {
     // configuration
     implementation(configuration.hoplite.yaml)
 
-    // ktor
+    // ktor server
     implementation(ktor.serialization.kotlinx.json)
 
     implementation(ktor.server.core)
@@ -90,11 +90,6 @@ dependencies { with(libs) {
     implementation(ktor.server.auth)
     implementation(ktor.server.auth.jwt)
     implementation(ktor.server.contentNegotiation)
-
-    // ktor client (used for OAuth2)
-    implementation(ktor.client.core)
-    implementation(ktor.client.apache)
-    implementation(ktor.client.contentNegotiation)
 
     // monitoring
     implementation(monitoring.ktor.opentelemetry)

@@ -5,11 +5,11 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 import io.ktor.serialization.*
+import io.ktor.util.*
 import io.ktor.util.reflect.*
 import me.snoty.integration.moodle.param.MoodleParam
-import org.apache.http.client.utils.URIBuilder
-import java.net.URI
 
 interface MoodleAPI {
 	suspend fun <T> request(type: TypeInfo, request: MoodleRequest): T
@@ -29,7 +29,7 @@ class MoodleAPIImpl(private val httpClient: HttpClient) : MoodleAPI {
 	private val logger = KotlinLogging.logger {}
 
 	override suspend fun <T> request(type: TypeInfo, request: MoodleRequest): T {
-		val response = httpClient.post(request.toUri().toASCIIString()) {
+		val response = httpClient.post(request.toUrl()) {
 			header("Content-Type", "application/json; charset=UTF-8")
 		}
 		if (logger.isDebugEnabled()) {
@@ -49,12 +49,12 @@ class MoodleAPIImpl(private val httpClient: HttpClient) : MoodleAPI {
 	}
 }
 
-class MoodleRequest(private val urlBuilder: URIBuilder, private val credential: MoodleCredential) {
+class MoodleRequest(private val urlBuilder: URLBuilder, private val credential: MoodleCredential) {
 	lateinit var method: String
 	val params: MutableList<MoodleParam> = mutableListOf()
 
 	constructor(credential: MoodleCredential, block: MoodleRequest.() -> Unit = {}) : this(
-		urlBuilder = URIBuilder(credential.baseUrl + MOODLE_WS),
+		urlBuilder = URLBuilder(credential.baseUrl + MOODLE_WS),
 		credential = credential,
 	) {
 		block()
@@ -64,18 +64,24 @@ class MoodleRequest(private val urlBuilder: URIBuilder, private val credential: 
 		params.add(param)
 	}
 
-	private fun URIBuilder.setParameters(params: List<MoodleParam>): URIBuilder {
-		params.flatMap { it.toMap().entries }
-			.forEach { (key, value) ->
-				this.setParameter(key, value)
-			}
+	private fun URLBuilder.setParameters(params: List<MoodleParam>): URLBuilder {
+		val stringValues = StringValues.build {
+			params
+				.flatMap { it.toMap().entries }
+				.forEach {
+					this.append(it.key, it.value)
+				}
+		}
+		this.parameters.appendAll(stringValues)
 		return this
 	}
 
-	fun toUri(): URI = urlBuilder
-		.setParameter("moodlewsrestformat", "json")
-		.setParameter("wstoken", credential.appSecret)
-		.setParameter("wsfunction", method)
+	fun toUrl(): Url = urlBuilder
+		.apply {
+			parameters["moodlewsrestformat"] = "json"
+			parameters["wstoken"] = credential.appSecret
+			parameters["wsfunction"] = method
+		}
 		.setParameters(params)
 		.build()
 }

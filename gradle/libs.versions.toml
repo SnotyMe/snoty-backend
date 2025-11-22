@@ -60,7 +60,7 @@ authentication-keycloak-adminClient = { group = "org.keycloak", name = "keycloak
 
 integrationPlugin-ksp-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
 
-ktor-client-apache = { group = "io.ktor", name = "ktor-client-apache-jvm", version.ref = "ktor" }
+ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp-jvm", version.ref = "ktor" }
 ktor-client-contentNegotiation = { group = "io.ktor", name = "ktor-client-content-negotiation-jvm", version.ref = "ktor" }
 ktor-client-core = { group = "io.ktor", name = "ktor-client-core-jvm", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json-jvm", version.ref = "ktor" }
