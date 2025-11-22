@@ -80,6 +80,8 @@ class KeycloakConfigurer(private var realmsResource: RealmsResource, private var
 					logger.info { "Created client 'snoty'" }
 				}
 			}
+			// we have to fetch the client manually because Keycloak doesn't return the created client
+			clientsResource.findByClientId("snoty").single()
 		})
 		val serviceAccountUser = clientsResource.get(client.id).serviceAccountUser
 
