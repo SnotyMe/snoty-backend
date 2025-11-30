@@ -55,6 +55,7 @@ dependencies { with(libs) {
     }
 
     moduleImplementation(projects.api)
+	moduleImplementation(projects.adapter.adapterApi)
 
 	// database
     implementation(projects.adapter.mongodb)

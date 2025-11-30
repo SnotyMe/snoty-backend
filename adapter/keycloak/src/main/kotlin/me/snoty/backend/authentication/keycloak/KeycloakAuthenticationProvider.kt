@@ -5,7 +5,9 @@ import me.snoty.backend.authentication.AuthenticationProvider
 import me.snoty.backend.authentication.Role
 import me.snoty.backend.authentication.oidc.OidcAuthenticationProvider
 import me.snoty.backend.config.Config
+import me.snoty.backend.utils.http.INTERNAL_HTTP_CLIENT
 import org.keycloak.admin.client.resource.RealmResource
+import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 
 @Single(binds = [AuthenticationProvider::class])
@@ -13,7 +15,7 @@ class KeycloakAuthenticationProvider(
 	keycloakConfig: KeycloakConfig,
 	realm: RealmResource,
 	config: Config,
-	httpClient: HttpClient,
+	@Named(INTERNAL_HTTP_CLIENT) httpClient: HttpClient,
 ) : OidcAuthenticationProvider(
 	oidcConfig = keycloakConfig.toOidcConfig(),
 	httpClient = httpClient,

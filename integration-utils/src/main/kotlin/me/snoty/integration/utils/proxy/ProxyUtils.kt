@@ -1,17 +1,15 @@
 package me.snoty.integration.utils.proxy
 
 import io.ktor.client.*
-import io.ktor.client.engine.*
-import io.ktor.client.engine.okhttp.*
-import io.ktor.http.*
 import kotlinx.serialization.Serializable
+import me.snoty.backend.utils.http.clone
+import me.snoty.backend.utils.http.configureProxy
 import me.snoty.backend.wiring.credential.Credential
 import me.snoty.backend.wiring.credential.RegisterCredential
 import me.snoty.integration.common.model.metadata.DisplayName
 import me.snoty.integration.common.model.metadata.FieldDefaultValue
-import kotlin.reflect.KProperty1
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.jvm.isAccessible
+import me.snoty.backend.utils.http.ProxyConfig as ApiProxyConfig
+import me.snoty.backend.utils.http.ProxyType as ApiProxyType
 
 enum class ProxyType {
 	@DisplayName("HTTP")
@@ -23,33 +21,26 @@ enum class ProxyType {
 
 @Serializable
 @RegisterCredential("Proxy")
-class ProxyCredential(
+data class ProxyCredential(
 	val type: ProxyType,
 	val host: String,
 	@FieldDefaultValue("8080")
 	val port: Int,
-) : Credential()
+) : Credential() {
+	fun toProxyConfig() = ApiProxyConfig(
+		type = when (type) {
+			ProxyType.HTTP -> ApiProxyType.HTTP
+			ProxyType.SOCKS -> ApiProxyType.SOCKS
+		},
+		host = host,
+		port = port,
+	)
+}
 
-@Suppress("UNCHECKED_CAST")
-private val userConfigField: KProperty1<HttpClient, HttpClientConfig<OkHttpConfig>> = HttpClient::class.declaredMemberProperties
-	.single { it.name == "userConfig" }
-	.apply {
-		isAccessible = true
-	} as KProperty1<HttpClient, HttpClientConfig<OkHttpConfig>>
+fun HttpClient.withOptionalProxy(proxyCredential: ProxyCredential?): HttpClient =
+	if (proxyCredential != null) this.withProxy(proxyCredential)
+	else this
 
-fun HttpClient.withProxy(proxyCredential: ProxyCredential): HttpClient = HttpClient(OkHttp) {
-	val oldConfig = userConfigField.get(this@withProxy)
-	this.plusAssign(oldConfig)
-
-	engine {
-		val url = URLBuilder().also {
-			it.host = proxyCredential.host
-			it.port = proxyCredential.port
-		}.build()
-
-		proxy = when (proxyCredential.type) {
-			ProxyType.HTTP -> ProxyBuilder.http(url)
-			ProxyType.SOCKS -> ProxyBuilder.socks(url.host, url.port)
-		}
-	}
+fun HttpClient.withProxy(proxyCredential: ProxyCredential): HttpClient = this.clone {
+	configureProxy(proxyCredential.toProxyConfig())
 }

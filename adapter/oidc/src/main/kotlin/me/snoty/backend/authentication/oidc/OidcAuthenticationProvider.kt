@@ -18,8 +18,10 @@ import me.snoty.backend.authentication.Role
 import me.snoty.backend.authentication.User
 import me.snoty.backend.config.Config
 import me.snoty.backend.utils.UnauthorizedException
+import me.snoty.backend.utils.http.INTERNAL_HTTP_CLIENT
 import me.snoty.backend.utils.parseAuthHeader
 import me.snoty.backend.utils.respondStatus
+import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 import java.net.URI
 
@@ -29,7 +31,7 @@ const val OIDC = "oidc"
 open class OidcAuthenticationProvider(
 	private val config: Config,
 	private val oidcConfig: OidcConfig,
-	private val httpClient: HttpClient,
+	@Named(INTERNAL_HTTP_CLIENT) private val httpClient: HttpClient,
 ) : AuthenticationProvider {
 	private val logger = KotlinLogging.logger {}
 
