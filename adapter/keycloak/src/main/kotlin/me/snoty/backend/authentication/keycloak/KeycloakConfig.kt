@@ -11,6 +11,7 @@ import org.koin.core.annotation.Single
 data class KeycloakConfig(
 	val baseUrl: String,
 	val realm: String,
+	val issuerUrl: String = "$baseUrl/realms/$realm", // override when using internal networking
 	val clientId: String,
 	val clientSecret: String,
 	val roleMappings: RoleMapping = mapOf(
@@ -19,7 +20,7 @@ data class KeycloakConfig(
 )
 
 fun KeycloakConfig.toOidcConfig() = OidcConfig(
-	issuerUrl = "$baseUrl/realms/$realm",
+	issuerUrl = issuerUrl,
 	oidcUrl = "$baseUrl/realms/$realm/protocol/openid-connect",
 	clientId = clientId,
 	clientSecret = clientSecret,
