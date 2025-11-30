@@ -5,6 +5,7 @@ plugins {
 
 dependencies { with(libs) {
 	compileOnly(projects.api)
+	compileOnly(projects.adapter.adapterApi)
 
 	implementation(authentication.keycloak.adminClient)
 

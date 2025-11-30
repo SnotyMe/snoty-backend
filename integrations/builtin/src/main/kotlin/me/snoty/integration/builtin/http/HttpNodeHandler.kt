@@ -16,7 +16,7 @@ import me.snoty.integration.common.wiring.data.getOrNull
 import me.snoty.integration.common.wiring.data.iterableStructOutput
 import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.node.NodeHandler
-import me.snoty.integration.utils.proxy.withProxy
+import me.snoty.integration.utils.proxy.withOptionalProxy
 import org.bson.codecs.BsonTypeClassMap
 import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Single
@@ -46,10 +46,7 @@ class HttpNodeHandler(
 
 		val output = requests.map { request ->
 			val response = httpClient
-				.run {
-					if (proxy != null) withProxy(proxy)
-					else this
-				}
+				.withOptionalProxy(proxy)
 				.applyConfig(request)
 				.request {
 					url(request.url)

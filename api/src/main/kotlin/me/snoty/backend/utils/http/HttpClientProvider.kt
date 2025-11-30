@@ -1,6 +1,8 @@
-package me.snoty.backend.utils
+package me.snoty.backend.utils.http
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
+import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -10,6 +12,8 @@ import io.opentelemetry.instrumentation.ktor.v3_0.KtorClientTelemetry
 import me.snoty.integration.common.BaseSnotyJson
 import org.koin.core.annotation.Single
 
+private val logger = KotlinLogging.logger {}
+
 /**
  * Provides an opinionated Ktor [HttpClient].
  *
@@ -18,7 +22,15 @@ import org.koin.core.annotation.Single
  * Prefer to utilize this function if you need http client functionality as this will guarantee the best compatibility and observability.
  */
 @Single
-fun httpClient(openTelemetry: OpenTelemetry) = HttpClient {
+fun httpClient(openTelemetry: OpenTelemetry, proxyConfigWrapper: ProxyConfigWrapper) = HttpClient(OkHttp) {
+	configureBase(openTelemetry)
+	proxyConfigWrapper.defaultProxy?.let {
+		logger.info { "Configuring default HTTP Client with proxy $it" }
+		configureProxy(it)
+	}
+}
+
+fun HttpClientConfig<*>.configureBase(openTelemetry: OpenTelemetry) {
 	install(KtorClientTelemetry) {
 		setOpenTelemetry(openTelemetry)
 		spanNameExtractor {
