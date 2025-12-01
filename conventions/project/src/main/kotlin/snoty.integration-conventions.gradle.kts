@@ -3,6 +3,12 @@ plugins {
 	id("com.google.devtools.ksp")
 }
 
+kotlin {
+	compilerOptions {
+		freeCompilerArgs.addAll("-Xcontext-parameters")
+	}
+}
+
 apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
 apply(plugin = "org.jetbrains.kotlinx.kover")
 
