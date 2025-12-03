@@ -44,8 +44,8 @@ fun Route.credentialResource() {
 			val credentialId = parseCredentialId()
 			val user = call.getUser()
 
-			val credential = credentialService.resolve(userId = user.id.toString(), credentialId = credentialId)
-				?: call.respondStatus(NotFoundException("Credential not found"))
+			val credential = credentialService.get(userId = user.id.toString(), credentialId = credentialId)
+				?: return@get call.respondStatus(NotFoundException("Credential not found"))
 
 			call.respond(credential)
 		}

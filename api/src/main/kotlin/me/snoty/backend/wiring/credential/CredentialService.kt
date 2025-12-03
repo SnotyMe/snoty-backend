@@ -13,6 +13,7 @@ interface CredentialService {
 	suspend fun enumerateCredentials(userId: String, credentialType: String): Flow<EnumeratedCredentialDto>
 	suspend fun listCredentials(userId: String, credentialType: String): Flow<PotentiallyAccessibleCredentialDto>
 
+	suspend fun get(userId: String, credentialId: String): CredentialDto?
 	suspend fun resolve(userId: String, credentialId: String): ResolvedCredential<out Credential>?
 	suspend fun <T : Credential> resolve(userId: String, credentialId: String, type: KClass<T>): ResolvedCredential<T>?
 
