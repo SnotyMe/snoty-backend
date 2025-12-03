@@ -165,6 +165,23 @@ class SqlCredentialService(
 		}
 	}
 
+	override suspend fun get(userId: String, credentialId: String): CredentialDto? = db.newSuspendedTransactionWithRoles(userId) { userRoles ->
+		val row = credentialTable.selectAll()
+			.where {
+				credentialTable.id eq credentialId.toUuid() and useVisibleFilter(userId = userId, userRoles = userRoles)
+			}
+			.singleOrNull()
+			?: return@newSuspendedTransactionWithRoles null
+		val definition = registry.lookupByType(row[credentialTable.type])
+
+		CredentialDto(
+			scope = row[credentialTable.scope],
+			id = row[credentialTable.id].value.toString(),
+			name = row[credentialTable.name],
+			data = row.dataJson(definition)
+		)
+	}
+
 	override suspend fun resolve(userId: String, credentialId: String): ResolvedCredential<out Credential>? = resolveImpl(userId = userId, credentialId = credentialId) {
 		registry.lookupByType(this[credentialTable.type]).clazz.kotlin
 	}
