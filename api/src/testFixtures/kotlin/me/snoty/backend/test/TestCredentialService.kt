@@ -78,7 +78,7 @@ object TestCredentialService : CredentialService {
 		)
 	}
 
-	override suspend fun get(userId: String, credentialId: String): CredentialDto? = throw NotImplementedError()
+	override suspend fun get(userId: String, credentialId: String): PotentiallyAccessibleCredentialDto = throw NotImplementedError()
 
 	override suspend fun <T : Credential> resolve(
 		userId: String,

@@ -60,6 +60,11 @@ class SqlCredentialService(
 		return json.encodeToJsonElement(serializer, data).jsonObject
 	}
 
+	private fun ResultRow.dataJsonIfAccessible(definition: CredentialDefinition, userId: String, userRoles: List<Role>): JsonObject? {
+		val accessible = canReadAndWrite(userId, userRoles)
+		return if (accessible) dataJson(definition) else null
+	}
+
 	private suspend fun <T> Database.newSuspendedTransactionWithRoles(userId: String, block: suspend Transaction.(userRoles: List<Role>) -> T): T {
 		val userRoles = authenticationProvider.getRolesById(userId)
 
@@ -137,16 +142,12 @@ class SqlCredentialService(
 		listCredentialsRaw(userId = userId, credentialType = credentialType) { it, definition, userRoles ->
 			val role = it[credentialTable.roleRequired]
 				?.let { Role(it) }
-			val accessible = it.canReadAndWrite(userId, userRoles)
-			val data =
-				if (accessible) it.dataJson(definition)
-				else null
 			PotentiallyAccessibleCredentialDto(
 				scope = it[credentialTable.scope],
 				id = it[credentialTable.id].value.toString(),
 				name = it[credentialTable.name],
 				requiredRole = role,
-				data = data
+				data = it.dataJsonIfAccessible(definition, userId, userRoles)
 			)
 		}
 
@@ -165,20 +166,21 @@ class SqlCredentialService(
 		}
 	}
 
-	override suspend fun get(userId: String, credentialId: String): CredentialDto? = db.newSuspendedTransactionWithRoles(userId) { userRoles ->
+	override suspend fun get(userId: String, credentialId: String): PotentiallyAccessibleCredentialDto? = db.newSuspendedTransactionWithRoles(userId) { userRoles ->
 		val row = credentialTable.selectAll()
 			.where {
 				credentialTable.id eq credentialId.toUuid() and useVisibleFilter(userId = userId, userRoles = userRoles)
 			}
 			.singleOrNull()
 			?: return@newSuspendedTransactionWithRoles null
-		val definition = registry.lookupByType(row[credentialTable.type])
 
-		CredentialDto(
+		val definition = registry.lookupByType(row[credentialTable.type])
+		PotentiallyAccessibleCredentialDto(
 			scope = row[credentialTable.scope],
+			requiredRole = row[credentialTable.roleRequired]?.let { Role(it) },
 			id = row[credentialTable.id].value.toString(),
 			name = row[credentialTable.name],
-			data = row.dataJson(definition)
+			data = row.dataJsonIfAccessible(definition, userId, userRoles)
 		)
 	}
 
