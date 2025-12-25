@@ -9,10 +9,12 @@ import me.snoty.backend.wiring.node.MongoNode
 import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
 import org.bson.Document
 import org.bson.conversions.Bson
+import org.bson.types.ObjectId
 import kotlin.reflect.KProperty
 
-val KProperty<*>.mongoField
-	get() = "$$name"
+val KProperty<*>.mongoField get() = "$$name"
+
+val String.objectId get() = ObjectId(this)
 
 inline fun <reified T : Any> MongoCollection<*>.aggregate(vararg stages: Bson): AggregateFlow<T>
 	= aggregate<T>(stages.toList())
