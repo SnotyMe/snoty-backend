@@ -2,9 +2,6 @@ package me.snoty.backend.test
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.encodeToJsonElement
-import kotlinx.serialization.json.jsonObject
 import me.snoty.backend.authentication.Role
 import me.snoty.backend.utils.toUuid
 import me.snoty.backend.wiring.credential.Credential
@@ -37,7 +34,7 @@ object TestCredentialService : CredentialService {
 			id = id.toString(),
 			name = name,
 			scope = CredentialScope.USER,
-			data = Json.encodeToJsonElement(data).jsonObject,
+			data = data,
 		)
 	}
 
@@ -59,7 +56,7 @@ object TestCredentialService : CredentialService {
 				name = value.name,
 				scope = CredentialScope.USER,
 				requiredRole = null,
-				data = Json.encodeToJsonElement(value.data).jsonObject,
+				data = value.data,
 			)
 		}
 		.asFlow()
@@ -102,16 +99,12 @@ object TestCredentialService : CredentialService {
 			id = credential.id,
 			name = name,
 			scope = CredentialScope.USER,
-			data = Json.encodeToJsonElement(data).jsonObject,
+			data = data,
 		)
 	}
 
-	override suspend fun delete(userId: String, credentialId: String): Boolean {
-		val id = credentialId.toUuid()
-		val existing = credentials[id] ?: return false
-		if (existing.userId != userId) {
-			return false
-		}
+	override suspend fun delete(credential: ResolvedCredential<*>): Boolean {
+		val id = credential.id.toUuid()
 		credentials.remove(id)
 		return true
 	}

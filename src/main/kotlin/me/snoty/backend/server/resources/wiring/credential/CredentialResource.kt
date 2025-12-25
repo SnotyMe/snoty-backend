@@ -72,10 +72,12 @@ fun Route.credentialResource() {
 			val credentialId = parseCredentialId()
 			val user = call.getUser()
 
-			val deleted = credentialService.delete(
+			val resolved = credentialService.resolve(
 				userId = user.id.toString(),
 				credentialId = credentialId,
-			)
+			) ?: return@delete call.respondStatus(NotFoundException("Credential not found"))
+
+			val deleted = credentialService.delete(resolved)
 
 			if (!deleted) {
 				return@delete call.respondStatus(NotFoundException("Credential not found"))

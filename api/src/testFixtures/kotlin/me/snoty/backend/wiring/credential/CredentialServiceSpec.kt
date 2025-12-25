@@ -5,11 +5,9 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.jsonPrimitive
 import me.snoty.backend.authentication.AuthenticationProvider
 import me.snoty.backend.authentication.Role
 import me.snoty.backend.test.TestIds
-import me.snoty.backend.test.randomString
 import me.snoty.backend.utils.NotFoundException
 import me.snoty.backend.wiring.credential.dto.CredentialScope
 import org.junit.jupiter.api.Test
@@ -17,9 +15,8 @@ import org.junit.jupiter.api.assertNotNull
 import org.junit.jupiter.api.assertNull
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
-import kotlin.uuid.Uuid
 
-abstract class CredentialServiceSpec {
+abstract class CredentialServiceSpec(private val makeId: () -> String) {
 	companion object {
 		private val USER_ID = TestIds.USER_ID_1.toString()
 		private val USER_ID_2 = TestIds.USER_ID_2.toString()
@@ -49,7 +46,7 @@ abstract class CredentialServiceSpec {
 
 	@Test
 	fun testCreateAndGet(): Unit = runBlocking {
-		val data = TestCredential(password = randomString())
+		val data = TestCredential(password = "testCreateAndGet")
 
 		val credential = service.create(
 			userId = USER_ID,
@@ -67,7 +64,7 @@ abstract class CredentialServiceSpec {
 
 	@Test
 	fun testGet_AccessControl_User() = runBlocking {
-		val data = TestCredential(password = randomString())
+		val data = TestCredential(password = "testGet_AccessControl_User")
 
 		val credential = service.create(
 			userId = USER_ID,
@@ -102,7 +99,7 @@ abstract class CredentialServiceSpec {
 
 	@Test
 	fun testGet_AccessControl_Role() = runBlocking {
-		val data = TestCredential(password = randomString())
+		val data = TestCredential(password = "testGet_AccessControl_Role")
 
 		val credential = service.create(
 			userId = USER_ID, // needs an owner
@@ -126,7 +123,7 @@ abstract class CredentialServiceSpec {
 
 	@Test
 	fun testGet_AccessControl_Global() = runBlocking {
-		val data = TestCredential(password = randomString())
+		val data = TestCredential(password = "testGet_AccessControl_Global")
 
 		val credential = service.create(
 			userId = USER_ID, // needs an owner
@@ -163,7 +160,7 @@ abstract class CredentialServiceSpec {
 			role = null,
 			name = "My Credential",
 			credentialType = type,
-			data = TestCredential(password = randomString())
+			data = TestCredential(password = "testListDefinitionsWithStatistics")
 		)
 
 		val afterCreate = service.listDefinitionsWithStatistics(USER_ID)
@@ -177,16 +174,13 @@ abstract class CredentialServiceSpec {
 	fun testEnumerateCredentials(): Unit = runBlocking {
 		val type = credentialRegistry.registerTestCredential("testEnumerateCredentials")
 
-		val test = service.enumerateCredentials(USER_ID, type).toList()
-		println(test)
-
 		val created1 = service.create(
 			userId = USER_ID,
 			scope = CredentialScope.USER,
 			role = null,
 			name = "Credential 1",
 			credentialType = type,
-			data = TestCredential(password = randomString())
+			data = TestCredential(password = "testEnumerateCredentials")
 		)
 
 		val created2 = service.create(
@@ -195,7 +189,7 @@ abstract class CredentialServiceSpec {
 			role = ROLE,
 			name = "Credential 2",
 			credentialType = type,
-			data = TestCredential(password = randomString())
+			data = TestCredential(password = "testEnumerateCredentials2")
 		)
 
 		val created3 = service.create(
@@ -204,7 +198,7 @@ abstract class CredentialServiceSpec {
 			role = null,
 			name = "Credential 3",
 			credentialType = type,
-			data = TestCredential(password = randomString())
+			data = TestCredential(password = "testEnumerateCredentials3")
 		)
 
 		val credentials = service.enumerateCredentials(USER_ID, type).toList()
@@ -229,7 +223,7 @@ abstract class CredentialServiceSpec {
 			role = null,
 			name = "My Credential",
 			credentialType = type,
-			data = TestCredential(password = randomString())
+			data = TestCredential(password = "testListCredentials")
 		)
 
 		val createdUser2 = service.create(
@@ -238,7 +232,7 @@ abstract class CredentialServiceSpec {
 			role = null,
 			name = "User2 Credential",
 			credentialType = type,
-			data = TestCredential(password = randomString())
+			data = TestCredential(password = "testListCredentials2")
 		)
 
 		val createdRoleAccessible = service.create(
@@ -247,7 +241,7 @@ abstract class CredentialServiceSpec {
 			role = ROLE,
 			name = "My Role Credential",
 			credentialType = type,
-			data = TestCredential(password = randomString())
+			data = TestCredential(password = "testListCredentials3")
 		)
 
 		val createdGlobal = service.create(
@@ -256,7 +250,7 @@ abstract class CredentialServiceSpec {
 			role = null,
 			name = "My Global Credential",
 			credentialType = type,
-			data = TestCredential(password = randomString())
+			data = TestCredential(password = "testListCredentials4")
 		)
 
 		val credentials = service.listCredentials(USER_ID, type).toList()
@@ -303,7 +297,7 @@ abstract class CredentialServiceSpec {
 
 	@Test
 	fun testResolve() = runBlocking {
-		val data = TestCredential(password = randomString())
+		val data = TestCredential(password = "testResolve")
 
 		val created = service.create(
 			userId = USER_ID,
@@ -347,7 +341,7 @@ abstract class CredentialServiceSpec {
 			role = null,
 			name = "My Credential 2",
 			credentialType = type,
-			data = TestCredential2(apiKey = randomString())
+			data = TestCredential2(apiKey = "testResolve2")
 		)
 
 		val resolved2 = service.resolve(
@@ -357,15 +351,15 @@ abstract class CredentialServiceSpec {
 		)
 		assertNotNull(resolved2)
 		assertEquals(created2.id, resolved2.id)
-		assertEquals(created2.data["apiKey"]!!.jsonPrimitive.content, resolved2.data.apiKey)
+		assertEquals(created2.data, resolved2.data)
 
-		val unresolved = service.resolve(USER_ID, Uuid.random().toString())
+		val unresolved = service.resolve(userId = USER_ID, credentialId = makeId())
 		assertNull(unresolved)
 	}
 
 	@Test
 	fun testUpdate(): Unit = runBlocking {
-		var data1 = TestCredential(password = randomString())
+		val data1 = TestCredential(password = "testUpdate")
 		val created = service.create(
 			userId = USER_ID,
 			scope = CredentialScope.USER,
@@ -379,7 +373,7 @@ abstract class CredentialServiceSpec {
 		assertNotNull(resolved)
 		assertEquals(data1, resolved.data)
 
-		val data2 = TestCredential(password = randomString())
+		val data2 = TestCredential(password = "testUpdate2")
 		val updated = service.update(
 			userId = USER_ID,
 			credential = resolved,
@@ -387,7 +381,7 @@ abstract class CredentialServiceSpec {
 			data = data2
 		)
 		assertEquals("Updated Credential", updated.name)
-		assertEquals(data2.password, updated.data["password"]!!.jsonPrimitive.content)
+		assertEquals(data2, updated.data)
 		val resolvedUpdated = service.resolve(USER_ID, created.id)
 		assertNotNull(resolvedUpdated)
 		assertEquals(data2, resolvedUpdated.data)
@@ -395,12 +389,14 @@ abstract class CredentialServiceSpec {
 		val fetched = service.get(USER_ID, created.id)
 		assertNotNull(fetched)
 		assertEquals("Updated Credential", fetched.name)
-		assertEquals(data2.password, fetched.data!!["password"]!!.jsonPrimitive.content)
+		assertEquals(data2, fetched.data)
 
-		val data3 = TestCredential(password = randomString())
+		val data3 = TestCredential(password = "testUpdate3")
 
 		assertThrows<NotFoundException> {
-			service.update(USER_ID_2, resolved, "Should Not Work", data3)
+			runBlocking { // needed to ensure we can catch the thrown exception
+				service.update(USER_ID_2, resolved, "Should Not Work", data3)
+			}
 		}
 	}
 
@@ -412,13 +408,16 @@ abstract class CredentialServiceSpec {
 			role = null,
 			name = "My Credential",
 			credentialType = "test",
-			data = TestCredential(password = randomString())
+			data = TestCredential(password = "testDelete")
 		)
 
-		val deleted = service.delete(
+		val credential = service.resolve(
 			userId = USER_ID,
 			credentialId = created.id
 		)
+		assertNotNull(credential)
+
+		val deleted = service.delete(credential)
 		assertEquals(true, deleted)
 
 		val fetched = service.get(USER_ID, created.id)
