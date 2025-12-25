@@ -27,5 +27,5 @@ interface CredentialService {
 		data: Credential,
 	): CredentialDto
 
-	suspend fun delete(userId: String, credentialId: String): Boolean
+	suspend fun delete(credential: ResolvedCredential<*>): Boolean
 }

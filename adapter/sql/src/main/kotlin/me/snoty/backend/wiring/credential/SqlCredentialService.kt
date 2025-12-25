@@ -2,11 +2,8 @@ package me.snoty.backend.wiring.credential
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.serializer
 import me.snoty.backend.authentication.AuthenticationProvider
 import me.snoty.backend.authentication.Role
@@ -53,14 +50,12 @@ class SqlCredentialService(
 		return accessFilter
 	}
 
-	private fun ResultRow.dataJson(definition: CredentialDefinition): JsonObject {
-		@Suppress("UNCHECKED_CAST")
-		val serializer = definition.clazz.kotlin.serializer() as KSerializer<Credential>
-		val data = json.decodeFromString(serializer, this[credentialTable.data])
-		return json.encodeToJsonElement(serializer, data).jsonObject
+	private fun ResultRow.dataJson(definition: CredentialDefinition): Credential {
+		val serializer = definition.clazz.kotlin.serializer()
+		return json.decodeFromString(serializer, this[credentialTable.data])
 	}
 
-	private fun ResultRow.dataJsonIfAccessible(definition: CredentialDefinition, userId: String, userRoles: List<Role>): JsonObject? {
+	private fun ResultRow.dataJsonIfAccessible(definition: CredentialDefinition, userId: String, userRoles: List<Role>): Credential? {
 		val accessible = canReadAndWrite(userId, userRoles)
 		return if (accessible) dataJson(definition) else null
 	}
@@ -253,12 +248,9 @@ class SqlCredentialService(
 		)
 	}
 
-	override suspend fun delete(userId: String, credentialId: String): Boolean = db.newSuspendedTransactionWithRoles(userId) { userRoles ->
+	override suspend fun delete(credential: ResolvedCredential<*>): Boolean = db.newSuspendedTransaction {
 		credentialTable.deleteWhere {
-			credentialTable.id eq credentialId.toUuid() and useVisibleFilter(
-				userId = userId,
-				userRoles = userRoles,
-			)
+			credentialTable.id eq credential.id.toUuid()
 		} == 1
 	}
 }
