@@ -29,8 +29,8 @@ data class HttpNodeSettings(
 data class HttpNodeInput(
 	val url: String,
 	val method: HttpMethod,
-	val headers: Map<@FieldDefaultValue("My-Header") String, @FieldDefaultValue("Header Value") String>,
-	val body: String,
+	val headers: Map<@FieldDefaultValue("My-Header") String, @FieldDefaultValue("Header Value") String> = emptyMap(),
+	val body: String? = null,
 	@FieldDescription("Whether to expect the request to succeed. When set to false, non-200 status codes will cause the Flow to fail.")
 	@FieldDefaultValue("false")
 	val expectSuccess: Boolean = true, // set to true for backwards compatibility
