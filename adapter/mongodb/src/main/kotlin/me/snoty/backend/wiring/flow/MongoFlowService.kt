@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import me.snoty.backend.database.mongo.aggregate
 import me.snoty.backend.database.mongo.deserializeOrInvalid
+import me.snoty.backend.database.mongo.objectId
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.wiring.node.MongoNode
@@ -50,13 +51,13 @@ class MongoFlowService(
 	}
 
 	override suspend fun getStandalone(flowId: NodeId) = collection
-		.find(Filters.eq(MongoWorkflow::_id.name, ObjectId(flowId)))
+		.find(Filters.eq(MongoWorkflow::_id.name, flowId.objectId))
 		.firstOrNull()
 		?.toStandalone()
 
 	override suspend fun getWithNodes(flowId: NodeId) = collection
 		.aggregate<MongoWorkflowWithNodes>(
-			match(Filters.eq(MongoWorkflow::_id.name, ObjectId(flowId))),
+			match(Filters.eq(MongoWorkflow::_id.name, flowId.objectId)),
 			lookup(
 				/* from = */ NODE_COLLECTION_NAME,
 				/* localField = */ Workflow::_id.name,
@@ -69,14 +70,14 @@ class MongoFlowService(
 
 	override suspend fun rename(flowId: NodeId, name: String) {
 		collection.updateOne(
-			Filters.eq(MongoWorkflow::_id.name, ObjectId(flowId)),
+			Filters.eq(MongoWorkflow::_id.name, flowId.objectId),
 			Updates.set(MongoWorkflow::name.name, name)
 		)
 	}
 
 	override suspend fun updateSettings(flowId: NodeId, settings: WorkflowSettings) {
 		val workflow = collection.findOneAndUpdate(
-			Filters.eq(MongoWorkflow::_id.name, ObjectId(flowId)),
+			Filters.eq(MongoWorkflow::_id.name, flowId.objectId),
 			Updates.set(MongoWorkflow::settings.name, settings),
 			FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
 		)!!.toStandalone()
@@ -85,7 +86,7 @@ class MongoFlowService(
 	}
 
 	override suspend fun delete(flowId: NodeId) {
-		collection.deleteOne(Filters.eq(MongoWorkflow::_id.name, ObjectId(flowId)))
+		collection.deleteOne(Filters.eq(MongoWorkflow::_id.name, flowId.objectId))
 	}
 }
 

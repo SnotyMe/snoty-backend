@@ -1,6 +1,6 @@
 package me.snoty.backend.utils
 
-import me.snoty.backend.integration.config.flow.NodeId
+import me.snoty.backend.errors.InvalidIdException
 import java.security.SecureRandom
 import kotlin.time.Clock
 import kotlin.uuid.Uuid
@@ -32,4 +32,8 @@ fun Uuid.Companion.randomV7(): Uuid {
 	return Uuid.fromByteArray(value)
 }
 
-fun NodeId.toUuid() = Uuid.parse(this)
+fun String.toUuid() = try {
+	Uuid.parse(this)
+} catch (e: IllegalArgumentException) {
+	throw InvalidIdException(e)
+}

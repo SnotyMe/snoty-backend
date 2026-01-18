@@ -9,10 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import me.snoty.backend.database.mongo.Aggregations
-import me.snoty.backend.database.mongo.aggregate
-import me.snoty.backend.database.mongo.mongoField
-import me.snoty.backend.database.mongo.upsertOne
+import me.snoty.backend.database.mongo.*
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.wiring.flow.FlowFeatureFlags
@@ -75,7 +72,7 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 			collection.insertOne(
 				MongoFlowLogs(
 					_id = jobId,
-					flowId = ObjectId(flowId),
+					flowId = flowId.objectId,
 					triggeredBy = triggeredBy,
 					creationDate = Clock.System.now(),
 					status = FlowExecutionStatus.RUNNING,
@@ -112,7 +109,7 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 	}
 
 	override suspend fun retrieve(flowId: NodeId): List<NodeLogEntry> =
-		collection.find(Filters.eq(MongoFlowLogs::flowId.name, ObjectId(flowId)))
+		collection.find(Filters.eq(MongoFlowLogs::flowId.name, flowId.objectId))
 			.toList()
 			.flatMap { it.logs }
 
@@ -162,7 +159,7 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 	override fun query(flowId: NodeId, startFrom: String?, limit: Int): Flow<FlowExecution> =
 		collection.find(
 			Filters.and(
-				Filters.eq(MongoFlowLogs::flowId.name, ObjectId(flowId)),
+				Filters.eq(MongoFlowLogs::flowId.name, flowId.objectId),
 				if (startFrom != null) Filters.lt(MongoFlowLogs::_id.name, startFrom) else Filters.empty(),
 			)
 		)
@@ -182,6 +179,6 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 			}
 
 	override suspend fun deleteAll(flowId: NodeId) {
-		collection.deleteMany(Filters.eq(MongoFlowLogs::flowId.name, ObjectId(flowId)))
+		collection.deleteMany(Filters.eq(MongoFlowLogs::flowId.name, flowId.objectId))
 	}
 }

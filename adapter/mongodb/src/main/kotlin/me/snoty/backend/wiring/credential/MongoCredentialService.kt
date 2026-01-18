@@ -19,7 +19,6 @@ import me.snoty.backend.utils.bson.encode
 import me.snoty.backend.wiring.credential.dto.*
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
-import org.bson.types.ObjectId
 import org.koin.core.annotation.Single
 import kotlin.reflect.KClass
 
@@ -139,7 +138,7 @@ class MongoCredentialService(
 		val userRoles = authenticationProvider.getRolesById(userId)
 		val credential = collection
 			.find(Filters.and(
-				Filters.eq(MongoCredential::_id.name, ObjectId(credentialId)),
+				Filters.eq(MongoCredential::_id.name, credentialId.objectId),
 				CredentialFilters.credentialVisible(userId, userRoles)
 			))
 			.firstOrNull()

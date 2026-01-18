@@ -316,13 +316,13 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 		assertEquals(created.id, resolved.id)
 		assertEquals(data, resolved.data)
 
-		val resolvedNoAccess = service.resolve(
+		val resolvedRoleAccess = service.resolve(
 			userId = USER_ID_2,
 			credentialId = created.id
 		)
-		assertNotNull(resolvedNoAccess)
-		assertEquals(created.id, resolvedNoAccess.id)
-		assertEquals(data, resolvedNoAccess.data)
+		assertNotNull(resolvedRoleAccess)
+		assertEquals(created.id, resolvedRoleAccess.id)
+		assertEquals(data, resolvedRoleAccess.data)
 
 		@Serializable
 		data class TestCredential2(
@@ -333,7 +333,8 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 			type, TestCredential.DEFINITION.copy(
 				type = type,
 				clazz = TestCredential2::class.java,
-		))
+			)
+		)
 
 		val created2 = service.create(
 			userId = USER_ID,

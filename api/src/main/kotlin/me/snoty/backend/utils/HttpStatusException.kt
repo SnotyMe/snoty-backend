@@ -32,11 +32,11 @@ object HttpStatusCodeSerializer : KSerializer<HttpStatusCode> {
 }
 
 // 4xx
-class BadRequestException(message: String) : HttpStatusException(HttpStatusCode.BadRequest, message)
-class UnauthorizedException(message: String) : HttpStatusException(HttpStatusCode.Unauthorized, message)
-class ForbiddenException(message: String) : HttpStatusException(HttpStatusCode.Forbidden, message)
-class NotFoundException(message: String? = null) : HttpStatusException(HttpStatusCode.NotFound, message ?: HttpStatusCode.NotFound.description)
+open class BadRequestException(message: String) : HttpStatusException(HttpStatusCode.BadRequest, message)
+open class UnauthorizedException(message: String) : HttpStatusException(HttpStatusCode.Unauthorized, message)
+open class ForbiddenException(message: String) : HttpStatusException(HttpStatusCode.Forbidden, message)
+open class NotFoundException(message: String? = null) : HttpStatusException(HttpStatusCode.NotFound, message ?: HttpStatusCode.NotFound.description)
 
 // 5xx
-class InternalServerErrorException(message: String) : HttpStatusException(HttpStatusCode.InternalServerError, message)
-class NotImplemented(message: String) : HttpStatusException(HttpStatusCode.NotImplemented, message)
+open class InternalServerErrorException(message: String) : HttpStatusException(HttpStatusCode.InternalServerError, message)
+open class NotImplemented(message: String) : HttpStatusException(HttpStatusCode.NotImplemented, message)

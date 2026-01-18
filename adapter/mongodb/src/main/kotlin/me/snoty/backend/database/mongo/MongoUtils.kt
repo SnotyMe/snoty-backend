@@ -5,6 +5,7 @@ import com.mongodb.client.model.Projections
 import com.mongodb.client.model.UpdateOptions
 import com.mongodb.kotlin.client.coroutine.AggregateFlow
 import com.mongodb.kotlin.client.coroutine.MongoCollection
+import me.snoty.backend.errors.InvalidIdException
 import me.snoty.backend.wiring.node.MongoNode
 import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
 import org.bson.Document
@@ -14,7 +15,11 @@ import kotlin.reflect.KProperty
 
 val KProperty<*>.mongoField get() = "$$name"
 
-val String.objectId get() = ObjectId(this)
+val String.objectId get() = try {
+	ObjectId(this)
+} catch (e: IllegalArgumentException) {
+	throw InvalidIdException(e)
+}
 
 inline fun <reified T : Any> MongoCollection<*>.aggregate(vararg stages: Bson): AggregateFlow<T>
 	= aggregate<T>(stages.toList())
@@ -31,15 +36,15 @@ object Aggregations {
 		)
 
 	fun unwind(field: KProperty<*>): Bson
-		= Aggregates.unwind("$${field.name}")
+		= Aggregates.unwind(field.mongoField)
 
 	fun size(field: KProperty<*>): Bson
-		= Document("\$size", "$${field.name}")
+		= Document($$"$size", field.mongoField)
 }
 
 object Stages {
 	fun objectToArray(name: String): Bson
-		= Document("\$objectToArray", "$$name")
+		= Document($$"$objectToArray", "$$name")
 }
 
 fun NodeSettingsDeserializationService.deserializeOrInvalid(node: MongoNode) =

@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import me.snoty.backend.database.mongo.objectId
 import me.snoty.backend.notifications.Notification
 import me.snoty.backend.notifications.NotificationAttributes
 import me.snoty.backend.notifications.NotificationService
@@ -80,7 +81,7 @@ class MongoNotificationService(
 		val result = collection.deleteOne(
 			Filters.and(
 				Filters.eq(MongoNotification::userId.name, userId),
-				Filters.eq(MongoNotification::_id.name, ObjectId(id))
+				Filters.eq(MongoNotification::_id.name, id.objectId)
 			)
 		)
 		return result.deletedCount > 0
