@@ -20,7 +20,7 @@ testing.suites.withType<JvmTestSuite>().configureEach {
 		}
 		implementation(libs.tests.json)
 		implementation(libs.tests.ktor.server.testHost)
-		implementation(projects.snotyBackend.dependencyProject.sourceSets["dev"].runtimeClasspath)
-		implementation(projects.snotyBackend.dependencyProject.sourceSets["test"].runtimeClasspath)
+		implementation(rootProject.sourceSets["dev"].runtimeClasspath)
+		implementation(rootProject.sourceSets["test"].runtimeClasspath)
 	}
 }
