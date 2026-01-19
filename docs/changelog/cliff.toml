@@ -31,24 +31,23 @@ body = """
                 {{ commit.message }} - by @{{ commit.author.name }} in {{ commit.id }}
         {% endif -%}
     {%- endfor -%}
-    {%- if commits | filter(attribute="scope", value="deps") | length > 0 %}
-        ### Dependencies
-        {%- for commit in commits | filter(attribute="scope", value="deps") %}
-            - {% if commit.breaking %}[**breaking**] {% endif %}\
-                {{ commit.message }} - {{ commit.id }}
-        {%- endfor %}
-    {%- endif %}
     {%- if loop.last %}{% else %}\n{% endif %}\
 {% endfor %}\n
 ## Nodes
 {% for scope, commits in commits | group_by(attribute="scope") %}
     {%- if scope | truncate(length=1) != scope | upper | truncate(length=1) -%}{% continue %}{%- endif %}
     ### {{ scope }}
-    {%- for commit in commits %}
-        - {% if commit.breaking %}[**breaking**] {% endif %}**{{commit.group}}**: \
+    {%- for group, commit in commits | group_by(attribute="group") %}
+        {%- for commit in commit %}
+        - {% if commit.breaking %}[**breaking**] {% endif %}**{{group}}**: \
             {{ commit.message }} - by @{{ commit.author.name }} in {{ commit.id }}
+        {%- endfor %}
     {%- endfor %}
 {% endfor %}
+## Dependencies
+{%- for commit in commits | filter(attribute="scope", value="deps") %}
+    - {% if commit.breaking %}[**breaking**] {% endif %} {{ commit.message }} - {{ commit.id }}
+{%- endfor %}
 """
 
 # Remove leading and trailing whitespaces from the changelog's body.
@@ -85,3 +84,4 @@ topo_order = false
 # Order of commits in each group/release within the changelog.
 # Allowed values: newest, oldest
 sort_commits = "oldest"
+ignore_tags = ".*"

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 git-cliff \
-	--tag "$1" \
-	-u \
+  "$1" \
+	--tag "$2" \
 	--use-branch-tags \
-	-w ../.. # use root of repository as workdir
+	--repository ../..
