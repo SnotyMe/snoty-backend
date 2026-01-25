@@ -4,17 +4,11 @@ import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.MongoCredential
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
-import com.sksamuel.hoplite.fp.getOrElse
-import com.sksamuel.hoplite.parsers.PropsPropertySource
 import io.github.oshai.kotlinlogging.KotlinLogging
-import me.snoty.backend.config.ConfigLoader
-import me.snoty.backend.config.load
-import me.snoty.backend.config.loadContainerConfig
 import me.snoty.backend.database.mongo.tracing.ContextProvider
 import me.snoty.backend.database.mongo.tracing.MongoTracing
 import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Single
-import java.util.Properties
 import com.mongodb.client.MongoClient as SyncMongoClient
 import com.mongodb.client.MongoClients as SyncMongoClients
 import com.mongodb.kotlin.client.coroutine.MongoClient as CoroutineMongoClient
@@ -63,11 +57,6 @@ class MongoStartup(private val mongoTracing: MongoTracing) {
 
 		return MongoClients(mongoDB, mongoClient, syncMongoClient)
 	}
-}
-
-@Single
-fun provideMongoConfig(configLoader: ConfigLoader): MongoConfig = configLoader.load("mongodb") {
-	autoconfigForMongo()
 }
 
 @Single

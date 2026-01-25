@@ -34,8 +34,8 @@ fun startApplication(vararg extraModules: Module) = runBlocking {
 	}.koin
 
 	val adapterSelector: AdapterSelector = koin.get()
-	adapterSelector.load(DatabaseAdapter::class, DatabaseAdapter.CONFIG_KEY)
-	adapterSelector.load(AuthenticationAdapter::class, AuthenticationAdapter.CONFIG_KEY)
+	adapterSelector.load(DatabaseAdapter::class, DatabaseAdapter.CONFIG_GROUP)
+	adapterSelector.load(AuthenticationAdapter::class, AuthenticationAdapter.CONFIG_GROUP)
 
 	// setup logging related things
 	setupLogbackFilters(koin.getAll(), koin.getFromAllScopes())

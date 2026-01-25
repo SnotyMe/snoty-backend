@@ -8,7 +8,7 @@ import org.koin.core.annotation.Single
 import java.util.*
 import kotlin.reflect.KClass
 
-data class ProviderConfig(val type: String)
+data class AdapterConfig(val adapter: String)
 
 @Single
 class SpiAdapterSelector(
@@ -20,12 +20,12 @@ class SpiAdapterSelector(
 	override fun <T : Adapter> load(adapterClass: KClass<T>, configKey: String): T {
 		val providers = ServiceLoader.load(adapterClass.java).toList()
 
-		val providerConfig: ProviderConfig = configLoader.load(configKey) {
+		val adapterConfig: AdapterConfig = configLoader.load(configKey) {
 			providers.forEach { it.autoconfigure(this) }
 		}
 
 		val potential = providers.filter {
-			providerConfig.type in it.supportedTypes
+			adapterConfig.adapter in it.supportedTypes
 		}
 		logger.debug { "Selected $configKey adapter config: $potential" }
 
