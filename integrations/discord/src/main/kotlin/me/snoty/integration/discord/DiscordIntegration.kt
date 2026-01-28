@@ -33,7 +33,7 @@ data class DiscordWebhookCredential(
 @Serializable
 data class DiscordSettings(
 	override val name: String = "Discord",
-	val credentials: CredentialRef<DiscordWebhookCredential> = CredentialRef(),
+	val credentials: CredentialRef<DiscordWebhookCredential>? = null,
 	@FieldName("Empty is Error")
 	@FieldDescription("If enabled, no message content will result in an error")
 	val emptyIsError: Boolean = true

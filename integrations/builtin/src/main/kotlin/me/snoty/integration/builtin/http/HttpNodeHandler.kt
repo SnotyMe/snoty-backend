@@ -4,7 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.util.*
-import me.snoty.backend.wiring.credential.resolve
+import me.snoty.backend.wiring.credential.resolveOrNull
 import me.snoty.integration.builtin.utils.parseJson
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
@@ -41,7 +41,7 @@ class HttpNodeHandler(
 		input: Collection<IntermediateData>,
 	): NodeOutput {
 		val settings = node.getConfig<HttpNodeSettings>()
-		val proxy = settings.proxy?.resolve(node.userId.toString())
+		val proxy = settings.proxy.resolveOrNull(node.userId.toString())
 		val requests = input.mapNotNull { it.getOrNull<HttpNodeInput>() } + settings.requests
 
 		val output = requests.map { request ->

@@ -14,7 +14,6 @@ fun MoodleRpcException.map() = when (errorcode) {
 }
 
 abstract class MoodleException(message: String) : Exception("Moodle API error: $message")
-class MoodleCredentialsMissingException : MoodleException("missing credentials")
 class MoodleInvalidTokenException : MoodleException("invalid token provided")
 class MoodleUnknownException(
 	errorCode: String,

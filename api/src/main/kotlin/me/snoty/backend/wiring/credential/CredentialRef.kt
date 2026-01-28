@@ -4,5 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CredentialRef<T : Credential>(
-	val credentialId: String? = null,
+	val credentialId: String,
 )

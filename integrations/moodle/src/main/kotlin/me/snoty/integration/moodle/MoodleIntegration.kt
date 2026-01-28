@@ -4,7 +4,7 @@ import io.ktor.client.*
 import me.snoty.backend.notifications.NotificationAttributes
 import me.snoty.backend.notifications.NotificationService
 import me.snoty.backend.utils.filterIfNot
-import me.snoty.backend.wiring.credential.resolveOrNull
+import me.snoty.backend.wiring.credential.resolve
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.Node
@@ -42,7 +42,7 @@ class MoodleIntegration(
 		val userId = node.userId.toString()
 
 		val moodleSettings = node.getConfig<MoodleSettings>()
-		val credentials = moodleSettings.credentials.resolveOrNull(userId) ?: throw MoodleCredentialsMissingException()
+		val credentials = moodleSettings.credentials.resolve(userId)
 
 		val authFailureAttributes = NotificationAttributes(type = "moodle.authfailure", flowId = node.flowId, nodeId = node._id)
 		val assignments = try {
