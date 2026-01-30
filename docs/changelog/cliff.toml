@@ -4,15 +4,25 @@
 [changelog]
 header = "<!-- IMPORTANT: fix incorrect usernames in the changelog!! -->"
 body = """
-{%- if version -%}
-    {% if previous.version %}
-        # [{{ version | trim_start_matches(pat="v") }}]({{ previous.version }}..{{ version }}) - {{ timestamp | date(format="%Y-%m-%d") }}
-    {% else %}
-        # [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
-    {% endif %}
-{%- else -%}
-    # [unreleased]
-{%- endif %}
+## Notable Changes
+None.
+
+## Nodes
+{% for scope, commits in commits | group_by(attribute="scope") %}
+    {%- if scope | truncate(length=1) != scope | upper | truncate(length=1) -%}{% continue %}{%- endif %}
+    ### {{ scope }}
+    {%- for group, commit in commits | group_by(attribute="group") %}
+        {%- for commit in commit %}
+        - {% if commit.breaking %}[**breaking**] {% endif %}**{{group}}**: \
+            {{ commit.message }} - by @{{ commit.author.name }} in {{ commit.id }}
+        {%- endfor %}
+    {%- endfor %}
+{% endfor %}
+## Dependencies
+{%- for commit in commits | filter(attribute="scope", value="deps") %}
+    - {% if commit.breaking %}[**breaking**] {% endif %} {{ commit.message }} - {{ commit.id }}
+{%- endfor %}
+
 ## Backend
 {% for group, commits in commits | group_by(attribute="group") %}
     {%- if commits | filter(attribute="scope", value="deps") | length == commits | length -%}{% break %}{%- endif -%}
@@ -33,21 +43,6 @@ body = """
     {%- endfor -%}
     {%- if loop.last %}{% else %}\n{% endif %}\
 {% endfor %}\n
-## Nodes
-{% for scope, commits in commits | group_by(attribute="scope") %}
-    {%- if scope | truncate(length=1) != scope | upper | truncate(length=1) -%}{% continue %}{%- endif %}
-    ### {{ scope }}
-    {%- for group, commit in commits | group_by(attribute="group") %}
-        {%- for commit in commit %}
-        - {% if commit.breaking %}[**breaking**] {% endif %}**{{group}}**: \
-            {{ commit.message }} - by @{{ commit.author.name }} in {{ commit.id }}
-        {%- endfor %}
-    {%- endfor %}
-{% endfor %}
-## Dependencies
-{%- for commit in commits | filter(attribute="scope", value="deps") %}
-    - {% if commit.breaking %}[**breaking**] {% endif %} {{ commit.message }} - {{ commit.id }}
-{%- endfor %}
 """
 
 # Remove leading and trailing whitespaces from the changelog's body.
