@@ -4,13 +4,13 @@ import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
+import com.mongodb.kotlin.client.model.Projections.projection
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapMerge
 import me.snoty.backend.database.mongo.aggregate
 import me.snoty.backend.database.mongo.mongoCollectionPrefix
-import me.snoty.backend.database.mongo.mongoField
 import me.snoty.backend.database.mongo.upsertOne
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.register
@@ -43,9 +43,9 @@ class MongoEntityStateService(
 	override suspend fun getLastState(nodeId: NodeId, entityId: String): EntityState? =
 		nodeEntityStates.aggregate<EntityState>(
 			Aggregates.match(Filters.eq(MongoNodeEntityStates::_id.name, nodeId)),
-			Aggregates.unwind(MongoNodeEntityStates::entities.mongoField),
+			Aggregates.unwind(MongoNodeEntityStates::entities.projection),
 			Aggregates.match(Filters.eq("${MongoNodeEntityStates::entities.name}.${EntityState::id.name}", entityId)),
-			Aggregates.replaceRoot(MongoNodeEntityStates::entities.mongoField)
+			Aggregates.replaceRoot(MongoNodeEntityStates::entities.projection)
 		).firstOrNull()
 
 	override fun getLastStates(nodeId: NodeId): Flow<EntityState> =

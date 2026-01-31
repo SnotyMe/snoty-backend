@@ -5,8 +5,8 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Projections
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
+import com.mongodb.kotlin.client.model.Projections.projection
 import kotlinx.coroutines.flow.Flow
-import me.snoty.backend.database.mongo.Aggregations
 import me.snoty.backend.database.mongo.Stages
 import me.snoty.backend.database.mongo.mongoCollectionPrefix
 import me.snoty.backend.database.mongo.upsertOne
@@ -58,7 +58,7 @@ class MongoNodePersistenceService<T : Any>(
 						Stages.objectToArray(NodeEntities<T>::entities.name)
 					)
 				),
-				Aggregations.unwind(NodeEntities<T>::entities),
+				Aggregates.unwind(NodeEntities<T>::entities.projection),
 				Aggregates.replaceRoot("$${NodeEntities<T>::entities.name}.v")
 			),
 			entityClass.java
