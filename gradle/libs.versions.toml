@@ -17,7 +17,7 @@ opentelemetry-semconv = "1.30.0"
 opentelemetry-semconv-incubating = "1.30.0-alpha"
 opentelemetry-instrumentation = "2.11.0-alpha"
 micrometer = "1.14.2"
-junit = "5.12.2"
+junit = "5.14.2"
 testcontainers = "2.0.2"
 ktor = "3.4.0"
 
