@@ -8,7 +8,7 @@ koin = "4.1.0"
 koin-annotations = "2.1.0"
 hoplite = "2.9.0"
 
-mongodb = "5.3.1"
+mongodb = "5.6.2"
 exposed = "1.0.0"
 
 opentelemetry = "1.48.0"
@@ -47,6 +47,7 @@ koin-annotations = { group = "io.insert-koin", name = "koin-annotations", versio
 koin-ksp = { group = "io.insert-koin", name = "koin-ksp-compiler", version.ref = "koin-annotations" }
 
 database-mongodb = { group = "org.mongodb", name = "mongodb-driver-kotlin-coroutine", version.ref = "mongodb" }
+database-mongodb-kotlin-extensions = { group = "org.mongodb", name = "mongodb-driver-kotlin-extensions", version.ref = "mongodb" }
 database-mongodb-sync = { group = "org.mongodb", name = "mongodb-driver-sync", version.ref = "mongodb" }
 
 database-exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }

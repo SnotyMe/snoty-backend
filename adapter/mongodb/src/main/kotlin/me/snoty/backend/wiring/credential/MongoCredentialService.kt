@@ -5,13 +5,13 @@ import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
+import com.mongodb.kotlin.client.model.Projections.projection
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import me.snoty.backend.authentication.AuthenticationProvider
 import me.snoty.backend.authentication.Role
-import me.snoty.backend.database.mongo.mongoField
 import me.snoty.backend.database.mongo.objectId
 import me.snoty.backend.utils.NotFoundException
 import me.snoty.backend.utils.bson.decode
@@ -69,7 +69,7 @@ class MongoCredentialService(
 		val pipeline = listOf(
 			Aggregates.match(matchFilter),
 			Aggregates.group(
-				MongoCredential::type.mongoField,
+				MongoCredential::type.projection,
 			Accumulators.sum(count, 1L)
 			)
 		)

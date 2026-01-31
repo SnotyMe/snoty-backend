@@ -10,6 +10,7 @@ dependencies { with(libs) {
 	implementation("com.github.zafarkhaja:java-semver:0.10.2")
 
 	api(database.mongodb)
+	api(database.mongodb.kotlin.extensions)
 	api(database.mongodb.sync)
 
 	testIntegrationImplementation(tests.testcontainers.mongodb)

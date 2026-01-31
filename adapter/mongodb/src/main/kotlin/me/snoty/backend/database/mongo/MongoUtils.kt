@@ -5,6 +5,7 @@ import com.mongodb.client.model.Projections
 import com.mongodb.client.model.UpdateOptions
 import com.mongodb.kotlin.client.coroutine.AggregateFlow
 import com.mongodb.kotlin.client.coroutine.MongoCollection
+import com.mongodb.kotlin.client.model.Projections.projection
 import me.snoty.backend.errors.InvalidIdException
 import me.snoty.backend.wiring.node.MongoNode
 import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
@@ -12,8 +13,6 @@ import org.bson.Document
 import org.bson.conversions.Bson
 import org.bson.types.ObjectId
 import kotlin.reflect.KProperty
-
-val KProperty<*>.mongoField get() = "$$name"
 
 val String.objectId get() = try {
 	ObjectId(this)
@@ -35,16 +34,13 @@ object Aggregations {
 			)
 		)
 
-	fun unwind(field: KProperty<*>): Bson
-		= Aggregates.unwind(field.mongoField)
-
 	fun size(field: KProperty<*>): Bson
-		= Document($$"$size", field.mongoField)
+		= Document($$"$size", field.projection)
 }
 
 object Stages {
 	fun objectToArray(name: String): Bson
-		= Document($$"$objectToArray", "$$name")
+		= Document($$"$objectToArray", name.projection)
 }
 
 fun NodeSettingsDeserializationService.deserializeOrInvalid(node: MongoNode) =

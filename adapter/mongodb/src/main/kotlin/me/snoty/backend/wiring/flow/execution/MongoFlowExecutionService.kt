@@ -3,13 +3,17 @@ package me.snoty.backend.wiring.flow.execution
 import com.mongodb.MongoWriteException
 import com.mongodb.client.model.*
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
+import com.mongodb.kotlin.client.model.Projections.projection
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import me.snoty.backend.database.mongo.*
+import me.snoty.backend.database.mongo.Aggregations
+import me.snoty.backend.database.mongo.aggregate
+import me.snoty.backend.database.mongo.objectId
+import me.snoty.backend.database.mongo.upsertOne
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.wiring.flow.FlowFeatureFlags
@@ -136,11 +140,11 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 		return collection.aggregate<MongoFlowExecution>(
 			Aggregates.sort(Sorts.descending(MongoFlowLogs::flowId.name, MongoFlowLogs::creationDate.name)),
 			Aggregates.group(
-				MongoFlowLogs::flowId.mongoField,
-				Accumulators.first(MongoFlowExecution::jobId.name, MongoFlowLogs::_id.mongoField),
-				Accumulators.first(MongoFlowExecution::flowId.name, MongoFlowLogs::flowId.mongoField),
-				Accumulators.first(MongoFlowExecution::status.name, MongoFlowLogs::status.mongoField),
-				Accumulators.first(MongoFlowExecution::startDate.name, MongoFlowLogs::creationDate.mongoField),
+				MongoFlowLogs::flowId.projection,
+				Accumulators.first(MongoFlowExecution::jobId.name, MongoFlowLogs::_id.projection),
+				Accumulators.first(MongoFlowExecution::flowId.name, MongoFlowLogs::flowId.projection),
+				Accumulators.first(MongoFlowExecution::status.name, MongoFlowLogs::status.projection),
+				Accumulators.first(MongoFlowExecution::startDate.name, MongoFlowLogs::creationDate.projection),
 			),
 			Aggregates.lookup(
 				/* from = */ FLOW_COLLECTION_NAME,
