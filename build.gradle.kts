@@ -6,6 +6,7 @@ apply(from = "version.gradle.kts")
 plugins {
     application
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ktor)
     id("snoty.buildinfo-conventions")
     id("snoty.doctor-conventions")
     id("snoty.kotlin-conventions")
@@ -91,6 +92,7 @@ dependencies { with(libs) {
     implementation(ktor.server.auth)
     implementation(ktor.server.auth.jwt)
     implementation(ktor.server.contentNegotiation)
+    implementation(ktor.server.routing.openapi)
 
     // monitoring
     implementation(monitoring.ktor.opentelemetry)
@@ -128,6 +130,14 @@ dependencies { with(libs) {
 if (isDevelopment) {
     tasks.run.configure {
         classpath += devSourceSet.output
+    }
+}
+
+ktor {
+    openApi {
+        enabled = true
+        codeInferenceEnabled = true
+        onlyCommented = false
     }
 }
 
