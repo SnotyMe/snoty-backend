@@ -27,7 +27,7 @@ import kotlin.uuid.Uuid
 class AuthenticationTest {
 	companion object {
 		@Container
-		val keycloakContainer = KeycloakContainer("quay.io/keycloak/keycloak:26.0")
+		val keycloakContainer = KeycloakContainer("quay.io/keycloak/keycloak:26.5")
 		lateinit var keycloakConfig: KeycloakConfig
 		val oidcConfig by lazy {
 			keycloakConfig.toOidcConfig()
