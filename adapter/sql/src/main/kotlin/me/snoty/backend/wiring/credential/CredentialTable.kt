@@ -3,9 +3,7 @@ package me.snoty.backend.wiring.credential
 import me.snoty.backend.database.sql.utils.UuidTable
 import me.snoty.backend.database.sql.utils.rawJsonb
 import me.snoty.backend.wiring.credential.dto.CredentialScope
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.or
+import org.jetbrains.exposed.v1.core.*
 import org.koin.core.annotation.Single
 
 @Single(binds = [Table::class])

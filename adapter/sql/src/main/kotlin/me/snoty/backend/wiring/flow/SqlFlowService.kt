@@ -3,7 +3,7 @@ package me.snoty.backend.wiring.flow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
 import me.snoty.backend.database.sql.flowTransaction
-import me.snoty.backend.database.sql.newSuspendedTransaction
+import me.snoty.backend.database.sql.suspendTransaction
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.utils.toUuid
@@ -12,8 +12,8 @@ import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.flow.StandaloneWorkflow
 import me.snoty.integration.common.wiring.flow.WorkflowSettings
 import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.*
 import org.koin.core.annotation.Single
 import kotlin.uuid.Uuid
 
@@ -24,7 +24,7 @@ class SqlFlowService(
 	private val nodeService: NodeService,
 	private val flowTable: FlowTable,
 ) : FlowService {
-	override suspend fun create(userId: Uuid, name: String, settings: WorkflowSettings): StandaloneWorkflow = db.newSuspendedTransaction {
+	override suspend fun create(userId: Uuid, name: String, settings: WorkflowSettings): StandaloneWorkflow = db.suspendTransaction {
 		val id = flowTable.insertAndGetId {
 			it[flowTable.userId] = userId
 			it[flowTable.name] = name
@@ -43,17 +43,17 @@ class SqlFlowService(
 			.map { it.toStandalone(flowTable) }
 	}
 
-	override suspend fun getStandalone(flowId: NodeId): StandaloneWorkflow? = db.newSuspendedTransaction {
+	override suspend fun getStandalone(flowId: NodeId): StandaloneWorkflow? = db.suspendTransaction {
 		flowTable.selectStandalone()
 			.where { flowTable.id eq flowId.toUuid() }
 			.firstOrNull()
 			?.toStandalone(flowTable)
 	}
 
-	override suspend fun getWithNodes(flowId: NodeId): WorkflowWithNodes? = db.newSuspendedTransaction {
+	override suspend fun getWithNodes(flowId: NodeId): WorkflowWithNodes? = db.suspendTransaction {
 		val flow = flowTable.selectStandalone()
 			.where { flowTable.id eq flowId.toUuid() }
-			.firstOrNull() ?: return@newSuspendedTransaction null
+			.firstOrNull() ?: return@suspendTransaction null
 
 		val nodes = nodeService.getByFlow(flowId).toList()
 
@@ -72,13 +72,13 @@ class SqlFlowService(
 		flowTable.selectStandalone().map { it.toStandalone(flowTable) }
 	}
 
-	override suspend fun rename(flowId: NodeId, name: String) = db.newSuspendedTransaction<Unit> {
+	override suspend fun rename(flowId: NodeId, name: String) = db.suspendTransaction<Unit> {
 		flowTable.update({ flowTable.id eq flowId.toUuid() }) {
 			it[flowTable.name] = name
 		}
 	}
 
-	override suspend fun updateSettings(flowId: NodeId, settings: WorkflowSettings) = db.newSuspendedTransaction {
+	override suspend fun updateSettings(flowId: NodeId, settings: WorkflowSettings) = db.suspendTransaction {
 		val flow = flowTable.updateReturning(flowTable.standaloneColumns, { flowTable.id eq flowId.toUuid() }) {
 			it[flowTable.settings] = settings
 		}
@@ -88,7 +88,7 @@ class SqlFlowService(
 		flowScheduler.reschedule(flow)
 	}
 
-	override suspend fun delete(flowId: NodeId) = db.newSuspendedTransaction<Unit> {
+	override suspend fun delete(flowId: NodeId) = db.suspendTransaction<Unit> {
 		flowTable.deleteWhere { id eq flowId.toUuid() }
 	}
 }

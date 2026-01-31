@@ -4,7 +4,6 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import me.snoty.backend.database.sql.utils.UuidTable
-import me.snoty.backend.database.sql.utils.kotlinUuid
 import me.snoty.backend.database.sql.utils.rawJsonb
 import me.snoty.backend.wiring.flow.FlowTable
 import me.snoty.integration.common.wiring.StandaloneNode
@@ -12,16 +11,17 @@ import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.integration.common.wiring.node.tryDeserializeNodeSettings
-import org.jetbrains.exposed.sql.ReferenceOption
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.v1.core.ReferenceOption
+import org.jetbrains.exposed.v1.core.ResultRow
+import org.jetbrains.exposed.v1.core.Table
+import org.jetbrains.exposed.v1.jdbc.select
 import org.koin.core.annotation.Single
 import org.slf4j.event.Level
 
 @Single(binds = [Table::class])
 class NodeTable(flowTable: FlowTable) : UuidTable("node") {
 	val flowId = reference("flow_id", flowTable)
-	val userId = kotlinUuid("user_id")
+	val userId = uuid("user_id")
 
 	val descriptor_namespace = varchar("descriptor_namespace", 255)
 	val descriptor_name = varchar("descriptor_name", 255)

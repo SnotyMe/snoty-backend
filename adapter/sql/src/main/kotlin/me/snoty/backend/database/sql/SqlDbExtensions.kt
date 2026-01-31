@@ -3,8 +3,8 @@ package me.snoty.backend.database.sql
 import me.snoty.backend.utils.quoted
 import me.snoty.backend.utils.unquoted
 import me.snoty.integration.common.wiring.node.NodeDescriptor
-import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.v1.core.Column
+import org.jetbrains.exposed.v1.core.Table
 
 fun NodeDescriptor.sqlTableName(suffixName: String)
 	= "nodes:${name}:${suffixName}".quoted()

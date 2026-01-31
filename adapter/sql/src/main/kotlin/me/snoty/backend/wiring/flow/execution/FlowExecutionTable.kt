@@ -1,16 +1,15 @@
 package me.snoty.backend.wiring.flow.execution
 
-import kotlinx.datetime.toStdlibInstant
 import me.snoty.backend.database.sql.utils.UuidTable
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.wiring.flow.FlowTable
 import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
 import me.snoty.integration.common.wiring.flow.NodeLogEntry
-import org.jetbrains.exposed.dao.id.IdTable
-import org.jetbrains.exposed.sql.ReferenceOption
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.kotlin.datetime.timestamp
+import org.jetbrains.exposed.v1.core.ReferenceOption
+import org.jetbrains.exposed.v1.core.ResultRow
+import org.jetbrains.exposed.v1.core.Table
+import org.jetbrains.exposed.v1.core.dao.id.IdTable
+import org.jetbrains.exposed.v1.datetime.timestamp
 import org.koin.core.annotation.Single
 import org.slf4j.event.Level
 
@@ -36,7 +35,7 @@ class FlowExecutionLogTable(flowExecutionTable: FlowExecutionTable) : UuidTable(
 }
 
 fun ResultRow.toLogEntry(flowExecutionLogTable: FlowExecutionLogTable) = NodeLogEntry(
-	timestamp = this[flowExecutionLogTable.timestamp].toStdlibInstant(),
+	timestamp = this[flowExecutionLogTable.timestamp],
 	level = this[flowExecutionLogTable.level],
 	message = this[flowExecutionLogTable.message],
 	node = this[flowExecutionLogTable.node]

@@ -2,17 +2,17 @@ package me.snoty.backend.wiring.flow
 
 import kotlinx.serialization.json.Json
 import me.snoty.backend.database.sql.utils.UuidTable
-import me.snoty.backend.database.sql.utils.kotlinUuid
 import me.snoty.integration.common.wiring.flow.StandaloneWorkflow
 import me.snoty.integration.common.wiring.flow.WorkflowSettings
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.json.jsonb
+import org.jetbrains.exposed.v1.core.ResultRow
+import org.jetbrains.exposed.v1.core.Table
+import org.jetbrains.exposed.v1.jdbc.select
+import org.jetbrains.exposed.v1.json.jsonb
 import org.koin.core.annotation.Single
 
 @Single(binds = [Table::class])
 class FlowTable(json: Json) : UuidTable("flow") {
-	val userId = kotlinUuid("user_id")
+	val userId = uuid("user_id")
 	val name = varchar("name", 255)
 	val settings = jsonb<WorkflowSettings>("settings", json).nullable() // nullable for backwards compatibility
 

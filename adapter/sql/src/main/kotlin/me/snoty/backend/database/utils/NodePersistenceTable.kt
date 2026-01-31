@@ -5,8 +5,8 @@ import me.snoty.backend.database.sql.sqlTableName
 import me.snoty.backend.database.sql.utils.rawJsonb
 import me.snoty.backend.wiring.node.NodeTable
 import me.snoty.integration.common.wiring.node.NodeDescriptor
-import org.jetbrains.exposed.dao.id.IdTable
-import org.jetbrains.exposed.sql.ReferenceOption
+import org.jetbrains.exposed.v1.core.ReferenceOption
+import org.jetbrains.exposed.v1.core.dao.id.IdTable
 import kotlin.uuid.Uuid
 
 class NodePersistenceTable<T : Any>(

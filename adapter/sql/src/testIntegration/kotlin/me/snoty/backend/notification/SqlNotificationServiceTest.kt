@@ -1,14 +1,14 @@
 package me.snoty.backend.notification
 
-import kotlinx.datetime.toDeprecatedInstant
 import me.snoty.backend.database.sql.PostgresTest
 import me.snoty.backend.notifications.NotificationServiceSpec
 import me.snoty.backend.notifications.NotificationTable
 import me.snoty.backend.notifications.SqlNotificationService
 import me.snoty.integration.common.snotyJson
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.SchemaUtils
+import org.jetbrains.exposed.v1.jdbc.update
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.time.Clock
@@ -43,7 +43,7 @@ class SqlNotificationServiceTest : NotificationServiceSpec() {
 				notificationTable.userId eq userId and (notificationTable.attributes eq attributes)
 			}) {
 				it[notificationTable.open] = false
-				it[notificationTable.resolvedAt] = Clock.System.now().toDeprecatedInstant()
+				it[notificationTable.resolvedAt] = Clock.System.now()
 			}
 		}
 	}

@@ -17,7 +17,7 @@ import me.snoty.integration.common.diff.provideStateCodecRegistry
 import me.snoty.integration.common.snotyJson
 import me.snoty.integration.common.utils.bsonTypeClassMap
 import me.snoty.integration.common.wiring.flow.FlowService
-import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import kotlin.uuid.Uuid
 
 class SqlEntityStateServiceTest : EntityStateServiceSpec({ Uuid.random().toString() }) {

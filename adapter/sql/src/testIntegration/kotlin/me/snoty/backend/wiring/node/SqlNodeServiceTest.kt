@@ -8,7 +8,7 @@ import me.snoty.backend.wiring.flow.SqlFlowService
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.snotyJson
 import me.snoty.integration.common.wiring.flow.WorkflowSettings
-import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import kotlin.uuid.Uuid
 
 class SqlNodeServiceTest : NodeServiceSpec() {

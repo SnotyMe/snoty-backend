@@ -1,10 +1,8 @@
 package me.snoty.backend.wiring.flow.execution
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.toDeprecatedInstant
-import kotlinx.datetime.toStdlibInstant
 import me.snoty.backend.database.sql.flowTransaction
-import me.snoty.backend.database.sql.newSuspendedTransaction
+import me.snoty.backend.database.sql.suspendTransaction
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.utils.toUuid
@@ -13,8 +11,8 @@ import me.snoty.integration.common.wiring.flow.EnumeratedFlowExecution
 import me.snoty.integration.common.wiring.flow.FlowExecution
 import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
 import me.snoty.integration.common.wiring.flow.NodeLogEntry
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.jdbc.*
 import org.koin.core.annotation.Single
 import kotlin.time.Clock
 import kotlin.uuid.Uuid
@@ -26,33 +24,33 @@ class SqlFlowExecutionService(
 	private val flowExecutionTable: FlowExecutionTable,
 	private val flowExecutionLogTable: FlowExecutionLogTable,
 ) : FlowExecutionService {
-	override suspend fun create(jobId: String, flowId: NodeId, triggeredBy: FlowTriggerReason) = db.newSuspendedTransaction<Unit> {
+	override suspend fun create(jobId: String, flowId: NodeId, triggeredBy: FlowTriggerReason) = db.suspendTransaction<Unit> {
 		flowExecutionTable.upsert {
 			it[id] = jobId
 			it[this.flowId] = flowId.toUuid()
 			it[this.triggeredBy] = triggeredBy
-			it[this.triggeredAt] = Clock.System.now().toDeprecatedInstant()
+			it[this.triggeredAt] = Clock.System.now()
 			it[this.status] = FlowExecutionStatus.RUNNING
 		}
 	}
 
-	override suspend fun record(jobId: String, entry: NodeLogEntry) = db.newSuspendedTransaction<Unit> {
+	override suspend fun record(jobId: String, entry: NodeLogEntry) = db.suspendTransaction<Unit> {
 		flowExecutionLogTable.insert {
 			it[executionId] = jobId
-			it[timestamp] = entry.timestamp.toDeprecatedInstant()
+			it[timestamp] = entry.timestamp
 			it[level] = entry.level
 			it[message] = entry.message
 			it[node] = entry.node
 		}
 	}
 
-	override suspend fun setExecutionStatus(jobId: String, status: FlowExecutionStatus) = db.newSuspendedTransaction<Unit> {
+	override suspend fun setExecutionStatus(jobId: String, status: FlowExecutionStatus) = db.suspendTransaction<Unit> {
 		flowExecutionTable.update(where = { flowExecutionTable.id eq jobId }) {
 			it[this.status] = status
 		}
 	}
 
-	override suspend fun retrieve(flowId: NodeId): List<NodeLogEntry> = db.newSuspendedTransaction {
+	override suspend fun retrieve(flowId: NodeId): List<NodeLogEntry> = db.suspendTransaction {
 		flowExecutionLogTable.selectAll()
 			.where { flowExecutionLogTable.executionId eq flowId }
 			.orderBy(flowExecutionLogTable.timestamp to SortOrder.DESC)
@@ -76,7 +74,7 @@ class SqlFlowExecutionService(
 					jobId = it[flowExecutionTable.id].value,
 					flowId = it[flowExecutionTable.flowId].value.toString(),
 					triggeredBy = it[flowExecutionTable.triggeredBy],
-					startDate = it[flowExecutionTable.triggeredAt].toStdlibInstant(),
+					startDate = it[flowExecutionTable.triggeredAt],
 					status = it[flowExecutionTable.status]
 				)
 			}
@@ -106,7 +104,7 @@ class SqlFlowExecutionService(
 				jobId = execution[flowExecutionTable.id].value,
 				flowId = execution[flowExecutionTable.flowId].value.toString(),
 				triggeredBy = execution[flowExecutionTable.triggeredBy],
-				startDate = execution[flowExecutionTable.triggeredAt].toStdlibInstant(),
+				startDate = execution[flowExecutionTable.triggeredAt],
 				status = execution[flowExecutionTable.status],
 				logs = logs[execution[flowExecutionTable.id].value]?.map {
 					it.toLogEntry(flowExecutionLogTable)
@@ -115,7 +113,7 @@ class SqlFlowExecutionService(
 		}
 	}
 
-	override suspend fun deleteAll(flowId: NodeId) = db.newSuspendedTransaction<Unit> {
+	override suspend fun deleteAll(flowId: NodeId) = db.suspendTransaction<Unit> {
 		flowExecutionTable.deleteWhere { flowExecutionTable.flowId eq flowId.toUuid() }
 	}
 }

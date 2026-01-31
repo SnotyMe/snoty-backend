@@ -5,7 +5,7 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import me.snoty.backend.database.sql.flowTransaction
-import me.snoty.backend.database.sql.newSuspendedTransaction
+import me.snoty.backend.database.sql.suspendTransaction
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.register
 import me.snoty.backend.utils.hackyEncodeToString
@@ -16,9 +16,10 @@ import me.snoty.integration.common.wiring.flow.NodeDeletedHook
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePersistenceFactory
 import me.snoty.integration.common.wiring.node.NodePersistenceService
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.*
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.koin.core.annotation.Factory
 import org.koin.core.component.KoinComponent
 import kotlin.reflect.KClass
@@ -47,7 +48,7 @@ class SqlNodePersistenceService<T : Any>(
 		}
 	}
 
-	override suspend fun setEntities(node: Node, entities: List<T>, idGetter: (T) -> String): Unit = db.newSuspendedTransaction {
+	override suspend fun setEntities(node: Node, entities: List<T>, idGetter: (T) -> String): Unit = db.suspendTransaction {
 		nodePersistenceTable.deleteWhere { nodePersistenceTable.id eq node._id.toUuid() }
 		nodePersistenceTable.batchInsert(entities) { entity ->
 			this[nodePersistenceTable.id] = node._id.toUuid()
@@ -63,13 +64,13 @@ class SqlNodePersistenceService<T : Any>(
 			.map { json.decodeFromString(entityClass.serializer(), it[nodePersistenceTable.entity]) }
 	}
 
-	override suspend fun deleteEntity(node: Node, entityId: String): Unit = db.newSuspendedTransaction {
+	override suspend fun deleteEntity(node: Node, entityId: String): Unit = db.suspendTransaction {
 		nodePersistenceTable.deleteWhere {
 			(nodePersistenceTable.id eq node._id.toUuid()) and (nodePersistenceTable.entityId eq entityId)
 		}
 	}
 
-	override suspend fun delete(node: Node): Unit = db.newSuspendedTransaction {
+	override suspend fun delete(node: Node): Unit = db.suspendTransaction {
 		nodePersistenceTable.deleteWhere { nodePersistenceTable.id eq node._id.toUuid() }
 	}
 }

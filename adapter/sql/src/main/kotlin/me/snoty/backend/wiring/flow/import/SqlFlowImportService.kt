@@ -1,6 +1,6 @@
 package me.snoty.backend.wiring.flow.import
 
-import me.snoty.backend.database.sql.newSuspendedTransaction
+import me.snoty.backend.database.sql.suspendTransaction
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.utils.toUuid
 import me.snoty.backend.wiring.flow.ImportFlow
@@ -8,8 +8,8 @@ import me.snoty.backend.wiring.node.NodeConnectionTable
 import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
 import me.snoty.backend.wiring.node.SqlNodeService
 import me.snoty.integration.common.wiring.flow.FlowService
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.batchInsert
+import org.jetbrains.exposed.v1.jdbc.Database
+import org.jetbrains.exposed.v1.jdbc.batchInsert
 import org.koin.core.annotation.Single
 import kotlin.uuid.Uuid
 
@@ -21,7 +21,7 @@ class SqlFlowImportService(
 	private val nodeService: SqlNodeService,
 	private val nodeSettingsDeserializationService: NodeSettingsDeserializationService,
 ) : FlowImportService {
-	override suspend fun import(userId: Uuid, flow: ImportFlow): NodeId = db.newSuspendedTransaction {
+	override suspend fun import(userId: Uuid, flow: ImportFlow): NodeId = db.suspendTransaction {
 		val createdFlow = flowService.create(userId, flow.name, flow.settings)
 
 		val createdNodes = flow.nodes.associate {
@@ -41,6 +41,6 @@ class SqlFlowImportService(
 			this[nodeConnectionTable.to] = createdNodes[to]!!.toUuid()
 		}
 
-		return@newSuspendedTransaction createdFlow._id
+		return@suspendTransaction createdFlow._id
 	}
 }

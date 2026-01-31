@@ -2,12 +2,10 @@ package me.snoty.backend.notifications
 
 import kotlinx.serialization.json.Json
 import me.snoty.backend.database.sql.utils.UuidTable
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.json.jsonb
-import org.jetbrains.exposed.sql.kotlin.datetime.CurrentTimestamp
-import org.jetbrains.exposed.sql.kotlin.datetime.timestamp
-import org.jetbrains.exposed.sql.or
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
+import org.jetbrains.exposed.v1.datetime.timestamp
+import org.jetbrains.exposed.v1.json.jsonb
 import org.koin.core.annotation.Single
 
 @Single(binds = [Table::class])

@@ -8,14 +8,13 @@ import kotlinx.serialization.serializer
 import me.snoty.backend.authentication.AuthenticationProvider
 import me.snoty.backend.authentication.Role
 import me.snoty.backend.database.sql.flowTransaction
-import me.snoty.backend.database.sql.newSuspendedTransaction
+import me.snoty.backend.database.sql.suspendTransaction
 import me.snoty.backend.utils.NotFoundException
 import me.snoty.backend.utils.hasAnyRole
 import me.snoty.backend.utils.toUuid
 import me.snoty.backend.wiring.credential.dto.*
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.jdbc.*
 import org.koin.core.annotation.Single
 import kotlin.reflect.KClass
 
@@ -63,7 +62,7 @@ class SqlCredentialService(
 	private suspend fun <T> Database.newSuspendedTransactionWithRoles(userId: String, block: suspend Transaction.(userRoles: List<Role>) -> T): T {
 		val userRoles = authenticationProvider.getRolesById(userId)
 
-		return newSuspendedTransaction {
+		return suspendTransaction {
 			block(userRoles)
 		}
 	}
@@ -102,7 +101,7 @@ class SqlCredentialService(
 		val definitions = registry.getAll()
 
 		val count = credentialTable.id.count()
-		val byType = db.newSuspendedTransaction {
+		val byType = db.suspendTransaction {
 			credentialTable
 				.select(credentialTable.type, count)
 				.groupBy(credentialTable.type)
@@ -248,7 +247,7 @@ class SqlCredentialService(
 		)
 	}
 
-	override suspend fun delete(credential: ResolvedCredential<*>): Boolean = db.newSuspendedTransaction {
+	override suspend fun delete(credential: ResolvedCredential<*>): Boolean = db.suspendTransaction {
 		credentialTable.deleteWhere {
 			credentialTable.id eq credential.id.toUuid()
 		} == 1

@@ -2,7 +2,7 @@ package me.snoty.backend.wiring.credential
 
 import me.snoty.backend.database.sql.PostgresTest
 import me.snoty.integration.common.snotyJson
-import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import kotlin.uuid.Uuid
 
 class SqlCredentialServiceTest : CredentialServiceSpec({ Uuid.random().toString() }) {

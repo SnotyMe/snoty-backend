@@ -2,15 +2,16 @@ package me.snoty.backend.database.utils
 
 import me.snoty.backend.database.sql.SanitizedPrimaryKey
 import me.snoty.backend.database.sql.sqlTableName
-import me.snoty.backend.wiring.node.NodesScope
 import me.snoty.backend.wiring.node.NodeTable
+import me.snoty.backend.wiring.node.NodesScope
 import me.snoty.integration.common.diff.state.EntityState
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
-import org.jetbrains.exposed.sql.ReferenceOption
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.v1.core.ReferenceOption
+import org.jetbrains.exposed.v1.core.ResultRow
+import org.jetbrains.exposed.v1.core.Table
+import org.jetbrains.exposed.v1.jdbc.select
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Scope
 

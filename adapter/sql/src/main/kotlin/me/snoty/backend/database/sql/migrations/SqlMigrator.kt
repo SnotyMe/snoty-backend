@@ -1,11 +1,11 @@
 package me.snoty.backend.database.sql.migrations
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import me.snoty.backend.database.sql.newSuspendedTransaction
+import me.snoty.backend.database.sql.suspendTransaction
 import me.snoty.backend.injection.getFromAllScopes
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.v1.core.Table
+import org.jetbrains.exposed.v1.jdbc.Database
+import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.koin.core.Koin
 import org.koin.core.annotation.Single
 
@@ -16,7 +16,7 @@ class SqlMigrator(private val database: Database, koin: Koin) {
 	private val tables: List<Table> = koin.getFromAllScopes()
 
 	suspend fun migrate() {
-		database.newSuspendedTransaction {
+		database.suspendTransaction {
 			val sortedTables = SchemaUtils.sortTablesByReferences(tables).toTypedArray()
 			SchemaUtils.createMissingTablesAndColumns(*sortedTables)
 			val migrationsRequired = SchemaUtils.statementsRequiredToActualizeScheme(*sortedTables)

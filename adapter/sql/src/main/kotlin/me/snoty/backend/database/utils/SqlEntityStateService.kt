@@ -2,7 +2,7 @@ package me.snoty.backend.database.utils
 
 import kotlinx.coroutines.flow.Flow
 import me.snoty.backend.database.sql.flowTransaction
-import me.snoty.backend.database.sql.newSuspendedTransaction
+import me.snoty.backend.database.sql.suspendTransaction
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.utils.bson.getIdAsString
 import me.snoty.backend.utils.toUuid
@@ -14,9 +14,11 @@ import me.snoty.integration.common.diff.state.EntityState
 import me.snoty.integration.common.wiring.Node
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.v1.core.Transaction
+import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.*
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Scope
 import kotlin.uuid.Uuid
@@ -35,7 +37,7 @@ class SqlEntityStateService(
 		}
 	}
 
-	override suspend fun getLastState(nodeId: NodeId, entityId: String): EntityState? = db.newSuspendedTransaction {
+	override suspend fun getLastState(nodeId: NodeId, entityId: String): EntityState? = db.suspendTransaction {
 		entityStateTable.selectStandalone()
 			.where { (entityStateTable.nodeId eq nodeId.toUuid()) and (entityStateTable.entityId eq entityId) }
 			.firstOrNull()
@@ -48,14 +50,14 @@ class SqlEntityStateService(
 			.map { it.toEntityState(entityStateTable, codecRegistry) }
 	}
 
-	override suspend fun updateState(nodeId: NodeId, state: Document, diff: DiffResult) = db.newSuspendedTransaction {
+	override suspend fun updateState(nodeId: NodeId, state: Document, diff: DiffResult) = db.suspendTransaction {
 		doUpdateState(nodeId.toUuid(), state, diff)
 	}
 
 	override suspend fun updateStates(
 		nodeId: NodeId,
 		states: Collection<EntityStateService.EntityStateUpdate>
-	) = db.newSuspendedTransaction {
+	) = db.suspendTransaction {
 		states.forEach { (state, diffResult) ->
 			doUpdateState(nodeId.toUuid(), state.state, diffResult)
 		}
@@ -92,7 +94,7 @@ class SqlEntityStateService(
 		return
 	}
 
-	override suspend fun delete(node: Node): Unit = db.newSuspendedTransaction {
+	override suspend fun delete(node: Node): Unit = db.suspendTransaction {
 		entityStateTable.deleteWhere { entityStateTable.nodeId eq node._id.toUuid() }
 	}
 }

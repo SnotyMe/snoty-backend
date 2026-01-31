@@ -9,7 +9,7 @@ koin-annotations = "2.1.0"
 hoplite = "2.9.0"
 
 mongodb = "5.3.1"
-exposed = "0.61.0"
+exposed = "1.0.0"
 
 opentelemetry = "1.48.0"
 opentelemetry-semconv = "1.30.0"
