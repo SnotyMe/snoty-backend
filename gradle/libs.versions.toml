@@ -5,7 +5,7 @@ kotlinx-serialization = "1.10.0"
 coroutines = "1.10.2"
 
 koin = "4.1.0"
-koin-annotations = "2.1.0"
+koin-annotations = "2.3.1"
 hoplite = "2.9.0"
 
 mongodb = "5.6.2"
