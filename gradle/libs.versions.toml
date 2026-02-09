@@ -16,7 +16,7 @@ opentelemetry-semconv = "1.30.0"
 # https://github.com/open-telemetry/semantic-conventions-java/pull/53
 opentelemetry-semconv-incubating = "1.30.0-alpha"
 opentelemetry-instrumentation = "2.11.0-alpha"
-micrometer = "1.14.2"
+micrometer = "1.16.3"
 junit = "5.12.2"
 testcontainers = "2.0.2"
 ktor = "3.4.0"
