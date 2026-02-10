@@ -1,3 +1,4 @@
+me.snoty.integration.plugin.processor.ExtensionContributorProcessor$Provider
 me.snoty.integration.plugin.processor.NodeKoinModulesProcessor$Provider
 me.snoty.integration.plugin.processor.NodeHandlerContributorProcessor$Provider
 me.snoty.integration.plugin.processor.AdapterProcessor$Provider

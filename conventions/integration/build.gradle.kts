@@ -9,8 +9,8 @@ apply(from = "../../version.gradle.kts")
 dependencies {
 	implementation(kotlin("gradle-plugin"))
 	implementation(kotlin("serialization"))
-	libs.integrationPlugin.ksp.api.get().apply {
-		implementation("com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:$version")
+	libs.plugins.koin.compiler.get().apply {
+		implementation("io.insert-koin.compiler.plugin:io.insert-koin.compiler.plugin.gradle.plugin:$version")
 	}
 }
 

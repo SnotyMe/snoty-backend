@@ -10,14 +10,13 @@ import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.koin.core.annotation.Scope
 import org.koin.core.annotation.Scoped
-import org.koin.core.annotation.Single
 import kotlin.reflect.KClass
 
-fun TypeSpec.Builder.addSerializersModule(registerNode: RegisterNode): TypeSpec.Builder {
+fun TypeSpec.Builder.addSerializersModule(registerNode: RegisterNode, nodeHandlerScope: TypeSpec): TypeSpec.Builder {
 	val serializationModule = "kotlinx.serialization.modules"
 
 	return addFunction(
-		providerBuilder(registerNode.name, registerNode)
+		providerBuilder(registerNode.name, nodeHandlerScope)
 			.returns(SerializersModule::class)
 			.addAnnotation(AnnotationSpec.get(OptIn(InternalSerializationApi::class)))
 			.addStatement(
@@ -39,10 +38,14 @@ fun TypeSpec.Builder.addSerializersModule(registerNode: RegisterNode): TypeSpec.
 	)
 }
 
-fun providerBuilder(name: String, registerNode: RegisterNode) = FunSpec.builder("provide$name")
-	.addAnnotation(Single::class)
+fun providerBuilder(name: String, nodeHandlerScope: TypeSpec) = FunSpec
+	.builder("provide${name.replaceFirstChar { it.uppercase() }}SerializersModule")
 	.addAnnotation(Scoped::class)
-	.addAnnotation(AnnotationSpec.get(Scope(name = registerNode.name)))
+	.addAnnotation(
+		AnnotationSpec.builder(Scope::class)
+			.addMember("value = %L::class", nodeHandlerScope.name!!)
+			.build()
+	)
 
 @OptIn(KspExperimental::class)
 fun <T : Any> gimmeTypeName(get: () -> KClass<T>) = runCatching {

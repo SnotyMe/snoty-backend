@@ -10,6 +10,7 @@ import me.snoty.integration.notion.page.NotionPageCreateResponse
 import me.snoty.integration.notion.page.NotionPageUpdateDTO
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.InjectedParam
+import org.koin.core.annotation.Single
 
 const val NOTION_BASE_URL = "https://api.notion.com/v1"
 const val NotionVersion = "Notion-Version"
@@ -18,6 +19,11 @@ interface NotionAPI {
 	suspend fun createPage(pageCreateDTO: NotionPageCreateDTO): NotionPageCreateResponse
 	suspend fun updatePage(id: String, pageUpdateDTO: NotionPageUpdateDTO): HttpResponse
 	suspend fun deletePage(id: String): HttpResponse
+}
+
+@Single
+class NotionAPIFactory(private val client: HttpClient) {
+	operator fun invoke(token: String): NotionAPI = NotionAPIImpl(client, token)
 }
 
 @Factory

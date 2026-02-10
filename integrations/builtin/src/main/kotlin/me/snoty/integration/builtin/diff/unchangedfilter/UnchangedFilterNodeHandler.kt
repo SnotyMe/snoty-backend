@@ -1,7 +1,6 @@
 package me.snoty.integration.builtin.diff.unchangedfilter
 
 import kotlinx.serialization.Serializable
-import me.snoty.backend.wiring.node.NodesScope
 import me.snoty.integration.builtin.diff.DiffNodeHandler
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.diff.DiffResult
@@ -18,7 +17,6 @@ import me.snoty.integration.common.wiring.logger
 import me.snoty.integration.common.wiring.node.NodeRouteFactory
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.codecs.configuration.CodecRegistry
-import org.koin.core.annotation.ScopeId
 import org.koin.core.annotation.Single
 
 @Serializable
@@ -37,7 +35,7 @@ data class UnchangedFilterSettings(
 )
 @Single
 class UnchangedFilterNodeHandler(
-	@ScopeId(NodesScope::class) entityStateService: EntityStateService,
+	entityStateService: EntityStateService,
 	nodeRouteFactory: NodeRouteFactory,
 	codecRegistry: CodecRegistry,
 ) : DiffNodeHandler(entityStateService, nodeRouteFactory, codecRegistry) {
