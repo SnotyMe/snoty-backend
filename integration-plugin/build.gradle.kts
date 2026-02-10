@@ -1,4 +1,5 @@
 plugins {
+	id("snoty.testintegration-conventions")
 	id("snoty.publish-conventions")
 	id("snoty.publish-repo-conventions")
 }

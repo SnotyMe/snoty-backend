@@ -4,12 +4,18 @@ import me.snoty.backend.authentication.AuthenticationAdapter
 import me.snoty.backend.authentication.Role
 import me.snoty.backend.config.ConfigLoader
 import me.snoty.backend.config.load
+import me.snoty.backend.injection.DiModule
+import org.koin.core.annotation.ComponentScan
+import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
-import org.koin.ksp.generated.defaultModule
+
+@Module
+@ComponentScan
+object OidcKoinModule
 
 class OidcAdapter : AuthenticationAdapter {
 	override val supportedTypes: List<String> = listOf("oidc")
-	override val koinModule = defaultModule
+	override val koinModule: DiModule = OidcKoinModule.module()
 }
 
 data class OidcConfig(

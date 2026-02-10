@@ -15,16 +15,18 @@ import org.koin.core.annotation.PropertyValue
 import org.koin.core.annotation.Single
 import kotlin.time.Clock
 
+@PropertyValue(MongoMigrator.COLLECTION_PROPERTY_NAME)
+const val DEFAULT_MIGRATION_COLLECTION_NAME = "migrations"
+
 @Single
 class MongoMigrator(
 	private val mongoDatabase: MongoDatabase,
 	private val migrations: List<MongoMigration>,
-	@Property("migrations.collection.name") collectionName: String = DEFAULT_MIGRATION_COLLECTION_NAME,
+	@Property(COLLECTION_PROPERTY_NAME) collectionName: String = DEFAULT_MIGRATION_COLLECTION_NAME,
 ) {
 	companion object {
 		private val logger = KotlinLogging.logger {}
-		@PropertyValue("migrations.collection.name")
-		const val DEFAULT_MIGRATION_COLLECTION_NAME = "migrations"
+		const val COLLECTION_PROPERTY_NAME = "migrations.collection.name"
 	}
 
 	private val collection = mongoDatabase.getCollection<MongoMigrationData>(collectionName)

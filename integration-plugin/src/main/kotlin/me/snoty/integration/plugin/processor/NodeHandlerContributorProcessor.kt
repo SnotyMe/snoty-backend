@@ -122,21 +122,15 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 	}
 
 	private fun PropertySpec.Builder.buildKoinInitializer(clazz: KSClassDeclaration) = apply {
-		fun CodeBlock.Builder.addModule(moduleClassName: ClassName): CodeBlock.Builder {
-			return apply {
-				add(
-					"%T.%M,\n",
-					moduleClassName,
-					MemberName("org.koin.ksp.generated", "module"),
-				)
-			}
-		}
-
+		val koinModuleClassName = getKoinModuleClassName(clazz)
 		initializer(
 			CodeBlock.builder()
 				.add("listOf(\n")
-				.add("%M,\n", MemberName("org.koin.ksp.generated", "defaultModule"))
-				.addModule(getGeneratedModule(clazz))
+				.add(
+					"%T.%M(),\n",
+					koinModuleClassName,
+					MemberName(koinModuleClassName.packageName, "module"),
+				)
 				.add(
 					"%M(%N),\n",
 					NodeTemplateUtils::nodeTemplatesModule.getMemberName<NodeTemplateUtils>(),

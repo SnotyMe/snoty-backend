@@ -30,7 +30,6 @@ import kotlin.uuid.Uuid
 
 class MoodleIntegrationTest {
 	fun integration(moodleAPI: MoodleAPI) = MoodleIntegration(
-		httpClient = mockk(),
 		notificationService = mockk(relaxed = true),
 		moodleAPI = moodleAPI,
 	)
@@ -65,9 +64,9 @@ class MoodleIntegrationTest {
 	val credentialRef = CredentialRef<MoodleCredential>(randomString())
 	val credentialService = mockk<CredentialService>().also {
 		coEvery {
-			it.resolve(any(), credentialRef.credentialId!!, MoodleCredential::class)
+			it.resolve(any(), credentialRef.credentialId, MoodleCredential::class)
 		} returns ResolvedCredential(
-			id = credentialRef.credentialId!!,
+			id = credentialRef.credentialId,
 			type = "Moodle",
 			data = credential,
 		)
