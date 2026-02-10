@@ -8,7 +8,6 @@ import me.snoty.backend.config.ConfigWrapper
 import me.snoty.backend.featureflags.FeatureFlagBoolean
 import me.snoty.backend.featureflags.FeatureFlagsContainer
 import me.snoty.backend.utils.simpleClassName
-import me.snoty.backend.wiring.node.NodesScope
 import me.snoty.backend.wiring.node.metadataJson
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.node.NodeHandler
@@ -19,8 +18,10 @@ import org.koin.core.Koin
 import org.koin.core.annotation.Single
 import org.koin.core.error.InstanceCreationException
 import org.koin.core.parameter.parametersOf
+import org.koin.core.qualifier.TypeQualifier
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
+import org.koin.ext.getFullName
 import java.util.*
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
@@ -45,23 +46,47 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 		val scope: Scope
 	)
 
+	fun loadAndRegisterNodeHandlers() {
+		logger.debug { "Loading all extension modules..." }
+		val nodeHandlerContributors = loadKoinModules()
+		logger.debug { "Loaded ${nodeHandlerContributors.size} extension modules." }
+
+		logger.debug { "Registering node handlers..." }
+		val result = nodeHandlerContributors.map { (contributor, metadata, scope) ->
+			registerNodeHandler(contributor, metadata, scope)
+				.onFailure { ex ->
+					val exception = prettify(ex)
+					val isFatal = reportStartupFailure(metadata, exception)
+
+					if (isFatal && featureFlags.crashOnStartupFailure) {
+						throw exception
+					}
+				}
+		}
+		val successCount = result.count { it.isSuccess }
+		val allCount = result.size
+		logger.info { "Successfully enabled $successCount / $allCount node handlers!" }
+	}
+
 	/**
 	 * Stage 1: loading all Koin DI modules
 	 */
 	private fun loadKoinModules(): List<NodeHandlerContributorData> {
-		val nodesScope = koin.getScope(NodesScope.scopeId)
 		val loader = ServiceLoader.load(NodeHandlerContributor::class.java)
 		return loader.map { contributor ->
-			val metadata =
-				contributor.metadata
-					.let { metadataJson.decodeFromString<NodeMetadata>(it) }
-					.copy(settingsClass = contributor.settingsClass!!)
+			val metadata = metadataJson.decodeFromString<NodeMetadata>(contributor.metadata)
+				.copy(settingsClass = contributor.settingsClass!!)
 
-			val scopeName = metadata.descriptor.scope
-			val scope = koin.getOrCreateScope(scopeName.value, scopeName)
-			nodesScope.linkTo(scope) // link to discover node scoped services without explicit @ScopeId on usage
+            val scope = when (val contributedScope = contributor.koinScope) { // will become required at some point
+                null -> {
+					// fallback for 0.7.x and earlier, where Node declarations weren't actually scoped
+					val scopeName = metadata.descriptor.scope
+					koin.getOrCreateScope(scopeName.value, scopeName)
+				}
+				else -> koin.getOrCreateScope(scopeId = contributedScope.getFullName(), qualifier = TypeQualifier(contributedScope))
+			}
 
-			logger.trace { "Loading modules for $scopeName..." }
+			logger.trace { "Loading modules for ${scope.scopeQualifier.value}..." }
 			koin.loadModules(listOf(module {
 				includes(contributor.koinModules)
 				scope(scope.scopeQualifier) {
@@ -79,38 +104,16 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 	 * This will initialize non-eager services needed. Since all modules are registered, all Koin declarations should be available.
 	 */
 	private fun registerNodeHandler(contributor: NodeHandlerContributor, metadata: NodeMetadata, scope: Scope) = runCatching {
-		logger.trace { "Adding from ${contributor.javaClass.simpleName}..." }
+		logger.trace { "Registering ${contributor.javaClass.simpleName}..." }
 
 		val handler: NodeHandler = scope.get(
 			clazz = contributor.nodeHandlerClass,
 			parameters = { parametersOf(metadata, metadata.descriptor) }
 		)
+
 		nodeRegistry.registerHandler(metadata, handler)
+
 		logger.info { "Successfully enabled ${metadata.descriptor.id}!" }
-	}
-
-	fun loadAndRegisterNodeHandlers() {
-		logger.debug { "Loading all extension modules..." }
-		val nodeHandlerContributors = loadKoinModules()
-		
-		logger.debug { "Loaded ${nodeHandlerContributors.size} extension modules." }
-
-		logger.debug { "Registering node handlers..." }
-		val result = nodeHandlerContributors.map { (contributor, metadata, scope) ->
-			registerNodeHandler(contributor, metadata, scope)
-				.onFailure { ex ->
-					val exception = prettify(ex)
-					val isFatal = reportStartupFailure(metadata, exception)
-
-					if (isFatal && featureFlags.crashOnStartupFailure) {
-						throw exception
-					}
-				}
-		}
-
-		val successCount = result.count { it.isSuccess }
-		val allCount = result.size
-		logger.info { "Successfully enabled $successCount / $allCount node handlers!" }
 	}
 
 	private fun prettify(e: Throwable): Throwable = when (val cause = e.cause) {

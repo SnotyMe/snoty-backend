@@ -2,7 +2,7 @@ package me.snoty.integration.todoist
 
 import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.plugins.ClientRequestException
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -11,6 +11,7 @@ import me.snoty.integration.todoist.model.TodoistTaskCreateResponse
 import me.snoty.integration.todoist.model.TodoistTaskUpdateDTO
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.InjectedParam
+import org.koin.core.annotation.Single
 
 interface TodoistAPI {
 	suspend fun createTask(taskCreateDTO: TodoistTaskCreateDTO): TodoistTaskCreateResponse
@@ -19,6 +20,11 @@ interface TodoistAPI {
 }
 
 private const val TODOIST_BASE_URL = "https://api.todoist.com/rest/v2"
+
+@Single
+class TodoistAPIFactory(private val client: HttpClient) {
+	operator fun invoke(token: String): TodoistAPI = TodoistAPIImpl(client, token)
+}
 
 @Factory
 class TodoistAPIImpl(val client: HttpClient, @InjectedParam private val token: String) : TodoistAPI {

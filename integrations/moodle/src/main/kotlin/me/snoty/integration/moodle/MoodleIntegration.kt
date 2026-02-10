@@ -1,6 +1,5 @@
 package me.snoty.integration.moodle
 
-import io.ktor.client.*
 import me.snoty.backend.notifications.NotificationAttributes
 import me.snoty.backend.notifications.NotificationService
 import me.snoty.backend.utils.filterIfNot
@@ -30,9 +29,8 @@ import org.slf4j.event.Level
 )
 @Single
 class MoodleIntegration(
-	httpClient: HttpClient,
 	private val notificationService: NotificationService,
-	private val moodleAPI: MoodleAPI = MoodleAPIImpl(httpClient),
+	private val moodleAPI: MoodleAPI,
 ) : NodeHandler {
 	context(_: NodeHandleContext)
 	override suspend fun process(

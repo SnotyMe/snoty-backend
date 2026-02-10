@@ -1,6 +1,5 @@
 package me.snoty.integration.todoist
 
-import io.ktor.client.*
 import io.ktor.http.*
 import io.ktor.server.response.*
 import kotlinx.coroutines.flow.toList
@@ -40,8 +39,7 @@ data class TodoistSettings(
 )
 @Single
 class TodoistNodeHandler(
-	private val httpClient: HttpClient,
-	private val apiFactory: (String) -> TodoistAPI = { TodoistAPIImpl(httpClient, it) },
+	private val apiFactory: TodoistAPIFactory,
 	persistenceFactory: NodePersistenceFactory,
 	nodeHandlerRouteFactory: NodeHandlerRouteFactory,
 	config: TodoistConfig,

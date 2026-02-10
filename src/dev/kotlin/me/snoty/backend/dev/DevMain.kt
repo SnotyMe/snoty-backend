@@ -5,5 +5,5 @@ import me.snoty.backend.startApplication
 
 fun main() {
 	DevManager.runDevFunctions()
-	startApplication(devModule)
+	startApplication(DevModule.module)
 }
