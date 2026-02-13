@@ -19,8 +19,10 @@ import org.koin.core.Koin
 import org.koin.core.annotation.Single
 import org.koin.core.error.InstanceCreationException
 import org.koin.core.parameter.parametersOf
+import org.koin.core.qualifier.TypeQualifier
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
+import org.koin.ext.getFullName
 import java.util.*
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
@@ -55,11 +57,17 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 			val metadata = metadataJson.decodeFromString<NodeMetadata>(contributor.metadata)
 				.copy(settingsClass = contributor.settingsClass!!)
 
-			val scopeName = metadata.descriptor.scope
-			val scope = koin.getOrCreateScope(scopeName.value, scopeName)
+            val scope = when (val contributedScope = contributor.koinScope) { // will become required at some point
+                null -> {
+					// fallback for 0.7.x and earlier, where Node declarations weren't actually scoped
+					val scopeName = metadata.descriptor.scope
+					koin.getOrCreateScope(scopeName.value, scopeName)
+				}
+				else -> koin.getOrCreateScope(scopeId = contributedScope.getFullName(), qualifier = TypeQualifier(contributedScope))
+			}
 			nodesScope.linkTo(scope) // link to discover node scoped services without explicit @ScopeId on usage
 
-			logger.trace { "Loading modules for $scopeName..." }
+			logger.trace { "Loading modules for ${scope.scopeQualifier.value}..." }
 			koin.loadModules(listOf(module {
 				includes(contributor.koinModules)
 				scope(scope.scopeQualifier) {

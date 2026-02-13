@@ -33,5 +33,6 @@ dependencies {
 }
 
 koinCompiler {
+	userLogs = System.getenv("KOIN_USER_LOGS") == "true"
 	debugLogs = System.getenv("KOIN_DEBUG_LOGS") == "true"
 }

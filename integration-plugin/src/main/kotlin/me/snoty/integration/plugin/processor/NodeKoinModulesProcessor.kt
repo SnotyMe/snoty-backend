@@ -3,6 +3,7 @@ package me.snoty.integration.plugin.processor
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
@@ -11,6 +12,7 @@ import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.plugin.utils.getAnnotation
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
+import org.koin.core.annotation.Scope
 
 class NodeKoinModulesProcessor(private val codeGenerator: CodeGenerator) : SymbolProcessor {
 	override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -25,15 +27,22 @@ class NodeKoinModulesProcessor(private val codeGenerator: CodeGenerator) : Symbo
 	private fun processClass(clazz: KSClassDeclaration) {
 		val node = clazz.getAnnotation<RegisterNode>()!!
 
-		val generatedClassName = getKoinModuleClassName(clazz)
-
-		val nodeHandlerModule = TypeSpec.objectBuilder(generatedClassName)
-			.addAnnotation(Module::class)
-			.addAnnotation(ComponentScan::class)
-			.addSerializersModule(node)
+		val nodeHandlerScope = TypeSpec.classBuilder(getKoinClassName(clazz, "Scope"))
 			.build()
 
-		val nodeHandlerModuleFileSpec = FileSpec.builder(generatedClassName)
+		val nodeHandlerModule = TypeSpec.objectBuilder(getKoinClassName(clazz, "Module"))
+			.addAnnotation(
+				AnnotationSpec.builder(Scope::class)
+					.addMember("value = %L::class", nodeHandlerScope.name!!)
+					.build()
+			)
+			.addAnnotation(Module::class)
+			.addAnnotation(ComponentScan::class)
+			.addSerializersModule(node, nodeHandlerScope)
+			.build()
+
+		val nodeHandlerModuleFileSpec = FileSpec.builder(getKoinClassName(clazz, ""))
+			.addType(nodeHandlerScope)
 			.addType(nodeHandlerModule)
 			.build()
 
@@ -54,8 +63,8 @@ class NodeKoinModulesProcessor(private val codeGenerator: CodeGenerator) : Symbo
 	}
 }
 
-fun getKoinModuleClassName(clazz: KSClassDeclaration) =
+fun getKoinClassName(clazz: KSClassDeclaration, entity: String) =
 	ClassName(
 		clazz.packageName.asString(),
-		"${clazz.simpleName.asString().removeSuffix("NodeHandler")}KoinModule"
+		"${clazz.simpleName.asString().removeSuffix("Handler")}Koin${entity}"
 	)
