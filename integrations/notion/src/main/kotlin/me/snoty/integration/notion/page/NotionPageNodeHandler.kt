@@ -1,6 +1,5 @@
 package me.snoty.integration.notion.page
 
-import io.ktor.client.*
 import io.ktor.http.*
 import io.ktor.server.response.*
 import kotlinx.coroutines.flow.toList
@@ -21,8 +20,7 @@ import me.snoty.integration.common.wiring.node.NodeHandlerRouteFactory
 import me.snoty.integration.common.wiring.node.NodePersistenceFactory
 import me.snoty.integration.common.wiring.node.invoke
 import me.snoty.integration.notion.NOTION_BASE_URL
-import me.snoty.integration.notion.NotionAPI
-import me.snoty.integration.notion.NotionAPIImpl
+import me.snoty.integration.notion.NotionAPIFactory
 import me.snoty.integration.notion.NotionConfig
 import me.snoty.integration.notion.oauth.NotionOAuth
 import org.bson.Document
@@ -37,8 +35,7 @@ import org.koin.core.annotation.Single
 )
 @Single
 class NotionPageNodeHandler(
-	httpClient: HttpClient,
-	private val apiFactory: (token: String) -> NotionAPI = { NotionAPIImpl(httpClient, it) },
+	private val apiFactory: NotionAPIFactory,
 	persistenceFactory: NodePersistenceFactory,
 	nodeHandlerRouteFactory: NodeHandlerRouteFactory,
 	private val oauth: NotionOAuth,

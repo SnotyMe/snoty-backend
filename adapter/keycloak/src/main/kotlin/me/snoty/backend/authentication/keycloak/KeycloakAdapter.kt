@@ -6,15 +6,20 @@ import me.snoty.backend.authentication.oidc.OidcConfig
 import me.snoty.backend.authentication.oidc.RoleMapping
 import me.snoty.backend.config.ConfigLoader
 import me.snoty.backend.config.load
+import org.koin.core.annotation.ComponentScan
+import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
-import org.koin.ksp.generated.defaultModule
 
 const val KEYCLOAK_ADAPTER_TYPE = "keycloak"
 private const val CONFIG_KEY = "${AuthenticationAdapter.CONFIG_GROUP}.${KEYCLOAK_ADAPTER_TYPE}"
 
+@Module
+@ComponentScan
+object KeycloakKoinModule
+
 class KeycloakAdapter : AuthenticationAdapter {
 	override val supportedTypes: List<String> = listOf(KEYCLOAK_ADAPTER_TYPE)
-	override val koinModule = defaultModule
+	override val koinModule = KeycloakKoinModule.module()
 }
 
 data class KeycloakConfig(

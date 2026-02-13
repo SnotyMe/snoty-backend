@@ -11,15 +11,22 @@ import me.snoty.backend.config.addProperties
 import me.snoty.backend.config.load
 import me.snoty.backend.config.loadContainerConfig
 import me.snoty.backend.database.DatabaseAdapter
+import me.snoty.backend.injection.DiModule
+import org.koin.core.annotation.ComponentScan
+import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
 import javax.sql.DataSource
 
 const val SQL_ADAPTER_TYPE = "sql"
 private const val CONFIG_KEY = "${DatabaseAdapter.CONFIG_GROUP}.${SQL_ADAPTER_TYPE}"
 
+@Module
+@ComponentScan("me.snoty.backend")
+object SqlKoinModule
+
 class SqlAdapter : DatabaseAdapter {
 	override val supportedTypes: List<String> = listOf(SQL_ADAPTER_TYPE, "postgres")
-	override val koinModule = sqlKoinModule
+	override val koinModule: DiModule = SqlKoinModule.module()
 
 	override fun autoconfigure(configLoader: ConfigLoaderBuilder) = configLoader.autoconfigForSql()
 }

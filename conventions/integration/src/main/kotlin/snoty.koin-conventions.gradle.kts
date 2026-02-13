@@ -2,7 +2,7 @@ import kotlin.jvm.optionals.getOrNull
 
 plugins {
 	kotlin("jvm")
-	id("com.google.devtools.ksp")
+	id("io.insert-koin.compiler.plugin")
 }
 
 fun VersionCatalog.getLibrary(name: String) =
@@ -26,21 +26,13 @@ dependencies {
 		.getOrNull()
 		?.displayName
 			?: throw IllegalStateException("No koin version")
-	val koinAnnotationsVersion = libs
-		.findVersion("koin-annotations")
-		.getOrNull()
-		?.displayName
-			?: throw IllegalStateException("No koin-annotations version")
 
-	constraints {
-		implementation("${libs.getModule("koin-core")}:$koinVersion") {
-			version {
-				strictly(koinVersion) // TODO: remove once Koin 4.1 is fixed (https://github.com/InsertKoinIO/koin/pull/2231)
-			}
-		}
-	}
+	implementation("${libs.getModule("koin-core")}:$koinVersion")
 	implementation("${libs.getModule("koin-ktor")}:$koinVersion")
-	api("${libs.getModule("koin-annotations")}:$koinAnnotationsVersion")
+	api("${libs.getModule("koin-annotations")}:$koinVersion")
+}
 
-	ksp("${libs.getModule("koin-ksp")}:$koinAnnotationsVersion")
+koinCompiler {
+	userLogs = System.getenv("KOIN_USER_LOGS") == "true"
+	debugLogs = System.getenv("KOIN_DEBUG_LOGS") == "true"
 }

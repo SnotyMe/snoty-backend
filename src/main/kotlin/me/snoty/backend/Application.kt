@@ -2,21 +2,35 @@ package me.snoty.backend
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
+import me.snoty.ApiKoinModule
+import me.snoty.backend.extension.ExtensionContributorLookup
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.impl.PreBusinessStartupHook
 import me.snoty.backend.integration.NodeHandlerContributorLookup
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.scheduling.Scheduler
 import me.snoty.backend.server.KtorServer
+import org.koin.core.annotation.ComponentScan
+import org.koin.core.annotation.KoinApplication
+import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+
+@Module
+@ComponentScan
+class ApplicationKoinModule
+
+@KoinApplication(modules = [ApiKoinModule::class, ApplicationKoinModule::class])
+class KoinApplication
 
 @Single
 class Application : KoinComponent {
 	val logger = KotlinLogging.logger {}
 
 	suspend fun start() = coroutineScope {
+		get<ExtensionContributorLookup>().loadAndRegisterExtensions()
+
 		// register all node handlers
 		get<NodeHandlerContributorLookup>().loadAndRegisterNodeHandlers()
 

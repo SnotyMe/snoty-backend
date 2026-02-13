@@ -10,6 +10,7 @@ import io.ktor.serialization.*
 import io.ktor.util.*
 import io.ktor.util.reflect.*
 import me.snoty.integration.moodle.param.MoodleParam
+import org.koin.core.annotation.Single
 
 interface MoodleAPI {
 	suspend fun <T> request(type: TypeInfo, request: MoodleRequest): T
@@ -25,6 +26,7 @@ suspend inline fun <reified T> MoodleAPI.request(request: MoodleRequest): T = re
 
 const val MOODLE_WS = "/webservice/rest/server.php"
 
+@Single
 class MoodleAPIImpl(private val httpClient: HttpClient) : MoodleAPI {
 	private val logger = KotlinLogging.logger {}
 

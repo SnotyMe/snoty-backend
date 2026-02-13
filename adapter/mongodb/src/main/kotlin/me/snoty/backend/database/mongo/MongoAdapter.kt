@@ -8,14 +8,21 @@ import me.snoty.backend.config.addProperties
 import me.snoty.backend.config.load
 import me.snoty.backend.config.loadContainerConfig
 import me.snoty.backend.database.DatabaseAdapter
+import me.snoty.backend.injection.DiModule
+import org.koin.core.annotation.ComponentScan
+import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
 
 const val MONGODB_ADAPTER_TYPE = "mongodb"
 private const val CONFIG_KEY = "${DatabaseAdapter.CONFIG_GROUP}.${MONGODB_ADAPTER_TYPE}"
 
+@Module
+@ComponentScan("me.snoty.backend")
+object MongoKoinModule
+
 class MongoAdapter : DatabaseAdapter {
 	override val supportedTypes = listOf(MONGODB_ADAPTER_TYPE)
-	override val koinModule = mongoKoinModule
+	override val koinModule: DiModule = MongoKoinModule.module()
 
 	override fun autoconfigure(configLoader: ConfigLoaderBuilder) = configLoader.autoconfigForMongo()
 }

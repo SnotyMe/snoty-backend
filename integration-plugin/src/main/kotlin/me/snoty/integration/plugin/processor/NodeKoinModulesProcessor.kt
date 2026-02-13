@@ -9,12 +9,12 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.ksp.writeTo
 import me.snoty.integration.common.annotation.RegisterNode
-import me.snoty.integration.plugin.GENERATED_PACKAGE
 import me.snoty.integration.plugin.utils.getAnnotation
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
+import org.koin.core.annotation.Scope
 
-class NodeKoinModulesProcessor(private val logger: KSPLogger, private val codeGenerator: CodeGenerator) : SymbolProcessor {
+class NodeKoinModulesProcessor(private val codeGenerator: CodeGenerator) : SymbolProcessor {
 	override fun process(resolver: Resolver): List<KSAnnotated> {
 		// no filtering is done as the `Module` filter would only detect stuff from the last round
 		resolver.getSymbolsWithAnnotation(RegisterNode::class.qualifiedName!!)
@@ -27,38 +27,44 @@ class NodeKoinModulesProcessor(private val logger: KSPLogger, private val codeGe
 	private fun processClass(clazz: KSClassDeclaration) {
 		val node = clazz.getAnnotation<RegisterNode>()!!
 
-		val generatedModule = TypeSpec.objectBuilder(getGeneratedModule(clazz))
-			.addAnnotation(Module::class)
-			.addSerializersModule(node)
+		val nodeHandlerScope = TypeSpec.classBuilder(getKoinClassName(clazz, "Scope"))
 			.build()
 
-		val defaultModule = TypeSpec.objectBuilder(getDefaultModule(clazz))
+		val nodeHandlerModule = TypeSpec.objectBuilder(getKoinClassName(clazz, "Module"))
+			.addAnnotation(
+				AnnotationSpec.builder(Scope::class)
+					.addMember("value = %L::class", nodeHandlerScope.name!!)
+					.build()
+			)
 			.addAnnotation(Module::class)
-			.addAnnotation(AnnotationSpec.get(ComponentScan()))
+			.addAnnotation(ComponentScan::class)
+			.addSerializersModule(node, nodeHandlerScope)
 			.build()
 
-		val fileSpec = FileSpec.builder(GENERATED_PACKAGE, "${clazz.simpleName.asString()}KoinModules")
-			.addType(generatedModule)
-			.addType(defaultModule)
+		val nodeHandlerModuleFileSpec = FileSpec.builder(getKoinClassName(clazz, ""))
+			.addType(nodeHandlerScope)
+			.addType(nodeHandlerModule)
 			.build()
 
 		try {
-			fileSpec
-				.writeTo(
-					codeGenerator = codeGenerator,
-					aggregating = false,
-					originatingKSFiles = listOf(clazz.containingFile!!)
-				)
+			nodeHandlerModuleFileSpec.writeTo(
+				codeGenerator = codeGenerator,
+				aggregating = false,
+				originatingKSFiles = listOf(clazz.containingFile!!)
+			)
 		} catch (_: FileAlreadyExistsException) {}
 	}
 
 
 	class Provider : SymbolProcessorProvider {
 		override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
-			return NodeKoinModulesProcessor(environment.logger, environment.codeGenerator)
+			return NodeKoinModulesProcessor(environment.codeGenerator)
 		}
 	}
 }
 
-fun getDefaultModule(clazz: KSClassDeclaration) = ClassName(GENERATED_PACKAGE, "${clazz.simpleName.asString()}DefaultModule")
-fun getGeneratedModule(clazz: KSClassDeclaration) = ClassName(GENERATED_PACKAGE, "${clazz.simpleName.asString()}GeneratedModule")
+fun getKoinClassName(clazz: KSClassDeclaration, entity: String) =
+	ClassName(
+		clazz.packageName.asString(),
+		"${clazz.simpleName.asString().removeSuffix("Handler")}Koin${entity}"
+	)
