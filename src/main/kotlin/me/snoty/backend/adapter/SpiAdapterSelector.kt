@@ -27,7 +27,7 @@ class SpiAdapterSelector(
 		val potential = providers.filter {
 			adapterConfig.adapter in it.supportedTypes
 		}
-		logger.debug { "Selected $configKey adapter config: $potential" }
+		logger.info { "Adapter selection for $configKey: ${potential.map { it::class.simpleName }}" }
 
 		val selected = potential.singleOrNull()
 		when {

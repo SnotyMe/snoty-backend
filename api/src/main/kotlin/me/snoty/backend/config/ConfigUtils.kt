@@ -33,6 +33,7 @@ inline fun <reified T : Any> loadContainerConfig(folder: String): Validated<Conf
 		.map { logger.debug { "Loaded $configName: $it" }; return@map it }
 }
 
+fun ConfigLoaderBuilder.addProperties(vararg pairs: Pair<String, Any?>) = addProperties(mapOf(*pairs))
 
 fun ConfigLoaderBuilder.addProperties(properties: Map<String, Any?>) = addPropertySource(
 	PropsPropertySource(

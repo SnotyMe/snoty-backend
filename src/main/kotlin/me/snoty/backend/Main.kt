@@ -8,6 +8,7 @@ import me.snoty.backend.events.EventHandler
 import me.snoty.backend.featureflags.setupFeatureFlags
 import me.snoty.backend.injection.getFromAllScopes
 import me.snoty.backend.logging.setupLogbackFilters
+import me.snoty.backend.wiring.flow.execution.ExecutionEventAdapter
 import org.koin.core.Koin
 import org.koin.core.logger.Level
 import org.koin.core.module.Module
@@ -32,6 +33,7 @@ fun startApplication(vararg extraModules: Module) = runBlocking {
 	val adapterSelector: AdapterSelector = koin.get()
 	adapterSelector.load(DatabaseAdapter::class, DatabaseAdapter.CONFIG_GROUP)
 	adapterSelector.load(AuthenticationAdapter::class, AuthenticationAdapter.CONFIG_GROUP)
+	adapterSelector.load(ExecutionEventAdapter::class, ExecutionEventAdapter.CONFIG_GROUP)
 
 	// setup logging related things
 	setupLogbackFilters(koin.getAll(), koin.getFromAllScopes())

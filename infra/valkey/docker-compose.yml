@@ -1,0 +1,12 @@
+services:
+  valkey:
+    image: valkey/valkey:9-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+  redisinsight:
+    image: redis/redisinsight:3.0
+    ports:
+      - "5540:5540"
+    environment:
+      RI_REDIS_HOST: valkey

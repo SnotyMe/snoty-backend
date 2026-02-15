@@ -57,6 +57,8 @@ dependencies { with(libs) {
     moduleImplementation(projects.api)
 	moduleImplementation(projects.adapter.adapterApi)
 
+    implementation(projects.adapter.inMemory)
+
 	// database
     implementation(projects.adapter.mongodb)
     implementation(projects.adapter.sql)
@@ -64,6 +66,9 @@ dependencies { with(libs) {
 	// authentication
 	implementation(projects.adapter.oidc)
 	implementation(projects.adapter.keycloak)
+
+    // other adapters
+    implementation(projects.adapter.redis)
 
     implementation(koin.slf4j)
     implementation(libraries.coroutines.core)
