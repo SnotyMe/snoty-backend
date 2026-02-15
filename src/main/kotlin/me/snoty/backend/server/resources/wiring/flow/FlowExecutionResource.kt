@@ -38,8 +38,7 @@ fun Route.flowExecutionResource() {
 			}
 			val eventTypes = call.request.queryParameters["eventTypes"]?.split(",")?.map { it.trim() } ?: emptyList()
 
-			flowExecutionEventService.provideBus()
-				.filter { it.flowId == flow._id }
+			flowExecutionEventService.provideFlowBus(flowId = flow._id)
 				.filter { eventTypes.isEmpty() || it.eventType in eventTypes }
 				.collect {
 					send(
@@ -58,8 +57,7 @@ fun Route.flowExecutionResource() {
 			event = ServerSentEvent("heartbeat")
 		}
 
-		flowExecutionEventService.provideBus()
-			.filter { it.userId == user.id }
+		flowExecutionEventService.provideUserBus(userId = user.id.toString())
 			.collect {
 				send(
 					data = json.hackyEncodeToString(it),

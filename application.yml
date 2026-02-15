@@ -5,3 +5,5 @@ database:
   adapter: sql
 authentication:
   adapter: keycloak
+redis:
+  url: "redis://localhost:6379"

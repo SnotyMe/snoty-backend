@@ -60,6 +60,8 @@ database-jdbc-opentelemetry = { group = "io.opentelemetry.instrumentation", name
 
 authentication-keycloak-adminClient = { group = "org.keycloak", name = "keycloak-admin-client", version = "26.0.7" }
 
+redis-lettuce = { group = "io.lettuce", name = "lettuce-core", version = "7.4.0.RELEASE" }
+
 integrationPlugin-ksp-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
 
 ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp-jvm", version.ref = "ktor" }
@@ -82,6 +84,7 @@ ktor-server-netty = { group = "io.ktor", name = "ktor-server-netty-jvm", version
 ktor-server-statusPages = { group = "io.ktor", name = "ktor-server-status-pages-jvm", version.ref = "ktor" }
 
 libraries-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+libraries-coroutines-reactive = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-reactive", version.ref = "coroutines" }
 libraries-bson-kotlin = { group = "org.mongodb", name = "bson-kotlin", version.ref = "mongodb" }
 libraries-bson-kotlinx = { group = "org.mongodb", name = "bson-kotlinx", version.ref = "mongodb" }
 libraries-ical4j = { group = "org.mnode.ical4j", name = "ical4j", version = "4.1.0" }
