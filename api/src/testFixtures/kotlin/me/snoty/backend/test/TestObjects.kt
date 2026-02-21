@@ -2,8 +2,6 @@ package me.snoty.backend.test
 
 import me.snoty.backend.config.Config
 import me.snoty.backend.config.Environment
-import me.snoty.backend.config.FeatureFlagsConfig
-import me.snoty.backend.config.ProviderFeatureFlagConfig
 import me.snoty.backend.utils.bson.provideApiCodec
 import me.snoty.backend.utils.bson.provideCodecRegistry
 import me.snoty.integration.common.model.NodePosition
@@ -25,7 +23,6 @@ val TestConfig = Config(
 	port = 8080,
 	environment = Environment.TEST,
 	publicHost = "http://localhost:8080",
-	featureFlags = FeatureFlagsConfig(ProviderFeatureFlagConfig.InMemory()),
 )
 
 class TestConfigBuilder(block: TestConfigBuilder.() -> Unit) {
@@ -41,7 +38,6 @@ class TestConfigBuilder(block: TestConfigBuilder.() -> Unit) {
 		port = port,
 		environment = environment,
 		publicHost = publicHost,
-		featureFlags = FeatureFlagsConfig(ProviderFeatureFlagConfig.InMemory())
 	)
 }
 

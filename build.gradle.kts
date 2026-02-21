@@ -59,6 +59,9 @@ dependencies { with(libs) {
 
     implementation(projects.adapter.inMemory)
 
+	// feature flag
+	implementation(projects.adapter.flagd)
+
 	// database
     implementation(projects.adapter.mongodb)
     implementation(projects.adapter.sql)

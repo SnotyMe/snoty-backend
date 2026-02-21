@@ -19,17 +19,7 @@ class ApplicationConfigLoaderImpl(private val configLoader: ConfigLoader) : Appl
 		.build()
 		.loadConfigOrThrow<BuildInfo>()
 
-	override fun loadConfig(): Config = configLoader.load(prefix = null) {
-		loadContainerConfig<FlagdContainerConfig>("featureflags").map { containerConfig ->
-			val props = mapOf(
-				"type" to ProviderFeatureFlagConfig.Flagd::class.simpleName!!,
-				ProviderFeatureFlagConfig.Flagd::host.name to "localhost",
-				ProviderFeatureFlagConfig.Flagd::port.name to containerConfig.port.toString(),
-			).mapKeys { (key, _) -> "${Config::featureFlags.name}.$key" }
-
-			addProperties(props)
-		}
-	}
+	override fun loadConfig(): Config = configLoader.load(prefix = null)
 }
 
 @Single

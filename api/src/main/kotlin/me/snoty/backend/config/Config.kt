@@ -7,5 +7,4 @@ data class Config(
 	val publicHost: String,
 	val corsHosts: List<String> = emptyList(),
 	val environment: Environment,
-	val featureFlags: FeatureFlagsConfig,
 )

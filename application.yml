@@ -1,6 +1,8 @@
 environment: DEVELOPMENT
 port: 8080
 publicHost: http://localhost:{{port}}
+featureFlags:
+  adapter: flagd
 database:
   adapter: sql
 authentication:
