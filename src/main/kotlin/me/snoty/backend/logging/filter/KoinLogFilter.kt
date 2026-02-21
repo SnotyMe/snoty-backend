@@ -18,7 +18,7 @@ class KoinLogFilterFeatureFlags(override val client: Client) : FeatureFlagsConta
 	val muteCreationErrorLogs by FeatureFlagBoolean("koin.muteCreationErrorLogs", true)
 }
 
-@Single(createdAtStart = true)
+@Single
 class KoinLogFilter(private val featureFlags: KoinLogFilterFeatureFlags) : TurboFilter() {
 	override fun decide(marker: Marker?, logger: Logger?, level: Level?, format: String?, params: Array<out Any>?, t: Throwable?): FilterReply = when {
 		logger?.name != KOIN_TAG -> FilterReply.NEUTRAL
