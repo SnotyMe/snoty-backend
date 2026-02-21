@@ -13,6 +13,7 @@ import me.snoty.backend.server.KtorServer
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.KoinApplication
 import org.koin.core.annotation.Module
+import org.koin.core.annotation.Single
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
@@ -21,6 +22,7 @@ import org.koin.core.component.get
 class ApplicationKoinModule
 
 @KoinApplication(modules = [ApiKoinModule::class, ApplicationKoinModule::class])
+@Single
 class Application : KoinComponent {
 	val logger = KotlinLogging.logger {}
 
