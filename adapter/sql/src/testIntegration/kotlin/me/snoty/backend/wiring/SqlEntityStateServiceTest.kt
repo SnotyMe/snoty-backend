@@ -11,6 +11,7 @@ import me.snoty.backend.wiring.flow.FlowTable
 import me.snoty.backend.wiring.flow.SqlFlowService
 import me.snoty.backend.wiring.node.NodeTable
 import me.snoty.backend.wiring.node.SqlNodeService
+import me.snoty.core.NodeId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.diff.provideStateCodecRegistry
@@ -20,7 +21,7 @@ import me.snoty.integration.common.wiring.flow.FlowService
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import kotlin.uuid.Uuid
 
-class SqlEntityStateServiceTest : EntityStateServiceSpec({ Uuid.random().toString() }) {
+class SqlEntityStateServiceTest : EntityStateServiceSpec({ NodeId(Uuid.random().toString()) }) {
 	private val flowTable = FlowTable(snotyJson {})
 	private val nodeTable = NodeTable(flowTable)
 	private val entityStateTable = EntityStateTable(nodeDescriptor, nodeTable)

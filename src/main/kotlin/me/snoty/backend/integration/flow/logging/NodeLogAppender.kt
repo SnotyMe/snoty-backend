@@ -13,6 +13,7 @@ import me.snoty.backend.wiring.flow.execution.FlowExecutionEvent
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
 import me.snoty.core.FlowId
+import me.snoty.core.NodeId
 import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.flow.NodeLogEntry
 import org.slf4j.event.Level
@@ -50,7 +51,7 @@ class NodeLogAppender(
 			timestamp = Instant.fromEpochMilliseconds(eventObject.timeStamp),
 			level = eventLevel,
 			message = message,
-			node = eventObject.mdcPropertyMap[NODE_ID.key]
+			node = eventObject.mdcPropertyMap[NODE_ID.key]?.let(::NodeId)
 		)
 
 		val jobId = eventObject.mdcPropertyMap[JOB_ID.key]

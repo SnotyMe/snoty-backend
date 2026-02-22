@@ -3,10 +3,12 @@ package me.snoty.backend.wiring.node
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
-import me.snoty.backend.database.sql.utils.UuidTable
+import me.snoty.backend.database.sql.utils.nodeId
 import me.snoty.backend.database.sql.utils.rawJsonb
 import me.snoty.backend.database.sql.utils.userId
+import me.snoty.backend.utils.randomV7
 import me.snoty.backend.wiring.flow.FlowTable
+import me.snoty.core.NodeId
 import me.snoty.integration.common.wiring.StandaloneNode
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRegistry
@@ -15,12 +17,19 @@ import me.snoty.integration.common.wiring.node.tryDeserializeNodeSettings
 import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.Table
+import org.jetbrains.exposed.v1.core.dao.id.IdTable
 import org.jetbrains.exposed.v1.jdbc.select
 import org.koin.core.annotation.Single
 import org.slf4j.event.Level
+import kotlin.uuid.Uuid
 
 @Single(binds = [Table::class])
-class NodeTable(flowTable: FlowTable) : UuidTable("node") {
+class NodeTable(flowTable: FlowTable) : IdTable<NodeId>("node") {
+	override val id = nodeId("id").clientDefault {
+		NodeId(Uuid.randomV7().toString())
+	}.entityId()
+	override val primaryKey = PrimaryKey(id)
+
 	val flowId = reference("flow_id", flowTable)
 	val userId = userId("user_id")
 
@@ -40,7 +49,7 @@ fun ResultRow.toStandalone(nodeTable: NodeTable, json: Json, nodeRegistry: NodeR
 	val descriptor = NodeDescriptor(namespace = this[nodeTable.descriptor_namespace], name = this[nodeTable.descriptor_name])
 
 	return StandaloneNode(
-		_id = this[nodeTable.id].value.toString(),
+		_id = this[nodeTable.id].value,
 		flowId = this[nodeTable.flowId].value,
 		userId = this[nodeTable.userId],
 		descriptor = descriptor,

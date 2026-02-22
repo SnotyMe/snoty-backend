@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import me.snoty.backend.observability.FLOW_ID
 import me.snoty.backend.observability.NODE_ID
 import me.snoty.core.FlowId
+import me.snoty.core.NodeId
 import me.snoty.core.UserId
 import kotlin.time.Instant
 
@@ -14,12 +15,12 @@ const val NOTIFICATION_TYPE = "notificationType"
 fun NotificationAttributes(
 	type: String,
 	flowId: FlowId,
-	nodeId: String,
+	nodeId: NodeId,
 	vararg extra: Pair<String, String>,
 ) = NotificationAttributes(
 	type,
 	flowId,
-	NODE_ID.key to nodeId,
+	NODE_ID.key to nodeId.value,
 	*extra,
 )
 

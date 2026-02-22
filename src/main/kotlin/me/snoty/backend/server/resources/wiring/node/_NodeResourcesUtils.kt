@@ -8,6 +8,7 @@ import kotlinx.serialization.serializerOrNull
 import me.snoty.backend.server.plugins.void
 import me.snoty.backend.server.resources.wiring.noSerializerFound
 import me.snoty.backend.utils.getUser
+import me.snoty.core.NodeId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.http.invalidNodeId
 import me.snoty.integration.common.http.nodeNotFound
@@ -21,7 +22,7 @@ suspend fun RoutingContext.getPersonalNodeOrNull(): StandaloneNode? {
 	val nodeService: NodeService = get()
 
 	val user = call.getUser()
-	val id = call.parameters["id"]
+	val id = call.parameters["id"]?.let(::NodeId)
 		?: return void { call.invalidNodeId() }
 
 	val flow = nodeService.get(id)
