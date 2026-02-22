@@ -12,6 +12,7 @@ import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.serialization.json.Json
 import me.snoty.backend.wiring.flow.execution.RedisFlowExecutionChannelUtils.flowChannelName
 import me.snoty.backend.wiring.flow.execution.RedisFlowExecutionChannelUtils.userChannelName
+import me.snoty.core.FlowId
 import me.snoty.core.UserId
 import org.koin.core.annotation.Single
 
@@ -28,7 +29,7 @@ class RedisExecutionEventService(
         .observeChannels()
         .asFlow()
 
-    override suspend fun provideFlowBus(flowId: String): Flow<FlowExecutionEvent> {
+    override suspend fun provideFlowBus(flowId: FlowId): Flow<FlowExecutionEvent> {
         val channelName = flowChannelName(flowId)
         logger.trace { "Subscribing to flow channel $channelName" }
         connection.subscribe(channelName).awaitFirstOrNull()

@@ -34,9 +34,9 @@ class FlowTracingImpl(
 		val rootSpan = spanBuilder("Flow $flowId")
 			.setAttribute(USER_ID, flow.userId.value)
 			.setAttribute(JOB_ID, jobId)
-			.setAttribute(FLOW_ID, flowId)
+			.setAttribute(FLOW_ID, flowId.value)
 			.startSpan()
-		KMDC.put(USER_ID, flow._id)
+		KMDC.put(USER_ID, flowId.value)
 
 		return rootSpan
 	}

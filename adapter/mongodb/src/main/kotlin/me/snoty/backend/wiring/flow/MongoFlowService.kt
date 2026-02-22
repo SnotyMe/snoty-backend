@@ -13,11 +13,12 @@ import kotlinx.coroutines.flow.map
 import me.snoty.backend.database.mongo.aggregate
 import me.snoty.backend.database.mongo.deserializeOrInvalid
 import me.snoty.backend.database.mongo.objectId
-import me.snoty.backend.integration.config.flow.NodeId
+import me.snoty.backend.database.mongo.toFlowId
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.wiring.node.MongoNode
 import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
 import me.snoty.backend.wiring.node.toRelational
+import me.snoty.core.FlowId
 import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.flow.*
 import org.bson.codecs.pojo.annotations.BsonId
@@ -50,12 +51,12 @@ class MongoFlowService(
 		it.toStandalone()
 	}
 
-	override suspend fun getStandalone(flowId: NodeId) = collection
+	override suspend fun getStandalone(flowId: FlowId) = collection
 		.find(Filters.eq(MongoWorkflow::_id.name, flowId.objectId))
 		.firstOrNull()
 		?.toStandalone()
 
-	override suspend fun getWithNodes(flowId: NodeId) = collection
+	override suspend fun getWithNodes(flowId: FlowId) = collection
 		.aggregate<MongoWorkflowWithNodes>(
 			match(Filters.eq(MongoWorkflow::_id.name, flowId.objectId)),
 			lookup(
@@ -68,14 +69,14 @@ class MongoFlowService(
 		.firstOrNull()
 		?.toRelational(settingsDeserializationService)
 
-	override suspend fun rename(flowId: NodeId, name: String) {
+	override suspend fun rename(flowId: FlowId, name: String) {
 		collection.updateOne(
 			Filters.eq(MongoWorkflow::_id.name, flowId.objectId),
 			Updates.set(MongoWorkflow::name.name, name)
 		)
 	}
 
-	override suspend fun updateSettings(flowId: NodeId, settings: WorkflowSettings) {
+	override suspend fun updateSettings(flowId: FlowId, settings: WorkflowSettings) {
 		val workflow = collection.findOneAndUpdate(
 			Filters.eq(MongoWorkflow::_id.name, flowId.objectId),
 			Updates.set(MongoWorkflow::settings.name, settings),
@@ -85,7 +86,7 @@ class MongoFlowService(
 		flowScheduler.reschedule(workflow)
 	}
 
-	override suspend fun delete(flowId: NodeId) {
+	override suspend fun delete(flowId: FlowId) {
 		collection.deleteOne(Filters.eq(MongoWorkflow::_id.name, flowId.objectId))
 	}
 }
@@ -98,7 +99,7 @@ data class MongoWorkflow(
 	val settings: WorkflowSettings?,
 ) {
 	fun toStandalone() = StandaloneWorkflow(
-		_id = _id.toHexString(),
+		_id = _id.toFlowId(),
 		name = name,
 		userId = userId,
 		settings = settings ?: WorkflowSettings(),
@@ -114,7 +115,7 @@ data class MongoWorkflowWithNodes(
 	val nodes: List<MongoNode>,
 ) {
 	fun toRelational(settingsLookup: NodeSettingsDeserializationService) = WorkflowWithNodes(
-		_id = _id.toHexString(),
+		_id = _id.toFlowId(),
 		name = name,
 		userId = userId,
 		settings = settings ?: WorkflowSettings(),

@@ -3,10 +3,9 @@ package me.snoty.backend.wiring.flow.execution
 import kotlinx.coroutines.flow.Flow
 import me.snoty.backend.database.sql.flowTransaction
 import me.snoty.backend.database.sql.suspendTransaction
-import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowTriggerReason
-import me.snoty.backend.utils.toUuid
 import me.snoty.backend.wiring.flow.FlowTable
+import me.snoty.core.FlowId
 import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.flow.EnumeratedFlowExecution
 import me.snoty.integration.common.wiring.flow.FlowExecution
@@ -24,10 +23,10 @@ class SqlFlowExecutionService(
 	private val flowExecutionTable: FlowExecutionTable,
 	private val flowExecutionLogTable: FlowExecutionLogTable,
 ) : FlowExecutionService {
-	override suspend fun create(jobId: String, flowId: NodeId, triggeredBy: FlowTriggerReason) = db.suspendTransaction<Unit> {
+	override suspend fun create(jobId: String, flowId: FlowId, triggeredBy: FlowTriggerReason) = db.suspendTransaction<Unit> {
 		flowExecutionTable.upsert {
 			it[id] = jobId
-			it[this.flowId] = flowId.toUuid()
+			it[this.flowId] = flowId
 			it[this.triggeredBy] = triggeredBy
 			it[this.triggeredAt] = Clock.System.now()
 			it[this.status] = FlowExecutionStatus.RUNNING
@@ -50,9 +49,9 @@ class SqlFlowExecutionService(
 		}
 	}
 
-	override suspend fun retrieve(flowId: NodeId): List<NodeLogEntry> = db.suspendTransaction {
+	override suspend fun retrieve(flowId: FlowId): List<NodeLogEntry> = db.suspendTransaction {
 		flowExecutionLogTable.selectAll()
-			.where { flowExecutionLogTable.executionId eq flowId }
+			.where { flowExecutionLogTable.executionId eq flowId.value }
 			.orderBy(flowExecutionLogTable.timestamp to SortOrder.DESC)
 			.map { it.toLogEntry(flowExecutionLogTable) }
 	}
@@ -72,7 +71,7 @@ class SqlFlowExecutionService(
 			.map {
 				EnumeratedFlowExecution(
 					jobId = it[flowExecutionTable.id].value,
-					flowId = it[flowExecutionTable.flowId].value.toString(),
+					flowId = it[flowExecutionTable.flowId].value,
 					triggeredBy = it[flowExecutionTable.triggeredBy],
 					startDate = it[flowExecutionTable.triggeredAt],
 					status = it[flowExecutionTable.status]
@@ -81,13 +80,13 @@ class SqlFlowExecutionService(
 	}
 
 	override fun query(
-		flowId: NodeId,
+		flowId: FlowId,
 		startFrom: String?,
 		limit: Int
 	): Flow<FlowExecution> = db.flowTransaction {
 		val executions = flowExecutionTable.selectAll()
 			.where {
-				(flowExecutionTable.flowId eq flowId.toUuid()) andIfNotNull (startFrom?.let { flowExecutionTable.id less it })
+				(flowExecutionTable.flowId eq flowId) andIfNotNull (startFrom?.let { flowExecutionTable.id less it })
 			}
 			.orderBy(flowExecutionTable.triggeredAt to SortOrder.DESC)
 			.limit(limit)
@@ -102,7 +101,7 @@ class SqlFlowExecutionService(
 		executions.map { execution ->
 			FlowExecution(
 				jobId = execution[flowExecutionTable.id].value,
-				flowId = execution[flowExecutionTable.flowId].value.toString(),
+				flowId = execution[flowExecutionTable.flowId].value,
 				triggeredBy = execution[flowExecutionTable.triggeredBy],
 				startDate = execution[flowExecutionTable.triggeredAt],
 				status = execution[flowExecutionTable.status],
@@ -113,7 +112,7 @@ class SqlFlowExecutionService(
 		}
 	}
 
-	override suspend fun deleteAll(flowId: NodeId) = db.suspendTransaction<Unit> {
-		flowExecutionTable.deleteWhere { flowExecutionTable.flowId eq flowId.toUuid() }
+	override suspend fun deleteAll(flowId: FlowId) = db.suspendTransaction<Unit> {
+		flowExecutionTable.deleteWhere { flowExecutionTable.flowId eq flowId }
 	}
 }

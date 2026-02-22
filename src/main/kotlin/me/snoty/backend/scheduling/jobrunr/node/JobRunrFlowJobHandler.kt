@@ -42,7 +42,7 @@ class JobRunrFlowJobHandler(
 		val logger = JobRunrDashboardLogger(this.rootLogger)
 
 		KMDC.put(JOB_ID, jobContext.jobId.toString())
-		KMDC.put(FLOW_ID, jobRequest.flowId)
+		KMDC.put(FLOW_ID, jobRequest.flowId.value)
 		KMDC.put(APPENDER_LOG_LEVEL, jobRequest.logLevel.name)
 
 		runBlocking(MDCContext()) {

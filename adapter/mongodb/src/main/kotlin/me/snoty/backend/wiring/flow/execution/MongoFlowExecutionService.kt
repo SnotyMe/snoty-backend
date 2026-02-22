@@ -10,14 +10,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import me.snoty.backend.database.mongo.Aggregations
-import me.snoty.backend.database.mongo.aggregate
-import me.snoty.backend.database.mongo.objectId
-import me.snoty.backend.database.mongo.upsertOne
-import me.snoty.backend.integration.config.flow.NodeId
+import me.snoty.backend.database.mongo.*
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.wiring.flow.FlowFeatureFlags
 import me.snoty.backend.wiring.flow.MongoWorkflow
+import me.snoty.core.FlowId
 import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.flow.*
 import org.bson.codecs.pojo.annotations.BsonId
@@ -71,7 +68,7 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 		}
 	}
 
-	override suspend fun create(jobId: String, flowId: NodeId, triggeredBy: FlowTriggerReason) {
+	override suspend fun create(jobId: String, flowId: FlowId, triggeredBy: FlowTriggerReason) {
 		runCatching {
 			collection.insertOne(
 				MongoFlowLogs(
@@ -112,7 +109,7 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 		)
 	}
 
-	override suspend fun retrieve(flowId: NodeId): List<NodeLogEntry> =
+	override suspend fun retrieve(flowId: FlowId): List<NodeLogEntry> =
 		collection.find(Filters.eq(MongoFlowLogs::flowId.name, flowId.objectId))
 			.toList()
 			.flatMap { it.logs }
@@ -130,7 +127,7 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 		) {
 			fun toFlowExecution() = EnumeratedFlowExecution(
 				jobId = jobId,
-				flowId = flowId.toHexString(),
+				flowId = flowId.toFlowId(),
 				triggeredBy = triggeredBy ?: FlowTriggerReason.Unknown,
 				startDate = startDate,
 				status = status,
@@ -160,7 +157,7 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 		).map { it.toFlowExecution() }
 	}
 
-	override fun query(flowId: NodeId, startFrom: String?, limit: Int): Flow<FlowExecution> =
+	override fun query(flowId: FlowId, startFrom: String?, limit: Int): Flow<FlowExecution> =
 		collection.find(
 			Filters.and(
 				Filters.eq(MongoFlowLogs::flowId.name, flowId.objectId),
@@ -182,7 +179,7 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 				}
 			}
 
-	override suspend fun deleteAll(flowId: NodeId) {
+	override suspend fun deleteAll(flowId: FlowId) {
 		collection.deleteMany(Filters.eq(MongoFlowLogs::flowId.name, flowId.objectId))
 	}
 }

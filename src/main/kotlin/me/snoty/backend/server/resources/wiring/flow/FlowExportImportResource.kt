@@ -51,6 +51,6 @@ fun Route.flowExportImportResource() {
 		val imported: ImportFlow = call.receive()
 		val createdId = importService.import(user.id, imported)
 
-		call.respondText(text = createdId, status = HttpStatusCode.OK)
+		call.respondText(text = createdId.value, status = HttpStatusCode.OK)
 	}
 }

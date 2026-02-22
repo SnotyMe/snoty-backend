@@ -3,6 +3,7 @@ package me.snoty.integration.common.wiring.flow
 import kotlinx.serialization.Serializable
 import me.snoty.backend.scheduling.DEFAULT_SCHEDULE
 import me.snoty.backend.scheduling.JobSchedule
+import me.snoty.core.FlowId
 import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.FlowNode
 import org.jobrunr.scheduling.cron.CronExpression
@@ -13,7 +14,7 @@ import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
 interface Workflow {
-	val _id: String
+	val _id: FlowId
 	val name: String
 	val userId: UserId
 	val settings: WorkflowSettings
@@ -61,7 +62,7 @@ data class WorkflowSettings(
  */
 @Serializable
 data class StandaloneWorkflow(
-	override val _id: String,
+	override val _id: FlowId,
 	override val name: String,
 	override val userId: UserId,
 	override val settings: WorkflowSettings,
@@ -72,7 +73,7 @@ data class StandaloneWorkflow(
  */
  @Serializable
 data class WorkflowWithNodes(
-	override val _id: String,
+	override val _id: FlowId,
 	override val name: String,
 	override val userId: UserId,
 	override val settings: WorkflowSettings,

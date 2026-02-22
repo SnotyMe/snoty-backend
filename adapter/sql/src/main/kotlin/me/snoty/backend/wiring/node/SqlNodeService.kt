@@ -8,6 +8,7 @@ import me.snoty.backend.errors.ServiceResult
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.utils.hackyEncodeToString
 import me.snoty.backend.utils.toUuid
+import me.snoty.core.FlowId
 import me.snoty.core.UserId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.config.NodeServiceResults
@@ -39,9 +40,9 @@ class SqlNodeService(
 			?.toStandalone(nodeTable, json, nodeRegistry)
 	}
 
-	override fun getByFlow(flowId: NodeId): Flow<FlowNode> = db.flowTransaction {
+	override fun getByFlow(flowId: FlowId): Flow<FlowNode> = db.flowTransaction {
 		val nodes = nodeTable.selectStandalone()
-			.where { nodeTable.flowId eq flowId.toUuid() }
+			.where { nodeTable.flowId eq flowId }
 			.map { it.toStandalone(nodeTable, json, nodeRegistry) }
 
 		val connections = nodeConnectionTable.selectAll()
@@ -59,13 +60,13 @@ class SqlNodeService(
 
 	override suspend fun <S : NodeSettings> create(
 		userId: UserId,
-		flowId: NodeId,
+		flowId: FlowId,
 		descriptor: NodeDescriptor,
 		settings: S
 	): StandaloneNode {
 		val id = db.suspendTransaction {
 			nodeTable.insertAndGetId {
-				it[nodeTable.flowId] = flowId.toUuid()
+				it[nodeTable.flowId] = flowId
 				it[nodeTable.userId] = userId
 				it[nodeTable.descriptor_namespace] = descriptor.namespace
 				it[nodeTable.descriptor_name] = descriptor.name
