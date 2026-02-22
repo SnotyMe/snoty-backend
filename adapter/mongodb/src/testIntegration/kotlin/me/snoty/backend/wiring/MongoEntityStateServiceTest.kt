@@ -2,7 +2,6 @@ package me.snoty.backend.wiring
 
 import io.mockk.mockk
 import me.snoty.backend.database.mongo.MongoTest
-import me.snoty.backend.hooks.HookRegistryImpl
 import me.snoty.backend.integration.MongoEntityStateService
 import me.snoty.backend.integration.config.MongoNodeService
 import me.snoty.backend.wiring.flow.MongoFlowService
@@ -17,7 +16,7 @@ class MongoEntityStateServiceTest : EntityStateServiceSpec({ ObjectId().toHexStr
 	override val service = MongoEntityStateService(
 		mongoDB,
 		nodeDescriptor,
-		hookRegistry = HookRegistryImpl(),
+		hookRegistry = mockk(relaxed = true),
 		codecRegistry = provideStateCodecRegistry(bsonTypeClassMap(), mongoDB.codecRegistry),
 	)
 	override val nodeService: NodeService = MongoNodeService(mongoDB, mockk())
