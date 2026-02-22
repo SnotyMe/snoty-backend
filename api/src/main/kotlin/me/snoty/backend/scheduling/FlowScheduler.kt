@@ -23,7 +23,7 @@ interface FlowScheduler {
 
 	fun deleteAll(workflow: Workflow)
 
-	fun jobId(workflow: Workflow): String = workflow._id
+	fun jobId(workflow: Workflow): String = workflow._id.value
 	fun jobName(workflow: Workflow): String = workflow.run { "[${_id}] user=$userId flow=\"$name\"" }
 }
 

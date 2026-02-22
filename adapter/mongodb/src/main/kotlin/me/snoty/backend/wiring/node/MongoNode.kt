@@ -1,5 +1,6 @@
 package me.snoty.backend.wiring.node
 
+import me.snoty.backend.database.mongo.toFlowId
 import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.StandaloneNode
@@ -29,7 +30,7 @@ fun MongoNode.toStandalone(
 	settings: NodeSettings,
 ) = StandaloneNode(
 	_id = _id.toHexString(),
-	flowId = flowId.toHexString(),
+	flowId = flowId.toFlowId(),
 	userId = userId,
 	descriptor = descriptor,
 	logLevel = logLevel,
@@ -40,7 +41,7 @@ fun MongoNode.toRelational(
 	settings: NodeSettings,
 ): FlowNode = FlowNode(
 	_id = _id.toHexString(),
-	flowId = flowId.toHexString(),
+	flowId = flowId.toFlowId(),
 	userId = userId,
 	descriptor = descriptor,
 	logLevel = logLevel,

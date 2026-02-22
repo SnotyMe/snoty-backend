@@ -7,6 +7,7 @@ import me.snoty.backend.wiring.flow.CensoredField
 import me.snoty.backend.wiring.flow.ExportFlow
 import me.snoty.backend.wiring.flow.ExportNode
 import me.snoty.backend.wiring.flow.FlowExportImportSchema
+import me.snoty.core.FlowId
 import me.snoty.integration.common.model.metadata.NodeField
 import me.snoty.integration.common.model.metadata.NodeFieldDetails
 import me.snoty.integration.common.model.metadata.ObjectSchema
@@ -24,7 +25,7 @@ class FlowExportServiceImpl(
 	private val codecRegistry: CodecRegistry,
 	private val nodeRegistry: NodeRegistry,
 ) : FlowExportService {
-	override suspend fun export(flowId: NodeId, censor: Boolean): ExportFlow {
+	override suspend fun export(flowId: FlowId, censor: Boolean): ExportFlow {
 		val flow = flowService.getWithNodes(flowId) ?: throw IllegalArgumentException("Flow not found")
 		return ExportFlow(
 			version = FlowExportImportSchema.VERSION,

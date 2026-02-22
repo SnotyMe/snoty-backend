@@ -5,11 +5,11 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.runBlocking
-import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.test.TestIds.USER_ID_1
 import me.snoty.backend.test.assertAny
 import me.snoty.backend.test.nodeMetadata
+import me.snoty.core.FlowId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.FlowNode
@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.test.assertNotNull
 
-abstract class FlowServiceSpec(private val makeId: () -> NodeId) {
+abstract class FlowServiceSpec(private val makeId: () -> FlowId) {
 	protected abstract val service: FlowService
 	protected abstract val nodeService: NodeService
 
@@ -40,7 +40,7 @@ abstract class FlowServiceSpec(private val makeId: () -> NodeId) {
 	}
 
 	data class FlowTestContext(
-		val flowId: NodeId,
+		val flowId: FlowId,
 	)
 
 	private fun test(block: suspend FlowTestContext.() -> Unit) = runBlocking {

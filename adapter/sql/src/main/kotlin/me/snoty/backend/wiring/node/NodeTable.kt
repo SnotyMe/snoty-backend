@@ -41,7 +41,7 @@ fun ResultRow.toStandalone(nodeTable: NodeTable, json: Json, nodeRegistry: NodeR
 
 	return StandaloneNode(
 		_id = this[nodeTable.id].value.toString(),
-		flowId = this[nodeTable.flowId].value.toString(),
+		flowId = this[nodeTable.flowId].value,
 		userId = this[nodeTable.userId],
 		descriptor = descriptor,
 		logLevel = this[nodeTable.logLevel],

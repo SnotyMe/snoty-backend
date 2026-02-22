@@ -15,6 +15,7 @@ import me.snoty.backend.wiring.node.MongoNode
 import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
 import me.snoty.backend.wiring.node.toRelational
 import me.snoty.backend.wiring.node.toStandalone
+import me.snoty.core.FlowId
 import me.snoty.core.UserId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.config.NodeServiceResults
@@ -43,7 +44,7 @@ class MongoNodeService(
 		return mongoNode.toStandalone(settings)
 	}
 
-	override fun getByFlow(flowId: NodeId): Flow<FlowNode> = collection.find(
+	override fun getByFlow(flowId: FlowId): Flow<FlowNode> = collection.find(
 		Filters.eq(MongoNode::flowId.name, flowId.objectId)
 	).map { node ->
 		val settings = settingsDeserializationService.deserializeOrInvalid(node)
@@ -52,7 +53,7 @@ class MongoNodeService(
 
 	override suspend fun <S : NodeSettings> create(
 		userId: UserId,
-		flowId: NodeId,
+		flowId: FlowId,
 		descriptor: NodeDescriptor,
 		settings: S,
 	): StandaloneNode {

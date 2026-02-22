@@ -36,7 +36,7 @@ class SqlNodeServiceTest : NodeServiceSpec() {
 		flowTable = flowTable,
 	)
 
-	override val makeId = suspend  {
+	override val makeFlowId = suspend  {
 		flowService.create(
 			userId = UserId(Uuid.randomV7().toString()),
 			name = "test",

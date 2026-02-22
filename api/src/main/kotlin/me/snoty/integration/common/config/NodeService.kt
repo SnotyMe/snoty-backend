@@ -4,6 +4,7 @@ import io.ktor.http.*
 import kotlinx.coroutines.flow.Flow
 import me.snoty.backend.errors.ServiceResult
 import me.snoty.backend.integration.config.flow.NodeId
+import me.snoty.core.FlowId
 import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.StandaloneNode
@@ -13,11 +14,11 @@ import org.slf4j.event.Level
 
 interface NodeService {
 	suspend fun get(id: NodeId): StandaloneNode?
-	fun getByFlow(flowId: NodeId): Flow<FlowNode>
+	fun getByFlow(flowId: FlowId): Flow<FlowNode>
 
 	suspend fun <S : NodeSettings> create(
 		userId: UserId,
-		flowId: NodeId,
+		flowId: FlowId,
 		descriptor: NodeDescriptor,
 		settings: S,
 	): StandaloneNode

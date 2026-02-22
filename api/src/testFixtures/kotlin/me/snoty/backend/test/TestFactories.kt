@@ -1,7 +1,7 @@
 package me.snoty.backend.test
 
-import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.utils.randomV7
+import me.snoty.core.FlowId
 import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
@@ -14,10 +14,10 @@ fun node(
 	settings: NodeSettings = EmptyNodeSettings(),
 	next: List<FlowNode> = emptyList(),
 	userId: UserId = UserId(Uuid.randomV7().toString()),
-	makeId: () -> NodeId = ::randomString,
+	makeId: () -> String = ::randomString,
 ) = FlowNode(
 	_id = makeId(),
-	flowId = makeId(),
+	flowId = FlowId(makeId()),
 	userId = userId,
 	descriptor = descriptor,
 	logLevel = null,

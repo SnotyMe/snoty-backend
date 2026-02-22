@@ -4,13 +4,14 @@ import me.snoty.backend.database.sql.PostgresTest
 import me.snoty.backend.wiring.node.NodeConnectionTable
 import me.snoty.backend.wiring.node.NodeTable
 import me.snoty.backend.wiring.node.SqlNodeService
+import me.snoty.core.FlowId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.snotyJson
 import me.snoty.integration.common.wiring.flow.FlowService
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import kotlin.uuid.Uuid
 
-class SqlFlowServiceTest : FlowServiceSpec({ Uuid.random().toString() }) {
+class SqlFlowServiceTest : FlowServiceSpec({ FlowId(Uuid.random().toString()) }) {
 	private val flowTable = FlowTable(snotyJson {})
 	val nodeTable = NodeTable(flowTable)
 	val nodeConnectionTable = NodeConnectionTable(nodeTable)

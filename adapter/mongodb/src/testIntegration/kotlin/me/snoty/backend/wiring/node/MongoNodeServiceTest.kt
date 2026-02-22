@@ -1,6 +1,7 @@
 package me.snoty.backend.wiring.node
 
 import me.snoty.backend.database.mongo.MongoTest
+import me.snoty.backend.database.mongo.toFlowId
 import me.snoty.backend.integration.config.MongoNodeService
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
@@ -17,5 +18,5 @@ class MongoNodeServiceTest : NodeServiceSpec() {
 		): NodeSettings = EmptyNodeSettings(nodeSettings.getString(NodeSettings::name.name))
 	})
 
-	override val makeId = suspend { ObjectId().toHexString() }
+	override val makeFlowId = suspend { ObjectId().toFlowId() }
 }

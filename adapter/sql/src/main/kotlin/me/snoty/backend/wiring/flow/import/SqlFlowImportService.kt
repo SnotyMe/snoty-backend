@@ -1,12 +1,12 @@
 package me.snoty.backend.wiring.flow.import
 
 import me.snoty.backend.database.sql.suspendTransaction
-import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.utils.toUuid
 import me.snoty.backend.wiring.flow.ImportFlow
 import me.snoty.backend.wiring.node.NodeConnectionTable
 import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
 import me.snoty.backend.wiring.node.SqlNodeService
+import me.snoty.core.FlowId
 import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.flow.FlowService
 import org.jetbrains.exposed.v1.jdbc.Database
@@ -21,7 +21,7 @@ class SqlFlowImportService(
 	private val nodeService: SqlNodeService,
 	private val nodeSettingsDeserializationService: NodeSettingsDeserializationService,
 ) : FlowImportService {
-	override suspend fun import(userId: UserId, flow: ImportFlow): NodeId = db.suspendTransaction {
+	override suspend fun import(userId: UserId, flow: ImportFlow): FlowId = db.suspendTransaction {
 		val createdFlow = flowService.create(userId, flow.name, flow.settings)
 
 		val createdNodes = flow.nodes.associate {

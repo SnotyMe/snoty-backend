@@ -6,9 +6,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
-import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.respondServiceResult
+import me.snoty.core.FlowId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.http.nodeNotFound
 import me.snoty.integration.common.wiring.node.NodeDescriptor
@@ -18,7 +18,7 @@ fun Route.nodeCreate(nodeService: NodeService) = post("create") {
 
 	@Serializable
 	data class NodeCreateRequest(
-		val flowId: NodeId,
+		val flowId: FlowId,
 		val descriptor: NodeDescriptor,
 		val settings: JsonElement,
 	)

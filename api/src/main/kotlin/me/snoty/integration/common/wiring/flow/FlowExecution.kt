@@ -1,14 +1,14 @@
 package me.snoty.integration.common.wiring.flow
 
 import kotlinx.serialization.Serializable
-import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowTriggerReason
+import me.snoty.core.FlowId
 import kotlin.time.Instant
 
 @Serializable
 data class EnumeratedFlowExecution(
 	val jobId: String,
-	val flowId: NodeId,
+	val flowId: FlowId,
 	val triggeredBy: FlowTriggerReason,
 	val startDate: Instant,
 	val status: FlowExecutionStatus?,
@@ -17,7 +17,7 @@ data class EnumeratedFlowExecution(
 @Serializable
 data class FlowExecution(
 	val jobId: String,
-	val flowId: NodeId,
+	val flowId: FlowId,
 	val triggeredBy: FlowTriggerReason,
 	val startDate: Instant,
 	val status: FlowExecutionStatus?,
