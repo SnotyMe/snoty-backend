@@ -18,6 +18,7 @@ import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.wiring.flow.FlowFeatureFlags
 import me.snoty.backend.wiring.flow.MongoWorkflow
+import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.flow.*
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
@@ -25,7 +26,6 @@ import org.koin.core.annotation.Single
 import java.util.concurrent.TimeUnit
 import kotlin.time.Clock
 import kotlin.time.Instant
-import kotlin.uuid.Uuid
 
 data class MongoFlowLogs(
 	val _id: String,
@@ -117,7 +117,7 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 			.toList()
 			.flatMap { it.logs }
 
-	override fun query(userId: Uuid): Flow<EnumeratedFlowExecution> {
+	override fun query(userId: UserId): Flow<EnumeratedFlowExecution> {
 		val flow = "flow"
 
 		data class MongoFlowExecution(

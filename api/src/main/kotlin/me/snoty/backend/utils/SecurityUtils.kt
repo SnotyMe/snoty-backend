@@ -8,9 +8,8 @@ import io.ktor.server.request.*
 import me.snoty.backend.authentication.AuthenticationProvider
 import me.snoty.backend.authentication.Role
 import me.snoty.backend.authentication.User
+import me.snoty.core.UserId
 import org.koin.ktor.ext.get
-import java.util.*
-import kotlin.uuid.toKotlinUuid
 
 fun ApplicationRequest.parseAuthHeader() =
 	call.request.parseAuthorizationHeader()
@@ -24,8 +23,9 @@ fun ApplicationCall.getUserOrNull(): User? {
 	val principal = authentication.principal<JWTPrincipal>() ?: return null
 	val claims = principal.payload.claims
 
+	val id = claims["sub"]?.asString() ?: return null
 	return User(
-		id = claims["sub"]?.`as`(UUID::class.java)?.toKotlinUuid() ?: NULL_UUID,
+		id = UserId(id),
 		name = claims["preferred_username"]?.asString() ?: "unknown",
 		email = claims["email"]?.asString() ?: "unknown",
 	)

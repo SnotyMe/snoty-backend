@@ -2,6 +2,7 @@ package me.snoty.backend.wiring.credential
 
 import me.snoty.backend.database.sql.utils.UuidTable
 import me.snoty.backend.database.sql.utils.rawJsonb
+import me.snoty.backend.database.sql.utils.userId
 import me.snoty.backend.wiring.credential.dto.CredentialScope
 import org.jetbrains.exposed.v1.core.*
 import org.koin.core.annotation.Single
@@ -10,7 +11,7 @@ import org.koin.core.annotation.Single
 class CredentialTable : UuidTable("credential") {
 	val scope = enumerationByName<CredentialScope>("scope", 50)
 
-	val ownerId = varchar("owner_id", 255).nullable()
+	val ownerId = userId("owner_id").nullable()
 	val roleRequired = varchar("role_required", 255).nullable()
 
 	val type = varchar("type", 255)

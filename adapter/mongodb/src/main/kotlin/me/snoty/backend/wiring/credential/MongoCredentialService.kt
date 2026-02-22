@@ -17,6 +17,7 @@ import me.snoty.backend.utils.NotFoundException
 import me.snoty.backend.utils.bson.decode
 import me.snoty.backend.utils.bson.encode
 import me.snoty.backend.wiring.credential.dto.*
+import me.snoty.core.UserId
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Single
@@ -32,7 +33,7 @@ class MongoCredentialService(
 	private val collection = db.getCollection<MongoCredential>("credentials")
 
 	override suspend fun create(
-		userId: String,
+		userId: UserId,
 		scope: CredentialScope,
 		role: Role?,
 		name: String,
@@ -56,7 +57,7 @@ class MongoCredentialService(
 		return credential.toDto(codecRegistry, definition)
 	}
 
-	override suspend fun listDefinitionsWithStatistics(userId: String): List<CredentialDefinitionWithStatisticsDto> {
+	override suspend fun listDefinitionsWithStatistics(userId: UserId): List<CredentialDefinitionWithStatisticsDto> {
 		val userRoles = authenticationProvider.getRolesById(userId)
 		val definitions = registry.getAll()
 		val types = definitions.map { it.type }
@@ -93,7 +94,7 @@ class MongoCredentialService(
 	}
 
 	override suspend fun enumerateCredentials(
-		userId: String,
+		userId: UserId,
 		credentialType: String
 	): Flow<EnumeratedCredentialDto> {
 		val roles = authenticationProvider.getRolesById(userId)
@@ -113,7 +114,7 @@ class MongoCredentialService(
 	}
 
 	override suspend fun listCredentials(
-		userId: String,
+		userId: UserId,
 		credentialType: String
 	): Flow<PotentiallyAccessibleCredentialDto> {
 		val userRoles = authenticationProvider.getRolesById(userId)
@@ -134,7 +135,7 @@ class MongoCredentialService(
 		}
 	}
 
-	override suspend fun get(userId: String, credentialId: String): PotentiallyAccessibleCredentialDto? {
+	override suspend fun get(userId: UserId, credentialId: String): PotentiallyAccessibleCredentialDto? {
 		val userRoles = authenticationProvider.getRolesById(userId)
 		val credential = collection
 			.find(Filters.and(
@@ -154,14 +155,14 @@ class MongoCredentialService(
 	}
 
 	override suspend fun resolve(
-		userId: String,
+		userId: UserId,
 		credentialId: String
 	): ResolvedCredential<out Credential>? = resolveImpl(userId = userId, credentialId = credentialId) {
 		registry.lookupByType(it.type).clazz.kotlin
 	}
 
 	override suspend fun <T : Credential> resolve(
-		userId: String,
+		userId: UserId,
 		credentialId: String,
 		type: KClass<T>
 	): ResolvedCredential<T>? = resolveImpl(userId, credentialId) {
@@ -175,7 +176,7 @@ class MongoCredentialService(
 	}
 
 	private suspend fun <T : Credential> resolveImpl(
-		userId: String,
+		userId: UserId,
 		credentialId: String,
 		typeResolver: (credential: MongoCredential) -> KClass<T>,
 	): ResolvedCredential<T>? {
@@ -196,7 +197,7 @@ class MongoCredentialService(
 	}
 
 	override suspend fun <T : Credential> update(
-		userId: String,
+		userId: UserId,
 		credential: ResolvedCredential<T>,
 		name: String,
 		data: Credential

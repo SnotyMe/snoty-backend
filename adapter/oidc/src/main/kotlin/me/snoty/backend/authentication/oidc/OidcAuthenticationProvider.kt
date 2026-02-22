@@ -21,6 +21,7 @@ import me.snoty.backend.utils.UnauthorizedException
 import me.snoty.backend.utils.http.INTERNAL_HTTP_CLIENT
 import me.snoty.backend.utils.parseAuthHeader
 import me.snoty.backend.utils.respondStatus
+import me.snoty.core.UserId
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 import java.net.URI
@@ -35,11 +36,11 @@ open class OidcAuthenticationProvider(
 ) : AuthenticationProvider {
 	private val logger = KotlinLogging.logger {}
 
-	override suspend fun getUserById(userId: String): User? {
+	override suspend fun getUserById(userId: UserId): User? {
 		logger.warn { "OIDC provider does not support getting User by ID" }
 		return null
 	}
-	override suspend fun getRolesById(userId: String): List<Role> {
+	override suspend fun getRolesById(userId: UserId): List<Role> {
 		logger.warn { "OIDC provider does not support getting Roles by ID" }
 		return emptyList()
 	}

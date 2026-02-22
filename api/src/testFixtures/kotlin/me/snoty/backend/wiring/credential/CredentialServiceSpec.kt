@@ -7,7 +7,9 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import me.snoty.backend.authentication.AuthenticationProvider
 import me.snoty.backend.authentication.Role
-import me.snoty.backend.test.TestIds
+import me.snoty.backend.test.TestIds.USER_ID_1
+import me.snoty.backend.test.TestIds.USER_ID_2
+import me.snoty.backend.test.TestIds.USER_ID_CONTROL
 import me.snoty.backend.utils.NotFoundException
 import me.snoty.backend.wiring.credential.dto.CredentialScope
 import org.junit.jupiter.api.Test
@@ -18,9 +20,6 @@ import kotlin.test.assertEquals
 
 abstract class CredentialServiceSpec(private val makeId: () -> String) {
 	companion object {
-		private val USER_ID = TestIds.USER_ID_1.toString()
-		private val USER_ID_2 = TestIds.USER_ID_2.toString()
-		private val USER_ID_CONTROL = TestIds.USER_ID_CONTROL.toString()
 		private val ROLE = Role("user")
 	}
 
@@ -30,7 +29,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 
 	init {
 		coEvery {
-			authenticationProvider.getRolesById(USER_ID)
+			authenticationProvider.getRolesById(USER_ID_1)
 		} returns listOf(ROLE, Role.MANAGE_CREDENTIALS)
 
 		coEvery {
@@ -49,7 +48,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 		val data = TestCredential(password = "testCreateAndGet")
 
 		val credential = service.create(
-			userId = USER_ID,
+			userId = USER_ID_1,
 			scope = CredentialScope.USER,
 			role = null,
 			name = "My Credential",
@@ -57,7 +56,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 			data = data
 		)
 
-		val fetched = service.get(USER_ID, credential.id)
+		val fetched = service.get(USER_ID_1, credential.id)
 		assertNotNull(fetched)
 		assertEquals(credential.data, fetched.data)
 	}
@@ -67,7 +66,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 		val data = TestCredential(password = "testGet_AccessControl_User")
 
 		val credential = service.create(
-			userId = USER_ID,
+			userId = USER_ID_1,
 			scope = CredentialScope.USER,
 			role = null,
 			name = "My Credential",
@@ -75,7 +74,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 			data = data
 		)
 
-		val fetched = service.get(USER_ID, credential.id)
+		val fetched = service.get(USER_ID_1, credential.id)
 		assertEquals(credential.id, fetched!!.id)
 
 		val fetched2 = service.get(USER_ID_2, credential.id)
@@ -93,7 +92,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 			data = data
 		)
 
-		val fetchedNoAccess2 = service.get(USER_ID, credential2.id)
+		val fetchedNoAccess2 = service.get(USER_ID_1, credential2.id)
 		assertNull(fetchedNoAccess2)
 	}
 
@@ -102,7 +101,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 		val data = TestCredential(password = "testGet_AccessControl_Role")
 
 		val credential = service.create(
-			userId = USER_ID, // needs an owner
+			userId = USER_ID_1, // needs an owner
 			scope = CredentialScope.ROLE,
 			role = ROLE,
 			name = "My Credential",
@@ -110,7 +109,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 			data = data
 		)
 
-		val fetched = service.get(USER_ID, credential.id)
+		val fetched = service.get(USER_ID_1, credential.id)
 		assertEquals(credential.id, fetched!!.id)
 
 		val fetchedWithAccess = service.get(USER_ID_2, credential.id)
@@ -126,7 +125,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 		val data = TestCredential(password = "testGet_AccessControl_Global")
 
 		val credential = service.create(
-			userId = USER_ID, // needs an owner
+			userId = USER_ID_1, // needs an owner
 			scope = CredentialScope.GLOBAL,
 			role = null,
 			name = "My Credential",
@@ -134,7 +133,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 			data = data
 		)
 
-		val fetched = service.get(USER_ID, credential.id)
+		val fetched = service.get(USER_ID_1, credential.id)
 		assertEquals(credential.id, fetched!!.id)
 
 		val fetched2 = service.get(USER_ID_2, credential.id)
@@ -148,14 +147,14 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 	fun testListDefinitionsWithStatistics(): Unit = runBlocking {
 		val type = credentialRegistry.registerTestCredential("testListDefinitionsWithStatistics")
 
-		val initial = service.listDefinitionsWithStatistics(USER_ID)
+		val initial = service.listDefinitionsWithStatistics(USER_ID_1)
 		val initialDefinition = initial.single { it.type == type }
 		assertEquals(type, initialDefinition.type)
 		assertEquals(TestCredential.DEFINITION.displayName, initialDefinition.displayName)
 		assertEquals(0, initialDefinition.count)
 
 		service.create(
-			userId = USER_ID,
+			userId = USER_ID_1,
 			scope = CredentialScope.USER,
 			role = null,
 			name = "My Credential",
@@ -163,7 +162,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 			data = TestCredential(password = "testListDefinitionsWithStatistics")
 		)
 
-		val afterCreate = service.listDefinitionsWithStatistics(USER_ID)
+		val afterCreate = service.listDefinitionsWithStatistics(USER_ID_1)
 		val afterCreateDefinition = afterCreate.single { it.type == type }
 		assertEquals(type, afterCreateDefinition.type)
 		assertEquals(TestCredential.DEFINITION.displayName, afterCreateDefinition.displayName)
@@ -175,7 +174,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 		val type = credentialRegistry.registerTestCredential("testEnumerateCredentials")
 
 		val created1 = service.create(
-			userId = USER_ID,
+			userId = USER_ID_1,
 			scope = CredentialScope.USER,
 			role = null,
 			name = "Credential 1",
@@ -184,7 +183,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 		)
 
 		val created2 = service.create(
-			userId = USER_ID,
+			userId = USER_ID_1,
 			scope = CredentialScope.ROLE,
 			role = ROLE,
 			name = "Credential 2",
@@ -201,7 +200,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 			data = TestCredential(password = "testEnumerateCredentials3")
 		)
 
-		val credentials = service.enumerateCredentials(USER_ID, type).toList()
+		val credentials = service.enumerateCredentials(USER_ID_1, type).toList()
 		assertEquals(2, credentials.size)
 		assertEquals(setOf(created1.id, created2.id), credentials.map { it.id }.toSet())
 
@@ -218,7 +217,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 		val type = credentialRegistry.registerTestCredential("testListCredentials")
 
 		val created = service.create(
-			userId = USER_ID,
+			userId = USER_ID_1,
 			scope = CredentialScope.USER,
 			role = null,
 			name = "My Credential",
@@ -236,7 +235,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 		)
 
 		val createdRoleAccessible = service.create(
-			userId = USER_ID,
+			userId = USER_ID_1,
 			scope = CredentialScope.ROLE,
 			role = ROLE,
 			name = "My Role Credential",
@@ -245,7 +244,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 		)
 
 		val createdGlobal = service.create(
-			userId = USER_ID,
+			userId = USER_ID_1,
 			scope = CredentialScope.GLOBAL,
 			role = null,
 			name = "My Global Credential",
@@ -253,7 +252,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 			data = TestCredential(password = "testListCredentials4")
 		)
 
-		val credentials = service.listCredentials(USER_ID, type).toList()
+		val credentials = service.listCredentials(USER_ID_1, type).toList()
 		assertEquals(3, credentials.size)
 
 		val fetched = credentials.find { it.id == created.id }
@@ -300,7 +299,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 		val data = TestCredential(password = "testResolve")
 
 		val created = service.create(
-			userId = USER_ID,
+			userId = USER_ID_1,
 			scope = CredentialScope.ROLE,
 			role = ROLE,
 			name = "My Credential",
@@ -309,7 +308,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 		)
 
 		val resolved = service.resolve(
-			userId = USER_ID,
+			userId = USER_ID_1,
 			credentialId = created.id
 		)
 		assertNotNull(resolved)
@@ -337,7 +336,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 		)
 
 		val created2 = service.create(
-			userId = USER_ID,
+			userId = USER_ID_1,
 			scope = CredentialScope.USER,
 			role = null,
 			name = "My Credential 2",
@@ -346,7 +345,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 		)
 
 		val resolved2 = service.resolve(
-			userId = USER_ID,
+			userId = USER_ID_1,
 			credentialId = created2.id,
 			type = TestCredential2::class
 		)
@@ -354,7 +353,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 		assertEquals(created2.id, resolved2.id)
 		assertEquals(created2.data, resolved2.data)
 
-		val unresolved = service.resolve(userId = USER_ID, credentialId = makeId())
+		val unresolved = service.resolve(userId = USER_ID_1, credentialId = makeId())
 		assertNull(unresolved)
 	}
 
@@ -362,7 +361,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 	fun testUpdate(): Unit = runBlocking {
 		val data1 = TestCredential(password = "testUpdate")
 		val created = service.create(
-			userId = USER_ID,
+			userId = USER_ID_1,
 			scope = CredentialScope.USER,
 			role = null,
 			name = "My Credential",
@@ -370,24 +369,24 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 			data = data1
 		)
 
-		val resolved = service.resolve(USER_ID, created.id)
+		val resolved = service.resolve(USER_ID_1, created.id)
 		assertNotNull(resolved)
 		assertEquals(data1, resolved.data)
 
 		val data2 = TestCredential(password = "testUpdate2")
 		val updated = service.update(
-			userId = USER_ID,
+			userId = USER_ID_1,
 			credential = resolved,
 			name = "Updated Credential",
 			data = data2
 		)
 		assertEquals("Updated Credential", updated.name)
 		assertEquals(data2, updated.data)
-		val resolvedUpdated = service.resolve(USER_ID, created.id)
+		val resolvedUpdated = service.resolve(USER_ID_1, created.id)
 		assertNotNull(resolvedUpdated)
 		assertEquals(data2, resolvedUpdated.data)
 
-		val fetched = service.get(USER_ID, created.id)
+		val fetched = service.get(USER_ID_1, created.id)
 		assertNotNull(fetched)
 		assertEquals("Updated Credential", fetched.name)
 		assertEquals(data2, fetched.data)
@@ -404,7 +403,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 	@Test
 	fun testDelete(): Unit = runBlocking {
 		val created = service.create(
-			userId = USER_ID,
+			userId = USER_ID_1,
 			scope = CredentialScope.USER,
 			role = null,
 			name = "My Credential",
@@ -413,7 +412,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 		)
 
 		val credential = service.resolve(
-			userId = USER_ID,
+			userId = USER_ID_1,
 			credentialId = created.id
 		)
 		assertNotNull(credential)
@@ -421,7 +420,7 @@ abstract class CredentialServiceSpec(private val makeId: () -> String) {
 		val deleted = service.delete(credential)
 		assertEquals(true, deleted)
 
-		val fetched = service.get(USER_ID, created.id)
+		val fetched = service.get(USER_ID_1, created.id)
 		assertNull(fetched)
 	}
 }

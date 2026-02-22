@@ -3,6 +3,7 @@ package me.snoty.backend.wiring.flow.execution
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filter
+import me.snoty.core.UserId
 import org.koin.core.annotation.Single
 
 @Single
@@ -13,8 +14,8 @@ class InMemoryFlowExecutionEventService : FlowExecutionEventService {
 	override suspend fun provideFlowBus(flowId: String): Flow<FlowExecutionEvent> =
 		flow.filter { it.flowId == flowId }
 
-	override suspend fun provideUserBus(userId: String): Flow<FlowExecutionEvent> =
-		flow.filter { it.userId.toString() == userId }
+	override suspend fun provideUserBus(userId: UserId): Flow<FlowExecutionEvent> =
+		flow.filter { it.userId == userId }
 
 	override suspend fun offer(event: FlowExecutionEvent) {
 		flow.emit(event)

@@ -111,11 +111,11 @@ class FlowRunnerImpl(
 					if (node == null) NotificationAttributes(FLOW_FAILURE, flowId = flow._id)
 					else NotificationAttributes(FLOW_FAILURE, flowId = flow._id, nodeId = node._id)
 				if (it == null) {
-					notificationService.resolve(flow.userId.toString(), attributes)
+					notificationService.resolve(flow.userId, attributes)
 				} else {
 					val exception = it.unwrap()
 					notificationService.send(
-						userId = flow.userId.toString(),
+						userId = flow.userId,
 						attributes = attributes,
 						title = "Flow ${flow.name} failed",
 						description = "Something went wrong during the execution of this Flow!\n$exception",

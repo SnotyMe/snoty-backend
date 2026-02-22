@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import me.snoty.backend.test.randomString
+import me.snoty.core.UserId
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNotNull
 import org.junit.jupiter.api.assertNull
@@ -19,9 +20,9 @@ abstract class NotificationServiceSpec {
 
 	data class TestScope(
 		val testName: String,
-		val userId: String = randomString(),
+		val userId: UserId = UserId(randomString()),
 	) {
-		suspend fun NotificationService.send(attributes: NotificationAttributes, userId: String? = null) =
+		suspend fun NotificationService.send(attributes: NotificationAttributes, userId: UserId? = null) =
 			send(userId ?: this@TestScope.userId, attributes, testName, null)
 	}
 
@@ -90,7 +91,7 @@ abstract class NotificationServiceSpec {
 
 	@Test
 	fun interference() = test {
-		val userId = "userId"
+		val userId = UserId("userId")
 		val attributes1 = attributes("key" to "value")
 		val attributes2 = attributes("key" to "value2")
 
@@ -197,7 +198,7 @@ abstract class NotificationServiceSpec {
 		assertEquals(userId, notification.userId)
 		assertEquals(attributes, notification.attributes)
 
-		val deleted = notificationService.delete("invalidUser", notification.id)
+		val deleted = notificationService.delete(UserId("invalidUser"), notification.id)
 		assertFalse(deleted)
 
 		val notifications = notificationService.findByUser(userId).toList()

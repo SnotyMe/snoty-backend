@@ -34,7 +34,7 @@ abstract class EntityStateServiceSpec(val makeId: () -> NodeId) {
 	private fun flowNode(): Node = runBlocking {
 		nodeService.create(
 			flowId = flowId,
-			userID = USER_ID_1,
+			userId = USER_ID_1,
 			descriptor = nodeDescriptor,
 			settings = EmptyNodeSettings(),
 		)

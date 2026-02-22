@@ -7,9 +7,9 @@ import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowScheduler
+import me.snoty.backend.test.TestIds.USER_ID_1
 import me.snoty.backend.test.assertAny
 import me.snoty.backend.test.nodeMetadata
-import me.snoty.backend.utils.randomV7
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.FlowNode
@@ -23,13 +23,11 @@ import me.snoty.integration.common.wiring.node.NodeRegistry
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.test.assertNotNull
-import kotlin.uuid.Uuid
 
 abstract class FlowServiceSpec(private val makeId: () -> NodeId) {
 	protected abstract val service: FlowService
 	protected abstract val nodeService: NodeService
 
-	private val userId = Uuid.randomV7()
 	protected val flowScheduler: FlowScheduler = mockk(relaxed = true)
 	protected val nodeRegistry: NodeRegistry = mockk(relaxed = true)
 
@@ -46,7 +44,7 @@ abstract class FlowServiceSpec(private val makeId: () -> NodeId) {
 	)
 
 	private fun test(block: suspend FlowTestContext.() -> Unit) = runBlocking {
-		val flow = service.create(userId, "test", WorkflowSettings())
+		val flow = service.create(USER_ID_1, "test", WorkflowSettings())
 		block(FlowTestContext(flowId = flow._id))
 	}
 
@@ -81,7 +79,7 @@ abstract class FlowServiceSpec(private val makeId: () -> NodeId) {
 
 	private suspend fun FlowTestContext.node(name: String, vararg next: GenericNode): StandaloneNode {
 		val newNode = nodeService.create(
-			userID = userId,
+			userId = USER_ID_1,
 			flowId = flowId,
 			descriptor = NodeDescriptor(javaClass.packageName, name),
 			settings = EmptyNodeSettings(name)

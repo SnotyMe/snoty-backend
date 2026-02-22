@@ -57,7 +57,7 @@ fun Route.flowExecutionResource() {
 			event = ServerSentEvent("heartbeat")
 		}
 
-		flowExecutionEventService.provideUserBus(userId = user.id.toString())
+		flowExecutionEventService.provideUserBus(userId = user.id)
 			.collect {
 				send(
 					data = json.hackyEncodeToString(it),

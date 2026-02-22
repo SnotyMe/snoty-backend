@@ -20,20 +20,20 @@ fun notificationResource(notificationService: NotificationService) = Resource {
 			get("list") {
 				val user = call.getUser()
 
-				call.respond(notificationService.findByUser(user.id.toString()))
+				call.respond(notificationService.findByUser(user.id))
 			}
 
 			get("count") {
 				val user = call.getUser()
 
-				call.respond(notificationService.unresolvedByUser(user.id.toString()))
+				call.respond(notificationService.unresolvedByUser(user.id))
 			}
 
 			put("resolve") {
 				val user = call.getUser()
 				val attributes: NotificationAttributes = call.receive()
 
-				notificationService.resolve(user.id.toString(), attributes)
+				notificationService.resolve(user.id, attributes)
 
 				call.respond(HttpStatusCode.NoContent)
 			}
@@ -43,7 +43,7 @@ fun notificationResource(notificationService: NotificationService) = Resource {
 				val notification = call.parameters["id"]
 					?: return@delete call.respond(HttpStatusCode.BadRequest, "Notification ID is required")
 
-				val result = notificationService.delete(user.id.toString(), notification)
+				val result = notificationService.delete(user.id, notification)
 
 				if (result) {
 					call.respond(HttpStatusCode.NoContent)

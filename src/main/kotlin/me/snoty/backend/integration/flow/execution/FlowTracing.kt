@@ -32,7 +32,7 @@ class FlowTracingImpl(
 		val flowId = flow._id
 
 		val rootSpan = spanBuilder("Flow $flowId")
-			.setAttribute(USER_ID, flow.userId)
+			.setAttribute(USER_ID, flow.userId.value)
 			.setAttribute(JOB_ID, jobId)
 			.setAttribute(FLOW_ID, flowId)
 			.startSpan()

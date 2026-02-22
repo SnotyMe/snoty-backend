@@ -5,6 +5,7 @@ import me.snoty.backend.utils.bson.decode
 import me.snoty.backend.wiring.credential.dto.CredentialDto
 import me.snoty.backend.wiring.credential.dto.CredentialScope
 import me.snoty.backend.wiring.credential.dto.PotentiallyAccessibleCredentialDto
+import me.snoty.core.UserId
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
 import org.bson.codecs.pojo.annotations.BsonId
@@ -14,7 +15,7 @@ data class MongoCredential(
 	@BsonId
 	val _id: ObjectId = ObjectId(),
 	val scope: CredentialScope,
-	val ownerId: String?,
+	val ownerId: UserId?,
 	val roleRequired: String?,
 	val type: String,
 	val name: String,

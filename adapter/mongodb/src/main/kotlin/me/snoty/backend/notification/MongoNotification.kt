@@ -1,6 +1,7 @@
 package me.snoty.backend.notification
 
 import me.snoty.backend.notifications.Notification
+import me.snoty.core.UserId
 import org.bson.Document
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
@@ -9,7 +10,7 @@ import kotlin.time.Instant
 data class MongoNotification(
 	@BsonId
 	val _id: ObjectId,
-	val userId: String,
+	val userId: UserId,
 	val attributes: Document,
 	val resolvedAt: Instant? = null,
 	val lastSeenAt: Instant,

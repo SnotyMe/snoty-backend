@@ -8,13 +8,14 @@ import me.snoty.backend.wiring.credential.Credential
 import me.snoty.backend.wiring.credential.CredentialService
 import me.snoty.backend.wiring.credential.ResolvedCredential
 import me.snoty.backend.wiring.credential.dto.*
+import me.snoty.core.UserId
 import kotlin.reflect.KClass
 import kotlin.uuid.Uuid
 
 @Suppress("UNCHECKED_CAST")
 object TestCredentialService : CredentialService {
 	data class CredentialValue(
-		val userId: String,
+		val userId: UserId,
 		val name: String,
 		val type: String,
 		val data: Credential,
@@ -22,7 +23,7 @@ object TestCredentialService : CredentialService {
 
 	private val credentials = mutableMapOf<Uuid, CredentialValue>()
 
-	override suspend fun create(userId: String, scope: CredentialScope, role: Role?, name: String, credentialType: String, data: Credential): CredentialDto {
+	override suspend fun create(userId: UserId, scope: CredentialScope, role: Role?, name: String, credentialType: String, data: Credential): CredentialDto {
 		val id = Uuid.random()
 		credentials[id] = CredentialValue(
 			userId = userId,
@@ -38,17 +39,17 @@ object TestCredentialService : CredentialService {
 		)
 	}
 
-	override suspend fun listDefinitionsWithStatistics(userId: String): List<CredentialDefinitionWithStatisticsDto> = throw NotImplementedError()
+	override suspend fun listDefinitionsWithStatistics(userId: UserId): List<CredentialDefinitionWithStatisticsDto> = throw NotImplementedError()
 
 	override suspend fun enumerateCredentials(
-		userId: String,
+		userId: UserId,
 		credentialType: String
 	): Flow<EnumeratedCredentialDto> = credentials
 		.filterValues { it.userId == userId && it.type == credentialType }
 		.map { (id, value) -> EnumeratedCredentialDto(CredentialScope.USER, id = id.toString(), name = value.name) }
 		.asFlow()
 
-	override suspend fun listCredentials(userId: String, credentialType: String): Flow<PotentiallyAccessibleCredentialDto> = credentials
+	override suspend fun listCredentials(userId: UserId, credentialType: String): Flow<PotentiallyAccessibleCredentialDto> = credentials
 		.filterValues { it.userId == userId && it.type == credentialType }
 		.map { (id, value) ->
 			PotentiallyAccessibleCredentialDto(
@@ -62,7 +63,7 @@ object TestCredentialService : CredentialService {
 		.asFlow()
 
 	override suspend fun resolve(
-		userId: String,
+		userId: UserId,
 		credentialId: String
 	): ResolvedCredential<out Credential>? = credentials[credentialId.toUuid()].let {
 		if (it == null || it.userId != userId) {
@@ -75,15 +76,15 @@ object TestCredentialService : CredentialService {
 		)
 	}
 
-	override suspend fun get(userId: String, credentialId: String): PotentiallyAccessibleCredentialDto = throw NotImplementedError()
+	override suspend fun get(userId: UserId, credentialId: String): PotentiallyAccessibleCredentialDto = throw NotImplementedError()
 
 	override suspend fun <T : Credential> resolve(
-		userId: String,
+		userId: UserId,
 		credentialId: String,
 		type: KClass<T>
 	): ResolvedCredential<T> = throw NotImplementedError()
 
-	override suspend fun <T : Credential> update(userId: String, credential: ResolvedCredential<T>, name: String, data: Credential): CredentialDto {
+	override suspend fun <T : Credential> update(userId: UserId, credential: ResolvedCredential<T>, name: String, data: Credential): CredentialDto {
 		val id = credential.id.toUuid()
 		val existing = credentials[id] ?: throw IllegalArgumentException("Credential not found")
 		if (existing.userId != userId) {

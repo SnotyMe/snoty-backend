@@ -7,6 +7,7 @@ import me.snoty.backend.database.sql.suspendTransaction
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.utils.toUuid
+import me.snoty.core.UserId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.flow.StandaloneWorkflow
@@ -15,7 +16,6 @@ import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.*
 import org.koin.core.annotation.Single
-import kotlin.uuid.Uuid
 
 @Single
 class SqlFlowService(
@@ -24,7 +24,7 @@ class SqlFlowService(
 	private val nodeService: NodeService,
 	private val flowTable: FlowTable,
 ) : FlowService {
-	override suspend fun create(userId: Uuid, name: String, settings: WorkflowSettings): StandaloneWorkflow = db.suspendTransaction {
+	override suspend fun create(userId: UserId, name: String, settings: WorkflowSettings): StandaloneWorkflow = db.suspendTransaction {
 		val id = flowTable.insertAndGetId {
 			it[flowTable.userId] = userId
 			it[flowTable.name] = name
@@ -37,7 +37,7 @@ class SqlFlowService(
 			}
 	}
 
-	override fun query(userId: Uuid): Flow<StandaloneWorkflow> = db.flowTransaction {
+	override fun query(userId: UserId): Flow<StandaloneWorkflow> = db.flowTransaction {
 		flowTable.selectStandalone()
 			.where { flowTable.userId eq userId }
 			.map { it.toStandalone(flowTable) }

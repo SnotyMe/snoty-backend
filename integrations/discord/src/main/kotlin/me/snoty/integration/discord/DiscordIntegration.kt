@@ -66,7 +66,7 @@ class DiscordNodeHandler(
 
 		logger.info("Sending message {} to Discord webhook...", data)
 
-		val credentials = config.credentials.resolve(node.userId.toString())
+		val credentials = config.credentials.resolve(node.userId)
 		client.post(credentials.webhookUrl) {
 			contentType(ContentType.Application.Json)
 			setBody(data)
