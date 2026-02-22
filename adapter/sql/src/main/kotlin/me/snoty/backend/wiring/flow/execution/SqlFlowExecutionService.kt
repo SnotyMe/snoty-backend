@@ -7,6 +7,7 @@ import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.utils.toUuid
 import me.snoty.backend.wiring.flow.FlowTable
+import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.flow.EnumeratedFlowExecution
 import me.snoty.integration.common.wiring.flow.FlowExecution
 import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
@@ -15,7 +16,6 @@ import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
 import org.koin.core.annotation.Single
 import kotlin.time.Clock
-import kotlin.uuid.Uuid
 
 @Single
 class SqlFlowExecutionService(
@@ -57,7 +57,7 @@ class SqlFlowExecutionService(
 			.map { it.toLogEntry(flowExecutionLogTable) }
 	}
 
-	override fun query(userId: Uuid): Flow<EnumeratedFlowExecution> = db.flowTransaction {
+	override fun query(userId: UserId): Flow<EnumeratedFlowExecution> = db.flowTransaction {
 		val lastFlowId = flowExecutionTable.flowId.alias("last_flow_id")
 		val lastTriggeredAt = flowExecutionTable.triggeredAt.max().alias("last_triggered_at")
 		flowExecutionTable

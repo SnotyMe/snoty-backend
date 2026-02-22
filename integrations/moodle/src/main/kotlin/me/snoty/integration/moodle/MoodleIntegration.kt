@@ -37,10 +37,8 @@ class MoodleIntegration(
 		node: Node,
 		input: NodeInput,
 	): NodeOutput {
-		val userId = node.userId.toString()
-
 		val moodleSettings = node.getConfig<MoodleSettings>()
-		val credentials = moodleSettings.credentials.resolve(userId)
+		val credentials = moodleSettings.credentials.resolve(node.userId)
 
 		val authFailureAttributes = NotificationAttributes(type = "moodle.authfailure", flowId = node.flowId, nodeId = node._id)
 		val assignments = try {
@@ -51,7 +49,7 @@ class MoodleIntegration(
 					val message = "Failed to authenticate with Moodle. Please check your credentials. They may have expired."
 					logger.warn(message)
 					notificationService.send(
-						userId = userId,
+						userId = node.userId,
 						title = "Moodle Authentication Error",
 						description = message,
 						attributes = authFailureAttributes,
@@ -61,7 +59,7 @@ class MoodleIntegration(
 				else -> throw e
 			}
 		}
-		notificationService.resolve(userId, authFailureAttributes)
+		notificationService.resolve(node.userId, authFailureAttributes)
 
 		logger.atLevel(
 			if (assignments.isEmpty()) Level.WARN

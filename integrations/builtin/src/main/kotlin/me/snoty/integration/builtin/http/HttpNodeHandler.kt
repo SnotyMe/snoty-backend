@@ -41,7 +41,7 @@ class HttpNodeHandler(
 		input: Collection<IntermediateData>,
 	): NodeOutput {
 		val settings = node.getConfig<HttpNodeSettings>()
-		val proxy = settings.proxy.resolveOrNull(node.userId.toString())
+		val proxy = settings.proxy.resolveOrNull(node.userId)
 		val requests = input.mapNotNull { it.getOrNull<HttpNodeInput>() } + settings.requests
 
 		val output = requests.map { request ->

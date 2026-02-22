@@ -26,7 +26,7 @@ fun Route.credentialResource() {
 		if (credentialCreateDto.scope != CredentialScope.USER) call.requireAnyRole(Role.ADMIN, Role.MANAGE_CREDENTIALS)
 
 		val created = credentialService.create(
-			userId = user.id.toString(),
+			userId = user.id,
 			scope = credentialCreateDto.scope,
 			role = credentialCreateDto.role,
 			name = credentialCreateDto.name,
@@ -44,7 +44,7 @@ fun Route.credentialResource() {
 			val credentialId = parseCredentialId()
 			val user = call.getUser()
 
-			val credential = credentialService.get(userId = user.id.toString(), credentialId = credentialId)
+			val credential = credentialService.get(userId = user.id, credentialId = credentialId)
 				?: return@get call.respondStatus(NotFoundException("Credential not found"))
 
 			call.respond(credential)
@@ -55,11 +55,11 @@ fun Route.credentialResource() {
 			val user = call.getUser()
 			val credentialUpdateDto: CredentialUpdateDto = call.receive()
 
-			val existing = credentialService.resolve(userId = user.id.toString(), credentialId = credentialId)
+			val existing = credentialService.resolve(userId = user.id, credentialId = credentialId)
 				?: return@put call.respondStatus(NotFoundException("Credential not found"))
 
 			val updated = credentialService.update(
-				userId = user.id.toString(),
+				userId = user.id,
 				existing,
 				name = credentialUpdateDto.name,
 				data = credentialUpdateDto.data.convertToCredential(json, credentialDefinitionRegistry, existing.type),
@@ -73,7 +73,7 @@ fun Route.credentialResource() {
 			val user = call.getUser()
 
 			val resolved = credentialService.resolve(
-				userId = user.id.toString(),
+				userId = user.id,
 				credentialId = credentialId,
 			) ?: return@delete call.respondStatus(NotFoundException("Credential not found"))
 
@@ -90,7 +90,7 @@ fun Route.credentialResource() {
 	get("overview") {
 		val user = call.getUser()
 
-		val credentials = credentialService.listDefinitionsWithStatistics(userId = user.id.toString())
+		val credentials = credentialService.listDefinitionsWithStatistics(userId = user.id)
 
 		call.respond(credentials)
 	}
@@ -100,7 +100,7 @@ fun Route.credentialResource() {
 			val user = call.getUser()
 			val credentialType = call.parameters["credentialType"] ?: return@get call.respondStatus(BadRequestException("Missing credential type"))
 
-			val credentials = credentialService.enumerateCredentials(userId = user.id.toString(), credentialType = credentialType)
+			val credentials = credentialService.enumerateCredentials(userId = user.id, credentialType = credentialType)
 
 			call.respond(credentials)
 		}
@@ -109,7 +109,7 @@ fun Route.credentialResource() {
 			val user = call.getUser()
 			val credentialType = call.parameters["credentialType"] ?: return@get call.respondStatus(BadRequestException("Missing credential type"))
 
-			val credentials = credentialService.listCredentials(userId = user.id.toString(), credentialType = credentialType)
+			val credentials = credentialService.listCredentials(userId = user.id, credentialType = credentialType)
 
 			call.respond(credentials)
 		}

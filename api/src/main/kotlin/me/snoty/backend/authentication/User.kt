@@ -1,11 +1,11 @@
 package me.snoty.backend.authentication
 
 import kotlinx.serialization.Serializable
-import kotlin.uuid.Uuid
+import me.snoty.core.UserId
 
 @Serializable
 data class User(
-	val id: Uuid,
+	val id: UserId,
 	val name: String,
 	val email: String,
 )

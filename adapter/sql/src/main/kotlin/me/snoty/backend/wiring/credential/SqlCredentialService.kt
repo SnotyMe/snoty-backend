@@ -13,6 +13,7 @@ import me.snoty.backend.utils.NotFoundException
 import me.snoty.backend.utils.hasAnyRole
 import me.snoty.backend.utils.toUuid
 import me.snoty.backend.wiring.credential.dto.*
+import me.snoty.core.UserId
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
 import org.koin.core.annotation.Single
@@ -27,7 +28,7 @@ class SqlCredentialService(
 	private val credentialTable: CredentialTable,
 	private val authenticationProvider: AuthenticationProvider,
 ) : CredentialService {
-	fun ResultRow.canReadAndWrite(userId: String?, userRoles: List<Role>): Boolean {
+	fun ResultRow.canReadAndWrite(userId: UserId?, userRoles: List<Role>): Boolean {
 		if (this[credentialTable.ownerId] != null && this[credentialTable.ownerId] == userId) return true
 
 		return userRoles.hasAnyRole(Role.ADMIN, Role.MANAGE_CREDENTIALS)
@@ -36,7 +37,7 @@ class SqlCredentialService(
 	/**
 	 * Filter to select only credentials visible to the given user with the given roles.
 	 */
-	private fun useVisibleFilter(userId: String, userRoles: List<Role>): Op<Boolean> {
+	private fun useVisibleFilter(userId: UserId, userRoles: List<Role>): Op<Boolean> {
 		val canManage = userRoles.hasAnyRole(Role.ADMIN, Role.MANAGE_CREDENTIALS)
 
 		var accessFilter = (credentialTable.scope eq CredentialScope.GLOBAL)
@@ -54,12 +55,12 @@ class SqlCredentialService(
 		return json.decodeFromString(serializer, this[credentialTable.data])
 	}
 
-	private fun ResultRow.dataJsonIfAccessible(definition: CredentialDefinition, userId: String, userRoles: List<Role>): Credential? {
+	private fun ResultRow.dataJsonIfAccessible(definition: CredentialDefinition, userId: UserId, userRoles: List<Role>): Credential? {
 		val accessible = canReadAndWrite(userId, userRoles)
 		return if (accessible) dataJson(definition) else null
 	}
 
-	private suspend fun <T> Database.newSuspendedTransactionWithRoles(userId: String, block: suspend Transaction.(userRoles: List<Role>) -> T): T {
+	private suspend fun <T> Database.newSuspendedTransactionWithRoles(userId: UserId, block: suspend Transaction.(userRoles: List<Role>) -> T): T {
 		val userRoles = authenticationProvider.getRolesById(userId)
 
 		return suspendTransaction {
@@ -68,7 +69,7 @@ class SqlCredentialService(
 	}
 
 	override suspend fun create(
-		userId: String,
+		userId: UserId,
 		scope: CredentialScope,
 		role: Role?,
 		name: String,
@@ -96,7 +97,7 @@ class SqlCredentialService(
 		)
 	}
 
-	override suspend fun listDefinitionsWithStatistics(userId: String): List<CredentialDefinitionWithStatisticsDto> {
+	override suspend fun listDefinitionsWithStatistics(userId: UserId): List<CredentialDefinitionWithStatisticsDto> {
 		val userRoles = authenticationProvider.getRolesById(userId)
 		val definitions = registry.getAll()
 
@@ -123,7 +124,7 @@ class SqlCredentialService(
 		}.sortedByDescending { it.count }
 	}
 
-	override suspend fun enumerateCredentials(userId: String, credentialType: String) =
+	override suspend fun enumerateCredentials(userId: UserId, credentialType: String) =
 		listCredentialsRaw(userId = userId, credentialType = credentialType) { it, _, _ ->
 			EnumeratedCredentialDto(
 				scope = it[credentialTable.scope],
@@ -132,7 +133,7 @@ class SqlCredentialService(
 			)
 		}
 
-	override suspend fun listCredentials(userId: String, credentialType: String) =
+	override suspend fun listCredentials(userId: UserId, credentialType: String) =
 		listCredentialsRaw(userId = userId, credentialType = credentialType) { it, definition, userRoles ->
 			val role = it[credentialTable.roleRequired]
 				?.let { Role(it) }
@@ -145,7 +146,7 @@ class SqlCredentialService(
 			)
 		}
 
-	private suspend fun <DTO> listCredentialsRaw(userId: String, credentialType: String, mapResultRow: (ResultRow, CredentialDefinition, List<Role>) -> DTO): Flow<DTO> {
+	private suspend fun <DTO> listCredentialsRaw(userId: UserId, credentialType: String, mapResultRow: (ResultRow, CredentialDefinition, List<Role>) -> DTO): Flow<DTO> {
 		val definition = registry.lookupByType(credentialType)
 		val userRoles = authenticationProvider.getRolesById(userId)
 
@@ -160,7 +161,7 @@ class SqlCredentialService(
 		}
 	}
 
-	override suspend fun get(userId: String, credentialId: String): PotentiallyAccessibleCredentialDto? = db.newSuspendedTransactionWithRoles(userId) { userRoles ->
+	override suspend fun get(userId: UserId, credentialId: String): PotentiallyAccessibleCredentialDto? = db.newSuspendedTransactionWithRoles(userId) { userRoles ->
 		val row = credentialTable.selectAll()
 			.where {
 				credentialTable.id eq credentialId.toUuid() and useVisibleFilter(userId = userId, userRoles = userRoles)
@@ -178,11 +179,11 @@ class SqlCredentialService(
 		)
 	}
 
-	override suspend fun resolve(userId: String, credentialId: String): ResolvedCredential<out Credential>? = resolveImpl(userId = userId, credentialId = credentialId) {
+	override suspend fun resolve(userId: UserId, credentialId: String): ResolvedCredential<out Credential>? = resolveImpl(userId = userId, credentialId = credentialId) {
 		registry.lookupByType(this[credentialTable.type]).clazz.kotlin
 	}
 
-	override suspend fun <T : Credential> resolve(userId: String, credentialId: String, type: KClass<T>): ResolvedCredential<T>? = resolveImpl(userId = userId, credentialId = credentialId) {
+	override suspend fun <T : Credential> resolve(userId: UserId, credentialId: String, type: KClass<T>): ResolvedCredential<T>? = resolveImpl(userId = userId, credentialId = credentialId) {
 		val definition = registry.lookupByType(this[credentialTable.type])
 
 		if (definition.clazz != type.java) {
@@ -193,7 +194,7 @@ class SqlCredentialService(
 	}
 
 	private suspend fun <T : Credential> resolveImpl(
-		userId: String,
+		userId: UserId,
 		credentialId: String,
 		typeResolver: ResultRow.() -> KClass<T>,
 	): ResolvedCredential<T>? = db.newSuspendedTransactionWithRoles(userId) { userRoles ->
@@ -214,7 +215,7 @@ class SqlCredentialService(
 	}
 
 	override suspend fun <T : Credential> update(
-		userId: String,
+		userId: UserId,
 		credential: ResolvedCredential<T>, // access was already validated when resolving the credential
 		name: String,
 		data: Credential

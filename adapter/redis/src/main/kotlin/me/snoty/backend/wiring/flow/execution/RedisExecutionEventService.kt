@@ -12,6 +12,7 @@ import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.serialization.json.Json
 import me.snoty.backend.wiring.flow.execution.RedisFlowExecutionChannelUtils.flowChannelName
 import me.snoty.backend.wiring.flow.execution.RedisFlowExecutionChannelUtils.userChannelName
+import me.snoty.core.UserId
 import org.koin.core.annotation.Single
 
 @Single
@@ -41,7 +42,7 @@ class RedisExecutionEventService(
             }
     }
 
-    override suspend fun provideUserBus(userId: String): Flow<FlowExecutionEvent> {
+    override suspend fun provideUserBus(userId: UserId): Flow<FlowExecutionEvent> {
         val channelName = userChannelName(userId)
         logger.trace { "Subscribing to user channel $channelName" }
         connection.subscribe(channelName).awaitFirstOrNull()
@@ -70,7 +71,7 @@ class RedisExecutionEventService(
         connection.publish(flowChannelName(event.flowId), eventJson).subscribe()
         if (event !is FlowExecutionEvent.FlowLogEvent) {
             // cross-flow logging is not supported, so we only publish user events for non-log events
-            connection.publish(userChannelName(event.userId.toString()), eventJson).subscribe()
+            connection.publish(userChannelName(event.userId), eventJson).subscribe()
         }
     }
 }

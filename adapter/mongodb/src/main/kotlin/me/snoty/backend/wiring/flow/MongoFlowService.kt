@@ -18,11 +18,11 @@ import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.wiring.node.MongoNode
 import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
 import me.snoty.backend.wiring.node.toRelational
+import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.flow.*
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
 import org.koin.core.annotation.Single
-import kotlin.uuid.Uuid
 
 @Single
 class MongoFlowService(
@@ -32,7 +32,7 @@ class MongoFlowService(
 ) : FlowService {
 	private val collection = db.getCollection<MongoWorkflow>(FLOW_COLLECTION_NAME)
 
-	override suspend fun create(userId: Uuid, name: String, settings: WorkflowSettings): StandaloneWorkflow {
+	override suspend fun create(userId: UserId, name: String, settings: WorkflowSettings): StandaloneWorkflow {
 		val mongoWorkflow = MongoWorkflow(name = name, userId = userId, settings = settings)
 		collection.insertOne(mongoWorkflow)
 		val workflow = mongoWorkflow.toStandalone()
@@ -40,7 +40,7 @@ class MongoFlowService(
 		return workflow
 	}
 
-	override fun query(userId: Uuid): Flow<StandaloneWorkflow> = collection.find(
+	override fun query(userId: UserId): Flow<StandaloneWorkflow> = collection.find(
 		Filters.eq(MongoWorkflow::userId.name, userId)
 	).map {
 		it.toStandalone()
@@ -94,7 +94,7 @@ data class MongoWorkflow(
 	@BsonId
 	val _id: ObjectId = ObjectId(),
 	val name: String,
-	val userId: Uuid,
+	val userId: UserId,
 	val settings: WorkflowSettings?,
 ) {
 	fun toStandalone() = StandaloneWorkflow(
@@ -109,7 +109,7 @@ data class MongoWorkflowWithNodes(
 	@BsonId
 	val _id: ObjectId = ObjectId(),
 	val name: String,
-	val userId: Uuid,
+	val userId: UserId,
 	val settings: WorkflowSettings?,
 	val nodes: List<MongoNode>,
 ) {

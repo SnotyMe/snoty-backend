@@ -5,6 +5,7 @@ import me.snoty.backend.database.sql.PostgresTest
 import me.snoty.backend.utils.randomV7
 import me.snoty.backend.wiring.flow.FlowTable
 import me.snoty.backend.wiring.flow.SqlFlowService
+import me.snoty.core.UserId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.snotyJson
 import me.snoty.integration.common.wiring.flow.WorkflowSettings
@@ -37,7 +38,7 @@ class SqlNodeServiceTest : NodeServiceSpec() {
 
 	override val makeId = suspend  {
 		flowService.create(
-			userId = Uuid.randomV7(),
+			userId = UserId(Uuid.randomV7().toString()),
 			name = "test",
 			settings = WorkflowSettings(),
 		)._id

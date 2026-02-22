@@ -2,6 +2,7 @@ package me.snoty.backend.notifications
 
 import kotlinx.serialization.json.Json
 import me.snoty.backend.database.sql.utils.UuidTable
+import me.snoty.backend.database.sql.utils.userId
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
 import org.jetbrains.exposed.v1.datetime.timestamp
@@ -10,7 +11,7 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [Table::class])
 class NotificationTable(json: Json) : UuidTable("notification") {
-	val userId = varchar("user_id", 255)
+	val userId = userId("user_id")
 	val attributes = jsonb<NotificationAttributes>("attributes", json)
 	/**
 	 * Set to null when the notification is resolved. Due to the fact that null != null (lol), it'll allow multiple resolved notifications.

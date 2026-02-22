@@ -6,6 +6,7 @@ import me.snoty.backend.authentication.Role
 import me.snoty.backend.authentication.oidc.OidcAuthenticationProvider
 import me.snoty.backend.config.Config
 import me.snoty.backend.utils.http.INTERNAL_HTTP_CLIENT
+import me.snoty.core.UserId
 import org.keycloak.admin.client.resource.RealmResource
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
@@ -23,7 +24,7 @@ class KeycloakAuthenticationProvider(
 ) {
 	private val users = realm.users()
 
-	override suspend fun getRolesById(userId: String): List<Role> = users.get(userId)
+	override suspend fun getRolesById(userId: UserId): List<Role> = users.get(userId.value)
 		.groups()
 		.map { it.name }
 		.mapToSnotyRoles()

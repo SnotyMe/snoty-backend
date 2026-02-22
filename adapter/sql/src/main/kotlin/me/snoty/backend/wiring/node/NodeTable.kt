@@ -5,6 +5,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import me.snoty.backend.database.sql.utils.UuidTable
 import me.snoty.backend.database.sql.utils.rawJsonb
+import me.snoty.backend.database.sql.utils.userId
 import me.snoty.backend.wiring.flow.FlowTable
 import me.snoty.integration.common.wiring.StandaloneNode
 import me.snoty.integration.common.wiring.node.NodeDescriptor
@@ -21,7 +22,7 @@ import org.slf4j.event.Level
 @Single(binds = [Table::class])
 class NodeTable(flowTable: FlowTable) : UuidTable("node") {
 	val flowId = reference("flow_id", flowTable)
-	val userId = uuid("user_id")
+	val userId = userId("user_id")
 
 	val descriptor_namespace = varchar("descriptor_namespace", 255)
 	val descriptor_name = varchar("descriptor_name", 255)

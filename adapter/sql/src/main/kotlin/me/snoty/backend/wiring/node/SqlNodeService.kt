@@ -8,6 +8,7 @@ import me.snoty.backend.errors.ServiceResult
 import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.utils.hackyEncodeToString
 import me.snoty.backend.utils.toUuid
+import me.snoty.core.UserId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.config.NodeServiceResults
 import me.snoty.integration.common.wiring.FlowNode
@@ -22,7 +23,6 @@ import org.jetbrains.exposed.v1.core.inList
 import org.jetbrains.exposed.v1.jdbc.*
 import org.koin.core.annotation.Single
 import org.slf4j.event.Level
-import kotlin.uuid.Uuid
 
 @Single
 class SqlNodeService(
@@ -58,7 +58,7 @@ class SqlNodeService(
 	}
 
 	override suspend fun <S : NodeSettings> create(
-		userID: Uuid,
+		userId: UserId,
 		flowId: NodeId,
 		descriptor: NodeDescriptor,
 		settings: S
@@ -66,7 +66,7 @@ class SqlNodeService(
 		val id = db.suspendTransaction {
 			nodeTable.insertAndGetId {
 				it[nodeTable.flowId] = flowId.toUuid()
-				it[nodeTable.userId] = userID
+				it[nodeTable.userId] = userId
 				it[nodeTable.descriptor_namespace] = descriptor.namespace
 				it[nodeTable.descriptor_name] = descriptor.name
 				it[nodeTable.settings] = json.hackyEncodeToString(settings)
@@ -76,7 +76,7 @@ class SqlNodeService(
 		return StandaloneNode(
 			_id = id.value.toString(),
 			flowId = flowId,
-			userId = userID,
+			userId = userId,
 			descriptor = descriptor,
 			logLevel = null,
 			settings = settings,

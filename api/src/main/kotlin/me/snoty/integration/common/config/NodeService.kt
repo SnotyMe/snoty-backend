@@ -4,19 +4,19 @@ import io.ktor.http.*
 import kotlinx.coroutines.flow.Flow
 import me.snoty.backend.errors.ServiceResult
 import me.snoty.backend.integration.config.flow.NodeId
+import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.StandaloneNode
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.slf4j.event.Level
-import kotlin.uuid.Uuid
 
 interface NodeService {
 	suspend fun get(id: NodeId): StandaloneNode?
 	fun getByFlow(flowId: NodeId): Flow<FlowNode>
 
 	suspend fun <S : NodeSettings> create(
-		userID: Uuid,
+		userId: UserId,
 		flowId: NodeId,
 		descriptor: NodeDescriptor,
 		settings: S,

@@ -2,6 +2,7 @@ package me.snoty.backend.wiring.flow
 
 import kotlinx.serialization.json.Json
 import me.snoty.backend.database.sql.utils.UuidTable
+import me.snoty.backend.database.sql.utils.userId
 import me.snoty.integration.common.wiring.flow.StandaloneWorkflow
 import me.snoty.integration.common.wiring.flow.WorkflowSettings
 import org.jetbrains.exposed.v1.core.ResultRow
@@ -12,7 +13,7 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [Table::class])
 class FlowTable(json: Json) : UuidTable("flow") {
-	val userId = uuid("user_id")
+	val userId = userId("user_id")
 	val name = varchar("name", 255)
 	val settings = jsonb<WorkflowSettings>("settings", json).nullable() // nullable for backwards compatibility
 

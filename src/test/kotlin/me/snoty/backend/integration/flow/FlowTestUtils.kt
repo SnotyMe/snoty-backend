@@ -4,6 +4,7 @@ import me.snoty.backend.dev.randomString
 import me.snoty.backend.test.node
 import me.snoty.backend.test.nodeMetadata
 import me.snoty.backend.utils.randomV7
+import me.snoty.core.UserId
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.Node
@@ -20,7 +21,7 @@ fun relationalFlow(
 	vararg nodes: FlowNode,
 ) = WorkflowWithNodes(
 	_id = randomString(),
-	userId = Uuid.randomV7(),
+	userId = UserId(Uuid.randomV7().toString()),
 	name = randomString(),
 	settings = WorkflowSettings(),
 	nodes = nodes.toList(),

@@ -13,6 +13,7 @@ import me.snoty.backend.database.mongo.objectId
 import me.snoty.backend.notifications.Notification
 import me.snoty.backend.notifications.NotificationAttributes
 import me.snoty.backend.notifications.NotificationService
+import me.snoty.core.UserId
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.koin.core.annotation.Single
@@ -38,13 +39,13 @@ class MongoNotificationService(
 		}
 	}
 
-	private fun buildUnresolvedFilter(userId: String, attributes: NotificationAttributes) = Filters.and(
+	private fun buildUnresolvedFilter(userId: UserId, attributes: NotificationAttributes) = Filters.and(
 		Filters.eq(MongoNotification::userId.name, userId),
 		Filters.eq(MongoNotification::attributes.name, Document(attributes)),
 		Filters.eq(MongoNotification::resolvedAt.name, null),
 	)
 
-	override suspend fun send(userId: String, attributes: NotificationAttributes, title: String, description: String?) {
+	override suspend fun send(userId: UserId, attributes: NotificationAttributes, title: String, description: String?) {
 		val filter = buildUnresolvedFilter(userId, attributes)
 		val update = Updates.combine(
 			Updates.setOnInsert(MongoNotification::_id.name, ObjectId()),
@@ -58,18 +59,18 @@ class MongoNotificationService(
 		collection.updateOne(filter, update, UpdateOptions().upsert(true))
 	}
 
-	override suspend fun resolve(userId: String, attributes: NotificationAttributes) {
+	override suspend fun resolve(userId: UserId, attributes: NotificationAttributes) {
 		val filter = buildUnresolvedFilter(userId, attributes)
 		val update = Updates.set(MongoNotification::resolvedAt.name, Clock.System.now())
 		collection.updateOne(filter, update)
 	}
 
-	override fun findByUser(userId: String): Flow<Notification> =
+	override fun findByUser(userId: UserId): Flow<Notification> =
 		collection.find(Filters.eq(MongoNotification::userId.name, userId))
 			.sort(Sorts.descending(MongoNotification::lastSeenAt.name))
 			.map(MongoNotification::toNotification)
 
-	override suspend fun unresolvedByUser(userId: String): Long =
+	override suspend fun unresolvedByUser(userId: UserId): Long =
 		collection.countDocuments(
 			Filters.and(
 				Filters.eq(MongoNotification::userId.name, userId),
@@ -77,7 +78,7 @@ class MongoNotificationService(
 			)
 		)
 
-	override suspend fun delete(userId: String, id: String): Boolean {
+	override suspend fun delete(userId: UserId, id: String): Boolean {
 		val result = collection.deleteOne(
 			Filters.and(
 				Filters.eq(MongoNotification::userId.name, userId),

@@ -3,6 +3,7 @@ package me.snoty.backend.notifications
 import kotlinx.serialization.Serializable
 import me.snoty.backend.observability.FLOW_ID
 import me.snoty.backend.observability.NODE_ID
+import me.snoty.core.UserId
 import kotlin.time.Instant
 
 typealias NotificationAttributes = Map<String, String>
@@ -42,7 +43,7 @@ fun NotificationAttributes(
 @Serializable
 data class Notification(
 	val id: String,
-	val userId: String,
+	val userId: UserId,
 	val attributes: NotificationAttributes,
 	val resolvedAt: Instant? = null,
 	val lastSeenAt: Instant,
