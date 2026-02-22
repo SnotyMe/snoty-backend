@@ -9,13 +9,13 @@ import kotlinx.coroutines.flow.map
 import me.snoty.backend.database.mongo.deserializeOrInvalid
 import me.snoty.backend.database.mongo.objectId
 import me.snoty.backend.errors.ServiceResult
-import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.utils.bson.encode
 import me.snoty.backend.wiring.node.MongoNode
 import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
 import me.snoty.backend.wiring.node.toRelational
 import me.snoty.backend.wiring.node.toStandalone
 import me.snoty.core.FlowId
+import me.snoty.core.NodeId
 import me.snoty.core.UserId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.config.NodeServiceResults
@@ -24,7 +24,6 @@ import me.snoty.integration.common.wiring.StandaloneNode
 import me.snoty.integration.common.wiring.flow.NODE_COLLECTION_NAME
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings
-import org.bson.types.ObjectId
 import org.koin.core.annotation.Single
 import org.slf4j.event.Level
 
@@ -75,8 +74,8 @@ class MongoNodeService(
 		val toNode = get(to) ?: return NodeServiceResults.NodeNotFoundError(to)
 
 		collection.updateOne(
-			Filters.eq(MongoNode::_id.name, ObjectId(fromNode._id)),
-			Updates.addToSet(MongoNode::next.name, ObjectId(toNode._id))
+			Filters.eq(MongoNode::_id.name, fromNode._id.objectId),
+			Updates.addToSet(MongoNode::next.name, toNode._id.objectId)
 		)
 
 		return NodeServiceResults.NodeConnected(from, to)
@@ -87,8 +86,8 @@ class MongoNodeService(
 		val toNode = get(to) ?: return NodeServiceResults.NodeNotFoundError(to)
 
 		collection.updateOne(
-			Filters.eq(MongoNode::_id.name, ObjectId(fromNode._id)),
-			Updates.pull(MongoNode::next.name, ObjectId(toNode._id))
+			Filters.eq(MongoNode::_id.name, fromNode._id.objectId),
+			Updates.pull(MongoNode::next.name, toNode._id.objectId)
 		)
 
 		return NodeServiceResults.NodeDisconnected(from, to)

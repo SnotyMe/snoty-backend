@@ -1,10 +1,10 @@
 package me.snoty.backend.wiring
 
 import kotlinx.coroutines.runBlocking
-import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.test.TestIds.INTEGRATION_NAME
 import me.snoty.backend.test.TestIds.USER_ID_1
 import me.snoty.backend.utils.bson.getIdAsString
+import me.snoty.core.NodeId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.diff.Change
 import me.snoty.integration.common.diff.DiffResult

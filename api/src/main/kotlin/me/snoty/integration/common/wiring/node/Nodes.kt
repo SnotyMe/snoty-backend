@@ -2,8 +2,8 @@ package me.snoty.integration.common.wiring
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.core.FlowId
+import me.snoty.core.NodeId
 import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings

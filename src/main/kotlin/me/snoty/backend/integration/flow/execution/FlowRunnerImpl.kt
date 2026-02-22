@@ -7,7 +7,6 @@ import io.opentelemetry.api.trace.Span
 import io.opentelemetry.extension.kotlin.asContextElement
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.slf4j.MDCContext
-import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.integration.flow.FlowExecutionException
 import me.snoty.backend.integration.flow.NodeExecutionException
 import me.snoty.backend.integration.flow.unwrap
@@ -23,6 +22,7 @@ import me.snoty.backend.wiring.credential.CredentialService
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEvent
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
+import me.snoty.core.NodeId
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.Node

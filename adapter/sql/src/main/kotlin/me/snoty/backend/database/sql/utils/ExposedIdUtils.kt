@@ -2,6 +2,7 @@ package me.snoty.backend.database.sql.utils
 
 import me.snoty.backend.utils.toUuid
 import me.snoty.core.FlowId
+import me.snoty.core.NodeId
 import me.snoty.core.UserId
 import org.jetbrains.exposed.v1.core.*
 
@@ -34,3 +35,18 @@ class FlowIdColumnType : ColumnType<FlowId>() {
 
 fun Table.flowId(name: String): Column<FlowId> =
     registerColumn(name, FlowIdColumnType())
+
+class NodeIdColumnType : ColumnType<NodeId>() {
+    private val delegate = UuidColumnType()
+
+    override fun sqlType() = delegate.sqlType()
+
+    override fun valueFromDB(value: Any): NodeId =
+        NodeId(delegate.valueFromDB(value).toString())
+
+    override fun notNullValueToDB(value: NodeId): Any =
+        delegate.notNullValueToDB(value.value.toUuid())
+}
+
+fun Table.nodeId(name: String): Column<NodeId> =
+    registerColumn(name, NodeIdColumnType())

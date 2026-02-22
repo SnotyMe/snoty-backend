@@ -1,6 +1,7 @@
 package me.snoty.backend.wiring.flow.execution
 
 import me.snoty.backend.database.sql.utils.UuidTable
+import me.snoty.backend.database.sql.utils.nodeId
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.wiring.flow.FlowTable
 import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
@@ -31,7 +32,7 @@ class FlowExecutionLogTable(flowExecutionTable: FlowExecutionTable) : UuidTable(
 	val timestamp = timestamp("timestamp")
 	val level = enumerationByName("level", 10, Level::class)
 	val message = text("message")
-	val node = varchar("node", 255).nullable()
+	val node = nodeId("node").nullable()
 }
 
 fun ResultRow.toLogEntry(flowExecutionLogTable: FlowExecutionLogTable) = NodeLogEntry(

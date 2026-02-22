@@ -3,8 +3,8 @@ package me.snoty.integration.common.config
 import io.ktor.http.*
 import kotlinx.coroutines.flow.Flow
 import me.snoty.backend.errors.ServiceResult
-import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.core.FlowId
+import me.snoty.core.NodeId
 import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.StandaloneNode

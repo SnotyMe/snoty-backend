@@ -42,8 +42,8 @@ class FlowTracingImpl(
 	}
 
 	override fun SpanBuilder.setNodeAttributes(node: Node, input: Collection<IntermediateData>?) = apply {
-		setAttribute(NODE_ID, node._id)
-		KMDC.put(NODE_ID, node._id)
+		setAttribute(NODE_ID, node._id.value)
+		KMDC.put(NODE_ID, node._id.value)
 		setAttribute("node.descriptor", node.descriptor)
 
 		if (featureFlags.traceConfig) {

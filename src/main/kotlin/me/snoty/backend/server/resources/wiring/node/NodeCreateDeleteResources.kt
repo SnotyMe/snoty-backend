@@ -9,6 +9,7 @@ import kotlinx.serialization.json.JsonElement
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.respondServiceResult
 import me.snoty.core.FlowId
+import me.snoty.core.NodeId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.http.nodeNotFound
 import me.snoty.integration.common.wiring.node.NodeDescriptor
@@ -33,7 +34,7 @@ fun Route.nodeCreate(nodeService: NodeService) = post("create") {
 fun Route.nodeDelete(nodeService: NodeService) = delete("{id}") {
 	val user = call.getUser()
 
-	val id = call.parameters["id"]
+	val id = call.parameters["id"]?.let(::NodeId)
 		?: return@delete call.respond(HttpStatusCode.BadRequest, "Invalid node id")
 
 	val node = nodeService.get(id)

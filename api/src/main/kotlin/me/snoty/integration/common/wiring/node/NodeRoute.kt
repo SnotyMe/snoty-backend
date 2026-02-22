@@ -4,14 +4,13 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
-import me.snoty.backend.config.Config
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.impl.NodeapiRoutesHook
 import me.snoty.backend.hooks.register
-import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.utils.BadRequestException
 import me.snoty.backend.utils.getUserOrNull
 import me.snoty.backend.utils.respondStatus
+import me.snoty.core.NodeId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.http.nodeNotFound
 import me.snoty.integration.common.wiring.Node
@@ -21,9 +20,6 @@ import org.koin.ktor.ext.inject
 interface NodeRouteFactory {
 	operator fun invoke(route: String, method: HttpMethod, verifyUser: Boolean = true, block: suspend RoutingContext.(Node) -> Unit)
 }
-
-fun buildNodeApiUrl(config: Config, descriptor: NodeDescriptor, nodeId: NodeId, route: String) =
-	"${config.publicHost}/nodeapi/${descriptor.name}/$nodeId/$route"
 
 @Factory
 internal class NodeRouteFactoryImpl(
@@ -45,7 +41,7 @@ internal class NodeRouteFactoryImpl(
 					handle {
 						logger.debug { "Handling route for ${nodeDescriptor.id} nodes: $route"}
 
-						val nodeId = call.parameters["nodeId"]
+						val nodeId = call.parameters["nodeId"]?.let(::NodeId)
 							?: return@handle call.respondStatus(BadRequestException("nodeId is required"))
 						val node = nodeService.get(nodeId)
 							?: return@handle call.nodeNotFound(nodeId)

@@ -1,6 +1,5 @@
 package me.snoty.backend.wiring.flow.export
 
-import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.utils.bson.encode
 import me.snoty.backend.utils.bson.setByPath
 import me.snoty.backend.wiring.flow.CensoredField
@@ -8,6 +7,7 @@ import me.snoty.backend.wiring.flow.ExportFlow
 import me.snoty.backend.wiring.flow.ExportNode
 import me.snoty.backend.wiring.flow.FlowExportImportSchema
 import me.snoty.core.FlowId
+import me.snoty.core.NodeId
 import me.snoty.integration.common.model.metadata.NodeField
 import me.snoty.integration.common.model.metadata.NodeFieldDetails
 import me.snoty.integration.common.model.metadata.ObjectSchema

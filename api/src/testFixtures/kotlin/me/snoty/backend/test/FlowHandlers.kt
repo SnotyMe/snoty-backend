@@ -1,6 +1,6 @@
 package me.snoty.backend.test
 
-import me.snoty.backend.integration.config.flow.NodeId
+import me.snoty.core.NodeId
 import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.*

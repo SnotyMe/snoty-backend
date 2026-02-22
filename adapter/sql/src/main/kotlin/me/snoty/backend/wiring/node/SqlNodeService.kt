@@ -5,10 +5,9 @@ import kotlinx.serialization.json.Json
 import me.snoty.backend.database.sql.flowTransaction
 import me.snoty.backend.database.sql.suspendTransaction
 import me.snoty.backend.errors.ServiceResult
-import me.snoty.backend.integration.config.flow.NodeId
 import me.snoty.backend.utils.hackyEncodeToString
-import me.snoty.backend.utils.toUuid
 import me.snoty.core.FlowId
+import me.snoty.core.NodeId
 import me.snoty.core.UserId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.config.NodeServiceResults
@@ -35,7 +34,7 @@ class SqlNodeService(
 ) : NodeService {
 	override suspend fun get(id: NodeId): StandaloneNode? = db.suspendTransaction {
 		nodeTable.selectStandalone()
-			.where { nodeTable.id eq id.toUuid() }
+			.where { nodeTable.id eq id }
 			.firstOrNull()
 			?.toStandalone(nodeTable, json, nodeRegistry)
 	}
@@ -46,14 +45,13 @@ class SqlNodeService(
 			.map { it.toStandalone(nodeTable, json, nodeRegistry) }
 
 		val connections = nodeConnectionTable.selectAll()
-			.where { nodeConnectionTable.from inList nodes.map { it._id.toUuid() } }
+			.where { nodeConnectionTable.from inList nodes.map { it._id } }
 			.map { it[nodeConnectionTable.from].value to it[nodeConnectionTable.to].value }
 			.groupBy({ it.first }, { it.second })
 
 		nodes.map { node ->
 			node.toRelational(
-				next = connections[node._id.toUuid()]
-					?.map { it.toString() }
+				next = connections[node._id]
 			)
 		}
 	}
@@ -75,7 +73,7 @@ class SqlNodeService(
 		}
 
 		return StandaloneNode(
-			_id = id.value.toString(),
+			_id = id.value,
 			flowId = flowId,
 			userId = userId,
 			descriptor = descriptor,
@@ -89,8 +87,8 @@ class SqlNodeService(
 		to: NodeId
 	): ServiceResult = db.suspendTransaction {
 		val insertCount = nodeConnectionTable.insert {
-			it[nodeConnectionTable.from] = from.toUuid()
-			it[nodeConnectionTable.to] = to.toUuid()
+			it[nodeConnectionTable.from] = from
+			it[nodeConnectionTable.to] = to
 		}.insertedCount
 
 		when (insertCount) {
@@ -104,7 +102,7 @@ class SqlNodeService(
 		to: NodeId
 	): ServiceResult = db.suspendTransaction {
 		val deleteCount = nodeConnectionTable.deleteWhere {
-			(nodeConnectionTable.from eq from.toUuid()) and (nodeConnectionTable.to eq to.toUuid())
+			(nodeConnectionTable.from eq from) and (nodeConnectionTable.to eq to)
 		}
 
 		when (deleteCount) {
@@ -117,7 +115,7 @@ class SqlNodeService(
 		id: NodeId,
 		settings: NodeSettings
 	): ServiceResult = db.suspendTransaction {
-		val changeCount = nodeTable.update({ nodeTable.id eq id.toUuid() }) {
+		val changeCount = nodeTable.update({ nodeTable.id eq id }) {
 			it[nodeTable.settings] = json.hackyEncodeToString(settings)
 		}
 		when (changeCount) {
@@ -127,7 +125,7 @@ class SqlNodeService(
 	}
 
 	override suspend fun updateLogLevel(id: NodeId, logLevel: Level?): ServiceResult = db.suspendTransaction {
-		val changeCount = nodeTable.update({ nodeTable.id eq id.toUuid() }) {
+		val changeCount = nodeTable.update({ nodeTable.id eq id }) {
 			it[nodeTable.logLevel] = logLevel
 		}
 		when (changeCount) {
@@ -137,7 +135,7 @@ class SqlNodeService(
 	}
 
 	override suspend fun delete(id: NodeId): ServiceResult = db.suspendTransaction {
-		when (nodeTable.deleteWhere { nodeTable.id eq id.toUuid() }) {
+		when (nodeTable.deleteWhere { nodeTable.id eq id }) {
 			0 -> NodeServiceResults.NodeNotFoundError(id)
 			else -> NodeServiceResults.NodeDeleted(id)
 		}

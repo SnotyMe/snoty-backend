@@ -2,6 +2,7 @@ package me.snoty.backend.wiring
 
 import io.mockk.mockk
 import me.snoty.backend.database.mongo.MongoTest
+import me.snoty.backend.database.mongo.toNodeId
 import me.snoty.backend.integration.MongoEntityStateService
 import me.snoty.backend.integration.config.MongoNodeService
 import me.snoty.backend.wiring.flow.MongoFlowService
@@ -11,7 +12,7 @@ import me.snoty.integration.common.utils.bsonTypeClassMap
 import me.snoty.integration.common.wiring.flow.FlowService
 import org.bson.types.ObjectId
 
-class MongoEntityStateServiceTest : EntityStateServiceSpec({ ObjectId().toHexString() }) {
+class MongoEntityStateServiceTest : EntityStateServiceSpec({ ObjectId().toNodeId() }) {
 	private val mongoDB = MongoTest.getMongoDatabase {}
 	override val service = MongoEntityStateService(
 		mongoDB,

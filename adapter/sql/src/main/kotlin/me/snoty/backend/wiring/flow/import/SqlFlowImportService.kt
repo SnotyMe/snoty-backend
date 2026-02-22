@@ -1,7 +1,6 @@
 package me.snoty.backend.wiring.flow.import
 
 import me.snoty.backend.database.sql.suspendTransaction
-import me.snoty.backend.utils.toUuid
 import me.snoty.backend.wiring.flow.ImportFlow
 import me.snoty.backend.wiring.node.NodeConnectionTable
 import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
@@ -37,8 +36,8 @@ class SqlFlowImportService(
 				node.next.map { nextNode -> node.id to nextNode }
 			}
 		nodeConnectionTable.batchInsert(connections) { (from, to) ->
-			this[nodeConnectionTable.from] = createdNodes[from]!!.toUuid()
-			this[nodeConnectionTable.to] = createdNodes[to]!!.toUuid()
+			this[nodeConnectionTable.from] = createdNodes[from]!!
+			this[nodeConnectionTable.to] = createdNodes[to]!!
 		}
 
 		return@suspendTransaction createdFlow._id
