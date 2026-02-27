@@ -1,10 +1,12 @@
 package me.snoty.backend.authentication.oidc
 
 import me.snoty.backend.authentication.AuthenticationAdapter
+import me.snoty.backend.authentication.AuthenticationMetadata
 import me.snoty.backend.authentication.Role
 import me.snoty.backend.config.ConfigLoader
 import me.snoty.backend.config.load
 import me.snoty.backend.injection.DiModule
+import org.koin.core.Koin
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
@@ -13,9 +15,19 @@ import org.koin.core.annotation.Single
 @ComponentScan
 object OidcKoinModule
 
+const val OIDC_ADAPTER_TYPE = "oidc"
+
 class OidcAdapter : AuthenticationAdapter {
-	override val supportedTypes: List<String> = listOf("oidc")
+    override val supportedTypes: List<String> = listOf(OIDC_ADAPTER_TYPE)
 	override val koinModule: DiModule = OidcKoinModule.module()
+
+	override suspend fun buildAuthenticationMetadata(koin: Koin): AuthenticationMetadata {
+		val oidcConfig = koin.get<OidcConfig>()
+		return OidcAuthenticationMetadata(
+			authUrl = oidcConfig.authUrl,
+			clientId = oidcConfig.clientId,
+		)
+	}
 }
 
 data class OidcConfig(

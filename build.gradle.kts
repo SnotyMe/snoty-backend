@@ -49,7 +49,11 @@ val devImplementation: Configuration by configurations.getting {
     extendsFrom(configurations.implementation.get())
 }
 
-dependencies { with(libs) {
+dependencies { implementation("io.ktor:ktor-server-core:3.4.0")
+    implementation("io.ktor:ktor-server-openapi:3.4.0")
+    implementation("io.ktor:ktor-server-routing-openapi:3.4.0")
+    implementation("io.ktor:ktor-server-core:3.4.0")
+    with(libs) {
     fun moduleImplementation(dependency: Any) {
         implementation(dependency)
         testImplementation(dependency)
@@ -100,7 +104,9 @@ dependencies { with(libs) {
     implementation(ktor.server.auth)
     implementation(ktor.server.auth.jwt)
     implementation(ktor.server.contentNegotiation)
-    implementation(ktor.server.routing.openapi)
+    implementation(ktor.server.swagger)
+
+    implementation(libraries.swagger.codegen)
 
     // monitoring
     implementation(monitoring.ktor.opentelemetry)
@@ -146,6 +152,7 @@ ktor {
         enabled = true
         codeInferenceEnabled = true
         onlyCommented = false
+
     }
 }
 

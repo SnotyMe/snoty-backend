@@ -11,6 +11,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.routing.openapi.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import me.snoty.backend.utils.*
@@ -105,5 +106,7 @@ fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClien
 				call.respond(roles)
 			}
 		}
+	}.describe {
+		tag("auth")
 	}
 }

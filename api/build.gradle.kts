@@ -28,6 +28,7 @@ dependencies { with(libs) {
     api(ktor.server.core)
     api(ktor.server.auth)
     api(ktor.server.auth.jwt)
+    api(ktor.server.routing.openapi)
 
     api(ktor.serialization.kotlinx.json)
     api(monitoring.ktor.opentelemetry)

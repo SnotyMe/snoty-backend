@@ -34,7 +34,7 @@ jib = { id = "com.google.cloud.tools.jib", version = "3.4.4" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.1" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+ktor = { id = "io.ktor.plugin", version = "3.4.0-eap-187" } # TODO: Update to stable when available - https://youtrack.jetbrains.com/issue/KTOR-9279
 
 [libraries]
 configuration-hoplite-core = { group = "com.sksamuel.hoplite", name = "hoplite-core", version.ref = "hoplite" }
@@ -81,6 +81,7 @@ ktor-server-call-logging = { group = "io.ktor", name = "ktor-server-call-logging
 ktor-server-contentNegotiation = { group = "io.ktor", name = "ktor-server-content-negotiation", version.ref = "ktor" }
 ktor-server-core = { group = "io.ktor", name = "ktor-server-core", version.ref = "ktor" }
 ktor-server-routing-openapi = { group = "io.ktor", name = "ktor-server-routing-openapi", version.ref = "ktor" }
+ktor-server-swagger = { group = "io.ktor", name = "ktor-server-swagger", version.ref = "ktor" }
 ktor-server-sse = { group = "io.ktor", name = "ktor-server-sse", version.ref = "ktor" }
 ktor-server-cors = { group = "io.ktor", name = "ktor-server-cors", version.ref = "ktor" }
 ktor-server-defaultHeaders = { group = "io.ktor", name = "ktor-server-default-headers", version.ref = "ktor" }
@@ -89,6 +90,8 @@ ktor-server-forwardedHeader = { group = "io.ktor", name = "ktor-server-forwarded
 ktor-server-hostCommon = { group = "io.ktor", name = "ktor-server-host-common", version.ref = "ktor" }
 ktor-server-netty = { group = "io.ktor", name = "ktor-server-netty", version.ref = "ktor" }
 ktor-server-statusPages = { group = "io.ktor", name = "ktor-server-status-pages", version.ref = "ktor" }
+
+libraries-swagger-codegen = { group = "io.swagger.codegen.v3", name = "swagger-codegen-generators", version = "1.0.60" }
 
 libraries-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 libraries-coroutines-reactive = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-reactive", version.ref = "coroutines" }
