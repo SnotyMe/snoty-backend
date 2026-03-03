@@ -23,7 +23,7 @@ class FlowTable(json: Json) : IdTable<FlowId>("flow") {
 	override val primaryKey = PrimaryKey(id)
 
 	val userId = userId("user_id")
-	val name = varchar("name", 255)
+	val name = text("name")
 	val settings = jsonb<WorkflowSettings>("settings", json).nullable() // nullable for backwards compatibility
 
 	val standaloneColumns = listOf(id, userId, name, settings)

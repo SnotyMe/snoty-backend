@@ -13,10 +13,19 @@ import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.jdbc.select
 import org.koin.core.annotation.Factory
 
+@InternalSqlApi
+val entityStateTables: List<EntityStateTable>
+	field = mutableListOf()
+
 @Factory
+@OptIn(InternalSqlApi::class)
 class EntityStateTable(descriptor: NodeDescriptor, nodeTable: NodeTable) : Table(descriptor.sqlTableName("states")) {
+	init {
+		entityStateTables += this
+	}
+
 	val nodeId = reference("node_id", nodeTable, onDelete = ReferenceOption.CASCADE)
-	val entityId = varchar("entity_id", 255)
+	val entityId = text("entity_id")
 
 	override val primaryKey = SanitizedPrimaryKey(nodeId, entityId)
 

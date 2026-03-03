@@ -73,7 +73,7 @@ class FlowRunnerImpl(
 			jobId = jobId,
 			triggeredBy = triggeredBy,
 		))
-		kLogger.info { "Running ${flow.name} (${flow._id})" }
+		kLogger.info { "Running ${flow.name} (${flow._id.value})" }
 
 		@Suppress("UNCHECKED_CAST")
 		val executionContext = FlowExecutionContext(
@@ -161,11 +161,11 @@ class FlowRunnerImpl(
 		if (node._id in visited) {
 			val referencingNodes = visited
 				.filter { nodeMap[it]?.next?.contains(node._id) == true }
-			logger.error { "Cycle detected at node ${node.descriptor} (${node._id}, referenced by $referencingNodes)" }
+			logger.error { "Cycle detected at node ${node.descriptor} (${node._id.value}, referenced by $referencingNodes)" }
 			return emptyFlow()
 		}
 
-		val nodeLogName = "${node.descriptor.name} node \"${node.settings.name}\" (${node._id})"
+		val nodeLogName = "${node.descriptor.name} node \"${node.settings.name}\" (${node._id.value})"
 
 		val handler = nodeRegistry.lookupHandler(node.descriptor)
 			?: let {
@@ -210,7 +210,7 @@ class FlowRunnerImpl(
 			val data = with(context) { with(handler) { process(node, input) } }
 			logger.debug { "Processed $nodeLogName" }
 			if (metadata.position.logOutput && node.next.isEmpty()) {
-				logger.debug { "Node \"${node.settings.name}\" (${node._id}) has no output nodes, would have emitted $data" }
+				logger.debug { "Node \"${node.settings.name}\" (${node._id.value}) has no output nodes, would have emitted $data" }
 			}
 
 			emit(data)

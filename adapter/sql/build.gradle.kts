@@ -10,6 +10,11 @@ dependencies { with (libs) {
 	implementation(database.exposed.jdbc)
 	implementation(database.exposed.json)
 	implementation(database.exposed.datetime)
+	implementation(database.exposed.migration.core)
+	implementation(database.exposed.migration.jdbc)
+
+	implementation(database.flyway.core)
+	implementation(database.flyway.postgres)
 
 	implementation(database.hikari)
 	implementation(database.postgres)

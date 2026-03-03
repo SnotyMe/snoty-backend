@@ -7,17 +7,15 @@ import me.snoty.backend.notifications.SqlNotificationService
 import me.snoty.integration.common.snotyJson
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
-import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.update
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.time.Clock
 
 class SqlNotificationServiceTest : NotificationServiceSpec() {
+	val db = PostgresTest.getPostgresDatabase {}
+
 	private val notificationTable = NotificationTable(snotyJson {})
-	val db = PostgresTest.getPostgresDatabase {
-		SchemaUtils.create(notificationTable)
-	}
 
 	override val notificationService = SqlNotificationService(
 		db = db,

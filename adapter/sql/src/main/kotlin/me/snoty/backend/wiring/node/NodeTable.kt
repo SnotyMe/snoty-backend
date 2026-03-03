@@ -30,11 +30,11 @@ class NodeTable(flowTable: FlowTable) : IdTable<NodeId>("node") {
 	}.entityId()
 	override val primaryKey = PrimaryKey(id)
 
-	val flowId = reference("flow_id", flowTable)
+	val flowId = reference("flow_id", flowTable, onDelete = ReferenceOption.CASCADE)
 	val userId = userId("user_id")
 
-	val descriptor_namespace = varchar("descriptor_namespace", 255)
-	val descriptor_name = varchar("descriptor_name", 255)
+	val descriptor_namespace = text("descriptor_namespace")
+	val descriptor_name = text("descriptor_name")
 
 	val logLevel = enumerationByName("log_level", 10, Level::class).nullable()
 	@OptIn(InternalSerializationApi::class)

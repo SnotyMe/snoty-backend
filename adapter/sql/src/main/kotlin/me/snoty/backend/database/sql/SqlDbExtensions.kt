@@ -6,6 +6,7 @@ import me.snoty.integration.common.wiring.node.NodeDescriptor
 import org.jetbrains.exposed.v1.core.Column
 import org.jetbrains.exposed.v1.core.Table
 
+// TODO: come up with better naming schema for tables
 fun NodeDescriptor.sqlTableName(suffixName: String)
 	= "nodes:${name}:${suffixName}".quoted()
 

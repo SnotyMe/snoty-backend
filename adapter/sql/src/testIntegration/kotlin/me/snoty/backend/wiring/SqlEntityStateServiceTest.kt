@@ -2,6 +2,8 @@ package me.snoty.backend.wiring
 
 import io.mockk.mockk
 import me.snoty.backend.database.sql.PostgresTest
+import me.snoty.backend.database.sql.TestSqlTableRegistry
+import me.snoty.backend.database.sql.migrations.impl.`V0_2_0_1772393750__entity-state`
 import me.snoty.backend.database.utils.EntityStateTable
 import me.snoty.backend.database.utils.SqlEntityStateService
 import me.snoty.backend.utils.bson.CodecRegistryProvider
@@ -18,7 +20,6 @@ import me.snoty.integration.common.diff.provideStateCodecRegistry
 import me.snoty.integration.common.snotyJson
 import me.snoty.integration.common.utils.bsonTypeClassMap
 import me.snoty.integration.common.wiring.flow.FlowService
-import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import kotlin.uuid.Uuid
 
 class SqlEntityStateServiceTest : EntityStateServiceSpec({ NodeId(Uuid.random().toString()) }) {
@@ -26,9 +27,12 @@ class SqlEntityStateServiceTest : EntityStateServiceSpec({ NodeId(Uuid.random().
 	private val nodeTable = NodeTable(flowTable)
 	private val entityStateTable = EntityStateTable(nodeDescriptor, nodeTable)
 
-	private val db = PostgresTest.getPostgresDatabase {
-		SchemaUtils.create(nodeTable, entityStateTable)
-	}
+	private val db = PostgresTest.getPostgresDatabase(
+		extraMigrations = listOf(
+			`V0_2_0_1772393750__entity-state`(TestSqlTableRegistry(entityStateTable))
+		)
+	) {}
+
 	val bsonTypeClassMap = bsonTypeClassMap()
 	private val codecRegistry = provideCodecRegistry(CodecRegistryProvider(provideStateCodecRegistry(bsonTypeClassMap, provideApiCodec(bsonTypeClassMap).registry)))
 	override val nodeService: NodeService = SqlNodeService(

@@ -5,7 +5,7 @@ plugins {
 
 kotlin {
 	compilerOptions {
-		freeCompilerArgs.addAll("-Xcontext-parameters")
+		freeCompilerArgs.addAll("-Xcontext-parameters", "-Xexplicit-backing-fields")
 		optIn.addAll("kotlinx.coroutines.ExperimentalCoroutinesApi", "kotlin.uuid.ExperimentalUuidApi", "kotlin.time.ExperimentalTime")
 	}
 }
