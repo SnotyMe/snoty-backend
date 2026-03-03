@@ -1,6 +1,5 @@
 package me.snoty.backend.database.utils
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.Flow
 import me.snoty.backend.database.sql.flowTransaction
 import me.snoty.backend.database.sql.suspendTransaction
@@ -16,8 +15,10 @@ import org.bson.codecs.configuration.CodecRegistry
 import org.jetbrains.exposed.v1.core.Transaction
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
-import org.jetbrains.exposed.v1.jdbc.*
-import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import org.jetbrains.exposed.v1.jdbc.Database
+import org.jetbrains.exposed.v1.jdbc.deleteWhere
+import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.update
 import org.koin.core.annotation.Factory
 
 @Factory
@@ -26,15 +27,6 @@ class SqlEntityStateService(
 	private val codecRegistry: CodecRegistry,
 	private val entityStateTable: EntityStateTable,
 ) : EntityStateService {
-	private val logger = KotlinLogging.logger {}
-
-	init {
-		logger.trace { "Creating EntityStateTable for node ${entityStateTable.tableName}" }
-		transaction(db = db) {
-			SchemaUtils.create(entityStateTable)
-		}
-	}
-
 	override suspend fun getLastState(nodeId: NodeId, entityId: String): EntityState? = db.suspendTransaction {
 		entityStateTable.selectStandalone()
 			.where { (entityStateTable.nodeId eq nodeId) and (entityStateTable.entityId eq entityId) }

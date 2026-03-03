@@ -23,13 +23,13 @@ class NotificationTable(json: Json) : UuidTable("notification") {
 	val count = integer("count").default(1)
 	val lastSeenAt = timestamp("last_seen_at").defaultExpression(CurrentTimestamp)
 
-	val title = varchar("title", 255)
+	val title = text("title")
 	val description = text("description").nullable()
 
 	init {
 		uniqueIndex(userId, attributes, open)
 
-		check("inconsistent_resolved_state") {
+		check("notification_open_resolved_at_consistent") {
 			((open eq true) and (resolvedAt eq null)) or
 				((open eq null) and (resolvedAt neq null))
 		}

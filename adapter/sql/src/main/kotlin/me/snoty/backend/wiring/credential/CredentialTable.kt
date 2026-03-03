@@ -12,16 +12,16 @@ class CredentialTable : UuidTable("credential") {
 	val scope = enumerationByName<CredentialScope>("scope", 50)
 
 	val ownerId = userId("owner_id").nullable()
-	val roleRequired = varchar("role_required", 255).nullable()
+	val roleRequired = text("role_required").nullable()
 
-	val type = varchar("type", 255)
+	val type = text("type")
 
 	val name = text("name")
 
 	val data = rawJsonb<Credential>("data")
 
 	init {
-		check {
+		check("credential_scope_owner_id_role_required_consistent") {
 			(scope eq CredentialScope.USER and ownerId.isNotNull() and roleRequired.isNull())
 				.or(scope eq CredentialScope.ROLE and roleRequired.isNotNull())
 				.or(scope eq CredentialScope.GLOBAL and roleRequired.isNull())

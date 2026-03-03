@@ -3,6 +3,8 @@ package me.snoty.backend.database.sql
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import me.snoty.backend.test.getClassNameFromBlock
+import org.flywaydb.core.Flyway
+import org.flywaydb.core.api.migration.BaseJavaMigration
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
@@ -42,28 +44,24 @@ object PostgresTest {
 		return dbName
 	}
 
-	fun getPostgresDataSource(block: DataSource.() -> Unit): DataSource {
+	fun getPostgresDataSource(block: Unit.() -> Unit): DataSource =
+		getPostgresDataSource(getDb(block))
+
+	fun getPostgresDatabase(extraMigrations: List<BaseJavaMigration> = emptyList(), block: Database.() -> Unit): Database {
 		val dbName = getDb(block)
 
-		val ds = HikariDataSource(HikariConfig().apply {
-			jdbcUrl = postgresContainer.jdbcUrl.replace(ADMIN_DB, dbName)
-			username = postgresContainer.username
-			password = postgresContainer.password
-		})
+		val dataSource = getPostgresDataSource(dbName)
+		val db = Database.connect(dataSource)
 
-		block(ds)
+		val flyway = Flyway.configure()
+			.loggers("slf4j")
+			.dataSource(dataSource)
+			.defaultSchema(dataSource.schema)
+			.javaMigrations(*extraMigrations.toTypedArray())
+			.validateMigrationNaming(true)
+			.load()
 
-		return ds
-	}
-
-	fun getPostgresDatabase(block: Database.() -> Unit): Database {
-		val dbName = getDb(block)
-
-		val db = Database.connect(
-			url = postgresContainer.jdbcUrl.replace(ADMIN_DB, dbName),
-			user = postgresContainer.username,
-			password = postgresContainer.password,
-		)
+		flyway.migrate()
 
 		transaction(db = db) {
 			block(db)
@@ -71,4 +69,10 @@ object PostgresTest {
 
 		return db
 	}
+
+	private fun getPostgresDataSource(dbName: String): DataSource = HikariDataSource(HikariConfig().apply {
+        this.jdbcUrl = postgresContainer.jdbcUrl.replace(ADMIN_DB, dbName)
+        this.username = postgresContainer.username
+        this.password = postgresContainer.password
+    })
 }

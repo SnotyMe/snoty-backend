@@ -52,7 +52,8 @@ fun provideDataSource(configLoader: ConfigLoader, openTelemetry: OpenTelemetry):
 		}
 
 fun ConfigLoaderBuilder.defaultConfig() = addProperties(mapOf(
-	"${CONFIG_KEY}.leakDetectionThreshold" to 10000
+	"${CONFIG_KEY}.leakDetectionThreshold" to 10000,
+	"${CONFIG_KEY}.schema" to DEFAULT_SCHEMA,
 ))
 
 /**

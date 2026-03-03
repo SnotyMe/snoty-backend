@@ -10,6 +10,7 @@ hoplite = "2.9.0"
 
 mongodb = "5.6.2"
 exposed = "1.0.0"
+flyway = "12.0.3"
 
 opentelemetry = "1.48.0"
 opentelemetry-semconv = "1.30.0"
@@ -54,9 +55,13 @@ database-exposed-core = { module = "org.jetbrains.exposed:exposed-core", version
 database-exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
 database-exposed-json = { module = "org.jetbrains.exposed:exposed-json", version.ref = "exposed" }
 database-exposed-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed" }
+database-exposed-migration-core = { module = "org.jetbrains.exposed:exposed-migration-core", version.ref = "exposed" }
+database-exposed-migration-jdbc = { module = "org.jetbrains.exposed:exposed-migration-jdbc", version.ref = "exposed" }
 database-hikari = { module = "com.zaxxer:HikariCP", version = "7.0.0" }
 database-postgres = { group = "org.postgresql", name = "postgresql", version = "42.7.7" }
 database-jdbc-opentelemetry = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-jdbc", version.ref = "opentelemetry-instrumentation" }
+database-flyway-core = { group = "org.flywaydb", name = "flyway-core", version.ref = "flyway" }
+database-flyway-postgres = { group = "org.flywaydb", name = "flyway-database-postgresql", version.ref = "flyway" }
 
 authentication-keycloak-adminClient = { group = "org.keycloak", name = "keycloak-admin-client", version = "26.0.7" }
 

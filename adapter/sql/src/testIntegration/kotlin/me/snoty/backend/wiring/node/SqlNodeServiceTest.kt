@@ -9,17 +9,14 @@ import me.snoty.core.UserId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.snotyJson
 import me.snoty.integration.common.wiring.flow.WorkflowSettings
-import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import kotlin.uuid.Uuid
 
 class SqlNodeServiceTest : NodeServiceSpec() {
+	private val db = PostgresTest.getPostgresDatabase {}
+
 	val flowTable = FlowTable(snotyJson {})
 	private val nodeTable = NodeTable(flowTable)
 	private val nodeConnectionTable = NodeConnectionTable(nodeTable)
-
-	private val db = PostgresTest.getPostgresDatabase {
-		SchemaUtils.create(flowTable, nodeTable, nodeConnectionTable)
-	}
 
 	override val service: NodeService = SqlNodeService(
 		db = db,

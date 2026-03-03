@@ -1,5 +1,6 @@
 package me.snoty.backend.scheduling.jobrunr
 
+import me.snoty.backend.database.sql.schema
 import org.jobrunr.jobs.states.StateName
 import org.jobrunr.storage.StorageException
 import org.jobrunr.storage.StorageProvider
@@ -10,14 +11,12 @@ import org.koin.core.annotation.Single
 import java.sql.SQLException
 import javax.sql.DataSource
 
-const val JOBRUNR_TABLE_PREFIX = "jobrunr$"
-
 @Single(binds = [SnotyJobRunrStorageProvider::class, StorageProvider::class])
 fun provideStorageProvider(dataSource: DataSource): SnotyJobRunrStorageProvider = SqlJobRunrStorageProvider(dataSource)
 
 class SqlJobRunrStorageProvider(dataSource: DataSource) : PostgresStorageProvider(
 	/* dataSource = */ dataSource,
-	/* tablePrefix = */ JOBRUNR_TABLE_PREFIX
+	/* tablePrefix = */ "${dataSource.schema}."
 ), SnotyJobRunrStorageProvider {
 	override fun recurringJobExists(recurringJobId: String, vararg states: StateName): Boolean {
 		try {

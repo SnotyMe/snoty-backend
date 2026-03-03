@@ -16,7 +16,7 @@ import org.slf4j.event.Level
 
 @Single(binds = [Table::class])
 class FlowExecutionTable(flowTable: FlowTable) : IdTable<String>() {
-	override val id = varchar("id", 255).entityId()
+	override val id = text("id").entityId()
 	override val primaryKey = PrimaryKey(id)
 
 	val flowId = reference("flow_id", flowTable, onDelete = ReferenceOption.CASCADE)
