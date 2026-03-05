@@ -36,7 +36,7 @@ class FlowTracingImpl(
 			.setAttribute(JOB_ID, jobId)
 			.setAttribute(FLOW_ID, flowId.value)
 			.startSpan()
-		KMDC.put(USER_ID, flowId.value)
+		KMDC.put(USER_ID, flow.userId.value)
 
 		return rootSpan
 	}
