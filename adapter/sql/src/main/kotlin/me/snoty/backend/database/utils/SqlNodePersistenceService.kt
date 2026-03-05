@@ -34,7 +34,7 @@ class SqlNodePersistenceService<T : Any>(
 
 	override suspend fun persistEntity(node: Node, entityId: String, entity: T) {
 		nodePersistenceTable.upsert {
-			it[nodeId] = node._id
+			it[this.nodeId] = node._id
 			it[this.entityId] = entityId
 			it[this.entity] = json.hackyEncodeToString(entity)
 		}
