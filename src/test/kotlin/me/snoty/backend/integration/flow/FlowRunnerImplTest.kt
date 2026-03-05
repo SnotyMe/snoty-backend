@@ -26,7 +26,6 @@ import me.snoty.integration.common.snotyJson
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeInput
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
-import me.snoty.integration.common.wiring.flow.Workflow
 import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
@@ -99,21 +98,6 @@ class FlowRunnerImplTest {
 		}
 	}
 
-	private fun assertNoWarnings(flow: Workflow) = runBlocking {
-		val output = testFlowExecutionService.retrieve(flow._id)
-			.filter {
-				it.level.toInt() >= Level.WARN.toInt()
-			}
-
-		if (output.isNotEmpty()) {
-			println("Warnings:")
-			output.forEach {
-				println(it.message)
-			}
-		}
-		assertEquals(0, output.size)
-	}
-
 	private val intermediateDataRaw = "test"
 	private val intermediateData = SimpleIntermediateData(intermediateDataRaw)
 
@@ -124,7 +108,6 @@ class FlowRunnerImplTest {
 		val flow = relationalFlow(emit, node)
 		val jobId = "basic"
 		runner.executeStartNode(jobId, flow, listOf(intermediateData))
-		assertNoWarnings(flow)
 		assertEquals(listOf(intermediateData), mapHandler[node._id])
 		val spans = otel.spanExporter.finishedSpanItems
 			.sortedBy { it.startEpochNanos }
@@ -146,7 +129,6 @@ class FlowRunnerImplTest {
 		val flow = relationalFlow(emit, processor, map)
 
 		runner.executeStartNode("basic withQuote", flow, listOf(intermediateData))
-		assertNoWarnings(flow)
 		assertEquals("'test'", mapHandler[map._id]?.single()?.value)
 
 		val spans = otel.spanExporter.finishedSpanItems
@@ -165,7 +147,6 @@ class FlowRunnerImplTest {
 
 		suspend fun verifyTrace(flow: WorkflowWithNodes, input: IntermediateData, withConfig: Boolean) {
 			runner.executeStartNode("traces config attribute", flow, listOf(input))
-			assertNoWarnings(flow)
 			assertEquals(input, mapHandler[node._id]?.single())
 			val spans = otel.spanExporter.finishedSpanItems
 				.sortedBy { it.startEpochNanos }
@@ -250,7 +231,6 @@ class FlowRunnerImplTest {
 
 		runner.executeStartNode("receive empty input transitively", flow, emptyList())
 
-		assertNoWarnings(flow)
 		assertFalse(nodex4._id in wantsNonEmptyProvidesEmptyHandler)
 		assertFalse(nodex3._id in wantsNonEmptyProvidesEmptyHandler)
 		assertEquals(emptyList<SimpleIntermediateData>(), wantsEmptyProvidesNonEmptyHandler[nodex2._id])

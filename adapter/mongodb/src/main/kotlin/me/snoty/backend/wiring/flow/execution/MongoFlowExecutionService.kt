@@ -8,7 +8,10 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
 import me.snoty.backend.database.mongo.*
 import me.snoty.backend.scheduling.FlowTriggerReason
@@ -108,11 +111,6 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 			Updates.push(MongoFlowLogs::logs.name, entry),
 		)
 	}
-
-	override suspend fun retrieve(flowId: FlowId): List<NodeLogEntry> =
-		collection.find(Filters.eq(MongoFlowLogs::flowId.name, flowId.objectId))
-			.toList()
-			.flatMap { it.logs }
 
 	override fun query(userId: UserId): Flow<EnumeratedFlowExecution> {
 		val flow = "flow"
