@@ -105,14 +105,6 @@ fun Route.flowResource() {
 		call.respond(HttpStatusCode.NoContent)
 	}
 
-	get("{id}/logs") {
-		val flow = getPersonalFlowOrNull() ?: return@get
-
-		val logs = flowExecutionService.retrieve(flowId = flow._id)
-
-		call.respond(logs)
-	}
-
 	val flowManagement: FlowManagementService = get()
 	delete("{id}") {
 		val flow = getPersonalFlowOrNull() ?: return@delete

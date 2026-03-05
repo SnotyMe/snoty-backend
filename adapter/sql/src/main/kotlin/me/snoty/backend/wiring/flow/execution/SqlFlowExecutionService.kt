@@ -49,12 +49,6 @@ class SqlFlowExecutionService(
 		}
 	}
 
-	override suspend fun retrieve(flowId: FlowId): List<NodeLogEntry> = db.suspendTransaction {
-		flowExecutionLogTable.selectAll()
-			.where { flowExecutionLogTable.executionId eq flowId.value }
-			.orderBy(flowExecutionLogTable.timestamp to SortOrder.DESC)
-			.map { it.toLogEntry(flowExecutionLogTable) }
-	}
 
 	override fun query(userId: UserId): Flow<EnumeratedFlowExecution> = db.flowTransaction {
 		val lastFlowId = flowExecutionTable.flowId.alias("last_flow_id")

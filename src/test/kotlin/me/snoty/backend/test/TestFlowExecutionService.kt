@@ -23,9 +23,6 @@ class TestFlowExecutionService : FlowExecutionService {
 		logs[jobId]?.logs?.add(entry)
 	}
 
-	override suspend fun retrieve(flowId: FlowId): List<NodeLogEntry>
-		= logs.values.filter { entry -> entry.flowId == flowId }.flatMap(FlowEntry::logs)
-
 	override suspend fun setExecutionStatus(jobId: String, status: FlowExecutionStatus) {
 		// NOOP
 	}

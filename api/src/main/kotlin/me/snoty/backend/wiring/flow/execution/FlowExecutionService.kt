@@ -14,7 +14,6 @@ interface FlowExecutionService {
 	suspend fun record(jobId: String, entry: NodeLogEntry)
 	suspend fun setExecutionStatus(jobId: String, status: FlowExecutionStatus)
 
-	suspend fun retrieve(flowId: FlowId): List<NodeLogEntry>
 	fun query(userId: UserId): Flow<EnumeratedFlowExecution>
 	fun query(flowId: FlowId, startFrom: String?, limit: Int = 15): Flow<FlowExecution>
 
