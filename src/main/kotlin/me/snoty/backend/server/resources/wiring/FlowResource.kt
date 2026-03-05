@@ -15,7 +15,7 @@ import me.snoty.backend.utils.getUser
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
 import me.snoty.core.FlowId
 import me.snoty.integration.common.http.flowNotFound
-import me.snoty.integration.common.http.invalidNodeId
+import me.snoty.integration.common.http.invalidFlowId
 import me.snoty.integration.common.wiring.flow.FlowManagementService
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.flow.WorkflowSettings
@@ -77,9 +77,9 @@ fun Route.flowResource() {
 
 	get("{id}") {
 		val user = call.getUser()
-		val id = call.parameters["id"] ?: return@get call.invalidNodeId()
+		val id = call.parameters["id"]?.let(::FlowId) ?: return@get call.invalidFlowId()
 
-		val flow = flowService.getWithNodes(FlowId(id))
+		val flow = flowService.getWithNodes(id)
 		if (flow?.userId != user.id) {
 			return@get call.flowNotFound(flow)
 		}
