@@ -1,7 +1,10 @@
 package me.snoty.backend.server.resources.wiring
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.ktor.http.*
+import io.ktor.openapi.*
 import io.ktor.server.routing.*
+import io.ktor.server.routing.openapi.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -44,6 +47,12 @@ private fun Route.metadataEndpoint(featureFlags: NodeMetadataFeatureFlags, json:
 		}
 
 		call.respondCaching(description)
+	}.describe {
+		responses {
+			HttpStatusCode.OK {
+				schema = jsonSchema<List<NodeDescription>>()
+			}
+		}
 	}
 }
 

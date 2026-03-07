@@ -49,10 +49,7 @@ val devImplementation: Configuration by configurations.getting {
     extendsFrom(configurations.implementation.get())
 }
 
-dependencies { implementation("io.ktor:ktor-server-core:3.4.0")
-    implementation("io.ktor:ktor-server-openapi:3.4.0")
-    implementation("io.ktor:ktor-server-routing-openapi:3.4.0")
-    implementation("io.ktor:ktor-server-core:3.4.0")
+dependencies {
     with(libs) {
     fun moduleImplementation(dependency: Any) {
         implementation(dependency)
@@ -105,6 +102,8 @@ dependencies { implementation("io.ktor:ktor-server-core:3.4.0")
     implementation(ktor.server.auth.jwt)
     implementation(ktor.server.contentNegotiation)
     implementation(ktor.server.swagger)
+    implementation(ktor.server.openapi)
+    implementation(ktor.server.routing.openapi)
 
     implementation(libraries.swagger.codegen)
 

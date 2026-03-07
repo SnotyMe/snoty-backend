@@ -20,7 +20,7 @@ opentelemetry-instrumentation = "2.11.0-alpha"
 micrometer = "1.14.2"
 junit = "5.12.2"
 testcontainers = "2.0.2"
-ktor = "3.4.0"
+ktor = "3.4.4"
 
 jobrunr = "8.4.2"
 
@@ -34,7 +34,7 @@ jib = { id = "com.google.cloud.tools.jib", version = "3.4.4" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.1" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-ktor = { id = "io.ktor.plugin", version = "3.4.0-eap-187" } # TODO: Update to stable when available - https://youtrack.jetbrains.com/issue/KTOR-9279
+ktor = { id = "io.ktor.plugin", version = "3.4.2" } # TODO: Update to stable when available - https://youtrack.jetbrains.com/issue/KTOR-9279
 
 [libraries]
 configuration-hoplite-core = { group = "com.sksamuel.hoplite", name = "hoplite-core", version.ref = "hoplite" }
@@ -70,6 +70,7 @@ redis-lettuce = { group = "io.lettuce", name = "lettuce-core", version = "7.4.0.
 
 integrationPlugin-ksp-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
 
+ktor-openapi-schema = { group = "io.ktor", name = "ktor-openapi-schema", version.ref = "ktor" }
 ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-contentNegotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
@@ -80,6 +81,7 @@ ktor-server-call-id = { group = "io.ktor", name = "ktor-server-call-id", version
 ktor-server-call-logging = { group = "io.ktor", name = "ktor-server-call-logging", version.ref = "ktor" }
 ktor-server-contentNegotiation = { group = "io.ktor", name = "ktor-server-content-negotiation", version.ref = "ktor" }
 ktor-server-core = { group = "io.ktor", name = "ktor-server-core", version.ref = "ktor" }
+ktor-server-openapi = { group = "io.ktor", name = "ktor-server-openapi", version.ref = "ktor" }
 ktor-server-routing-openapi = { group = "io.ktor", name = "ktor-server-routing-openapi", version.ref = "ktor" }
 ktor-server-swagger = { group = "io.ktor", name = "ktor-server-swagger", version.ref = "ktor" }
 ktor-server-sse = { group = "io.ktor", name = "ktor-server-sse", version.ref = "ktor" }

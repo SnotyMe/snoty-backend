@@ -1,14 +1,13 @@
 package me.snoty.backend.authentication.keycloak
 
+import io.ktor.openapi.*
 import me.snoty.backend.authentication.AuthenticationAdapter
-import me.snoty.backend.authentication.AuthenticationMetadata
 import me.snoty.backend.authentication.Role
 import me.snoty.backend.authentication.oidc.OidcConfig
 import me.snoty.backend.authentication.oidc.RoleMapping
 import me.snoty.backend.config.ConfigLoader
 import me.snoty.backend.config.load
 import org.keycloak.admin.client.resource.RealmResource
-import org.koin.core.Koin
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
@@ -24,10 +23,10 @@ class KeycloakAdapter : AuthenticationAdapter {
     override val supportedTypes: List<String> = listOf(KEYCLOAK_ADAPTER_TYPE)
     override val koinModule = KeycloakKoinModule.module()
 
-    override suspend fun buildAuthenticationMetadata(koin: Koin): AuthenticationMetadata {
-        val keycloakConfig = koin.get<KeycloakConfig>()
+    override suspend fun buildAuthenticationMetadata(event: AuthenticationAdapter.OnBuildAuthenticationMetadata): KeycloakAuthenticationMetadata {
+        val keycloakConfig = event.koin.get<KeycloakConfig>()
         val oidcConfig = keycloakConfig.toOidcConfig()
-        val realm: RealmResource = koin.get()
+        val realm: RealmResource = event.koin.get()
 
         val providers = realm.identityProviders().findAll()
             .map {
@@ -45,6 +44,9 @@ class KeycloakAdapter : AuthenticationAdapter {
             providers = providers,
         )
     }
+
+    override fun getMetadataJsonSchema(jsonSchemaInference: JsonSchemaInference): JsonSchema =
+        jsonSchemaInference.jsonSchema<KeycloakAuthenticationMetadata>()
 }
 
 data class KeycloakConfig(

@@ -32,7 +32,7 @@ fun taskResources(adminTasks: AdminTasks) = Resource {
 			}
 
 			post("trigger") {
-				val action = call.request.queryParameters["action"] ?: return@post call.respondStatus(BadRequestException("Action is missing"))
+				val action = call.queryParameters["action"] ?: return@post call.respondStatus(BadRequestException("Action is missing"))
 				call.requireAnyRole(Role.ADMIN, Role(action))
 
 				val task = tasks[action] ?: return@post call.respondStatus(NotFoundException("Task not found"))

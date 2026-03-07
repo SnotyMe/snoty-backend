@@ -21,8 +21,8 @@ fun Route.flowExecutionResource() {
 
 	route("{id}") {
 		get("executions") {
-			val startFrom = call.request.queryParameters["startFrom"]?.orNull()
-			val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
+			val startFrom = call.queryParameters["startFrom"]?.orNull()
+			val limit = call.queryParameters["limit"]?.toIntOrNull() ?: 10
 			val flow = getPersonalFlowOrNull() ?: return@get
 			val executions = flowExecutionService.query(flowId = flow._id, startFrom = startFrom, limit = limit)
 

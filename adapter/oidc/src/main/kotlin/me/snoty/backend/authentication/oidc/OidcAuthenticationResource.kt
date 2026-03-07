@@ -7,6 +7,7 @@ import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.openapi.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -49,9 +50,9 @@ fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClien
 			}
 		}
 		post("/token") {
-			val code = call.request.queryParameters["code"]
+			val code = call.queryParameters["code"]
 				?: return@post call.respondStatus(BadRequestException("Code is missing"))
-			val redirectUrl = call.request.queryParameters["redirect_url"]
+			val redirectUrl = call.queryParameters["redirect_url"]
 				?: return@post call.respondStatus(BadRequestException("Redirect URL is missing"))
 			val response = httpClient.submitForm(
 				url = provider.accessTokenUrl,
@@ -78,6 +79,31 @@ fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClien
 			if (token.refreshToken != null)
 				call.response.cookies.append("refresh_token", token.refreshToken)
 			call.respond(token)
+		}.describe {
+			parameters {
+				query("code") {
+					this.schema = jsonSchema<String>()
+					this.description = "The authorization code received from the OIDC provider after a successful authentication"
+					this.required = true
+				}
+				query("redirect_url") {
+					this.schema = jsonSchema<String>()
+					this.description = "The redirect URL used in the authentication request, must match the one used in the initial request"
+					this.required = true
+				}
+			}
+
+			responses {
+				HttpStatusCode.OK {
+					schema = jsonSchema<OAuth2TokenResponse>()
+				}
+				HttpStatusCode.Unauthorized {
+					description = "Failed to get token from OIDC provider, check the response body for more details"
+				}
+				HttpStatusCode.BadRequest {
+					description = "Missing required query parameters"
+				}
+			}
 		}
 
 		post("/refresh") {

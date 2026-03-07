@@ -21,6 +21,8 @@ dependencies { with(libs) {
     api(log.kotlinLogging)
     api(log.logback)
 
+    api(ktor.openapi.schema)
+
     api(ktor.client.core)
     api(ktor.client.okhttp)
     api(ktor.client.contentNegotiation)
