@@ -22,7 +22,7 @@ junit = "5.12.2"
 testcontainers = "2.0.2"
 ktor = "3.4.0"
 
-jobrunr = "8.4.2"
+jobrunr = "8.5.0"
 
 [plugins]
 doctor = { id = "com.osacky.doctor", version = "0.12.0" }
@@ -94,7 +94,7 @@ libraries-bson-kotlin = { group = "org.mongodb", name = "bson-kotlin", version.r
 libraries-bson-kotlinx = { group = "org.mongodb", name = "bson-kotlinx", version.ref = "mongodb" }
 libraries-ical4j = { group = "org.mnode.ical4j", name = "ical4j", version = "4.1.0" }
 libraries-jobrunr = { group = "org.jobrunr", name = "jobrunr", version.ref = "jobrunr" }
-libraries-jobrunr-kotlin = { group = "org.jobrunr", name = "jobrunr-kotlin-2.2-support", version.ref = "jobrunr" }
+libraries-jobrunr-kotlin = { group = "org.jobrunr", name = "jobrunr-kotlin-support", version.ref = "jobrunr" }
 libraries-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.7.0-0.6.x-compat" }
 libraries-kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 libraries-openfeature = { group = "dev.openfeature", name = "sdk", version = "1.20.1" }
