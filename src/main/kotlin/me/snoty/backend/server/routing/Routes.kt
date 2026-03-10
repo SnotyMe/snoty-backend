@@ -23,15 +23,21 @@ fun Application.addResources(koin: Koin, resources: List<Resource>) = routing {
 
 	val buildInfo: BuildInfo = getDependency()
 	val extraSchemas: List<JsonSchema> = koin.getFromAllScopes()
-	openAPI("/openapi.json") {
+
+	val openApiBaseConfig: OpenApiDocDsl.() -> Unit = {
 		info = OpenApiInfo(title = buildInfo.application, version = buildInfo.version)
-		codegen = OpenAPIGenerator()
 		components = Components(
 			schemas = extraSchemas.associateBy { it.title ?: error("All extra schemas must have a title") }
 		)
 	}
 
+	openAPI("/openapi.json") {
+		codegen = OpenAPIGenerator()
+		openApiBaseConfig()
+	}
+
 	swaggerUI("/swagger") {
 		source = OpenApiDocSource.Routing(ContentType.Application.Json)
+		openApiBaseConfig()
 	}
 }

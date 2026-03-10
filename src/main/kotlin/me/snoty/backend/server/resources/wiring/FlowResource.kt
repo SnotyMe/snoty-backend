@@ -23,8 +23,7 @@ import me.snoty.integration.common.wiring.flow.WorkflowSettings
 import org.koin.ktor.ext.get
 import org.slf4j.event.Level
 
-// Tag: flow
-fun Route.flowResource() = route("") {
+fun Route.flowResource() = route("flow") {
 	val flowService: FlowService = get()
 	val flowExecutionService: FlowExecutionService = get()
 

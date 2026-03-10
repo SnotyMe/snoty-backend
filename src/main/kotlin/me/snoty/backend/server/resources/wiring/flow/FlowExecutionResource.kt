@@ -2,6 +2,7 @@ package me.snoty.backend.server.resources.wiring.flow
 
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.routing.openapi.*
 import io.ktor.server.sse.*
 import io.ktor.sse.*
 import kotlinx.coroutines.flow.filter
@@ -14,7 +15,7 @@ import me.snoty.backend.wiring.flow.execution.FlowExecutionService
 import org.koin.ktor.ext.get
 import kotlin.time.Duration.Companion.seconds
 
-fun Route.flowExecutionResource() {
+fun Route.flowExecutionResource() = route("flow") {
 	val flowExecutionService: FlowExecutionService = get()
 	val flowExecutionEventService: FlowExecutionEventService = get()
 	val json: Json = get()
@@ -65,4 +66,6 @@ fun Route.flowExecutionResource() {
 				)
 			}
 	}
+}.describe {
+	tag("flow")
 }

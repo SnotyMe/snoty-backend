@@ -4,6 +4,7 @@ import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.routing.openapi.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.snoty.backend.authentication.Role
@@ -43,6 +44,8 @@ fun taskResources(adminTasks: AdminTasks) = Resource {
 
 				call.respond(HttpStatusCode.OK)
 			}
+		}.describe {
+			tag("task")
 		}
 	}
 }

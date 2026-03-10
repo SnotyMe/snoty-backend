@@ -1,9 +1,11 @@
 package me.snoty.backend.server.resources.wiring.credential
 
 import io.ktor.http.*
+import io.ktor.openapi.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.routing.openapi.*
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
 import me.snoty.backend.authentication.Role
@@ -11,10 +13,11 @@ import me.snoty.backend.utils.*
 import me.snoty.backend.wiring.credential.CredentialDefinitionRegistry
 import me.snoty.backend.wiring.credential.CredentialService
 import me.snoty.backend.wiring.credential.dto.CredentialScope
+import me.snoty.backend.wiring.credential.dto.EnumeratedCredentialDto
 import org.koin.ktor.ext.get as getDependency
 
 @OptIn(InternalSerializationApi::class)
-fun Route.credentialResource() {
+fun Route.credentialResource() = route("credential") {
 	val credentialDefinitionRegistry: CredentialDefinitionRegistry = getDependency()
 	val credentialService: CredentialService = getDependency()
 	val json: Json = getDependency()
@@ -103,6 +106,12 @@ fun Route.credentialResource() {
 			val credentials = credentialService.enumerateCredentials(userId = user.id, credentialType = credentialType)
 
 			call.respond(credentials)
+		}.describe {
+			responses {
+				HttpStatusCode.OK {
+					schema = jsonSchema<List<EnumeratedCredentialDto>>()
+				}
+			}
 		}
 
 		get("list") {
@@ -114,4 +123,6 @@ fun Route.credentialResource() {
 			call.respond(credentials)
 		}
 	}
+}.describe {
+	tag("credential")
 }

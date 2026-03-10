@@ -17,11 +17,13 @@ import me.snoty.integration.common.wiring.node.template.NodeMetadataFeatureFlags
 import me.snoty.integration.common.wiring.node.template.NodeTemplateRegistry
 import org.koin.ktor.ext.get as getDependency
 
-fun Route.nodeMetadataResource() {
+fun Route.nodeMetadataResource() = route("node/metadata") {
 	val featureFlags: NodeMetadataFeatureFlags = getDependency()
 	val json: Json = getDependency()
 	metadataEndpoint(featureFlags, json)
 	templateEndpoint(featureFlags, json)
+}.describe {
+	tag("node-metadata")
 }
 
 private fun Route.metadataEndpoint(featureFlags: NodeMetadataFeatureFlags, json: Json) {
