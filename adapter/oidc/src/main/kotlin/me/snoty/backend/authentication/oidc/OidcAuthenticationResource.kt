@@ -8,7 +8,6 @@ import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.auth.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.SerialName
@@ -48,9 +47,9 @@ fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClien
 			}
 		}
 		post("/token") {
-			val code = call.request.queryParameters["code"]
+			val code = call.queryParameters["code"]
 				?: return@post call.respondStatus(BadRequestException("Code is missing"))
-			val redirectUrl = call.request.queryParameters["redirect_url"]
+			val redirectUrl = call.queryParameters["redirect_url"]
 				?: return@post call.respondStatus(BadRequestException("Redirect URL is missing"))
 			val response = httpClient.submitForm(
 				url = provider.accessTokenUrl,
@@ -80,7 +79,7 @@ fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClien
 		}
 
 		post("/refresh") {
-			val refreshToken = call.receiveParameters()["refresh_token"]
+			val refreshToken = call.queryParameters["refresh_token"]
 				?: return@post call.respondStatus(BadRequestException("Refresh token is missing"))
 			val response = httpClient.submitForm(
 				url = provider.accessTokenUrl,
@@ -96,9 +95,19 @@ fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClien
 		}
 
 		authenticate("jwt-auth") {
+			post("/logout") {
+				val idToken = call.queryParameters["id_token"] ?: return@post call.respondStatus(BadRequestException("ID token is missing"))
+				val response = httpClient.get("${authConfig.logoutUrl}?id_token_hint=$idToken") {
+					contentType(ContentType.Application.FormUrlEncoded)
+					parameter("id_token_hint", idToken)
+				}
+				call.respondBytes(contentType = ContentType.Application.Json, bytes = response.bodyAsBytes())
+			}
+
 			get("/userInfo") {
 				call.respond(call.getUser())
 			}
+
 			get("/roles") {
 				val roles = call.getUserRoles()
 
