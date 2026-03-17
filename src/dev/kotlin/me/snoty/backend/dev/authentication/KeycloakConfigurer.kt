@@ -93,7 +93,7 @@ class KeycloakConfigurer(private var realmsResource: RealmsResource, private var
 		val rolesToAssign = clientsResource.get(realmManagementId)
 			.roles()
 			.list()
-			.filter { it.name in listOf("view-users", "query-users") }
+			.filter { it.name in listOf("view-users", "query-users", "view-identity-providers") }
 		realmResource.users()
 			.get(serviceAccountUser.id)
 			.roles()

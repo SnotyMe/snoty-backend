@@ -1,6 +1,7 @@
 package me.snoty.backend.adapter
 
 import com.sksamuel.hoplite.ConfigLoaderBuilder
+import org.koin.core.Koin
 import org.koin.core.module.Module
 
 interface Adapter {
@@ -13,4 +14,7 @@ interface Adapter {
 	fun autoconfigure(configLoader: ConfigLoaderBuilder) {}
 
 	val koinModule: Module
+
+	data class OnLoad(val koin: Koin)
+	fun onLoad(event: OnLoad) = Unit
 }

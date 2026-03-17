@@ -13,15 +13,27 @@ import org.koin.core.annotation.Single
 @ComponentScan
 object OidcKoinModule
 
+const val OIDC_ADAPTER_TYPE = "oidc"
+
 class OidcAdapter : AuthenticationAdapter {
-	override val supportedTypes: List<String> = listOf("oidc")
+    override val supportedTypes: List<String> = listOf(OIDC_ADAPTER_TYPE)
 	override val koinModule: DiModule = OidcKoinModule.module()
+
+	override suspend fun buildAuthenticationMetadata(event: AuthenticationAdapter.OnBuildAuthenticationMetadata): OidcAuthenticationMetadata {
+		val oidcConfig = event.koin.get<OidcConfig>()
+		return OidcAuthenticationMetadata(
+			authUrl = oidcConfig.authUrl,
+			logoutUrl = oidcConfig.logoutUrl,
+			clientId = oidcConfig.clientId,
+		)
+	}
 }
 
 data class OidcConfig(
 	val issuerUrl: String,
 	val oidcUrl: String = issuerUrl,
 	val authUrl: String = "$oidcUrl/auth",
+	val logoutUrl: String = "$oidcUrl/logout",
 	val tokenUrl: String = "$oidcUrl/token",
 	val certUrl: String = "$oidcUrl/certs",
 	val userInfoUrl: String = "$oidcUrl/userinfo",
