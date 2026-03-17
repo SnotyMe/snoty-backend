@@ -81,7 +81,6 @@ fun Resolver.getDetails(
 		String::class.isAssignableFrom(type, this) ->
 			NodeFieldDetails.PlaintextDetails(
 				lines = annotated.getAnnotation<Multiline>()?.values ?: Multiline.DEFAULT_LINES,
-				defaultValue = annotated.getAnnotation<FieldDefaultValue>()?.value ?: "",
 				language = annotated.getAnnotation<Language>()?.value
 			)
 
