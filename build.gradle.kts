@@ -163,6 +163,11 @@ application {
     }
 }
 
+tasks.withType<JavaExec>().configureEach {
+    // https://github.com/swagger-api/swagger-codegen-generators/issues/1015
+    systemProperty("logback.configurationFile", file("src/main/resources/logback.xml").absolutePath)
+}
+
 tasks.test {
     jvmArgs("-Dio.ktor.development=true")
 }
