@@ -1,11 +1,8 @@
 package me.snoty.backend.server.resources
 
-import io.ktor.openapi.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.server.routing.openapi.*
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import me.snoty.backend.build.BuildInfo
 import me.snoty.backend.server.routing.Resource
 import org.koin.core.annotation.Named
@@ -31,14 +28,5 @@ fun AboutResource(buildInfo: BuildInfo) = Resource {
 			hostname = hostname,
 			buildInfo = buildInfo
 		))
-	}
-
-	val openApiJson = Json {
-		prettyPrint = true
-		encodeDefaults = false
-	}
-	get("/openapi.json") {
-		val doc = OpenApiDoc(info = OpenApiInfo(buildInfo.application, buildInfo.version)) + application.routingRoot.descendants()
-		call.respondText(openApiJson.encodeToString(doc))
 	}
 }
