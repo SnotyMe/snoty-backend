@@ -127,7 +127,7 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 				jobId = jobId,
 				flowId = flowId.toFlowId(),
 				triggeredBy = triggeredBy ?: FlowTriggerReason.Unknown,
-				startDate = startDate,
+				timestamp = startDate,
 				status = status,
 			)
 		}

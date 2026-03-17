@@ -14,12 +14,14 @@ import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toClassNameOrNull
 import com.squareup.kotlinpoet.ksp.toTypeName
+import kotlinx.serialization.SerialName
 import me.snoty.backend.utils.toTitleCase
 import me.snoty.backend.wiring.credential.CredentialRef
 import me.snoty.backend.wiring.credential.RegisterCredential
 import me.snoty.integration.common.model.metadata.*
 import kotlin.reflect.KClass
 
+@OptIn(KspExperimental::class)
 fun generateObjectSchema(resolver: Resolver, clazz: KSClassDeclaration, visited: List<ClassName> = emptyList()): ObjectSchema? {
 	when (clazz.toClassName()) {
 		NoSchema::class.asClassName() -> return null
@@ -35,9 +37,12 @@ fun generateObjectSchema(resolver: Resolver, clazz: KSClassDeclaration, visited:
 		val defaultValue = prop.getAnnotation<FieldDefaultValue>()?.value
 
 		val details = resolver.getDetails(prop, visited)
+		val type = details?.let {
+			resolver.getKotlinClassByName(details::class.qualifiedName!!)?.getAnnotation<SerialName>()?.value
+		} ?: prop.type.toString()
 		NodeField(
 			name = name.asString(),
-			type = details?.type ?: prop.type.toString(),
+			type = type,
 			defaultValue = defaultValue,
 			displayName = displayName,
 			description = description,

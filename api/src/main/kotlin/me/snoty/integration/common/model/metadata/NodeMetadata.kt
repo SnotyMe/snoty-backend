@@ -1,6 +1,7 @@
 package me.snoty.integration.common.model.metadata
 
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.json.JsonClassDiscriminator
@@ -36,14 +37,13 @@ data class NodeField(
 
 @Serializable
 @OptIn(ExperimentalSerializationApi::class)
-@JsonClassDiscriminator("_t")
-sealed class NodeFieldDetails(
-	val type: String
-) {
+@JsonClassDiscriminator("type")
+sealed class NodeFieldDetails {
 	@Serializable
+	@SerialName("Enum")
 	data class EnumDetails(
 		val values: List<EnumConstant>
-	) : NodeFieldDetails("Enum") {
+	) : NodeFieldDetails() {
 		@Serializable
 		data class EnumConstant(
 			val value: String,
@@ -52,37 +52,44 @@ sealed class NodeFieldDetails(
 	}
 
 	@Serializable
+	@SerialName("Plaintext")
 	data class PlaintextDetails @JvmOverloads constructor(
 		val lines: Int,
+		@Deprecated("Use NodeField#defaultValue instead", ReplaceWith("defaultValue"))
 		val defaultValue: String = "",
 		val language: String? = null,
-	) : NodeFieldDetails("Plaintext")
+	) : NodeFieldDetails()
 
 	@Serializable
+	@SerialName("Generic")
 	data class GenericDetails(
 		val genericType: String
-	) : NodeFieldDetails("Generic")
+	) : NodeFieldDetails()
 
 	@Serializable
+	@SerialName("Object")
 	data class ObjectDetails(
 		val className: String,
 		val schema: ObjectSchema,
-	) : NodeFieldDetails("Object")
+	) : NodeFieldDetails()
 
 	@Serializable
+	@SerialName("Collection")
 	data class CollectionDetails(
 		val elementDetails: NodeFieldDetails?,
-	) : NodeFieldDetails("Collection")
+	) : NodeFieldDetails()
 
 	@Serializable
+	@SerialName("Map")
 	data class MapDetails(
 		val keyDetails: NodeFieldDetails?,
 		val valueDetails: NodeFieldDetails?,
-	) : NodeFieldDetails("Map")
+	) : NodeFieldDetails()
 
 	@Serializable
+	@SerialName("Credential")
 	data class CredentialDetails(
 		val credentialType: String,
 		val schema: ObjectSchema,
-	) : NodeFieldDetails("Credential")
+	) : NodeFieldDetails()
 }
