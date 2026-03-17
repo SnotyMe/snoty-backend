@@ -7,6 +7,7 @@ import me.snoty.backend.authentication.AuthenticationMetadata
 data class KeycloakAuthenticationMetadata(
     override val adapter: String = KEYCLOAK_ADAPTER_TYPE,
     val authUrl: String,
+    val logoutUrl: String,
     val clientId: String,
     val providers: List<KeycloakIdentityProvider>,
 ) : AuthenticationMetadata

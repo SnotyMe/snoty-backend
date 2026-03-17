@@ -9,7 +9,6 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.openapi.*
 import io.ktor.server.auth.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.routing.openapi.*
@@ -107,7 +106,7 @@ fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClien
 		}
 
 		post("/refresh") {
-			val refreshToken = call.receiveParameters()["refresh_token"]
+			val refreshToken = call.queryParameters["refresh_token"]
 				?: return@post call.respondStatus(BadRequestException("Refresh token is missing"))
 			val response = httpClient.submitForm(
 				url = provider.accessTokenUrl,
@@ -120,12 +119,45 @@ fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClien
 			)
 
 			call.respondBytes(contentType = ContentType.Application.Json, bytes = response.bodyAsBytes())
+		}.describe {
+			parameters {
+				query("refresh_token") {
+					this.schema = jsonSchema<String>()
+					this.description = "The refresh token received from the OIDC provider, used to obtain a new access token without requiring the user to re-authenticate"
+					this.required = true
+				}
+			}
+
+			responses {
+				HttpStatusCode.OK {
+					description = "Successfully obtained a new access token, the response body will contain the new token information"
+					schema = jsonSchema<OAuth2TokenResponse>()
+				}
+			}
 		}
 
 		authenticate("jwt-auth") {
+			post("/logout") {
+				val idToken = call.queryParameters["id_token"] ?: return@post call.respondStatus(BadRequestException("ID token is missing"))
+				val response = httpClient.get("${authConfig.logoutUrl}?id_token_hint=$idToken") {
+					contentType(ContentType.Application.FormUrlEncoded)
+					parameter("id_token_hint", idToken)
+				}
+				call.respondBytes(contentType = ContentType.Application.Json, bytes = response.bodyAsBytes())
+			}.describe {
+				parameters {
+					query("id_token") {
+						this.schema = jsonSchema<String>()
+						this.description = "The ID token received from the OIDC provider, used to sign the user out of the OIDC provider as well"
+						this.required = true
+					}
+				}
+			}
+
 			get("/userInfo") {
 				call.respond(call.getUser())
 			}
+
 			get("/roles") {
 				val roles = call.getUserRoles()
 

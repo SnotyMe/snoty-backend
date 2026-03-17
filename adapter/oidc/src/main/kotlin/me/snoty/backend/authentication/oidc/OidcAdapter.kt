@@ -24,6 +24,7 @@ class OidcAdapter : AuthenticationAdapter {
 		val oidcConfig = event.koin.get<OidcConfig>()
 		return OidcAuthenticationMetadata(
 			authUrl = oidcConfig.authUrl,
+			logoutUrl = oidcConfig.logoutUrl,
 			clientId = oidcConfig.clientId,
 		)
 	}
@@ -36,6 +37,7 @@ data class OidcConfig(
 	val issuerUrl: String,
 	val oidcUrl: String = issuerUrl,
 	val authUrl: String = "$oidcUrl/auth",
+	val logoutUrl: String = "$oidcUrl/logout",
 	val tokenUrl: String = "$oidcUrl/token",
 	val certUrl: String = "$oidcUrl/certs",
 	val userInfoUrl: String = "$oidcUrl/userinfo",

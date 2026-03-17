@@ -40,6 +40,7 @@ class KeycloakAdapter : AuthenticationAdapter {
 
         return KeycloakAuthenticationMetadata(
             authUrl = oidcConfig.authUrl,
+            logoutUrl = oidcConfig.logoutUrl,
             clientId = oidcConfig.clientId,
             providers = providers,
         )

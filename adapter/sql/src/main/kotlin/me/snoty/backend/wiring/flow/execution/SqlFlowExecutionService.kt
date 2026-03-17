@@ -67,7 +67,7 @@ class SqlFlowExecutionService(
 					jobId = it[flowExecutionTable.id].value,
 					flowId = it[flowExecutionTable.flowId].value,
 					triggeredBy = it[flowExecutionTable.triggeredBy],
-					startDate = it[flowExecutionTable.triggeredAt],
+					timestamp = it[flowExecutionTable.triggeredAt],
 					status = it[flowExecutionTable.status]
 				)
 			}
