@@ -31,6 +31,9 @@ data class OAuth2TokenResponse(
 
 fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClient, provider: OAuthServerSettings.OAuth2ServerSettings) {
 	val logger = KotlinLogging.logger {}
+	val httpClient = httpClient.config {
+		expectSuccess = false
+	}
 	route("/auth") {
 		authenticate(OIDC) {
 			get("/login") {}
