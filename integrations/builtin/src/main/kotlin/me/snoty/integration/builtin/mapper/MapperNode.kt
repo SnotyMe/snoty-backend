@@ -2,6 +2,7 @@ package me.snoty.integration.builtin.mapper
 
 import kotlinx.serialization.Serializable
 import me.snoty.backend.utils.bson.encode
+import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.*
@@ -38,6 +39,7 @@ data class MapperSettings(
 @RegisterNode(
 	name = "mapper",
 	displayName = "Mapper",
+	icon = Icon(name = "lucide-shuffle"),
 	position = NodePosition.MIDDLE,
 	settingsType = MapperSettings::class,
 	inputType = EmptySchema::class,

@@ -4,6 +4,7 @@ import me.snoty.backend.notifications.NotificationAttributes
 import me.snoty.backend.notifications.NotificationService
 import me.snoty.backend.utils.filterIfNot
 import me.snoty.backend.wiring.credential.resolve
+import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.Node
@@ -23,6 +24,7 @@ import org.slf4j.event.Level
 @RegisterNode(
 	name = "moodle_assignments",
 	displayName = "Moodle",
+	icon = Icon(name = "devicon-moodle"),
 	position = NodePosition.START,
 	settingsType = MoodleSettings::class,
 	outputType = MoodleAssignment::class

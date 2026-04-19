@@ -6,6 +6,7 @@ import io.ktor.client.statement.*
 import io.ktor.util.*
 import me.snoty.backend.wiring.credential.resolveOrNull
 import me.snoty.integration.builtin.utils.parseJson
+import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.Node
@@ -24,6 +25,7 @@ import org.koin.core.annotation.Single
 @RegisterNode(
 	name = "http",
 	displayName = "HTTP",
+	icon = Icon(name = "material-symbols-http-rounded"),
 	position = NodePosition.START,
 	settingsType = HttpNodeSettings::class,
 	inputType = HttpNodeInput::class,

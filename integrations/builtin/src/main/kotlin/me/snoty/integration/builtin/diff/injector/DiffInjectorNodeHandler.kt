@@ -2,6 +2,7 @@ package me.snoty.integration.builtin.diff.injector
 
 import kotlinx.serialization.Serializable
 import me.snoty.integration.builtin.diff.DiffNodeHandler
+import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.ReceiveEmptyInput
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.diff.DiffResult
@@ -44,6 +45,7 @@ data class HasDiff(
 @RegisterNode(
 	name = "diffinjector",
 	displayName = "Diff Injector",
+	icon = Icon(name = "lucide-file-diff"),
 	position = NodePosition.MIDDLE,
 	settingsType = DiffInjectorSettings::class,
 	inputType = EmptySchema::class,

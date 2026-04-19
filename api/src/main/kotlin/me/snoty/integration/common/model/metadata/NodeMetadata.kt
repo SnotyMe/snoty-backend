@@ -8,10 +8,12 @@ import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings
 import kotlin.reflect.KClass
+import me.snoty.integration.common.annotation.Icon as IconAnnotation
 
 @Serializable
 data class NodeMetadata(
 	val displayName: String,
+	val icon: Icon? = null,
 	val descriptor: NodeDescriptor,
 	val position: NodePosition,
 	val settings: ObjectSchema,
@@ -21,6 +23,19 @@ data class NodeMetadata(
 	val receiveEmptyInput: Boolean = false,
 	val output: ObjectSchema?
 )
+
+@Serializable
+data class Icon(
+	val name: String,
+	val color: String? = null,
+) {
+	companion object {
+		fun of(icon: IconAnnotation) = Icon(
+			name = icon.name,
+			color = icon.color.takeIf(String::isNotEmpty)
+		)
+	}
+}
 
 @Serializable
 data class NodeField(

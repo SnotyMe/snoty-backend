@@ -3,6 +3,7 @@ package me.snoty.integration.builtin.split
 import kotlinx.serialization.Serializable
 import me.snoty.backend.utils.bson.getByPath
 import me.snoty.backend.utils.bson.setByPath
+import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.EmptySchema
@@ -41,6 +42,7 @@ enum class SplitBehavior {
 @RegisterNode(
 	name = "split",
 	displayName = "Split",
+	icon = Icon(name = "lucide-split"),
 	inputType = EmptySchema::class,
 	outputType = EmptySchema::class,
 	settingsType = SplitSettings::class,

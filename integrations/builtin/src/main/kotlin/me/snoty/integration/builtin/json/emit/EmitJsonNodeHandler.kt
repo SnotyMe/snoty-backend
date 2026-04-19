@@ -1,6 +1,7 @@
 package me.snoty.integration.builtin.json.emit
 
 import kotlinx.serialization.Serializable
+import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.EmptySchema
@@ -26,6 +27,7 @@ data class EmitJsonSettings(
 	name = "emitjson",
 	namespace = "me.snoty.integration.builtin.emitjson",
 	displayName = "Emit JSON",
+	icon = Icon(name = "lucide-braces"),
 	settingsType = EmitJsonSettings::class,
 	position = NodePosition.START,
 	outputType = EmptySchema::class,

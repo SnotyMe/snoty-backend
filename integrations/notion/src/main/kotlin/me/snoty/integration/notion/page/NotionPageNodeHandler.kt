@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.serialization.Serializable
 import me.snoty.backend.utils.BadRequestException
 import me.snoty.backend.utils.respondStatus
+import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.diff.DiffResult
 import me.snoty.integration.common.model.NodePosition
@@ -29,6 +30,7 @@ import org.koin.core.annotation.Single
 @RegisterNode(
 	name = "notion_page",
 	displayName = "Notion Page",
+	icon = Icon(name = "logos-notion-icon"),
 	position = NodePosition.END,
 	settingsType = NotionPageSettings::class,
 	inputType = NotionPage::class,

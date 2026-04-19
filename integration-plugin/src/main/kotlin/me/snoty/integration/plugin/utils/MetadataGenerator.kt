@@ -6,6 +6,7 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import me.snoty.backend.wiring.node.metadataJson
 import me.snoty.integration.common.annotation.ReceiveEmptyInput
 import me.snoty.integration.common.annotation.RegisterNode
+import me.snoty.integration.common.model.metadata.Icon
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.node.NodeSettings
 
@@ -17,6 +18,9 @@ fun generateMetadata(resolver: Resolver, clazz: KSClassDeclaration, node: Regist
 	val metadata = NodeMetadata(
 		descriptor = node.descriptor(clazz),
 		displayName = node.displayName,
+		icon = node.icon
+			.takeIf { it.name.isNotEmpty() }
+			?.let(Icon::of),
 		position = node.position,
 		settingsClass = NodeSettings::class,
 		settings = generateObjectSchema(resolver, settingsClass)!!,

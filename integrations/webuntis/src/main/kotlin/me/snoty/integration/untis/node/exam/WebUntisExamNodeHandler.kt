@@ -1,6 +1,7 @@
 package me.snoty.integration.untis.node.exam
 
 import kotlinx.serialization.Serializable
+import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.FieldCensored
@@ -23,6 +24,7 @@ import org.koin.core.annotation.Single
 @RegisterNode(
 	name = "webuntis_exams",
 	displayName = "WebUntis Exams",
+	icon = Icon(name = "arcticons-untis-mobile", color = "#FF6033"),
 	position = NodePosition.START,
 	settingsType = WebUntisExamSettings::class,
 	outputType = MappedUntisExam::class,

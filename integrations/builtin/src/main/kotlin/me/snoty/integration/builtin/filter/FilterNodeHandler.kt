@@ -3,6 +3,7 @@ package me.snoty.integration.builtin.filter
 import kotlinx.serialization.Serializable
 import liqp.TemplateParser
 import me.snoty.integration.builtin.utils.encodeObjects
+import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.FieldDescription
@@ -31,6 +32,7 @@ data class FilterSettings(
 @RegisterNode(
 	name = "filter",
 	displayName = "Filter",
+	icon = Icon(name = "lucide-funnel"),
 	settingsType = FilterSettings::class,
 	position = NodePosition.MIDDLE,
 	inputType = Any::class,

@@ -8,6 +8,7 @@ import me.snoty.backend.wiring.credential.Credential
 import me.snoty.backend.wiring.credential.CredentialRef
 import me.snoty.backend.wiring.credential.RegisterCredential
 import me.snoty.backend.wiring.credential.resolve
+import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.FieldCensored
@@ -42,6 +43,7 @@ data class DiscordSettings(
 @RegisterNode(
 	name = "discord",
 	displayName = "Discord",
+	icon = Icon(name = "logos-discord-icon"),
 	position = NodePosition.END,
 	settingsType = DiscordSettings::class,
 	inputType = DiscordWebhook.Message::class

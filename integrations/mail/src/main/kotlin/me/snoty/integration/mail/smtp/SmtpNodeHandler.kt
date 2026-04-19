@@ -1,6 +1,7 @@
 package me.snoty.integration.mail.smtp
 
 import jakarta.mail.Session
+import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.Node
@@ -15,6 +16,7 @@ import org.koin.core.annotation.Single
 @RegisterNode(
 	name = "smtp",
 	displayName = "SMTP",
+	icon = Icon(name = "lucide-mail"),
 	settingsType = SmtpSettings::class,
 	inputType = MailInput::class,
 	position = NodePosition.END,

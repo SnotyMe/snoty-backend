@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import me.snoty.backend.utils.bson.getByPath
 import me.snoty.backend.utils.bson.setByPath
 import me.snoty.integration.builtin.utils.parseJson
+import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.EmptySchema
@@ -28,6 +29,7 @@ data class ParseJsonNodeSettings(
 
 @RegisterNode(
 	displayName = "Parse JSON",
+	icon = Icon(name = "lucide-braces"),
 	name = "parsejson",
 	position = NodePosition.MIDDLE,
 	settingsType = ParseJsonNodeSettings::class,

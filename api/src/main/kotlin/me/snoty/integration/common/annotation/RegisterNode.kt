@@ -7,6 +7,7 @@ import kotlin.reflect.KClass
 
 annotation class RegisterNode(
 	val displayName: String,
+	val icon: Icon = Icon(),
 	/**
 	 * Namespace unique node name / id, in snake_case.
 	 * Must only exist once within your namespace or side effects will occur.
@@ -29,3 +30,8 @@ annotation class RegisterNode(
  * Marks that the node wants to receive empty input. Otherwise, following nodes will not be executed at all if no input element was produced by the prior node.
  */
 annotation class ReceiveEmptyInput
+
+annotation class Icon(
+	val name: String = "",
+	val color: String = "",
+)

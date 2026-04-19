@@ -1,6 +1,7 @@
 package me.snoty.integration.untis.node.timetable
 
 import kotlinx.serialization.Serializable
+import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.FieldCensored
@@ -22,6 +23,7 @@ import org.koin.core.annotation.Single
 @RegisterNode(
 	name = "webuntis_timetable",
 	displayName = "WebUntis Timetable",
+	icon = Icon(name = "arcticons-untis-mobile", color = "#FF6033"),
 	position = NodePosition.START,
 	settingsType = WebUntisTimetableSettings::class,
 	outputType = MappedUntisPeriod::class,

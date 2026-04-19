@@ -2,6 +2,7 @@ package me.snoty.integration.mail.global
 
 import me.snoty.backend.config.ConfigLoader
 import me.snoty.backend.config.load
+import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.Node
@@ -22,6 +23,7 @@ import org.koin.core.annotation.Single
 @RegisterNode(
 	name = "mail",
 	displayName = "E-Mail",
+	icon = Icon(name = "lucide-mail"),
 	position = NodePosition.END,
 	inputType = MailInput::class,
 	settingsType = MailSettings::class,

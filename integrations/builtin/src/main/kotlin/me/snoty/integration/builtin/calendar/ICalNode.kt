@@ -5,6 +5,7 @@ import io.ktor.server.response.*
 import kotlinx.serialization.Serializable
 import me.snoty.backend.utils.ForbiddenException
 import me.snoty.backend.utils.respondStatus
+import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.FieldCensored
@@ -33,6 +34,7 @@ data class ICalSettings(
 @RegisterNode(
 	name = "ical",
 	displayName = "ICal",
+	icon = Icon(name = "lucide-calendar-days"),
 	position = NodePosition.END,
 	settingsType = ICalSettings::class,
 	inputType = CalendarEvent::class,

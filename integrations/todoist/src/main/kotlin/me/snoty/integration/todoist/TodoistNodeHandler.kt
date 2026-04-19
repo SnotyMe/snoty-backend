@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.serialization.Serializable
 import me.snoty.backend.utils.BadRequestException
 import me.snoty.backend.utils.respondStatus
+import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.diff.DiffResult
 import me.snoty.integration.common.model.NodePosition
@@ -33,6 +34,7 @@ data class TodoistSettings(
 @RegisterNode(
 	name = "todoist",
 	displayName = "Todoist",
+	icon = Icon(name = "logos-todoist-icon"),
 	position = NodePosition.END,
 	settingsType = TodoistSettings::class,
 	inputType = TodoistInput::class,
