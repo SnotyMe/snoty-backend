@@ -1,11 +1,15 @@
 package me.snoty.backend
 
+import ch.qos.logback.classic.spi.ILoggingEvent
+import ch.qos.logback.classic.turbo.TurboFilter
+import ch.qos.logback.core.filter.Filter
 import kotlinx.coroutines.runBlocking
 import me.snoty.backend.adapter.AdapterSelector
 import me.snoty.backend.authentication.AuthenticationAdapter
 import me.snoty.backend.database.DatabaseAdapter
 import me.snoty.backend.events.EventHandler
 import me.snoty.backend.featureflags.FeatureFlagsAdapter
+import me.snoty.backend.featureflags.LogFeatureFlagsContainer
 import me.snoty.backend.featureflags.setupFeatureFlags
 import me.snoty.backend.injection.getFromAllScopes
 import me.snoty.backend.logging.setupLogbackFilters
@@ -35,12 +39,19 @@ fun startApplication(vararg extraModules: Module) = runBlocking {
 
 	// base setup, needed for other systems to work properly, so we load them first
 	adapterSelector.load(FeatureFlagsAdapter::class, FeatureFlagsAdapter.CONFIG_GROUP)
-	setupLogbackFilters(koin.getAll(), koin.getFromAllScopes())
-	setupFeatureFlags(koin.get(), koin.getFromAllScopes())
+	val initialFilters = koin.getFromAllScopes<TurboFilter>() + koin.getFromAllScopes<Filter<ILoggingEvent>>()
+	setupLogbackFilters(initialFilters)
+	val initialFeatureFlags = koin.getFromAllScopes<LogFeatureFlagsContainer>()
+	setupFeatureFlags(koin.get(), initialFeatureFlags)
 
 	adapterSelector.load(DatabaseAdapter::class, DatabaseAdapter.CONFIG_GROUP)
 	adapterSelector.load(AuthenticationAdapter::class, AuthenticationAdapter.CONFIG_GROUP)
 	adapterSelector.load(ExecutionEventAdapter::class, ExecutionEventAdapter.CONFIG_GROUP)
+
+	val postAdapterFilters = koin.getFromAllScopes<TurboFilter>() + koin.getFromAllScopes<Filter<ILoggingEvent>>()
+	setupLogbackFilters(postAdapterFilters.filter { it !in initialFilters })
+	val postAdapterFeatureFlags = koin.getFromAllScopes<LogFeatureFlagsContainer>()
+	setupFeatureFlags(koin.get(), postAdapterFeatureFlags.filter { it !in initialFeatureFlags })
 
 	koin.getAll<EventHandler>()
 		// allows to register hooks that need to be executed in the application lifecycle
