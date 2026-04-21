@@ -6,6 +6,7 @@ apply(from = "version.gradle.kts")
 plugins {
     application
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ktor)
     id("snoty.buildinfo-conventions")
     id("snoty.doctor-conventions")
     id("snoty.kotlin-conventions")
@@ -99,6 +100,11 @@ dependencies { with(libs) {
     implementation(ktor.server.auth)
     implementation(ktor.server.auth.jwt)
     implementation(ktor.server.contentNegotiation)
+    implementation(ktor.server.swagger)
+    implementation(ktor.server.openapi)
+    implementation(ktor.server.routing.openapi)
+
+    implementation(libraries.swagger.codegen)
 
     // monitoring
     implementation(monitoring.ktor.opentelemetry)
@@ -139,12 +145,25 @@ if (isDevelopment) {
     }
 }
 
+ktor {
+    openApi {
+        enabled = true
+        codeInferenceEnabled = true
+        onlyCommented = false
+    }
+}
+
 application {
     mainClass.set("me.snoty.backend.MainKt")
 
     if (isDevelopment) {
         applicationDefaultJvmArgs += "-Dio.ktor.development=$isDevelopment"
     }
+}
+
+tasks.withType<JavaExec>().configureEach {
+    // https://github.com/swagger-api/swagger-codegen-generators/issues/1015
+    systemProperty("logback.configurationFile", file("src/main/resources/logback.xml").absolutePath)
 }
 
 tasks.test {

@@ -1,7 +1,10 @@
 package me.snoty.backend.server.resources.wiring
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.ktor.http.*
+import io.ktor.openapi.*
 import io.ktor.server.routing.*
+import io.ktor.server.routing.openapi.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -14,11 +17,13 @@ import me.snoty.integration.common.wiring.node.template.NodeMetadataFeatureFlags
 import me.snoty.integration.common.wiring.node.template.NodeTemplateRegistry
 import org.koin.ktor.ext.get as getDependency
 
-fun Route.nodeMetadataResource() {
+fun Route.nodeMetadataResource() = route("node/metadata") {
 	val featureFlags: NodeMetadataFeatureFlags = getDependency()
 	val json: Json = getDependency()
 	metadataEndpoint(featureFlags, json)
 	templateEndpoint(featureFlags, json)
+}.describe {
+	tag("node-metadata")
 }
 
 private fun Route.metadataEndpoint(featureFlags: NodeMetadataFeatureFlags, json: Json) {
@@ -44,6 +49,12 @@ private fun Route.metadataEndpoint(featureFlags: NodeMetadataFeatureFlags, json:
 		}
 
 		call.respondCaching(description)
+	}.describe {
+		responses {
+			HttpStatusCode.OK {
+				schema = jsonSchema<List<NodeDescription>>()
+			}
+		}
 	}
 }
 

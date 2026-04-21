@@ -1,5 +1,6 @@
 package me.snoty.backend.authentication.keycloak
 
+import io.ktor.openapi.*
 import me.snoty.backend.authentication.AuthenticationAdapter
 import me.snoty.backend.authentication.Role
 import me.snoty.backend.authentication.oidc.OidcConfig
@@ -44,6 +45,9 @@ class KeycloakAdapter : AuthenticationAdapter {
             providers = providers,
         )
     }
+
+    override fun getMetadataJsonSchema(jsonSchemaInference: JsonSchemaInference): JsonSchema =
+        jsonSchemaInference.jsonSchema<KeycloakAuthenticationMetadata>()
 }
 
 data class KeycloakConfig(

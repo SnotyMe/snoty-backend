@@ -33,7 +33,7 @@ data class MongoFlowLogs(
 	val triggeredBy: FlowTriggerReason?,
 	val creationDate: Instant,
 	val status: FlowExecutionStatus? = null,
-	val logs: List<NodeLogEntry>,
+	val logs: List<NodeLogEntryDto>,
 )
 
 @Single
@@ -105,11 +105,19 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 		)
 	}
 
-	override suspend fun record(jobId: String, entry: NodeLogEntry) {
+	override suspend fun record(jobId: String, entry: NodeLogEntry): NodeLogEntryDto {
+		val entryDto = NodeLogEntryDto(
+			id = ObjectId().toString(),
+			timestamp = entry.timestamp,
+			level = entry.level,
+			message = entry.message,
+			node = entry.node,
+		)
 		collection.updateOne(
 			Filters.eq(MongoFlowLogs::_id.name, jobId),
-			Updates.push(MongoFlowLogs::logs.name, entry),
+			Updates.push(MongoFlowLogs::logs.name, entryDto),
 		)
+		return entryDto
 	}
 
 	override fun query(userId: UserId): Flow<EnumeratedFlowExecution> {
@@ -127,7 +135,7 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 				jobId = jobId,
 				flowId = flowId.toFlowId(),
 				triggeredBy = triggeredBy ?: FlowTriggerReason.Unknown,
-				startDate = startDate,
+				timestamp = startDate,
 				status = status,
 			)
 		}
@@ -170,7 +178,7 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 						jobId = _id,
 						flowId = flowId,
 						triggeredBy = triggeredBy ?: FlowTriggerReason.Unknown,
-						startDate = creationDate,
+						timestamp = creationDate,
 						status = status,
 						logs = logs,
 					)

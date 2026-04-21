@@ -56,6 +56,6 @@ class KtorServer(
 		authenticationProvider.configureKtor(this)
 		configureSerialization(json)
 		configureRouting(config)
-		addResources(koin.getAll())
+		addResources(koin, koin.getAll())
 	}
 }

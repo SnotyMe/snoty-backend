@@ -4,6 +4,7 @@ import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.routing.openapi.*
 import kotlinx.coroutines.flow.toList
 import kotlinx.serialization.Serializable
 import me.snoty.backend.scheduling.FlowJobRequest
@@ -22,7 +23,7 @@ import me.snoty.integration.common.wiring.flow.WorkflowSettings
 import org.koin.ktor.ext.get
 import org.slf4j.event.Level
 
-fun Route.flowResource() {
+fun Route.flowResource() = route("flow") {
 	val flowService: FlowService = get()
 	val flowExecutionService: FlowExecutionService = get()
 
@@ -115,4 +116,6 @@ fun Route.flowResource() {
 	}
 
 	flowExportImportResource()
+}.describe {
+	tag("flow")
 }

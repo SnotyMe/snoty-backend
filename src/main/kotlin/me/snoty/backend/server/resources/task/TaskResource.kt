@@ -4,6 +4,7 @@ import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.routing.openapi.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.snoty.backend.authentication.Role
@@ -32,7 +33,7 @@ fun taskResources(adminTasks: AdminTasks) = Resource {
 			}
 
 			post("trigger") {
-				val action = call.request.queryParameters["action"] ?: return@post call.respondStatus(BadRequestException("Action is missing"))
+				val action = call.queryParameters["action"] ?: return@post call.respondStatus(BadRequestException("Action is missing"))
 				call.requireAnyRole(Role.ADMIN, Role(action))
 
 				val task = tasks[action] ?: return@post call.respondStatus(NotFoundException("Task not found"))
@@ -43,6 +44,8 @@ fun taskResources(adminTasks: AdminTasks) = Resource {
 
 				call.respond(HttpStatusCode.OK)
 			}
+		}.describe {
+			tag("task")
 		}
 	}
 }

@@ -7,9 +7,11 @@ import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.openapi.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.routing.openapi.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import me.snoty.backend.utils.*
@@ -79,6 +81,31 @@ fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClien
 			if (token.refreshToken != null)
 				call.response.cookies.append("refresh_token", token.refreshToken)
 			call.respond(token)
+		}.describe {
+			parameters {
+				query("code") {
+					this.schema = jsonSchema<String>()
+					this.description = "The authorization code received from the OIDC provider after a successful authentication"
+					this.required = true
+				}
+				query("redirect_url") {
+					this.schema = jsonSchema<String>()
+					this.description = "The redirect URL used in the authentication request, must match the one used in the initial request"
+					this.required = true
+				}
+			}
+
+			responses {
+				HttpStatusCode.OK {
+					schema = jsonSchema<OAuth2TokenResponse>()
+				}
+				HttpStatusCode.Unauthorized {
+					description = "Failed to get token from OIDC provider, check the response body for more details"
+				}
+				HttpStatusCode.BadRequest {
+					description = "Missing required query parameters"
+				}
+			}
 		}
 
 		post("/refresh") {
@@ -95,6 +122,21 @@ fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClien
 			)
 
 			call.respondBytes(contentType = ContentType.Application.Json, bytes = response.bodyAsBytes())
+		}.describe {
+			parameters {
+				query("refresh_token") {
+					this.schema = jsonSchema<String>()
+					this.description = "The refresh token received from the OIDC provider, used to obtain a new access token without requiring the user to re-authenticate"
+					this.required = true
+				}
+			}
+
+			responses {
+				HttpStatusCode.OK {
+					description = "Successfully obtained a new access token, the response body will contain the new token information"
+					schema = jsonSchema<OAuth2TokenResponse>()
+				}
+			}
 		}
 
 		authenticate("jwt-auth") {
@@ -105,6 +147,14 @@ fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClien
 					parameter("id_token_hint", idToken)
 				}
 				call.respondBytes(contentType = ContentType.Application.Json, bytes = response.bodyAsBytes())
+			}.describe {
+				parameters {
+					query("id_token") {
+						this.schema = jsonSchema<String>()
+						this.description = "The ID token received from the OIDC provider, used to sign the user out of the OIDC provider as well"
+						this.required = true
+					}
+				}
 			}
 
 			get("/userInfo") {
@@ -117,5 +167,7 @@ fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClien
 				call.respond(roles)
 			}
 		}
+	}.describe {
+		tag("auth")
 	}
 }

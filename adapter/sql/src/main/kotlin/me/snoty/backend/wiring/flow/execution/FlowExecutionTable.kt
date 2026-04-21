@@ -5,7 +5,7 @@ import me.snoty.backend.database.sql.utils.nodeId
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.wiring.flow.FlowTable
 import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
-import me.snoty.integration.common.wiring.flow.NodeLogEntry
+import me.snoty.integration.common.wiring.flow.NodeLogEntryDto
 import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.Table
@@ -35,7 +35,8 @@ class FlowExecutionLogTable(flowExecutionTable: FlowExecutionTable) : UuidTable(
 	val node = nodeId("node").nullable()
 }
 
-fun ResultRow.toLogEntry(flowExecutionLogTable: FlowExecutionLogTable) = NodeLogEntry(
+fun ResultRow.toLogEntryDto(flowExecutionLogTable: FlowExecutionLogTable) = NodeLogEntryDto(
+	id = this[flowExecutionLogTable.id].value.toString(),
 	timestamp = this[flowExecutionLogTable.timestamp],
 	level = this[flowExecutionLogTable.level],
 	message = this[flowExecutionLogTable.message],

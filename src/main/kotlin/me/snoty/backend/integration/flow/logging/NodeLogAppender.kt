@@ -58,16 +58,16 @@ class NodeLogAppender(
 			?: return logger.error { "No job ID found in ${eventObject.mdcPropertyMap} with msg='$message'" }
 
 		scope.launch {
+			val entryDto = flowExecutionService.record(jobId, entry)
+
 			flowExecutionEventService.offer(FlowExecutionEvent.FlowLogEvent(
 				jobId = jobId,
 				userId = eventObject.mdcPropertyMap[USER_ID.key]?.let(::UserId)
 					?: return@launch logger.error { "No User ID found in log entry with msg='$message'" },
 				flowId = eventObject.mdcPropertyMap[FLOW_ID.key]?.let(::FlowId)
 					?: return@launch logger.error { "No Flow ID found in log entry with msg='$message'" },
-				entry = entry,
+				entry = entryDto,
 			))
-
-			flowExecutionService.record(jobId, entry)
 		}
 	}
 }

@@ -23,7 +23,12 @@ class SpiAdapterSelector(
 		val providers = ServiceLoader.load(adapterClass.java).toList()
 
 		val adapterConfig: AdapterConfig = configLoader.load(configKey) {
-			providers.forEach { it.autoconfigure(this) }
+			providers.forEach {
+				it.autoconfigure(this)
+				it.registerAlwaysOn(Adapter.OnRegisterAlwaysOn(
+					koin = koin,
+				))
+			}
 		}
 
 		val potential = providers.filter {

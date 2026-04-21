@@ -18,12 +18,8 @@ import org.koin.core.annotation.Single
 @Named("wiring")
 fun wiringResources(hookRegistry: HookRegistry) = Resource {
 	route("wiring") {
-		route("node") {
-			route("metadata") {
-				nodeMetadataResource()
-			}
-		}
-		
+		nodeMetadataResource()
+
 		route("nodeapi") innerRoute@{
 			runBlocking {
 				hookRegistry.executeHooks(NodeapiRoutesHook::class, this@innerRoute)
@@ -33,18 +29,12 @@ fun wiringResources(hookRegistry: HookRegistry) = Resource {
 
 	authenticate("jwt-auth") {
 		route("wiring") {
-			route("node") {
-				nodeResource()
-			}
+			nodeResource()
 
-			route("flow") {
-				flowResource()
-				flowExecutionResource()
-			}
+			flowResource()
+			flowExecutionResource()
 
-			route("credential") {
-				credentialResource()
-			}
+			credentialResource()
 		}
 	}
 }
