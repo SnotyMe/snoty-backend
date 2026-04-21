@@ -12,3 +12,12 @@ data class NodeLogEntry(
 	val message: String,
 	val node: NodeId?,
 )
+
+@Serializable
+data class NodeLogEntryDto(
+	val id: String,
+	val timestamp: Instant,
+	val level: Level,
+	val message: String,
+	val node: NodeId?,
+)

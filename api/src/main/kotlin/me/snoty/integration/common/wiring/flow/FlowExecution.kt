@@ -10,8 +10,8 @@ data class EnumeratedFlowExecution(
 	val jobId: String,
 	val flowId: FlowId,
 	val triggeredBy: FlowTriggerReason,
-	val startDate: Instant,
-	val status: FlowExecutionStatus?,
+	val timestamp: Instant,
+	val status: FlowExecutionStatus,
 )
 
 @Serializable
@@ -19,9 +19,9 @@ data class FlowExecution(
 	val jobId: String,
 	val flowId: FlowId,
 	val triggeredBy: FlowTriggerReason,
-	val startDate: Instant,
+	val timestamp: Instant,
 	val status: FlowExecutionStatus?,
-	val logs: List<NodeLogEntry>?,
+	val logs: List<NodeLogEntryDto>?,
 )
 
 enum class FlowExecutionStatus {

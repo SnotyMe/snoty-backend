@@ -7,10 +7,7 @@ import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.wiring.flow.FlowTable
 import me.snoty.core.FlowId
 import me.snoty.core.UserId
-import me.snoty.integration.common.wiring.flow.EnumeratedFlowExecution
-import me.snoty.integration.common.wiring.flow.FlowExecution
-import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
-import me.snoty.integration.common.wiring.flow.NodeLogEntry
+import me.snoty.integration.common.wiring.flow.*
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
 import org.koin.core.annotation.Single
@@ -33,14 +30,15 @@ class SqlFlowExecutionService(
 		}
 	}
 
-	override suspend fun record(jobId: String, entry: NodeLogEntry) = db.suspendTransaction<Unit> {
-		flowExecutionLogTable.insert {
+	override suspend fun record(jobId: String, entry: NodeLogEntry): NodeLogEntryDto = db.suspendTransaction {
+		flowExecutionLogTable.insertReturning {
 			it[executionId] = jobId
 			it[timestamp] = entry.timestamp
 			it[level] = entry.level
 			it[message] = entry.message
 			it[node] = entry.node
-		}
+		}.single()
+			.toLogEntryDto(flowExecutionLogTable)
 	}
 
 	override suspend fun setExecutionStatus(jobId: String, status: FlowExecutionStatus) = db.suspendTransaction<Unit> {
@@ -67,7 +65,7 @@ class SqlFlowExecutionService(
 					jobId = it[flowExecutionTable.id].value,
 					flowId = it[flowExecutionTable.flowId].value,
 					triggeredBy = it[flowExecutionTable.triggeredBy],
-					startDate = it[flowExecutionTable.triggeredAt],
+					timestamp = it[flowExecutionTable.triggeredAt],
 					status = it[flowExecutionTable.status]
 				)
 			}
@@ -97,10 +95,10 @@ class SqlFlowExecutionService(
 				jobId = execution[flowExecutionTable.id].value,
 				flowId = execution[flowExecutionTable.flowId].value,
 				triggeredBy = execution[flowExecutionTable.triggeredBy],
-				startDate = execution[flowExecutionTable.triggeredAt],
+				timestamp = execution[flowExecutionTable.triggeredAt],
 				status = execution[flowExecutionTable.status],
 				logs = logs[execution[flowExecutionTable.id].value]?.map {
-					it.toLogEntry(flowExecutionLogTable)
+					it.toLogEntryDto(flowExecutionLogTable)
 				} ?: emptyList()
 			)
 		}

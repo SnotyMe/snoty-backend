@@ -1,5 +1,6 @@
 package me.snoty.backend.authentication.oidc
 
+import io.ktor.openapi.*
 import me.snoty.backend.authentication.AuthenticationAdapter
 import me.snoty.backend.authentication.Role
 import me.snoty.backend.config.ConfigLoader
@@ -27,6 +28,9 @@ class OidcAdapter : AuthenticationAdapter {
 			clientId = oidcConfig.clientId,
 		)
 	}
+
+	override fun getMetadataJsonSchema(jsonSchemaInference: JsonSchemaInference): JsonSchema =
+		jsonSchemaInference.jsonSchema<OidcAuthenticationMetadata>()
 }
 
 data class OidcConfig(

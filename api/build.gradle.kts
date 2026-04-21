@@ -21,6 +21,8 @@ dependencies { with(libs) {
     api(log.kotlinLogging)
     api(log.logback)
 
+    api(ktor.openapi.schema)
+
     api(ktor.client.core)
     api(ktor.client.okhttp)
     api(ktor.client.contentNegotiation)
@@ -28,6 +30,7 @@ dependencies { with(libs) {
     api(ktor.server.core)
     api(ktor.server.auth)
     api(ktor.server.auth.jwt)
+    api(ktor.server.routing.openapi)
 
     api(ktor.serialization.kotlinx.json)
     api(monitoring.ktor.opentelemetry)

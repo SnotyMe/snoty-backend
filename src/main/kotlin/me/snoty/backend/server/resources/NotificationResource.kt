@@ -5,6 +5,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.routing.openapi.*
 import me.snoty.backend.notifications.NotificationAttributes
 import me.snoty.backend.notifications.NotificationService
 import me.snoty.backend.server.routing.Resource
@@ -51,6 +52,8 @@ fun notificationResource(notificationService: NotificationService) = Resource {
 					call.respond(HttpStatusCode.NotFound)
 				}
 			}
+		}.describe {
+			tag("notification")
 		}
 	}
 }

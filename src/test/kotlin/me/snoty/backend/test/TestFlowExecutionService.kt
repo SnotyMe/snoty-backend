@@ -5,13 +5,10 @@ import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
 import me.snoty.core.FlowId
 import me.snoty.core.UserId
-import me.snoty.integration.common.wiring.flow.EnumeratedFlowExecution
-import me.snoty.integration.common.wiring.flow.FlowExecution
-import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
-import me.snoty.integration.common.wiring.flow.NodeLogEntry
+import me.snoty.integration.common.wiring.flow.*
 
 class TestFlowExecutionService : FlowExecutionService {
-	data class FlowEntry(val flowId: FlowId, val logs: MutableList<NodeLogEntry>)
+	data class FlowEntry(val flowId: FlowId, val logs: MutableList<NodeLogEntryDto>)
 
 	private val logs = mutableMapOf<String, FlowEntry>()
 
@@ -19,8 +16,16 @@ class TestFlowExecutionService : FlowExecutionService {
 		logs[jobId] = FlowEntry(flowId = flowId, logs = mutableListOf())
 	}
 
-	override suspend fun record(jobId: String, entry: NodeLogEntry) {
-		logs[jobId]?.logs?.add(entry)
+	override suspend fun record(jobId: String, entry: NodeLogEntry): NodeLogEntryDto {
+		val nodeLogEntryDto = NodeLogEntryDto(
+			id = randomString(),
+			timestamp = entry.timestamp,
+			level = entry.level,
+			message = entry.message,
+			node = entry.node
+		)
+		logs[jobId]?.logs?.add(nodeLogEntryDto)
+		return nodeLogEntryDto
 	}
 
 	override suspend fun setExecutionStatus(jobId: String, status: FlowExecutionStatus) {
