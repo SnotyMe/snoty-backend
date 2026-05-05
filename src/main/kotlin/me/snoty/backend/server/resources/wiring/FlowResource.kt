@@ -1,6 +1,7 @@
 package me.snoty.backend.server.resources.wiring
 
 import io.ktor.http.*
+import io.ktor.openapi.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -95,6 +96,14 @@ fun Route.flowResource() = route("flow") {
 		flowService.rename(flow._id, name)
 
 		call.respond(HttpStatusCode.NoContent)
+	}.describe {
+		// `receive<T>` is known, `receiveText` isn't
+		// https://ktor.io/docs/openapi-spec-generation.html#code-inference
+		requestBody = RequestBody(
+			content = mapOf(
+				ContentType.Text.Plain to MediaType(schema = ReferenceOr.value(JsonSchema(JsonType.STRING)))
+			)
+		)
 	}
 
 	put("{id}/settings") {
