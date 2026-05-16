@@ -21,6 +21,7 @@ class KeycloakSetup : DevRunnable() {
 		val configPrefix = "config.override.${AuthenticationAdapter.CONFIG_GROUP}.${KEYCLOAK_ADAPTER_TYPE}"
 		System.setProperty("$configPrefix.baseUrl", serverUrl)
 		System.setProperty("$configPrefix.realm", REALM_NAME)
+		System.setProperty("$configPrefix.publicClientId", result.publicClientId)
 		System.setProperty("$configPrefix.clientId", result.clientId)
 		System.setProperty("$configPrefix.clientSecret", result.clientSecret)
 	}

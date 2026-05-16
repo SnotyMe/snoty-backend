@@ -51,14 +51,31 @@ class KeycloakConfigurer(private var realmsResource: RealmsResource, private var
 		realmResource.update(realmRepresentation)
 
 		val clientsResource = realmResource.clients()
+		val publicClient = clientsResource.findByClientId("snoty-public").firstOrNull() ?: let {
+			logger.info { "Client 'snoty-public' does not exist yet, creating..." }
+			ClientRepresentation().apply {
+				clientId = "snoty-public"
+				isPublicClient = true
+				isDirectAccessGrantsEnabled = true
+				redirectUris = listOf("http://localhost:3000/*", *extraRedirectUris)
+
+				val response = clientsResource.create(this)
+				if (response.statusInfo.family != Response.Status.Family.SUCCESSFUL) {
+					logger.error { "Error creating client: HTTP ${response.status} - ${response.readEntity(String::class.java)}" }
+				} else {
+					logger.info { "Created client 'snoty-public'" }
+				}
+			}
+		}
 		val client = (clientsResource.findByClientId("snoty").firstOrNull() ?: let {
 			logger.info { "Client 'snoty' does not exist yet, creating..." }
 			ClientRepresentation().apply {
 				clientId = "snoty"
 				secret = randomString(64)
+				isPublicClient = false
 				isDirectAccessGrantsEnabled = true
 				isServiceAccountsEnabled = true
-				redirectUris = listOf("http://localhost:8080/*", "http://localhost:5173/*", *extraRedirectUris)
+				redirectUris = listOf("http://localhost:8080/*", "http://localhost:5173/*", "http://localhost:3000/*", *extraRedirectUris)
 				protocolMappers = listOf(ProtocolMapperRepresentation().apply {
 					name = "Group Mapper"
 					protocol = "openid-connect"
@@ -100,6 +117,6 @@ class KeycloakConfigurer(private var realmsResource: RealmsResource, private var
 			.clientLevel(realmManagementId)
 			.add(rolesToAssign)
 
-		return KeycloakConfigurationResult(client.clientId, client.secret)
+		return KeycloakConfigurationResult(publicClient.clientId, client.clientId, client.secret)
 	}
 }
