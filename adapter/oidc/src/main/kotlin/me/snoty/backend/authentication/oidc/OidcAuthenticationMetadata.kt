@@ -7,6 +7,8 @@ import me.snoty.backend.authentication.AuthenticationMetadata
 data class OidcAuthenticationMetadata(
     override val adapter: String = OIDC_ADAPTER_TYPE,
     val authUrl: String,
+    val tokenUrl: String,
     val logoutUrl: String,
     val clientId: String,
+    val publicClientId: String?,
 ) : AuthenticationMetadata
