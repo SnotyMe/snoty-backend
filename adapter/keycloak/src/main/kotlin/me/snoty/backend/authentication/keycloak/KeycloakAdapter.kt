@@ -40,8 +40,10 @@ class KeycloakAdapter : AuthenticationAdapter {
 
         return KeycloakAuthenticationMetadata(
             authUrl = oidcConfig.authUrl,
+            tokenUrl = oidcConfig.tokenUrl,
             logoutUrl = oidcConfig.logoutUrl,
             clientId = oidcConfig.clientId,
+            publicClientId = oidcConfig.publicClientId,
             providers = providers,
         )
     }
@@ -55,6 +57,7 @@ data class KeycloakConfig(
     val realm: String,
     val issuerUrl: String = "$baseUrl/realms/$realm", // override when using internal networking
     val clientId: String,
+    val publicClientId: String? = null,
     val clientSecret: String,
     val roleMappings: RoleMapping = mapOf(
         "snoty-admin" to Role.ADMIN.name,
@@ -65,6 +68,7 @@ fun KeycloakConfig.toOidcConfig() = OidcConfig(
     issuerUrl = issuerUrl,
     oidcUrl = "$baseUrl/realms/$realm/protocol/openid-connect",
     clientId = clientId,
+    publicClientId = publicClientId,
     clientSecret = clientSecret,
     roleMappings = roleMappings,
 )
