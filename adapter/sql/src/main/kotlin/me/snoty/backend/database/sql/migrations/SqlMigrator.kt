@@ -27,11 +27,12 @@ class SqlMigrator(
 
 	suspend fun migrate() {
 		logger.info { "Migrating database using Flyway..." }
+		val sanitizedVersion = buildInfo.version.replace("(\\d+\\.\\d+.\\d+).*".toRegex()) { it.groupValues[1] }
 		val flyway = Flyway.configure()
 			.loggers("slf4j")
 			.dataSource(dataSource)
 			.defaultSchema(dataSource.schema)
-			.target("${buildInfo.version}.${"9".repeat(10)}?")
+			.target("${sanitizedVersion}.${"9".repeat(10)}?")
 			.javaMigrations(*koin.getFromAllScopes<BaseJavaMigration>().toTypedArray())
 			.validateMigrationNaming(true)
 			.load()
