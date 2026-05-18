@@ -35,4 +35,5 @@ dependencies {
 koinCompiler {
 	userLogs = System.getenv("KOIN_USER_LOGS") == "true"
 	debugLogs = System.getenv("KOIN_DEBUG_LOGS") == "true"
+	compileSafety = project.name == "api"
 }

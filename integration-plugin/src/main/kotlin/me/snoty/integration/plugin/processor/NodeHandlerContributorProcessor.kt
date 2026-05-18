@@ -63,6 +63,7 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 		val nodeMetadata = registerNode.descriptor(clazz)
 		classBuilder
 			.addSuperinterface(NodeHandlerContributor::class)
+			.addAnnotation(Single::class)
 			.addProperty(
 				PropertySpec.builder("descriptor", NodeDescriptor::class)
 					.initializer(
@@ -97,14 +98,6 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 					.override()
 					.initializer("%T::class", resolver.resolveClassFromAnnotation(clazz, RegisterNode::settingsType).toClassName())
 					.removeModifiers(KModifier.OPEN) // w: 'open' has no effect on a final class
-					.build()
-			)
-			.addProperty(
-				contributorSpec
-					.propertySpecs
-					.single { it.name == NodeHandlerContributor::koinScope.name }
-					.override()
-					.initializer("%T::class", getKoinClassName(clazz, "Scope"))
 					.build()
 			)
 			.addProperty(

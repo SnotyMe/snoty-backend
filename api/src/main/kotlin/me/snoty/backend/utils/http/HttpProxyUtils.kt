@@ -10,6 +10,7 @@ import me.snoty.backend.config.ConfigException
 import me.snoty.backend.config.ConfigLoader
 import me.snoty.backend.config.ConfigWrapper
 import me.snoty.backend.config.loadConfig
+import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
 
 enum class ProxyType {
@@ -27,7 +28,7 @@ data class ProxyConfig(
 data class ProxyConfigWrapper(val defaultProxy: ProxyConfig?)
 
 @Single
-fun provideProxyConfig(configLoader: ConfigLoader): ProxyConfigWrapper = configLoader.loadConfig<ProxyConfig>("defaultProxy")
+fun provideProxyConfig(@Provided configLoader: ConfigLoader): ProxyConfigWrapper = configLoader.loadConfig<ProxyConfig>("defaultProxy")
 	.getOrElse { failure ->
 		if (failure is ConfigFailure.MissingConfigValue) return@getOrElse null
 		throw ConfigException(failure)

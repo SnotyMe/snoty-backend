@@ -10,6 +10,4 @@ interface NodeHandlerContributor {
 
 	val nodeHandlerClass: KClass<out NodeHandler>
 	val koinModules: List<Module>
-	val koinScope: KClass<*>?
-		get() = null
 }
