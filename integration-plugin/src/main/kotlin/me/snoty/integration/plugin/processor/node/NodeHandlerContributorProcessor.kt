@@ -13,8 +13,10 @@ import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeHandlerContributor
 import me.snoty.integration.common.wiring.node.template.NodeTemplateUtils
+import me.snoty.integration.plugin.processor.node.writeNodeKoinEntities
 import me.snoty.integration.plugin.utils.*
 import org.koin.core.annotation.Single
+import kotlin.reflect.KProperty1
 
 class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGenerator: CodeGenerator) : SymbolProcessor {
 	private val allProcessingResults = mutableListOf<SpiContributor>()
@@ -24,6 +26,8 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 
 	@OptIn(KspExperimental::class)
 	override fun process(resolver: Resolver): List<KSAnnotated> {
+		val extensionName = resolver.getExtensionName()
+
 		val newlyProcessed = resolver.getSymbolsWithAnnotation(RegisterNode::class.qualifiedName!!)
 			.filterIsInstance<KSClassDeclaration>()
 			.filter {
@@ -36,7 +40,7 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 			.onEach { handler ->
 				logger.info("NodeHandlerContributorProcessor: processing ${handler.qualifiedName!!.asString()}...")
 
-				val processResult = processClass(resolver, handler)
+				val processResult = processClass(resolver, extensionName, handler)
 				allProcessingResults.add(processResult)
 
 				handler.qualifiedName!!.asString()
@@ -51,7 +55,7 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 		return emptyList()
 	}
 
-	private fun processClass(resolver: Resolver, clazz: KSClassDeclaration): SpiContributor {
+	private fun processClass(resolver: Resolver, extensionName: String, clazz: KSClassDeclaration): SpiContributor {
 		val contributorClassName = contributorName(clazz)
 
 		val classBuilder = TypeSpec.classBuilder(contributorClassName)
@@ -61,6 +65,14 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 
 		val registerNode = clazz.getAnnotation<RegisterNode>()!!
 		val nodeMetadata = registerNode.descriptor(clazz)
+
+		val writtenKoinEntities = codeGenerator.writeNodeKoinEntities(clazz, extensionName, registerNode)
+
+		fun overrideProperty(property: KProperty1<NodeHandlerContributor, *>) = contributorSpec
+			.propertySpecs
+			.single { it.name == property.name }
+			.override()
+
 		classBuilder
 			.addSuperinterface(NodeHandlerContributor::class)
 			.addAnnotation(Single::class)
@@ -75,45 +87,30 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 					.build()
 			)
 			.addProperty(
-				contributorSpec
-					.propertySpecs
-					.single { it.name == NodeHandlerContributor::nodeHandlerClass.name }
-					.override()
+				overrideProperty(NodeHandlerContributor::nodeHandlerClass)
 					.initializer("%T::class", clazz.toClassName())
 					.build()
 			)
 			.addProperty(
-				contributorSpec
-					.propertySpecs
-					.single { it.name == NodeHandlerContributor::metadata.name }
-					.override()
+				overrideProperty(NodeHandlerContributor::metadata)
 					.initializer("%S", generateMetadata(resolver, clazz, registerNode))
 					.removeModifiers(KModifier.OPEN) // w: 'open' has no effect on a final class
 					.build()
 			)
 			.addProperty(
-				contributorSpec
-					.propertySpecs
-					.single { it.name == NodeHandlerContributor::settingsClass.name }
-					.override()
+				overrideProperty(NodeHandlerContributor::settingsClass)
 					.initializer("%T::class", resolver.resolveClassFromAnnotation(clazz, RegisterNode::settingsType).toClassName())
 					.removeModifiers(KModifier.OPEN) // w: 'open' has no effect on a final class
 					.build()
 			)
 			.addProperty(
-				contributorSpec
-					.propertySpecs
-					.single { it.name == NodeHandlerContributor::koinScope.name }
-					.override()
-					.initializer("%L", getKoinClassName(clazz, "Scope").simpleName)
+				overrideProperty(NodeHandlerContributor::koinScope)
+					.initializer("%L", writtenKoinEntities.scope.scopeProperty.name)
 					.build()
 			)
 			.addProperty(
-				contributorSpec
-					.propertySpecs
-					.single { it.name == NodeHandlerContributor::koinModules.name }
-					.override()
-					.buildKoinInitializer(clazz)
+				overrideProperty(NodeHandlerContributor::koinModules)
+					.initializer(buildKoinInitializer(writtenKoinEntities.moduleClassName))
 					.build()
 			)
 
@@ -130,25 +127,20 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 		return SpiContributor(contributorClassName = contributorClassName, containingFile = clazz.containingFile!!)
 	}
 
-	private fun PropertySpec.Builder.buildKoinInitializer(clazz: KSClassDeclaration) = apply {
-		val koinModuleClassName = getKoinClassName(clazz, "Module")
-		initializer(
-			CodeBlock.builder()
-				.add("listOf(\n")
-				.add(
-					"%T.%M(),\n",
-					koinModuleClassName,
-					MemberName(koinModuleClassName.packageName, "module"),
-				)
-				.add(
-					"%M(%N),\n",
-					NodeTemplateUtils::nodeTemplatesModule.getMemberName<NodeTemplateUtils>(),
-					"descriptor",
-				)
-				.add(")")
-				.build()
+	private fun buildKoinInitializer(koinModuleClassName: ClassName) = CodeBlock.builder()
+		.add("listOf(\n")
+		.add(
+			"%T.%M(),\n",
+			koinModuleClassName,
+			MemberName(koinModuleClassName.packageName, "module"),
 		)
-	}
+		.add(
+			"%M(%N),\n",
+			NodeTemplateUtils::nodeTemplatesModule.getMemberName<NodeTemplateUtils>(),
+			"descriptor",
+		)
+		.add(")")
+		.build()
 
 	class Provider : SymbolProcessorProvider {
 		override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {

@@ -10,9 +10,11 @@ import com.squareup.kotlinpoet.metadata.specs.toTypeSpec
 import me.snoty.extension.ExtensionContributor
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.plugin.utils.*
+import me.snoty.integration.plugin.utils.koin.KoinEntities
+import me.snoty.integration.plugin.utils.koin.KoinScopeReferences
+import me.snoty.integration.plugin.utils.koin.writeKoinScope
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
-import org.koin.core.annotation.Scope
 
 class ExtensionContributorProcessor(private val logger: KSPLogger, private val codeGenerator: CodeGenerator) : SymbolProcessor {
     companion object {
@@ -28,12 +30,19 @@ class ExtensionContributorProcessor(private val logger: KSPLogger, private val c
             return emptyList()
         }
 
-        val koinScopeName = ClassName(METADATA_PACKAGE, "${extensionName}ExtensionKoinScope")
         val koinModuleName = ClassName(METADATA_PACKAGE, "${extensionName}ExtensionKoinModule")
 
-        writeKoinModule(resolver, koinScopeName, koinModuleName)
-        writeKoinScope(koinScopeName)
-        writeExtensionContributor(contributorName = contributorName, koinModuleName = koinModuleName)
+        val koinScope = codeGenerator.writeKoinScope(
+            METADATA_PACKAGE,
+            "${extensionName}Extension",
+            "extension:$extensionName",
+        )
+        writeKoinModule(resolver, extensionName, koinScope, koinModuleName)
+        val koinEntities = KoinEntities(
+            scope = koinScope,
+            moduleClassName = koinModuleName,
+        )
+        writeExtensionContributor(contributorName, koinEntities)
 
         codeGenerator.writeSpiFile(
             serviceQualifiedName = ExtensionContributor::class.qualifiedName!!,
@@ -47,25 +56,23 @@ class ExtensionContributorProcessor(private val logger: KSPLogger, private val c
         return emptyList()
     }
 
-    private fun writeKoinModule(resolver: Resolver, koinScopeName: ClassName, koinModuleName: ClassName) {
-        val extensionPackages = resolver.getSymbolsWithAnnotation(RegisterNode::class.qualifiedName!!)
+    private fun writeKoinModule(resolver: Resolver, extensionName: String, koinScope: KoinScopeReferences, koinModuleName: ClassName) {
+        val nodes = resolver.getSymbolsWithAnnotation(RegisterNode::class.qualifiedName!!)
             .filterIsInstance<KSClassDeclaration>()
+        val extensionPackages = nodes
             // me.simulatan.snoty.myintegration.mynode.MyNodeHandler -> me.simulatan.snoty.myintegration
             // every handler has its own dedicated package, so we need to walk upwards by one to
             // get a "generic"-ish package that hopefully contains shared code, such as API clients
             // opinionated logic that may not hold in all cases, but it'll have to do for now
             .map { it.packageName.asString().substringBeforeLast(".") }
-            .distinct()
             .toList()
+            .distinct()
 
         val commonExtensionPackages = groupCommonPackages(extensionPackages)
         val koinModule = TypeSpec.objectBuilder(koinModuleName)
             .addAnnotation(Module::class)
             .addAnnotation(AnnotationSpec.get(ComponentScan(*commonExtensionPackages.toTypedArray())))
-            .addAnnotation(AnnotationSpec.builder(Scope::class)
-                .addMember("%T::class", koinScopeName)
-                .build()
-            )
+            .addSerializersModule(nodes.mapNotNull { it.getAnnotation<RegisterNode>() }.toList(), extensionName, koinScope)
             .build()
 
         val koinModuleFileSpec = FileSpec.builder(koinModuleName)
@@ -78,21 +85,7 @@ class ExtensionContributorProcessor(private val logger: KSPLogger, private val c
         )
     }
 
-    private fun writeKoinScope(koinScopeName: ClassName) {
-        val extensionScopeType = TypeSpec.classBuilder(koinScopeName)
-            .build()
-
-        val extensionScopeFile = FileSpec.builder(koinScopeName)
-            .addType(extensionScopeType)
-            .build()
-
-        extensionScopeFile.writeTo(
-            codeGenerator = codeGenerator,
-            aggregating = false,
-        )
-    }
-
-    private fun writeExtensionContributor(contributorName: ClassName, koinModuleName: ClassName) {
+    private fun writeExtensionContributor(contributorName: ClassName, koinEntities: KoinEntities) {
         val contributorSpec = ExtensionContributor::class.toTypeSpec(lenient = true)
 
         val contributor = TypeSpec.classBuilder(contributorName)
@@ -104,9 +97,17 @@ class ExtensionContributorProcessor(private val logger: KSPLogger, private val c
                     .override()
                     .initializer(
                         "%T.%M()",
-                        koinModuleName,
+                        koinEntities.moduleClassName,
                         MemberName(METADATA_PACKAGE, "module"),
                     )
+                    .build()
+            )
+            .addProperty(
+                contributorSpec
+                    .propertySpecs
+                    .single { it.name == ExtensionContributor::koinScope.name }
+                    .override()
+                    .initializer("%L", koinEntities.scope.scopeProperty.name)
                     .build()
             )
             .build()
