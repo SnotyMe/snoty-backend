@@ -70,11 +70,14 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 	/**
 	 * Stage 1: loading all Koin DI modules
 	 */
-	private fun loadKoinModules(extension: ExtensionContributor): List<NodeHandlerContributorData> {
-		val temporaryKoin = Koin()
-		temporaryKoin.loadModules(listOf(extension.koinModule))
-		val nodeHandlerContributors: List<NodeHandlerContributor> = temporaryKoin.getAll()
-		return nodeHandlerContributors.map { contributor ->
+	private fun loadKoinModules(extension: ExtensionContributor): List<NodeHandlerContributorData> =
+		Koin().let { temporaryKoin ->
+			temporaryKoin.loadModules(listOf(extension.koinModule))
+			val nodeHandlerContributors: List<NodeHandlerContributor> = temporaryKoin.getAll<NodeHandlerContributor>()
+			temporaryKoin.close()
+			return@let nodeHandlerContributors
+		}
+		.map { contributor ->
 			val metadata = metadataJson.decodeFromString<NodeMetadata>(contributor.metadata)
 				.copy(settingsClass = contributor.settingsClass!!)
 
@@ -91,7 +94,6 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 
 			NodeHandlerContributorData(contributor, metadata, scope)
 		}
-	}
 
 	/**
 	 * Stage 2: creating the NodeHandler instances and registering them

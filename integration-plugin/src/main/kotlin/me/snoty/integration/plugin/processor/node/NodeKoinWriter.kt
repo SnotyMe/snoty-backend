@@ -19,7 +19,7 @@ fun CodeGenerator.writeNodeKoinEntities(clazz: KSClassDeclaration, extensionName
 		scopeValue = "extension:${extensionName}:node:${node.name}",
 	)
 
-	val moduleName = ClassName(clazz.packageName.asString(), "${clazz.simpleName.asString()}KoinModule")
+	val moduleName = ClassName(clazz.packageName.asString(), "${clazz.simpleName}KoinModule")
 	val nodeHandlerModule = TypeSpec.objectBuilder(moduleName)
 		.addAnnotation(Module::class)
 		.addAnnotation(ComponentScan::class)

@@ -16,7 +16,6 @@ import me.snoty.integration.common.wiring.node.template.NodeTemplateUtils
 import me.snoty.integration.plugin.processor.node.writeNodeKoinEntities
 import me.snoty.integration.plugin.utils.*
 import org.koin.core.annotation.Single
-import kotlin.reflect.KProperty1
 
 class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGenerator: CodeGenerator) : SymbolProcessor {
 	private val allProcessingResults = mutableListOf<SpiContributor>()
@@ -68,11 +67,6 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 
 		val writtenKoinEntities = codeGenerator.writeNodeKoinEntities(clazz, extensionName, registerNode)
 
-		fun overrideProperty(property: KProperty1<NodeHandlerContributor, *>) = contributorSpec
-			.propertySpecs
-			.single { it.name == property.name }
-			.override()
-
 		classBuilder
 			.addSuperinterface(NodeHandlerContributor::class)
 			.addAnnotation(Single::class)
@@ -87,29 +81,29 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 					.build()
 			)
 			.addProperty(
-				overrideProperty(NodeHandlerContributor::nodeHandlerClass)
+				contributorSpec.overrideProperty(NodeHandlerContributor::nodeHandlerClass)
 					.initializer("%T::class", clazz.toClassName())
 					.build()
 			)
 			.addProperty(
-				overrideProperty(NodeHandlerContributor::metadata)
+				contributorSpec.overrideProperty(NodeHandlerContributor::metadata)
 					.initializer("%S", generateMetadata(resolver, clazz, registerNode))
 					.removeModifiers(KModifier.OPEN) // w: 'open' has no effect on a final class
 					.build()
 			)
 			.addProperty(
-				overrideProperty(NodeHandlerContributor::settingsClass)
+				contributorSpec.overrideProperty(NodeHandlerContributor::settingsClass)
 					.initializer("%T::class", resolver.resolveClassFromAnnotation(clazz, RegisterNode::settingsType).toClassName())
 					.removeModifiers(KModifier.OPEN) // w: 'open' has no effect on a final class
 					.build()
 			)
 			.addProperty(
-				overrideProperty(NodeHandlerContributor::koinScope)
+				contributorSpec.overrideProperty(NodeHandlerContributor::koinScope)
 					.initializer("%L", writtenKoinEntities.scope.scopeProperty.name)
 					.build()
 			)
 			.addProperty(
-				overrideProperty(NodeHandlerContributor::koinModules)
+				contributorSpec.overrideProperty(NodeHandlerContributor::koinModules)
 					.initializer(buildKoinInitializer(writtenKoinEntities.moduleClassName))
 					.build()
 			)
