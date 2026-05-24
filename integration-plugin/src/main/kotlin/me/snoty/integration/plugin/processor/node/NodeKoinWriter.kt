@@ -15,11 +15,11 @@ import org.koin.core.annotation.Module
 fun CodeGenerator.writeNodeKoinEntities(clazz: KSClassDeclaration, extensionName: String, node: RegisterNode): KoinEntities {
 	val koinScope = writeKoinScope(
 		clazz.packageName.asString(),
-		entityName = "${clazz.simpleName.asString()}Node",
+		entityName = clazz.simpleName.asString(),
 		scopeValue = "extension:${extensionName}:node:${node.name}",
 	)
 
-	val moduleName = ClassName(clazz.packageName.asString(), "${clazz.simpleName}KoinModule")
+	val moduleName = ClassName(clazz.packageName.asString(), "${clazz.simpleName.asString()}KoinModule")
 	val nodeHandlerModule = TypeSpec.objectBuilder(moduleName)
 		.addAnnotation(Module::class)
 		.addAnnotation(ComponentScan::class)

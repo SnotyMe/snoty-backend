@@ -1,4 +1,4 @@
-package me.snoty.integration.plugin.processor
+package me.snoty.integration.plugin.processor.node
 
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getClassDeclarationByName
@@ -13,7 +13,6 @@ import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeHandlerContributor
 import me.snoty.integration.common.wiring.node.template.NodeTemplateUtils
-import me.snoty.integration.plugin.processor.node.writeNodeKoinEntities
 import me.snoty.integration.plugin.utils.*
 import org.koin.core.annotation.Single
 
