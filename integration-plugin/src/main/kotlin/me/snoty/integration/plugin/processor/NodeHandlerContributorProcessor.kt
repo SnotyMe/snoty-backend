@@ -103,6 +103,14 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 			.addProperty(
 				contributorSpec
 					.propertySpecs
+					.single { it.name == NodeHandlerContributor::koinScope.name }
+					.override()
+					.initializer("%L", getKoinClassName(clazz, "Scope").simpleName)
+					.build()
+			)
+			.addProperty(
+				contributorSpec
+					.propertySpecs
 					.single { it.name == NodeHandlerContributor::koinModules.name }
 					.override()
 					.buildKoinInitializer(clazz)

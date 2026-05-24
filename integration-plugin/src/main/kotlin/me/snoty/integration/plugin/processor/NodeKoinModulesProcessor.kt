@@ -3,46 +3,49 @@ package me.snoty.integration.plugin.processor
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.squareup.kotlinpoet.AnnotationSpec
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ksp.writeTo
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.plugin.utils.getAnnotation
+import me.snoty.integration.plugin.utils.getExtensionName
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
-import org.koin.core.annotation.Scope
 
 class NodeKoinModulesProcessor(private val codeGenerator: CodeGenerator) : SymbolProcessor {
 	override fun process(resolver: Resolver): List<KSAnnotated> {
 		// no filtering is done as the `Module` filter would only detect stuff from the last round
 		resolver.getSymbolsWithAnnotation(RegisterNode::class.qualifiedName!!)
 			.filterIsInstance<KSClassDeclaration>()
-			.forEach { processClass(it) }
+			.forEach { processClass(resolver, it) }
 
 		return emptyList()
 	}
 
-	private fun processClass(clazz: KSClassDeclaration) {
+	private fun processClass(resolver: Resolver, clazz: KSClassDeclaration) {
 		val node = clazz.getAnnotation<RegisterNode>()!!
 
-		val nodeHandlerScope = TypeSpec.classBuilder(getKoinClassName(clazz, "Scope"))
+		val extensionName = resolver.getExtensionName()
+		val nodeHandlerScopeValue = PropertySpec.builder(
+			getKoinClassName(clazz, "ScopeValue").simpleName,
+			STRING,
+			KModifier.CONST,
+		)
+			.initializer("%S", "${extensionName}:${node.name}")
+			.build()
+		val stringQualifier = ClassName("org.koin.core.qualifier", "StringQualifier")
+		val nodeHandlerScope = PropertySpec.builder(getKoinClassName(clazz, "Scope").simpleName, stringQualifier)
+			.initializer("%T(%L)", stringQualifier, nodeHandlerScopeValue.name)
 			.build()
 
 		val nodeHandlerModule = TypeSpec.objectBuilder(getKoinClassName(clazz, "Module"))
-			.addAnnotation(
-				AnnotationSpec.builder(Scope::class)
-					.addMember("value = %L::class", nodeHandlerScope.name!!)
-					.build()
-			)
 			.addAnnotation(Module::class)
 			.addAnnotation(ComponentScan::class)
-			.addSerializersModule(node, nodeHandlerScope)
+			.addSerializersModule(node, nodeHandlerScopeValue)
 			.build()
 
 		val nodeHandlerModuleFileSpec = FileSpec.builder(getKoinClassName(clazz, ""))
-			.addType(nodeHandlerScope)
+			.addProperty(nodeHandlerScopeValue)
+			.addProperty(nodeHandlerScope)
 			.addType(nodeHandlerModule)
 			.build()
 

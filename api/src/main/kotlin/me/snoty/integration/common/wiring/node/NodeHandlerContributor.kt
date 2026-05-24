@@ -1,6 +1,7 @@
 package me.snoty.integration.common.wiring.node
 
 import org.koin.core.module.Module
+import org.koin.core.qualifier.Qualifier
 import kotlin.reflect.KClass
 
 interface NodeHandlerContributor {
@@ -10,4 +11,5 @@ interface NodeHandlerContributor {
 
 	val nodeHandlerClass: KClass<out NodeHandler>
 	val koinModules: List<Module>
+	val koinScope: Qualifier
 }

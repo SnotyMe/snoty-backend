@@ -12,7 +12,7 @@ import org.koin.core.annotation.Scope
 import org.koin.core.annotation.Scoped
 import kotlin.reflect.KClass
 
-fun TypeSpec.Builder.addSerializersModule(registerNode: RegisterNode, nodeHandlerScope: TypeSpec): TypeSpec.Builder {
+fun TypeSpec.Builder.addSerializersModule(registerNode: RegisterNode, nodeHandlerScope: PropertySpec): TypeSpec.Builder {
 	val serializationModule = "kotlinx.serialization.modules"
 
 	return addFunction(
@@ -38,12 +38,12 @@ fun TypeSpec.Builder.addSerializersModule(registerNode: RegisterNode, nodeHandle
 	)
 }
 
-fun providerBuilder(name: String, nodeHandlerScope: TypeSpec) = FunSpec
+fun providerBuilder(name: String, nodeHandlerScope: PropertySpec) = FunSpec
 	.builder("provide${name.replaceFirstChar { it.uppercase() }}SerializersModule")
 	.addAnnotation(Scoped::class)
 	.addAnnotation(
 		AnnotationSpec.builder(Scope::class)
-			.addMember("value = %L::class", nodeHandlerScope.name!!)
+			.addMember("name = %L", nodeHandlerScope.name)
 			.build()
 	)
 

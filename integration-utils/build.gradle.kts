@@ -1,6 +1,6 @@
 plugins {
 	kotlin("plugin.serialization")
-	id("snoty.publish-conventions")
+	id("snoty.integration-conventions")
 	id("snoty.publish-repo-conventions")
 }
 

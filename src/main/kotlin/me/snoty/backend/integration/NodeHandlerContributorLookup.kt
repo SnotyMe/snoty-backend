@@ -15,7 +15,6 @@ import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeHandlerContributor
 import me.snoty.integration.common.wiring.node.NodeRegistry
-import me.snoty.integration.common.wiring.node.scope
 import org.koin.core.Koin
 import org.koin.core.annotation.Single
 import org.koin.core.error.InstanceCreationException
@@ -46,8 +45,8 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 	)
 
 	fun loadAndRegisterNodeHandlers() {
-		logger.debug { "Loading all node handlers..." }
 		val extensions = koin.getFromAllScopes<ExtensionContributor>()
+		logger.debug { "Collecting node handlers from ${extensions.size} extensions." }
 		val nodeHandlerContributors = extensions.flatMap(::loadKoinModules)
 		logger.debug { "Loaded ${nodeHandlerContributors.size} node handlers." }
 
@@ -72,10 +71,6 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 	 * Stage 1: loading all Koin DI modules
 	 */
 	private fun loadKoinModules(extension: ExtensionContributor): List<NodeHandlerContributorData> {
-/*
-		val extensionScope = koin.getOrCreateScope(extension.koinScope, qualifier = StringQualifier(extension.koinScope))
-		val nodeHandlerContributors: List<NodeHandlerContributor> = extensionScope.getAll()
-*/
 		val temporaryKoin = Koin()
 		temporaryKoin.loadModules(listOf(extension.koinModule))
 		val nodeHandlerContributors: List<NodeHandlerContributor> = temporaryKoin.getAll()
@@ -83,17 +78,17 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 			val metadata = metadataJson.decodeFromString<NodeMetadata>(contributor.metadata)
 				.copy(settingsClass = contributor.settingsClass!!)
 
-			val scopeName = metadata.descriptor.scope
-			val scope = koin.getOrCreateScope(scopeName.value, scopeName)
+			val koinScope = contributor.koinScope
+			val scope = koin.getOrCreateScope(koinScope.value, koinScope)
 
 			logger.trace { "Loading modules for ${scope.scopeQualifier.value}..." }
-			koin.loadModules(listOf(module {
+			koin.loadModules(contributor.koinModules + module {
 				scope(scope.scopeQualifier) {
 					scoped { metadata }
 					scoped { metadata.descriptor }
 				}
-			}))
-			
+			})
+
 			NodeHandlerContributorData(contributor, metadata, scope)
 		}
 	}
