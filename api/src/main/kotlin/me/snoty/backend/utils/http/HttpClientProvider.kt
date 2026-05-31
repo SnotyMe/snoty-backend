@@ -10,6 +10,7 @@ import io.opentelemetry.api.OpenTelemetry
 import io.opentelemetry.instrumentation.api.instrumenter.SpanNameExtractor
 import io.opentelemetry.instrumentation.ktor.v3_0.KtorClientTelemetry
 import me.snoty.integration.common.BaseSnotyJson
+import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
 
 private val logger = KotlinLogging.logger {}
@@ -22,7 +23,7 @@ private val logger = KotlinLogging.logger {}
  * Prefer to utilize this function if you need http client functionality as this will guarantee the best compatibility and observability.
  */
 @Single
-fun httpClient(openTelemetry: OpenTelemetry, proxyConfigWrapper: ProxyConfigWrapper) = HttpClient(OkHttp) {
+fun httpClient(@Provided openTelemetry: OpenTelemetry, @Provided proxyConfigWrapper: ProxyConfigWrapper) = HttpClient(OkHttp) {
 	configureBase(openTelemetry)
 	proxyConfigWrapper.defaultProxy?.let {
 		logger.info { "Configuring default HTTP Client with proxy $it" }

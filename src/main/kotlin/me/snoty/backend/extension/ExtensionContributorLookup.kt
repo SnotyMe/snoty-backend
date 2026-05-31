@@ -12,6 +12,9 @@ class ExtensionContributorLookup(
     fun loadAndRegisterExtensions() {
         val loader = ServiceLoader.load(ExtensionContributor::class.java)
         loader.forEach { contributor ->
+            contributor.koinModule.scope(contributor.koinScope) {
+                scoped { contributor }
+            }
             koin.loadModules(listOf(contributor.koinModule))
         }
     }

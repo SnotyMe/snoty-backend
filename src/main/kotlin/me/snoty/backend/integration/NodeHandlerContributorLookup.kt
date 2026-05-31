@@ -7,22 +7,20 @@ import me.snoty.backend.config.ConfigException
 import me.snoty.backend.config.ConfigWrapper
 import me.snoty.backend.featureflags.FeatureFlagBoolean
 import me.snoty.backend.featureflags.FeatureFlagsContainer
+import me.snoty.backend.injection.getFromAllScopes
 import me.snoty.backend.utils.simpleClassName
 import me.snoty.backend.wiring.node.metadataJson
+import me.snoty.extension.ExtensionContributor
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeHandlerContributor
 import me.snoty.integration.common.wiring.node.NodeRegistry
-import me.snoty.integration.common.wiring.node.scope
 import org.koin.core.Koin
 import org.koin.core.annotation.Single
 import org.koin.core.error.InstanceCreationException
 import org.koin.core.parameter.parametersOf
-import org.koin.core.qualifier.TypeQualifier
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
-import org.koin.ext.getFullName
-import java.util.*
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
@@ -47,9 +45,10 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 	)
 
 	fun loadAndRegisterNodeHandlers() {
-		logger.debug { "Loading all extension modules..." }
-		val nodeHandlerContributors = loadKoinModules()
-		logger.debug { "Loaded ${nodeHandlerContributors.size} extension modules." }
+		val extensions = koin.getFromAllScopes<ExtensionContributor>()
+		logger.debug { "Collecting node handlers from ${extensions.size} extensions." }
+		val nodeHandlerContributors = extensions.flatMap(::loadKoinModules)
+		logger.debug { "Loaded ${nodeHandlerContributors.size} node handlers." }
 
 		logger.debug { "Registering node handlers..." }
 		val result = nodeHandlerContributors.map { (contributor, metadata, scope) ->
@@ -71,33 +70,30 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 	/**
 	 * Stage 1: loading all Koin DI modules
 	 */
-	private fun loadKoinModules(): List<NodeHandlerContributorData> {
-		val loader = ServiceLoader.load(NodeHandlerContributor::class.java)
-		return loader.map { contributor ->
+	private fun loadKoinModules(extension: ExtensionContributor): List<NodeHandlerContributorData> =
+		Koin().let { temporaryKoin ->
+			temporaryKoin.loadModules(listOf(extension.koinModule))
+			val nodeHandlerContributors: List<NodeHandlerContributor> = temporaryKoin.getAll<NodeHandlerContributor>()
+			temporaryKoin.close()
+			return@let nodeHandlerContributors
+		}
+		.map { contributor ->
 			val metadata = metadataJson.decodeFromString<NodeMetadata>(contributor.metadata)
 				.copy(settingsClass = contributor.settingsClass!!)
 
-            val scope = when (val contributedScope = contributor.koinScope) { // will become required at some point
-                null -> {
-					// fallback for 0.7.x and earlier, where Node declarations weren't actually scoped
-					val scopeName = metadata.descriptor.scope
-					koin.getOrCreateScope(scopeName.value, scopeName)
-				}
-				else -> koin.getOrCreateScope(scopeId = contributedScope.getFullName(), qualifier = TypeQualifier(contributedScope))
-			}
+			val koinScope = contributor.koinScope
+			val scope = koin.getOrCreateScope(koinScope.value, koinScope)
 
 			logger.trace { "Loading modules for ${scope.scopeQualifier.value}..." }
-			koin.loadModules(listOf(module {
-				includes(contributor.koinModules)
+			koin.loadModules(contributor.koinModules + module {
 				scope(scope.scopeQualifier) {
 					scoped { metadata }
 					scoped { metadata.descriptor }
 				}
-			}))
-			
+			})
+
 			NodeHandlerContributorData(contributor, metadata, scope)
 		}
-	}
 
 	/**
 	 * Stage 2: creating the NodeHandler instances and registering them
