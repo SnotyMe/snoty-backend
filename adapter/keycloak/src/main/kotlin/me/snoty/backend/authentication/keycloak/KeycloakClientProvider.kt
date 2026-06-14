@@ -6,7 +6,7 @@ import org.koin.core.annotation.Single
 
 @Single
 fun provideKeycloakApi(config: KeycloakConfig) = KeycloakBuilder.builder()
-	.serverUrl(config.baseUrl)
+	.serverUrl(config.internalBaseUrl)
 	// the realm of the user we're authenticating with
 	.realm(config.realm)
 	.grantType(OAuth2Constants.CLIENT_CREDENTIALS)

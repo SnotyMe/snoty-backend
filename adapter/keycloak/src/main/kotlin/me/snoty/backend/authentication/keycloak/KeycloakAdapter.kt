@@ -25,7 +25,7 @@ class KeycloakAdapter : AuthenticationAdapter {
 
     override suspend fun buildAuthenticationMetadata(event: AuthenticationAdapter.OnBuildAuthenticationMetadata): KeycloakAuthenticationMetadata {
         val keycloakConfig = event.koin.get<KeycloakConfig>()
-        val oidcConfig = keycloakConfig.toOidcConfig()
+        val oidcConfig = keycloakConfig.toOidcConfig(keycloakConfig.baseUrl)
         val realm: RealmResource = event.koin.get()
 
         val providers = realm.identityProviders().findAll()
@@ -54,6 +54,12 @@ class KeycloakAdapter : AuthenticationAdapter {
 
 data class KeycloakConfig(
     val baseUrl: String,
+    /**
+     * Internal Base URL used for communication between the backend and Keycloak.
+     * This reduces the amount of networking overhead whilst preserving the public base URL
+     * that is referenced in the public-facing authentication metadata.
+     */
+    val internalBaseUrl: String = baseUrl,
     val realm: String,
     val issuerUrl: String = "$baseUrl/realms/$realm", // override when using internal networking
     val clientId: String,
@@ -64,9 +70,9 @@ data class KeycloakConfig(
     ),
 )
 
-fun KeycloakConfig.toOidcConfig() = OidcConfig(
+fun KeycloakConfig.toOidcConfig(keycloakBaseUrl: String) = OidcConfig(
     issuerUrl = issuerUrl,
-    oidcUrl = "$baseUrl/realms/$realm/protocol/openid-connect",
+    oidcUrl = "$keycloakBaseUrl/realms/$realm/protocol/openid-connect",
     clientId = clientId,
     publicClientId = publicClientId,
     clientSecret = clientSecret,

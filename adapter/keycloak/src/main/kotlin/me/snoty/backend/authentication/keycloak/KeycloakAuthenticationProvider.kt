@@ -18,7 +18,7 @@ class KeycloakAuthenticationProvider(
 	config: Config,
 	@Named(INTERNAL_HTTP_CLIENT) httpClient: HttpClient,
 ) : OidcAuthenticationProvider(
-	oidcConfig = keycloakConfig.toOidcConfig(),
+	oidcConfig = keycloakConfig.toOidcConfig(keycloakConfig.internalBaseUrl),
 	httpClient = httpClient,
 	config = config,
 ) {
