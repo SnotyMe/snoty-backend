@@ -55,7 +55,7 @@ class MapperNodeHandler(
 		input: Collection<IntermediateData>,
 	) = mapInputWithSettings<Document, MapperSettings>(input, node) { data, settings ->
 		val mappedData = Document(data.mapValues { (_, value) ->
-			val packageName = value.javaClass.packageName
+			val packageName = value?.javaClass?.packageName ?: return@mapValues null
 			if (packageName.startsWith("kotlin") || packageName.startsWith("java") || value::class == Document::class) value
 			else codecRegistry.encode(value)
 		})
