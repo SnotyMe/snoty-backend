@@ -1,10 +1,14 @@
 package me.snoty.backend.config
 
 import com.sksamuel.hoplite.ConfigFailure
-import com.sksamuel.hoplite.ConfigLoader as HopliteConfigLoader
-import me.snoty.backend.config.ConfigLoader as SnotyConfigLoader
 import com.sksamuel.hoplite.ConfigLoaderBuilder
 import com.sksamuel.hoplite.fp.getOrElse
+import com.sksamuel.hoplite.sources.SystemPropertiesPropertySource
+import me.snoty.backend.config.hoplite.MapPropertySource
+import me.snoty.backend.config.hoplite.envSourceMap
+import me.snoty.backend.config.hoplite.systemPropertiesSourceMap
+import com.sksamuel.hoplite.ConfigLoader as HopliteConfigLoader
+import me.snoty.backend.config.ConfigLoader as SnotyConfigLoader
 
 interface ConfigLoader {
 	fun build(configure: ConfigLoaderBuilder.() -> Unit): HopliteConfigLoader
@@ -34,4 +38,10 @@ fun ConfigLoaderBuilder.Companion.saneDefault() =
 		.addDefaultPreprocessors()
 		.addDefaultParamMappers()
 		.addDefaultPropertySources()
+		.addPropertySources(listOf(
+			SystemPropertiesPropertySource(), // uses `config.override.` prefix
+			MapPropertySource(systemPropertiesSourceMap),
+			MapPropertySource(envSourceMap),
+			MapPropertySource(systemPropertiesSourceMap, prefix = "$DEV_PROPERTY_PREFIX."),
+		))
 		.addDefaultParsers()

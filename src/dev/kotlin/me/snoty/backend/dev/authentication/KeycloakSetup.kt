@@ -3,6 +3,7 @@ package me.snoty.backend.dev.authentication
 import com.sksamuel.hoplite.Masked
 import me.snoty.backend.authentication.AuthenticationAdapter
 import me.snoty.backend.authentication.keycloak.KEYCLOAK_ADAPTER_TYPE
+import me.snoty.backend.config.DEV_PROPERTY_PREFIX
 import me.snoty.backend.config.loadContainerConfig
 import me.snoty.backend.dev.spi.DevRunnable
 import org.keycloak.admin.client.KeycloakBuilder
@@ -18,7 +19,7 @@ class KeycloakSetup : DevRunnable() {
 
 		val result = setup(serverUrl, containerConfig)
 
-		val configPrefix = "config.override.${AuthenticationAdapter.CONFIG_GROUP}.${KEYCLOAK_ADAPTER_TYPE}"
+		val configPrefix = "${DEV_PROPERTY_PREFIX}.${AuthenticationAdapter.CONFIG_GROUP}.${KEYCLOAK_ADAPTER_TYPE}"
 		System.setProperty("$configPrefix.baseUrl", serverUrl)
 		System.setProperty("$configPrefix.realm", REALM_NAME)
 		System.setProperty("$configPrefix.publicClientId", result.publicClientId)

@@ -2,7 +2,6 @@ package me.snoty.backend.config
 
 import com.sksamuel.hoplite.ConfigLoaderBuilder
 import com.sksamuel.hoplite.ExperimentalHoplite
-import com.sksamuel.hoplite.addEnvironmentSource
 import com.sksamuel.hoplite.addFileSource
 import org.koin.core.annotation.Single
 
@@ -15,7 +14,6 @@ class ConfigLoaderImpl : ConfigLoader {
 		.withResolveTypesCaseInsensitive()
 		.withExplicitSealedTypes("type")
 		.addDefaultPreprocessors()
-		.addEnvironmentSource(useUnderscoresAsSeparator = false)
 		.addFileSource("application.local.yml", optional = true)
 		.addFileSource("application.yml", optional = true)
 		.apply(configure)
