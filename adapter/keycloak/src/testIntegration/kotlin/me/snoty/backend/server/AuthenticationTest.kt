@@ -30,7 +30,7 @@ class AuthenticationTest {
 		val keycloakContainer = KeycloakContainer("quay.io/keycloak/keycloak:26.5")
 		lateinit var keycloakConfig: KeycloakConfig
 		val oidcConfig by lazy {
-			keycloakConfig.toOidcConfig()
+			keycloakConfig.toOidcConfig(keycloakConfig.internalBaseUrl)
 		}
 
 		@BeforeAll
