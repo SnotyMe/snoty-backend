@@ -1,0 +1,17 @@
+ALTER TABLE "node"
+    ADD COLUMN "position_x" INT DEFAULT 0   NOT NULL,
+    ADD COLUMN "position_y" INT DEFAULT 0   NOT NULL,
+    ADD COLUMN "width"      INT DEFAULT 250 NOT NULL,
+    ADD COLUMN "height"     INT DEFAULT 150 NOT NULL;
+
+ALTER TABLE "node"
+    ALTER COLUMN "position_x" DROP DEFAULT;
+
+ALTER TABLE "node"
+    ALTER COLUMN "position_y" DROP DEFAULT;
+
+ALTER TABLE "node"
+    ALTER COLUMN "width" DROP DEFAULT;
+
+ALTER TABLE "node"
+    ALTER COLUMN "height" DROP DEFAULT;

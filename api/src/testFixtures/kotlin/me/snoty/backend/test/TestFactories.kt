@@ -7,6 +7,7 @@ import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeSettings
 import kotlin.uuid.Uuid
 
@@ -21,6 +22,7 @@ fun node(
 	flowId = FlowId(makeId()),
 	userId = userId,
 	descriptor = descriptor,
+	position = NodePosition(0, 0, 300, 200),
 	logLevel = null,
 	settings = settings,
 	next = next.map(FlowNode::_id),

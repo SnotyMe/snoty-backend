@@ -4,10 +4,11 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import me.snoty.integration.common.wiring.flow.WorkflowSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.NodePosition
 import org.bson.Document
 
 object FlowExportImportSchema {
-	const val VERSION = "1.1"
+	const val VERSION = "1.2"
 }
 
 @Serializable
@@ -33,6 +34,7 @@ data class ImportFlow(
 data class ExportNode(
 	val id: String,
 	val descriptor: NodeDescriptor,
+	val position: NodePosition,
 	val settings: @Contextual Document,
 	val next: List<String>,
 )
@@ -44,6 +46,7 @@ data class CensoredField(val default: String?, val censored: Boolean = true)
 data class ImportNode(
 	val id: String,
 	val descriptor: NodeDescriptor,
+	val position: NodePosition = NodePosition(0, 0, 250, 150), // added in 1.2
 	val settings: @Contextual Document,
 	val next: List<String>,
 )

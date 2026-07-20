@@ -13,6 +13,7 @@ import me.snoty.core.NodeId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.http.nodeNotFound
 import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.NodePosition
 
 fun Route.nodeCreate(nodeService: NodeService) = post("create") {
 	val user = call.getUser()
@@ -21,12 +22,13 @@ fun Route.nodeCreate(nodeService: NodeService) = post("create") {
 	data class NodeCreateRequest(
 		val flowId: FlowId,
 		val descriptor: NodeDescriptor,
+		val position: NodePosition,
 		val settings: JsonElement,
 	)
 
-	val (flowId, descriptor, settingsJson) = call.receive<NodeCreateRequest>()
+	val (flowId, descriptor, position, settingsJson) = call.receive<NodeCreateRequest>()
 	val settingsObj = deserializeSettings(descriptor, settingsJson) ?: return@post
-	val createdNode = nodeService.create(user.id, flowId, descriptor, settingsObj)
+	val createdNode = nodeService.create(user.id, flowId, descriptor, position, settingsObj)
 
 	call.respond(status = HttpStatusCode.Created, message = createdNode)
 }

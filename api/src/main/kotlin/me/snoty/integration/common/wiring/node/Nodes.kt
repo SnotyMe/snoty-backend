@@ -6,6 +6,7 @@ import me.snoty.core.FlowId
 import me.snoty.core.NodeId
 import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.slf4j.event.Level
 
@@ -19,6 +20,7 @@ interface GenericNode {
 	val userId: UserId
 	val descriptor: NodeDescriptor
 	val logLevel: Level?
+	val position: NodePosition
 }
 
 /**
@@ -39,6 +41,7 @@ data class FlowNode(
 	override val userId: UserId,
 	override val descriptor: NodeDescriptor,
 	override val logLevel: Level?,
+	override val position: NodePosition,
 	override val settings: NodeSettings,
 	val next: List<NodeId> = emptyList()
 ) : Node
@@ -50,6 +53,7 @@ data class StandaloneNode(
 	override val userId: UserId,
 	override val descriptor: NodeDescriptor,
 	override val logLevel: Level?,
+	override val position: NodePosition,
 	@Contextual
 	override val settings: NodeSettings,
 ) : Node
@@ -61,6 +65,7 @@ fun StandaloneNode.toRelational(next: List<NodeId>?) = FlowNode(
 	descriptor = descriptor,
 	logLevel = logLevel,
 	settings = settings,
+	position = position,
 	next = next ?: emptyList(),
 )
 

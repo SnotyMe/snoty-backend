@@ -10,15 +10,11 @@ import me.snoty.backend.utils.randomV7
 import me.snoty.backend.wiring.flow.FlowTable
 import me.snoty.core.NodeId
 import me.snoty.integration.common.wiring.StandaloneNode
-import me.snoty.integration.common.wiring.node.NodeDescriptor
-import me.snoty.integration.common.wiring.node.NodeRegistry
-import me.snoty.integration.common.wiring.node.NodeSettings
-import me.snoty.integration.common.wiring.node.tryDeserializeNodeSettings
+import me.snoty.integration.common.wiring.node.*
 import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.core.dao.id.IdTable
-import org.jetbrains.exposed.v1.jdbc.select
 import org.koin.core.annotation.Single
 import org.slf4j.event.Level
 import kotlin.uuid.Uuid
@@ -37,13 +33,14 @@ class NodeTable(flowTable: FlowTable) : IdTable<NodeId>("node") {
 	val descriptor_name = text("descriptor_name")
 
 	val logLevel = enumerationByName("log_level", 10, Level::class).nullable()
+	val positionX = integer("position_x")
+	val positionY = integer("position_y")
+	val width = integer("width")
+	val height = integer("height")
 	@OptIn(InternalSerializationApi::class)
 	val settings = rawJsonb<NodeSettings>("settings")
-
-	val standaloneColumns = listOf(id, flowId, userId, descriptor_namespace, descriptor_name, logLevel, settings)
 }
 
-fun NodeTable.selectStandalone() = select(standaloneColumns)
 @OptIn(InternalSerializationApi::class)
 fun ResultRow.toStandalone(nodeTable: NodeTable, json: Json, nodeRegistry: NodeRegistry): StandaloneNode {
 	val descriptor = NodeDescriptor(namespace = this[nodeTable.descriptor_namespace], name = this[nodeTable.descriptor_name])
@@ -54,6 +51,12 @@ fun ResultRow.toStandalone(nodeTable: NodeTable, json: Json, nodeRegistry: NodeR
 		userId = this[nodeTable.userId],
 		descriptor = descriptor,
 		logLevel = this[nodeTable.logLevel],
+		position = NodePosition(
+			x = this[nodeTable.positionX],
+			y = this[nodeTable.positionY],
+			width = this[nodeTable.width],
+			height = this[nodeTable.height]
+		),
 		settings = tryDeserializeNodeSettings(descriptor, nodeRegistry) {
 			json.decodeFromString(it.serializer(), this[nodeTable.settings])
 		}

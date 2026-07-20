@@ -15,6 +15,7 @@ import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.flow.WorkflowSettings
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.NodePosition
 import org.bson.Document
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
@@ -36,6 +37,7 @@ abstract class EntityStateServiceSpec(val makeId: () -> NodeId) {
 			flowId = flowId,
 			userId = USER_ID_1,
 			descriptor = nodeDescriptor,
+			position = NodePosition(0, 0, 300, 200),
 			settings = EmptyNodeSettings(),
 		)
 	}

@@ -6,6 +6,7 @@ import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.StandaloneNode
 import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.Document
 import org.bson.codecs.pojo.annotations.BsonId
@@ -23,6 +24,7 @@ data class MongoNode(
 	val userId: UserId,
 	val descriptor: NodeDescriptor,
 	val logLevel: Level? = null,
+	val position: NodePosition,
 	val settings: Document,
 	val next: List<ObjectId>?,
 )
@@ -35,6 +37,7 @@ fun MongoNode.toStandalone(
 	userId = userId,
 	descriptor = descriptor,
 	logLevel = logLevel,
+	position = position,
 	settings = settings,
 )
 
@@ -46,6 +49,7 @@ fun MongoNode.toRelational(
 	userId = userId,
 	descriptor = descriptor,
 	logLevel = logLevel,
+	position = position,
 	settings = settings,
 	next = next?.map(ObjectId::toNodeId) ?: emptyList(),
 )

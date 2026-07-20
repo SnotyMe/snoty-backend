@@ -23,7 +23,9 @@ import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.StandaloneNode
 import me.snoty.integration.common.wiring.flow.NODE_COLLECTION_NAME
 import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeSettings
+import org.bson.conversions.Bson
 import org.koin.core.annotation.Single
 import org.slf4j.event.Level
 
@@ -54,12 +56,14 @@ class MongoNodeService(
 		userId: UserId,
 		flowId: FlowId,
 		descriptor: NodeDescriptor,
+		position: NodePosition,
 		settings: S,
 	): StandaloneNode {
 		val node = MongoNode(
 			flowId = flowId.objectId,
 			userId = userId,
 			descriptor = descriptor,
+			position = position,
 			settings = collection.codecRegistry.encode(settings),
 			next = emptyList()
 		)
@@ -93,28 +97,32 @@ class MongoNodeService(
 		return NodeServiceResults.NodeDisconnected(from, to)
 	}
 
-	override suspend fun updateSettings(id: NodeId, settings: NodeSettings): ServiceResult {
-		val result = collection.updateOne(
-			Filters.eq(MongoNode::_id.name, id.objectId),
-			Updates.set(MongoNode::settings.name, collection.codecRegistry.encode(settings))
-		)
-		return when {
-			result.matchedCount == 0L -> NodeServiceResults.NodeNotFoundError(id)
-			else -> NodeServiceResults.NodeSettingsUpdated(id)
-		}
-	}
+	override suspend fun updatePosition(id: NodeId, position: NodePosition) = updateNode(
+		id,
+		Updates.set(MongoNode::position.name, position)
+	)
 
-	override suspend fun updateLogLevel(id: NodeId, logLevel: Level?): ServiceResult {
+	override suspend fun updateSettings(id: NodeId, settings: NodeSettings) = updateNode(
+		id,
+		Updates.set(MongoNode::settings.name, collection.codecRegistry.encode(settings))
+	)
+
+	override suspend fun updateLogLevel(id: NodeId, logLevel: Level?) = updateNode(
+		id,
+		when {
+			logLevel != null -> Updates.set(MongoNode::logLevel.name, logLevel)
+			else -> Updates.unset(MongoNode::logLevel.name)
+		}
+	)
+
+	private suspend fun updateNode(id: NodeId, update: Bson): ServiceResult {
 		val result = collection.updateOne(
 			Filters.eq(MongoNode::_id.name, id.objectId),
-			when {
-				logLevel != null -> Updates.set(MongoNode::logLevel.name, logLevel)
-				else -> Updates.unset(MongoNode::logLevel.name)
-			}
+			update
 		)
 		return when {
 			result.matchedCount == 0L -> NodeServiceResults.NodeNotFoundError(id)
-			else -> NodeServiceResults.NodeLogLevelUpdated(id)
+			else -> NodeServiceResults.NodeUpdated(id)
 		}
 	}
 

@@ -9,6 +9,7 @@ import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.StandaloneNode
 import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.slf4j.event.Level
 
@@ -20,12 +21,14 @@ interface NodeService {
 		userId: UserId,
 		flowId: FlowId,
 		descriptor: NodeDescriptor,
+		position: NodePosition,
 		settings: S,
 	): StandaloneNode
 
 	suspend fun connect(from: NodeId, to: NodeId): ServiceResult
 	suspend fun disconnect(from: NodeId, to: NodeId): ServiceResult
 
+	suspend fun updatePosition(id: NodeId, position: NodePosition): ServiceResult
 	suspend fun updateSettings(id: NodeId, settings: NodeSettings): ServiceResult
 	suspend fun updateLogLevel(id: NodeId, logLevel: Level?): ServiceResult
 
@@ -36,7 +39,6 @@ object NodeServiceResults {
 	class NodeNotFoundError(id: NodeId) : ServiceResult(HttpStatusCode.NotFound, "Node with ID $id not found")
 	class NodeConnected(from: NodeId, to: NodeId) : ServiceResult(HttpStatusCode.OK, "Connected $from to $to")
 	class NodeDisconnected(from: NodeId, to: NodeId) : ServiceResult(HttpStatusCode.OK, "Disconnected $from from $to")
-	class NodeSettingsUpdated(id: NodeId) : ServiceResult(HttpStatusCode.OK, "Settings for node $id updated")
-	class NodeLogLevelUpdated(id: NodeId) : ServiceResult(HttpStatusCode.OK, "Log level for node $id updated")
+	class NodeUpdated(id: NodeId) : ServiceResult(HttpStatusCode.OK, "Aspect of node $id updated")
 	class NodeDeleted(id: NodeId) : ServiceResult(HttpStatusCode.OK, "Node $id deleted")
 }

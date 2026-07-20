@@ -14,12 +14,14 @@ import me.snoty.integration.common.config.NodeServiceResults
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.StandaloneNode
 import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.integration.common.wiring.toRelational
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.inList
+import org.jetbrains.exposed.v1.core.statements.UpdateStatement
 import org.jetbrains.exposed.v1.jdbc.*
 import org.koin.core.annotation.Single
 import org.slf4j.event.Level
@@ -33,14 +35,14 @@ class SqlNodeService(
 	private val nodeConnectionTable: NodeConnectionTable,
 ) : NodeService {
 	override suspend fun get(id: NodeId): StandaloneNode? = db.suspendTransaction {
-		nodeTable.selectStandalone()
+		nodeTable.selectAll()
 			.where { nodeTable.id eq id }
 			.firstOrNull()
 			?.toStandalone(nodeTable, json, nodeRegistry)
 	}
 
 	override fun getByFlow(flowId: FlowId): Flow<FlowNode> = db.flowTransaction {
-		val nodes = nodeTable.selectStandalone()
+		val nodes = nodeTable.selectAll()
 			.where { nodeTable.flowId eq flowId }
 			.map { it.toStandalone(nodeTable, json, nodeRegistry) }
 
@@ -60,6 +62,7 @@ class SqlNodeService(
 		userId: UserId,
 		flowId: FlowId,
 		descriptor: NodeDescriptor,
+		position: NodePosition,
 		settings: S
 	): StandaloneNode {
 		val id = db.suspendTransaction {
@@ -68,6 +71,10 @@ class SqlNodeService(
 				it[nodeTable.userId] = userId
 				it[nodeTable.descriptor_namespace] = descriptor.namespace
 				it[nodeTable.descriptor_name] = descriptor.name
+				it[nodeTable.positionX] = position.x
+				it[nodeTable.positionY] = position.y
+				it[nodeTable.width] = position.width
+				it[nodeTable.height] = position.height
 				it[nodeTable.settings] = json.hackyEncodeToString(settings)
 			}
 		}
@@ -78,6 +85,7 @@ class SqlNodeService(
 			userId = userId,
 			descriptor = descriptor,
 			logLevel = null,
+			position = position,
 			settings = settings,
 		)
 	}
@@ -111,26 +119,28 @@ class SqlNodeService(
 		}
 	}
 
-	override suspend fun updateSettings(
-		id: NodeId,
-		settings: NodeSettings
-	): ServiceResult = db.suspendTransaction {
-		val changeCount = nodeTable.update({ nodeTable.id eq id }) {
-			it[nodeTable.settings] = json.hackyEncodeToString(settings)
-		}
-		when (changeCount) {
-			0 -> NodeServiceResults.NodeNotFoundError(id)
-			else -> NodeServiceResults.NodeSettingsUpdated(id)
-		}
+	override suspend fun updatePosition(id: NodeId, position: NodePosition) = updateNode(id) {
+		it[nodeTable.positionX] = position.x
+		it[nodeTable.positionY] = position.y
+		it[nodeTable.width] = position.width
+		it[nodeTable.height] = position.height
 	}
 
-	override suspend fun updateLogLevel(id: NodeId, logLevel: Level?): ServiceResult = db.suspendTransaction {
-		val changeCount = nodeTable.update({ nodeTable.id eq id }) {
-			it[nodeTable.logLevel] = logLevel
+	override suspend fun updateSettings(id: NodeId, settings: NodeSettings) = updateNode(id) {
+		it[nodeTable.settings] = json.hackyEncodeToString(settings)
+	}
+
+	override suspend fun updateLogLevel(id: NodeId, logLevel: Level?) = updateNode(id) {
+		it[nodeTable.logLevel] = logLevel
+	}
+
+	private suspend fun updateNode(id: NodeId, update: NodeTable.(UpdateStatement) -> Unit): ServiceResult {
+		val changeCount = db.suspendTransaction {
+			nodeTable.update(where = { nodeTable.id eq id }, body = update)
 		}
-		when (changeCount) {
+		return when (changeCount) {
 			0 -> NodeServiceResults.NodeNotFoundError(id)
-			else -> NodeServiceResults.NodeLogLevelUpdated(id)
+			else -> NodeServiceResults.NodeUpdated(id)
 		}
 	}
 
