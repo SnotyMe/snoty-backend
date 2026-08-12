@@ -17,11 +17,13 @@ import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import io.opentelemetry.api.OpenTelemetry
 import io.opentelemetry.instrumentation.ktor.v3_0.server.KtorServerTracing
 import me.snoty.backend.config.Config
+import me.snoty.backend.injection.getFromAllScopes
+import org.koin.core.Koin
 import org.koin.core.annotation.Single
 import org.slf4j.event.Level
 import ch.qos.logback.classic.Level as LogbackLevel
 
-fun Application.configureMonitoring(config: Config, openTelemetry: OpenTelemetry, meterRegistry: MeterRegistry) {
+fun Application.configureMonitoring(koin: Koin, config: Config, openTelemetry: OpenTelemetry, meterRegistry: MeterRegistry) {
 	install(MicrometerMetrics) {
 		registry = meterRegistry
 	}
@@ -54,6 +56,8 @@ fun Application.configureMonitoring(config: Config, openTelemetry: OpenTelemetry
 				}
 			}
 		}
+
+		configureActuator(koin.getFromAllScopes(), koin.getFromAllScopes())
 	}.start(wait = false)
 }
 

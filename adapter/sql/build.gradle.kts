@@ -20,6 +20,9 @@ dependencies { with (libs) {
 	implementation(database.postgres)
 	implementation(database.jdbc.opentelemetry)
 
+	implementation(cohort.api)
+	implementation(cohort.hikari)
+
 	implementation(configuration.hoplite.hikari) {
 		exclude(group = "com.zaxxer", module = "HikariCP")
 	}

@@ -7,10 +7,12 @@ import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
 import javax.sql.DataSource
 
+fun DataSource.unwrapHikariDs(): HikariDataSource = unwrap(HikariDataSource::class.java)
+
 const val DEFAULT_SCHEMA = "public"
 
 val DataSource.schema: String
-	get() = unwrap(HikariDataSource::class.java).schema ?: DEFAULT_SCHEMA
+	get() = unwrapHikariDs().schema ?: DEFAULT_SCHEMA
 
 suspend inline fun <T> Database.suspendTransaction(noinline statement: suspend Transaction.() -> T)
 	= suspendTransaction(db = this, statement = statement)

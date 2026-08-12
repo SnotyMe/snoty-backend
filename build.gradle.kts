@@ -103,6 +103,7 @@ dependencies { with(libs) {
     implementation(ktor.server.swagger)
     implementation(ktor.server.openapi)
     implementation(ktor.server.routing.openapi)
+    implementation(cohort.ktor)
 
     implementation(libraries.swagger.codegen)
 

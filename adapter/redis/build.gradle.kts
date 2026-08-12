@@ -8,5 +8,8 @@ dependencies {
 
     implementation(libs.libraries.coroutines.reactive)
 
+    implementation(libs.cohort.api)
+    implementation(libs.cohort.redis.lettuce)
+
     compileOnly(projects.adapter.adapterApi)
 }

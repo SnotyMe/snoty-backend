@@ -51,7 +51,7 @@ class KtorServer(
 
 	private fun Application.installModules() {
 		setKoin(koin)
-		configureMonitoring(config, openTelemetry, metricsRegistry)
+		configureMonitoring(koin, config, openTelemetry, metricsRegistry)
 		configureHTTP(config)
 		authenticationProvider.configureKtor(this)
 		configureSerialization(json)

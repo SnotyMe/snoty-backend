@@ -7,6 +7,7 @@ coroutines = "1.10.2"
 koin = "4.2.1"
 koin-plugin = "1.0.0"
 hoplite = "2.9.0"
+cohort = "2.9.10"
 
 mongodb = "5.6.2"
 exposed = "1.0.0"
@@ -92,6 +93,12 @@ ktor-server-forwardedHeader = { group = "io.ktor", name = "ktor-server-forwarded
 ktor-server-hostCommon = { group = "io.ktor", name = "ktor-server-host-common", version.ref = "ktor" }
 ktor-server-netty = { group = "io.ktor", name = "ktor-server-netty", version.ref = "ktor" }
 ktor-server-statusPages = { group = "io.ktor", name = "ktor-server-status-pages", version.ref = "ktor" }
+
+cohort-api = { group = "com.sksamuel.cohort", name = "cohort-api", version.ref = "cohort" }
+cohort-ktor = { group = "com.sksamuel.cohort", name = "cohort-ktor", version.ref = "cohort" }
+cohort-hikari = { group = "com.sksamuel.cohort", name = "cohort-hikari", version.ref = "cohort" }
+cohort-mongo = { group = "com.sksamuel.cohort", name = "cohort-mongo", version.ref = "cohort" }
+cohort-redis-lettuce = { group = "com.sksamuel.cohort", name = "cohort-lettuce", version.ref = "cohort" }
 
 libraries-swagger-codegen = { group = "io.swagger.codegen.v3", name = "swagger-codegen-generators", version = "1.0.60" }
 

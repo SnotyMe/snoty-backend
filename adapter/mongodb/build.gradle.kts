@@ -13,5 +13,8 @@ dependencies { with(libs) {
 	api(database.mongodb.kotlin.extensions)
 	api(database.mongodb.sync)
 
+	implementation(cohort.api)
+	implementation(cohort.mongo)
+
 	testIntegrationImplementation(tests.testcontainers.mongodb)
 }}
