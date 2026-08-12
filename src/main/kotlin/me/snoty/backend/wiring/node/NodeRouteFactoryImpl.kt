@@ -4,6 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
+import io.ktor.server.routing.openapi.*
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.impl.NodeapiRoutesHook
 import me.snoty.backend.hooks.register
@@ -56,6 +57,8 @@ internal class NodeRouteFactoryImpl(
 
                         block(this, node)
                     }
+                }.describe {
+                    tag("node:${nodeDescriptor.name}")
                 }
             }
 
