@@ -22,10 +22,10 @@ import me.snoty.backend.wiring.credential.CredentialService
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEvent
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
+import me.snoty.core.Node
 import me.snoty.core.NodeId
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.FlowNode
-import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContextImpl
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
@@ -63,21 +63,21 @@ class FlowRunnerImpl(
 	) {
 		val kLogger = KotlinLogging.logger(logger)
 		val rootSpan = flowTracing.createRootSpan(jobId, flow)
-		flowExecutionService.create(jobId, flow._id, triggeredBy)
+		flowExecutionService.create(jobId, flow, triggeredBy)
 
 		logger.trace("Processing flow {}", flow)
 
 		flowExecutionEventService.offer(FlowExecutionEvent.FlowStartedEvent(
 			userId = flow.userId,
-			flowId = flow._id,
+			flowId = flow.id,
 			jobId = jobId,
 			triggeredBy = triggeredBy,
 		))
-		kLogger.info { "Running ${flow.name} (${flow._id.value})" }
+		kLogger.info { "Running ${flow.name} (${flow.id.value})" }
 
 		@Suppress("UNCHECKED_CAST")
 		val executionContext = FlowExecutionContext(
-			nodeMap = flow.nodes.associateBy { it._id },
+			nodeMap = flow.nodes.associateBy { it.id },
 			logger = kLogger as Slf4jLogger<Logger>,
 			logLevel = logLevel,
 			flowTracing = flowTracing,
@@ -97,7 +97,7 @@ class FlowRunnerImpl(
 				val status = if (it == null) FlowExecutionStatus.SUCCESS else FlowExecutionStatus.FAILED
 				flowExecutionEventService.offer(FlowExecutionEvent.FlowEndedEvent(
 					userId = flow.userId,
-					flowId = flow._id,
+					flowId = flow.id,
 					jobId = jobId,
 					status = status,
 				))
@@ -108,8 +108,8 @@ class FlowRunnerImpl(
 
 				val node = it?.unwrapNodeException()?.node
 				val attributes =
-					if (node == null) NotificationAttributes(FLOW_FAILURE, flowId = flow._id)
-					else NotificationAttributes(FLOW_FAILURE, flowId = flow._id, nodeId = node._id)
+					if (node == null) NotificationAttributes(FLOW_FAILURE, flowId = flow.id)
+					else NotificationAttributes(FLOW_FAILURE, flowId = flow.id, nodeId = node.id)
 				if (it == null) {
 					notificationService.resolve(flow.userId, attributes)
 				} else {
@@ -158,14 +158,14 @@ class FlowRunnerImpl(
 		visited: List<NodeId>,
 		depth: Int,
 	): Flow<Unit> {
-		if (node._id in visited) {
+		if (node.id in visited) {
 			val referencingNodes = visited
-				.filter { nodeMap[it]?.next?.contains(node._id) == true }
-			logger.error { "Cycle detected at node ${node.descriptor} (${node._id.value}, referenced by $referencingNodes)" }
+				.filter { nodeMap[it]?.next?.contains(node.id) == true }
+			logger.error { "Cycle detected at node ${node.descriptor} (${node.id.value}, referenced by $referencingNodes)" }
 			return emptyFlow()
 		}
 
-		val nodeLogName = "${node.descriptor.name} node \"${node.settings.name}\" (${node._id.value})"
+		val nodeLogName = "${node.descriptor.name} node \"${node.settings.name}\" (${node.id.value})"
 
 		val handler = nodeRegistry.lookupHandler(node.descriptor)
 			?: let {
@@ -187,7 +187,7 @@ class FlowRunnerImpl(
 				val subspan = span.subspan(flowTracing, traceName(nextNode)) {
 					setNodeAttributes(nextNode, input)
 				}
-				executeImpl(subspan, nextNode, input, visited + node._id, depth + 1)
+				executeImpl(subspan, nextNode, input, visited + node.id, depth + 1)
 			}
 
 		if (metadata.position != NodePosition.START && input.isEmpty() && !metadata.receiveEmptyInput) {
@@ -210,7 +210,7 @@ class FlowRunnerImpl(
 			val data = with(context) { with(handler) { process(node, input) } }
 			logger.debug { "Processed $nodeLogName" }
 			if (metadata.position.logOutput && node.next.isEmpty()) {
-				logger.debug { "Node \"${node.settings.name}\" (${node._id.value}) has no output nodes, would have emitted $data" }
+				logger.debug { "Node \"${node.settings.name}\" (${node.id.value}) has no output nodes, would have emitted $data" }
 			}
 
 			emit(data)

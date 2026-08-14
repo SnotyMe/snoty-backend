@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 import me.snoty.backend.errors.ServiceResult
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.respondServiceResult
+import me.snoty.core.Node
 import me.snoty.core.NodeId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.http.nodeNotFound
@@ -16,20 +17,15 @@ data class ConnectionRequest(val from: NodeId, val to: NodeId)
 fun Route.connectionRoute(
 	nodeService: NodeService,
 	name: String,
-	action: suspend NodeService.(from: NodeId, to: NodeId) -> ServiceResult,
+	action: suspend NodeService.(from: Node, to: Node) -> ServiceResult,
 ) = put(name) {
 	val user = call.getUser()
 
-	val (from, to) = call.receive<ConnectionRequest>()
-	val fromNode = nodeService.get(from)
-	if (fromNode?.userId != user.id) {
-		return@put call.nodeNotFound(fromNode)
-	}
-	val toNode = nodeService.get(to)
-	if (toNode?.userId != user.id) {
-		return@put call.nodeNotFound(toNode)
-	}
-	val result = nodeService.action(from, to)
+	val (requestedFrom, requestedTo) = call.receive<ConnectionRequest>()
+	val fromNode = nodeService.get(user.id, requestedFrom) ?: return@put call.nodeNotFound(requestedFrom)
+	val toNode = nodeService.get(user.id, requestedTo) ?: return@put call.nodeNotFound(requestedTo)
+
+	val result = nodeService.action(fromNode, toNode)
 
 	call.respondServiceResult(result)
 }

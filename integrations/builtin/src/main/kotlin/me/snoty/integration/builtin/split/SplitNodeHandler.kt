@@ -10,8 +10,8 @@ import me.snoty.integration.common.model.metadata.EmptySchema
 import me.snoty.integration.common.model.metadata.FieldDefaultValue
 import me.snoty.integration.common.model.metadata.FieldDescription
 import me.snoty.integration.common.model.metadata.FieldHidden
-import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
+import me.snoty.integration.common.wiring.NodeWithSettings
 import me.snoty.integration.common.wiring.data.*
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
@@ -52,7 +52,7 @@ enum class SplitBehavior {
 class SplitNodeHandler : NodeHandler {
 	context(_: NodeHandleContext)
 	override suspend fun process(
-		node: Node,
+		node: NodeWithSettings,
 		input: Collection<IntermediateData>
 	): NodeOutput = mapInputWithSettings<Document, SplitSettings>(input, node) { data, settings ->
 		val key = settings.key

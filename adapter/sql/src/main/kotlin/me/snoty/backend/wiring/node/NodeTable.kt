@@ -46,7 +46,7 @@ fun ResultRow.toStandalone(nodeTable: NodeTable, json: Json, nodeRegistry: NodeR
 	val descriptor = NodeDescriptor(namespace = this[nodeTable.descriptor_namespace], name = this[nodeTable.descriptor_name])
 
 	return StandaloneNode(
-		_id = this[nodeTable.id].value,
+		id = this[nodeTable.id].value,
 		flowId = this[nodeTable.flowId].value,
 		userId = this[nodeTable.userId],
 		descriptor = descriptor,

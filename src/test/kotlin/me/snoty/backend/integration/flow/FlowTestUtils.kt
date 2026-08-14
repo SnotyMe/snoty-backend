@@ -8,8 +8,8 @@ import me.snoty.core.FlowId
 import me.snoty.core.UserId
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.FlowNode
-import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
+import me.snoty.integration.common.wiring.NodeWithSettings
 import me.snoty.integration.common.wiring.data.NodeInput
 import me.snoty.integration.common.wiring.flow.WorkflowSettings
 import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
@@ -21,7 +21,7 @@ import kotlin.uuid.Uuid
 fun relationalFlow(
 	vararg nodes: FlowNode,
 ) = WorkflowWithNodes(
-	_id = FlowId(randomString()),
+	id = FlowId(randomString()),
 	userId = UserId(Uuid.randomV7().toString()),
 	name = randomString(),
 	settings = WorkflowSettings(),
@@ -39,7 +39,7 @@ object EmitHandler : NodeHandler {
 	)
 
 	context(_: NodeHandleContext)
-	override suspend fun process(node: Node, input: NodeInput) = input
+	override suspend fun process(node: NodeWithSettings, input: NodeInput) = input
 }
 fun NodeRegistry.registerEmitHandler() {
 	registerHandler(EmitHandler.metadata, EmitHandler)

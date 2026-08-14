@@ -23,8 +23,8 @@ interface FlowScheduler {
 
 	fun deleteAll(workflow: Workflow)
 
-	fun jobId(workflow: Workflow): String = workflow._id.value
-	fun jobName(workflow: Workflow): String = workflow.run { "[${_id}] user=$userId flow=\"$name\"" }
+	fun jobId(workflow: Workflow): String = workflow.id.value
+	fun jobName(workflow: Workflow): String = workflow.run { "[${id.value}] user=${userId.value} flow=\"$name\"" }
 }
 
 val DEFAULT_FLOW_JOB_REQUEST = FlowJobRequest(triggeredBy = FlowTriggerReason.Scheduled)

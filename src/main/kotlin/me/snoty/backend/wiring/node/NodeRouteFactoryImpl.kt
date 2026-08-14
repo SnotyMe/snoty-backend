@@ -14,7 +14,7 @@ import me.snoty.backend.utils.respondStatus
 import me.snoty.core.NodeId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.http.nodeNotFound
-import me.snoty.integration.common.wiring.Node
+import me.snoty.integration.common.wiring.NodeWithSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRouteFactory
 import org.koin.core.annotation.Factory
@@ -32,7 +32,7 @@ internal class NodeRouteFactoryImpl(
     /**
      * @param verifyUser whether to verify that the user is the owner of the node
      */
-    override operator fun invoke(route: String, method: HttpMethod, verifyUser: Boolean, block: suspend RoutingContext.(Node) -> Unit) =
+    override operator fun invoke(route: String, method: HttpMethod, verifyUser: Boolean, block: suspend RoutingContext.(NodeWithSettings) -> Unit) =
         hookRegistry.register(NodeapiRoutesHook { routing ->
             logger.debug { "Registering route for $nodeDescriptor node: $route" }
 
@@ -42,17 +42,19 @@ internal class NodeRouteFactoryImpl(
                     handle {
                         logger.debug { "Handling route for ${nodeDescriptor.id} nodes: $route" }
 
+                        val userId = when {
+							verifyUser -> call.getUserOrNull()?.id
+								?: return@handle call.respondStatus(BadRequestException("User is not authenticated"))
+							else -> null
+						}
+
                         val nodeId = call.parameters["nodeId"]?.let(::NodeId)
                             ?: return@handle call.respondStatus(BadRequestException("nodeId is required"))
-                        val node = nodeService.get(nodeId)
+                        val node = nodeService.get(userId, nodeId)
                             ?: return@handle call.nodeNotFound(nodeId)
 
                         if (node.descriptor != nodeDescriptor) {
                             return@handle call.respondStatus(BadRequestException("This node is not a $nodeDescriptor node"))
-                        }
-
-                        if (verifyUser && node.userId != call.getUserOrNull()?.id) {
-                            return@handle call.nodeNotFound(nodeId)
                         }
 
                         block(this, node)

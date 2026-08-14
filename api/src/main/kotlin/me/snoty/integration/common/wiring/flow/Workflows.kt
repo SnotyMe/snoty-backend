@@ -14,7 +14,7 @@ import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
 interface Workflow {
-	val _id: FlowId
+	val id: FlowId
 	val name: String
 	val userId: UserId
 	val settings: WorkflowSettings
@@ -62,7 +62,7 @@ data class WorkflowSettings(
  */
 @Serializable
 data class StandaloneWorkflow(
-	override val _id: FlowId,
+	override val id: FlowId,
 	override val name: String,
 	override val userId: UserId,
 	override val settings: WorkflowSettings,
@@ -73,7 +73,7 @@ data class StandaloneWorkflow(
  */
  @Serializable
 data class WorkflowWithNodes(
-	override val _id: FlowId,
+	override val id: FlowId,
 	override val name: String,
 	override val userId: UserId,
 	override val settings: WorkflowSettings,

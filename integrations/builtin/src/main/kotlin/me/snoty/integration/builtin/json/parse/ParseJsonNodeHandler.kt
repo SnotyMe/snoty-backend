@@ -8,8 +8,8 @@ import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.EmptySchema
-import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
+import me.snoty.integration.common.wiring.NodeWithSettings
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.data.mapInputWithSettings
@@ -43,7 +43,7 @@ class ParseJsonNodeHandler(
 ) : NodeHandler {
 	context(_: NodeHandleContext)
 	override suspend fun process(
-		node: Node,
+		node: NodeWithSettings,
 		input: Collection<IntermediateData>
 	): NodeOutput = mapInputWithSettings<Document, ParseJsonNodeSettings>(input, node) { document, settings ->
 		settings.fields.forEach { key ->

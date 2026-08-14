@@ -51,17 +51,27 @@ class MongoFlowService(
 		it.toStandalone()
 	}
 
-	override suspend fun getStandalone(flowId: FlowId) = collection
-		.find(Filters.eq(MongoWorkflow::_id.name, flowId.objectId))
+	override suspend fun getStandalone(userId: UserId, flowId: FlowId) = collection
+		.find(
+			Filters.and(
+				Filters.eq(MongoWorkflow::userId.name, userId),
+				Filters.eq(MongoWorkflow::_id.name, flowId.objectId),
+			)
+		)
 		.firstOrNull()
 		?.toStandalone()
 
-	override suspend fun getWithNodes(flowId: FlowId) = collection
+	override suspend fun getWithNodes(userId: UserId?, flowId: FlowId) = collection
 		.aggregate<MongoWorkflowWithNodes>(
-			match(Filters.eq(MongoWorkflow::_id.name, flowId.objectId)),
+			match(
+				Filters.and(
+					if (userId != null) Filters.eq(MongoWorkflow::userId.name, userId) else Filters.empty(),
+					Filters.eq(MongoWorkflow::_id.name, flowId.objectId)
+				)
+			),
 			lookup(
 				/* from = */ NODE_COLLECTION_NAME,
-				/* localField = */ Workflow::_id.name,
+				/* localField = */ MongoWorkflow::_id.name,
 				/* foreignField = */ MongoNode::flowId.name,
 				/* as = */ MongoWorkflowWithNodes::nodes.name,
 			),
@@ -69,16 +79,16 @@ class MongoFlowService(
 		.firstOrNull()
 		?.toRelational(settingsDeserializationService)
 
-	override suspend fun rename(flowId: FlowId, name: String) {
+	override suspend fun rename(flow: Workflow, name: String) {
 		collection.updateOne(
-			Filters.eq(MongoWorkflow::_id.name, flowId.objectId),
+			Filters.eq(MongoWorkflow::_id.name, flow.objectId),
 			Updates.set(MongoWorkflow::name.name, name)
 		)
 	}
 
-	override suspend fun updateSettings(flowId: FlowId, settings: WorkflowSettings) {
+	override suspend fun updateSettings(flow: Workflow, settings: WorkflowSettings) {
 		val workflow = collection.findOneAndUpdate(
-			Filters.eq(MongoWorkflow::_id.name, flowId.objectId),
+			Filters.eq(MongoWorkflow::_id.name, flow.objectId),
 			Updates.set(MongoWorkflow::settings.name, settings),
 			FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
 		)!!.toStandalone()
@@ -86,8 +96,8 @@ class MongoFlowService(
 		flowScheduler.reschedule(workflow)
 	}
 
-	override suspend fun delete(flowId: FlowId) {
-		collection.deleteOne(Filters.eq(MongoWorkflow::_id.name, flowId.objectId))
+	override suspend fun delete(flow: Workflow) {
+		collection.deleteOne(Filters.eq(MongoWorkflow::_id.name, flow.objectId))
 	}
 }
 
@@ -99,7 +109,7 @@ data class MongoWorkflow(
 	val settings: WorkflowSettings?,
 ) {
 	fun toStandalone() = StandaloneWorkflow(
-		_id = _id.toFlowId(),
+		id = _id.toFlowId(),
 		name = name,
 		userId = userId,
 		settings = settings ?: WorkflowSettings(),
@@ -115,7 +125,7 @@ data class MongoWorkflowWithNodes(
 	val nodes: List<MongoNode>,
 ) {
 	fun toRelational(settingsLookup: NodeSettingsDeserializationService) = WorkflowWithNodes(
-		_id = _id.toFlowId(),
+		id = _id.toFlowId(),
 		name = name,
 		userId = userId,
 		settings = settings ?: WorkflowSettings(),

@@ -1,17 +1,17 @@
 package me.snoty.integration.common.diff
 
 import kotlinx.coroutines.flow.Flow
-import me.snoty.core.NodeId
+import me.snoty.core.Node
 import me.snoty.integration.common.diff.state.EntityState
 import me.snoty.integration.common.wiring.node.NodeScopedPersistenceService
 import org.bson.Document
 
 interface EntityStateService : NodeScopedPersistenceService {
-	suspend fun getLastState(nodeId: NodeId, entityId: String): EntityState?
-	fun getLastStates(nodeId: NodeId): Flow<EntityState>
+	suspend fun getLastState(node: Node, entityId: String): EntityState?
+	fun getLastStates(node: Node): Flow<EntityState>
 
-	suspend fun updateState(nodeId: NodeId, state: Document, diff: DiffResult)
-	suspend fun updateStates(nodeId: NodeId, states: Collection<EntityStateUpdate>)
+	suspend fun updateState(node: Node, state: Document, diff: DiffResult)
+	suspend fun updateStates(node: Node, states: Collection<EntityStateUpdate>)
 
 	data class EntityStateUpdate(val state: EntityState, val diffResult: DiffResult)
 }

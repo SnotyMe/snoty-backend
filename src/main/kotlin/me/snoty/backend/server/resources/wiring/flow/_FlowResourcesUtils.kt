@@ -20,12 +20,10 @@ suspend fun RoutingContext.getPersonalFlowOrNull() = call.getPersonalFlowOrNull(
 
 suspend fun ApplicationCall.getPersonalFlowOrNull(): StandaloneWorkflow? {
 	val user = getUser()
-	val id = parameters["id"] ?: return void { invalidFlowId() }
+	val flowId = parameters["id"]?.let(::FlowId) ?: return void { invalidFlowId() }
 
-	val flow = get<FlowService>().getStandalone(FlowId(id))
-	if (flow?.userId != user.id) {
-		return void { flowNotFound(flow) }
-	}
+	val flow = get<FlowService>().getStandalone(user.id, flowId)
+		?: return void { flowNotFound(flowId) }
 
 	return flow
 }

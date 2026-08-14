@@ -20,11 +20,11 @@ class FlowManagementServiceImpl(
 ) : FlowManagementService {
     override suspend fun deleteFlowCascading(workflow: Workflow) {
         flowScheduler.deleteAll(workflow)
-        flowExecutionService.deleteAll(workflow._id)
-        flowService.getWithNodes(workflow._id)?.nodes?.forEach {
+        flowExecutionService.deleteAll(workflow)
+        flowService.getWithNodes(workflow.userId, workflow.id)?.nodes?.forEach {
             hookRegistry.executeHooks(NodeDeletedHook::class, it)
-            nodeService.delete(it._id)
+            nodeService.delete(it)
         }
-        flowService.delete(workflow._id)
+        flowService.delete(workflow)
     }
 }

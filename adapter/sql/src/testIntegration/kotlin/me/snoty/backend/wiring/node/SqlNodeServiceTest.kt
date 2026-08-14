@@ -38,6 +38,6 @@ class SqlNodeServiceTest : NodeServiceSpec() {
 			userId = UserId(Uuid.randomV7().toString()),
 			name = "test",
 			settings = WorkflowSettings(),
-		)._id
+		).id
 	}
 }

@@ -1,7 +1,7 @@
 package me.snoty.integration.common.wiring.data
 
-import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
+import me.snoty.integration.common.wiring.NodeWithSettings
 import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.node.NodeSettings
 
@@ -15,7 +15,7 @@ inline fun <reified T : Any> each(input: Collection<IntermediateData>, block: (T
 context(ctx: NodeHandleContext)
 inline fun <reified T : Any, reified Settings : NodeSettings> eachWithSettings(
 	input: Collection<IntermediateData>,
-	node: Node,
+	node: NodeWithSettings,
 	block: (T, Settings) -> Unit
 ): NodeOutput {
 	val settings = node.getConfig<Settings>()
@@ -37,7 +37,7 @@ inline fun <reified T : Any> mapInput(input: Collection<IntermediateData>, block
 context(ctx: NodeHandleContext)
 inline fun <reified T : Any, reified Settings : NodeSettings> mapInputWithSettings(
 	input: Collection<IntermediateData>,
-	node: Node,
+	node: NodeWithSettings,
 	block: (T, Settings) -> NodeOutput
 ): NodeOutput {
 	val settings = node.getConfig<Settings>()
@@ -48,7 +48,7 @@ inline fun <reified T : Any, reified Settings : NodeSettings> mapInputWithSettin
 	}
 }
 
-inline fun <reified Settings : NodeSettings> Collection<IntermediateData>.mapWithSettings(node: Node, block: (Settings) -> NodeOutput): NodeOutput {
+inline fun <reified Settings : NodeSettings> Collection<IntermediateData>.mapWithSettings(node: NodeWithSettings, block: (Settings) -> NodeOutput): NodeOutput {
 	val settings = node.getConfig<Settings>()
 
 	return this.flatMap { block(settings) }

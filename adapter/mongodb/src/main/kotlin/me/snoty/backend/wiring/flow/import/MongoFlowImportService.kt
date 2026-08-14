@@ -25,7 +25,7 @@ class MongoFlowImportService(
 
 		val nodesToInsert = flow.nodes.map {
 			MongoNode(
-				flowId = createdFlow._id.objectId,
+				flowId = createdFlow.objectId,
 				userId = userId,
 				descriptor = it.descriptor,
 				position = it.position,
@@ -54,6 +54,6 @@ class MongoFlowImportService(
 			}
 		)
 
-		return createdFlow._id
+		return createdFlow.id
 	}
 }

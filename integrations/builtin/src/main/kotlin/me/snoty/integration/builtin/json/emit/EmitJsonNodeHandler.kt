@@ -6,8 +6,8 @@ import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.EmptySchema
 import me.snoty.integration.common.model.metadata.Language
-import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
+import me.snoty.integration.common.wiring.NodeWithSettings
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.data.iterableStructOutput
@@ -36,7 +36,7 @@ data class EmitJsonSettings(
 class EmitJsonNodeHandler : NodeHandler {
 	context(_: NodeHandleContext)
 	override suspend fun process(
-		node: Node,
+		node: NodeWithSettings,
 		input: Collection<IntermediateData>
 	): NodeOutput = iterableStructOutput(
 		node.getConfig<EmitJsonSettings>()

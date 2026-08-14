@@ -31,7 +31,7 @@ class FlowTable(json: Json) : IdTable<FlowId>("flow") {
 }
 
 fun ResultRow.toStandalone(flowTable: FlowTable) = StandaloneWorkflow(
-	_id = this[flowTable.id].value,
+	id = this[flowTable.id].value,
 	userId = this[flowTable.userId],
 	name = this[flowTable.name],
 	settings = this[flowTable.settings] ?: WorkflowSettings(),

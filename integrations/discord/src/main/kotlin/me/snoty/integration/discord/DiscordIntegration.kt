@@ -14,8 +14,8 @@ import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.FieldCensored
 import me.snoty.integration.common.model.metadata.FieldDescription
 import me.snoty.integration.common.model.metadata.FieldName
-import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
+import me.snoty.integration.common.wiring.NodeWithSettings
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.eachWithSettings
 import me.snoty.integration.common.wiring.logger
@@ -54,7 +54,7 @@ class DiscordNodeHandler(
 ) : NodeHandler {
 	context(_: NodeHandleContext)
 	override suspend fun process(
-		node: Node,
+		node: NodeWithSettings,
 		input: Collection<IntermediateData>,
 	) = eachWithSettings<DiscordWebhook.Message, DiscordSettings>(input, node) { data, config ->
 		if (data.content.isNullOrEmpty() && data.embeds.isEmpty()) {

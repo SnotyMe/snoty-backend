@@ -11,8 +11,8 @@ import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.FieldCensored
 import me.snoty.integration.common.model.metadata.FieldDescription
 import me.snoty.integration.common.utils.filterNot
-import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
+import me.snoty.integration.common.wiring.NodeWithSettings
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.data.get
@@ -58,7 +58,7 @@ class ICalNodeHandler(
 
 			val events = eventPersistenceService.getEntities(node)
 
-			val calendar = iCalBuilder.build(node._id.value, settings.name, events)
+			val calendar = iCalBuilder.build(node.id.value, settings.name, events)
 
 			val contentType = calendar.getContentType(StandardCharsets.UTF_8)
 			val outputter = CalendarOutputter()
@@ -69,7 +69,7 @@ class ICalNodeHandler(
 	}
 
 	context(_: NodeHandleContext)
-	override suspend fun process(node: Node, input: Collection<IntermediateData>): NodeOutput {
+	override suspend fun process(node: NodeWithSettings, input: Collection<IntermediateData>): NodeOutput {
 		val events = input
 			.map { it.get<CalendarEvent>() }
 			.filterNot(

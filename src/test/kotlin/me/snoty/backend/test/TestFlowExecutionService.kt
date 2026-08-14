@@ -12,8 +12,8 @@ class TestFlowExecutionService : FlowExecutionService {
 
 	private val logs = mutableMapOf<String, FlowEntry>()
 
-	override suspend fun create(jobId: String, flowId: FlowId, triggeredBy: FlowTriggerReason) {
-		logs[jobId] = FlowEntry(flowId = flowId, logs = mutableListOf())
+	override suspend fun create(jobId: String, flow: Workflow, triggeredBy: FlowTriggerReason) {
+		logs[jobId] = FlowEntry(flowId = flow.id, logs = mutableListOf())
 	}
 
 	override suspend fun record(jobId: String, entry: NodeLogEntry): NodeLogEntryDto {
@@ -33,7 +33,7 @@ class TestFlowExecutionService : FlowExecutionService {
 	}
 
 	override fun query(userId: UserId): Flow<EnumeratedFlowExecution> = throw NotImplementedError()
-	override fun query(flowId: FlowId, startFrom: String?, limit: Int): Flow<FlowExecution> = throw NotImplementedError()
+	override fun query(flow: Workflow, startFrom: String?, limit: Int): Flow<FlowExecution> = throw NotImplementedError()
 
-	override suspend fun deleteAll(flowId: FlowId) = throw NotImplementedError()
+	override suspend fun deleteAll(flow: Workflow) = throw NotImplementedError()
 }

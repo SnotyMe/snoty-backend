@@ -26,11 +26,11 @@ class SqlFlowImportService(
 		val createdNodes = flow.nodes.associate {
 			it.id to nodeService.create(
 				userId = userId,
-				flowId = createdFlow._id,
+				flow = createdFlow,
 				descriptor = it.descriptor,
 				position = it.position,
 				settings = nodeSettingsDeserializationService.deserializeOrInvalid(it.descriptor, it.settings)
-			)._id
+			).id
 		}
 		val connections = flow.nodes
 			.flatMap { node ->
@@ -41,6 +41,6 @@ class SqlFlowImportService(
 			this[nodeConnectionTable.to] = createdNodes[to]!!
 		}
 
-		return@suspendTransaction createdFlow._id
+		return@suspendTransaction createdFlow.id
 	}
 }

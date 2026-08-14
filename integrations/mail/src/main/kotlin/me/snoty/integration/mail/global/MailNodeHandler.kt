@@ -5,8 +5,8 @@ import me.snoty.backend.config.load
 import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
+import me.snoty.integration.common.wiring.NodeWithSettings
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.data.get
@@ -31,7 +31,7 @@ import org.koin.core.annotation.Single
 class MailNodeHandler(private val mailService: GlobalMailService) : NodeHandler {
 	context(_: NodeHandleContext)
 	override suspend fun process(
-		node: Node,
+		node: NodeWithSettings,
 		input: Collection<IntermediateData>
 	): NodeOutput {
 		val settings: MailSettings = node.getConfig()

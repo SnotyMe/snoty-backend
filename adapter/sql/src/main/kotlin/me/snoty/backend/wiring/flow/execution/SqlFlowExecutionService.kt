@@ -5,7 +5,6 @@ import me.snoty.backend.database.sql.flowTransaction
 import me.snoty.backend.database.sql.suspendTransaction
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.wiring.flow.FlowTable
-import me.snoty.core.FlowId
 import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.flow.*
 import org.jetbrains.exposed.v1.core.*
@@ -20,10 +19,10 @@ class SqlFlowExecutionService(
 	private val flowExecutionTable: FlowExecutionTable,
 	private val flowExecutionLogTable: FlowExecutionLogTable,
 ) : FlowExecutionService {
-	override suspend fun create(jobId: String, flowId: FlowId, triggeredBy: FlowTriggerReason) = db.suspendTransaction<Unit> {
+	override suspend fun create(jobId: String, flow: Workflow, triggeredBy: FlowTriggerReason) = db.suspendTransaction<Unit> {
 		flowExecutionTable.upsert {
 			it[id] = jobId
-			it[this.flowId] = flowId
+			it[this.flowId] = flow.id
 			it[this.triggeredBy] = triggeredBy
 			it[this.triggeredAt] = Clock.System.now()
 			it[this.status] = FlowExecutionStatus.RUNNING
@@ -72,13 +71,13 @@ class SqlFlowExecutionService(
 	}
 
 	override fun query(
-		flowId: FlowId,
+		flow: Workflow,
 		startFrom: String?,
 		limit: Int
 	): Flow<FlowExecution> = db.flowTransaction {
 		val executions = flowExecutionTable.selectAll()
 			.where {
-				(flowExecutionTable.flowId eq flowId) andIfNotNull (startFrom?.let { flowExecutionTable.id less it })
+				(flowExecutionTable.flowId eq flow.id) andIfNotNull (startFrom?.let { flowExecutionTable.id less it })
 			}
 			.orderBy(flowExecutionTable.triggeredAt to SortOrder.DESC)
 			.limit(limit)
@@ -104,7 +103,7 @@ class SqlFlowExecutionService(
 		}
 	}
 
-	override suspend fun deleteAll(flowId: FlowId) = db.suspendTransaction<Unit> {
-		flowExecutionTable.deleteWhere { flowExecutionTable.flowId eq flowId }
+	override suspend fun deleteAll(flow: Workflow) = db.suspendTransaction<Unit> {
+		flowExecutionTable.deleteWhere { flowExecutionTable.flowId eq flow.id }
 	}
 }

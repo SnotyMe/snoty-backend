@@ -10,7 +10,7 @@ import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.register
 import me.snoty.backend.utils.hackyEncodeToString
 import me.snoty.backend.wiring.node.NodeTable
-import me.snoty.integration.common.wiring.Node
+import me.snoty.core.Node
 import me.snoty.integration.common.wiring.flow.NodeDeletedHook
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePersistenceFactory
@@ -34,16 +34,16 @@ class SqlNodePersistenceService<T : Any>(
 
 	override suspend fun persistEntity(node: Node, entityId: String, entity: T) {
 		nodePersistenceTable.upsert {
-			it[this.nodeId] = node._id
+			it[this.nodeId] = node.id
 			it[this.entityId] = entityId
 			it[this.entity] = json.hackyEncodeToString(entity)
 		}
 	}
 
 	override suspend fun setEntities(node: Node, entities: List<T>, idGetter: (T) -> String): Unit = db.suspendTransaction {
-		nodePersistenceTable.deleteWhere { nodePersistenceTable.nodeId eq node._id }
+		nodePersistenceTable.deleteWhere { nodePersistenceTable.nodeId eq node.id }
 		nodePersistenceTable.batchInsert(entities) { entity ->
-			this[nodePersistenceTable.nodeId] = node._id
+			this[nodePersistenceTable.nodeId] = node.id
 			this[nodePersistenceTable.entityId] = idGetter(entity)
 			this[nodePersistenceTable.entity] = json.hackyEncodeToString(entity)
 		}
@@ -52,18 +52,18 @@ class SqlNodePersistenceService<T : Any>(
 	@OptIn(InternalSerializationApi::class)
 	override fun getEntities(node: Node): Flow<T> = db.flowTransaction {
 		nodePersistenceTable.select(nodePersistenceTable.entity)
-			.where { nodePersistenceTable.nodeId eq node._id }
+			.where { nodePersistenceTable.nodeId eq node.id }
 			.map { json.decodeFromString(entityClass.serializer(), it[nodePersistenceTable.entity]) }
 	}
 
 	override suspend fun deleteEntity(node: Node, entityId: String): Unit = db.suspendTransaction {
 		nodePersistenceTable.deleteWhere {
-			(nodePersistenceTable.nodeId eq node._id) and (nodePersistenceTable.entityId eq entityId)
+			(nodePersistenceTable.nodeId eq node.id) and (nodePersistenceTable.entityId eq entityId)
 		}
 	}
 
 	override suspend fun delete(node: Node): Unit = db.suspendTransaction {
-		nodePersistenceTable.deleteWhere { nodePersistenceTable.nodeId eq node._id }
+		nodePersistenceTable.deleteWhere { nodePersistenceTable.nodeId eq node.id }
 	}
 }
 

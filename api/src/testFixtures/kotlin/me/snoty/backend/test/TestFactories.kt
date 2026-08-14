@@ -18,12 +18,12 @@ fun node(
 	userId: UserId = UserId(Uuid.randomV7().toString()),
 	makeId: () -> String = ::randomString,
 ) = FlowNode(
-	_id = NodeId(makeId()),
+	id = NodeId(makeId()),
 	flowId = FlowId(makeId()),
 	userId = userId,
 	descriptor = descriptor,
 	position = NodePosition(0, 0, 300, 200),
 	logLevel = null,
 	settings = settings,
-	next = next.map(FlowNode::_id),
+	next = next.map(FlowNode::id),
 )

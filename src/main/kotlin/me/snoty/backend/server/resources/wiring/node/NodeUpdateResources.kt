@@ -9,8 +9,8 @@ import kotlinx.serialization.json.*
 import me.snoty.backend.utils.BadRequestException
 import me.snoty.backend.utils.respondServiceResult
 import me.snoty.backend.utils.respondStatus
+import me.snoty.core.Node
 import me.snoty.integration.common.config.NodeService
-import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.node.NodePosition
 import org.slf4j.event.Level
 import java.util.*
@@ -29,7 +29,7 @@ fun Route.nodeUpdate(nodeService: NodeService) {
 		val settingsJson = call.receive<JsonElement>()
 		val settings = deserializeSettings(node.descriptor, settingsJson) ?: return@put
 
-		val result = nodeService.updateSettings(node._id, settings)
+		val result = nodeService.updateSettings(node, settings)
 
 		call.respondServiceResult(result)
 	}
@@ -39,13 +39,13 @@ fun Route.nodeUpdate(nodeService: NodeService) {
 		val request: NodePatchRequest = call.receive()
 
 		request.position?.let { position ->
-			nodeService.updatePosition(node._id, position)
+			nodeService.updatePosition(node, position)
 		}
 
 		request.logLevel?.let { level ->
 			if (level is JsonNull) {
 				// explicitly set to null in the request -> unset the level
-				nodeService.updateLogLevel(node._id, null)
+				nodeService.updateLogLevel(node, null)
 				return@let
 			}
 
@@ -56,12 +56,12 @@ fun Route.nodeUpdate(nodeService: NodeService) {
 			val logLevelString = level.jsonPrimitive.contentOrNull ?: return@patch
 			val logLevel = runCatching { Level.valueOf(logLevelString.uppercase(Locale.ROOT)) }.getOrNull()
 				?: return@patch call.respondStatus(BadRequestException("Couldn't parse ${Node::logLevel.name} level"))
-			nodeService.updateLogLevel(node._id, logLevel)
+			nodeService.updateLogLevel(node, logLevel)
 		}
 
 		request.settings?.let { settingsJson ->
 			val settings = deserializeSettings(node.descriptor, settingsJson) ?: return@patch
-			nodeService.updateSettings(node._id, settings)
+			nodeService.updateSettings(node, settings)
 		}
 
 		call.respond(HttpStatusCode.NoContent)

@@ -81,10 +81,7 @@ fun Route.flowResource() = route("flow") {
 		val user = call.getUser()
 		val id = call.parameters["id"]?.let(::FlowId) ?: return@get call.invalidFlowId()
 
-		val flow = flowService.getWithNodes(id)
-		if (flow?.userId != user.id) {
-			return@get call.flowNotFound(flow)
-		}
+		val flow = flowService.getWithNodes(user.id, id) ?: return@get call.flowNotFound(id)
 
 		call.respond(flow)
 	}
@@ -93,7 +90,7 @@ fun Route.flowResource() = route("flow") {
 		val flow = getPersonalFlowOrNull() ?: return@put
 
 		val name = call.receiveText()
-		flowService.rename(flow._id, name)
+		flowService.rename(flow, name)
 
 		call.respond(HttpStatusCode.NoContent)
 	}.describe {
@@ -110,7 +107,7 @@ fun Route.flowResource() = route("flow") {
 		val flow = getPersonalFlowOrNull() ?: return@put
 
 		val settings = call.receive<WorkflowSettings>()
-		flowService.updateSettings(flow._id, settings)
+		flowService.updateSettings(flow, settings)
 
 		call.respond(HttpStatusCode.NoContent)
 	}

@@ -9,13 +9,13 @@ import kotlinx.serialization.json.JsonElement
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.respondServiceResult
 import me.snoty.core.FlowId
-import me.snoty.core.NodeId
 import me.snoty.integration.common.config.NodeService
-import me.snoty.integration.common.http.nodeNotFound
+import me.snoty.integration.common.http.flowNotFound
+import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePosition
 
-fun Route.nodeCreate(nodeService: NodeService) = post("create") {
+fun Route.nodeCreate(flowService: FlowService, nodeService: NodeService) = post("create") {
 	val user = call.getUser()
 
 	@Serializable
@@ -26,25 +26,18 @@ fun Route.nodeCreate(nodeService: NodeService) = post("create") {
 		val settings: JsonElement,
 	)
 
-	val (flowId, descriptor, position, settingsJson) = call.receive<NodeCreateRequest>()
+	val (requestedFlowId, descriptor, position, settingsJson) = call.receive<NodeCreateRequest>()
+	val flow = flowService.getStandalone(user.id, requestedFlowId) ?: return@post call.flowNotFound(requestedFlowId)
 	val settingsObj = deserializeSettings(descriptor, settingsJson) ?: return@post
-	val createdNode = nodeService.create(user.id, flowId, descriptor, position, settingsObj)
+	val createdNode = nodeService.create(user.id, flow, descriptor, position, settingsObj)
 
 	call.respond(status = HttpStatusCode.Created, message = createdNode)
 }
 
 fun Route.nodeDelete(nodeService: NodeService) = delete("{id}") {
-	val user = call.getUser()
+	val node = getPersonalNodeOrNull() ?: return@delete
 
-	val id = call.parameters["id"]?.let(::NodeId)
-		?: return@delete call.respond(HttpStatusCode.BadRequest, "Invalid node id")
-
-	val node = nodeService.get(id)
-	if (node?.userId != user.id) {
-		return@delete call.nodeNotFound(node)
-	}
-
-	val result = nodeService.delete(id)
+	val result = nodeService.delete(node)
 
 	call.respondServiceResult(result)
 }

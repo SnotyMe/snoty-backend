@@ -2,17 +2,16 @@ package me.snoty.backend.wiring.flow.execution
 
 import kotlinx.coroutines.flow.Flow
 import me.snoty.backend.scheduling.FlowTriggerReason
-import me.snoty.core.FlowId
 import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.flow.*
 
 interface FlowExecutionService {
-	suspend fun create(jobId: String, flowId: FlowId, triggeredBy: FlowTriggerReason)
+	suspend fun create(jobId: String, flow: Workflow, triggeredBy: FlowTriggerReason)
 	suspend fun record(jobId: String, entry: NodeLogEntry): NodeLogEntryDto
 	suspend fun setExecutionStatus(jobId: String, status: FlowExecutionStatus)
 
 	fun query(userId: UserId): Flow<EnumeratedFlowExecution>
-	fun query(flowId: FlowId, startFrom: String?, limit: Int = 15): Flow<FlowExecution>
+	fun query(flow: Workflow, startFrom: String?, limit: Int = 15): Flow<FlowExecution>
 
-	suspend fun deleteAll(flowId: FlowId)
+	suspend fun deleteAll(flow: Workflow)
 }

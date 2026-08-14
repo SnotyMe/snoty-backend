@@ -6,12 +6,12 @@ import me.snoty.backend.wiring.flow.CensoredField
 import me.snoty.backend.wiring.flow.ExportFlow
 import me.snoty.backend.wiring.flow.ExportNode
 import me.snoty.backend.wiring.flow.FlowExportImportSchema
-import me.snoty.core.FlowId
 import me.snoty.core.NodeId
 import me.snoty.integration.common.model.metadata.NodeField
 import me.snoty.integration.common.model.metadata.NodeFieldDetails
 import me.snoty.integration.common.model.metadata.ObjectSchema
 import me.snoty.integration.common.wiring.flow.FlowService
+import me.snoty.integration.common.wiring.flow.Workflow
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.NodeSettings
@@ -25,8 +25,8 @@ class FlowExportServiceImpl(
 	private val codecRegistry: CodecRegistry,
 	private val nodeRegistry: NodeRegistry,
 ) : FlowExportService {
-	override suspend fun export(flowId: FlowId, censor: Boolean): ExportFlow {
-		val flow = flowService.getWithNodes(flowId) ?: throw IllegalArgumentException("Flow not found")
+	override suspend fun export(flow: Workflow, censor: Boolean): ExportFlow {
+		val flow = flowService.getWithNodes(flow.userId, flow.id) ?: throw IllegalArgumentException("Flow not found")
 		return ExportFlow(
 			version = FlowExportImportSchema.VERSION,
 			templateName = flow.name,
@@ -34,7 +34,7 @@ class FlowExportServiceImpl(
 			nodes = flow.nodes.map {
 				val settings = it.settings.encode(it.descriptor, censor)
 				ExportNode(
-					id = it._id.hash(),
+					id = it.id.hash(),
 					descriptor = it.descriptor,
 					position = it.position,
 					settings = settings,

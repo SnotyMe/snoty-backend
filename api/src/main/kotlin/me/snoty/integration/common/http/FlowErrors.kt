@@ -4,9 +4,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import me.snoty.core.FlowId
-import me.snoty.integration.common.wiring.flow.Workflow
 
-suspend fun ApplicationCall.flowNotFound(workflow: Workflow?) = flowNotFound(workflow?._id)
 suspend fun ApplicationCall.flowNotFound(flowId: FlowId?) {
 	val message = when {
 		flowId != null -> "Flow $flowId not found"

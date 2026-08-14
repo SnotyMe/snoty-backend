@@ -21,7 +21,7 @@ class JobRunrFlowScheduler(
 	private fun createJob(workflow: Workflow, jobRequest: FlowJobRequest): SnotyJob {
 		val jobRunrRequest = jobRequest.run {
 			JobRunrFlowJobRequest(
-				flowId = workflow._id,
+				flowId = workflow.id,
 				triggeredBy = triggeredBy,
 				logLevel = logLevel,
 			)
@@ -38,7 +38,7 @@ class JobRunrFlowScheduler(
 
 	override fun schedule(workflow: Workflow, jobRequest: FlowJobRequest) {
 		if (workflow.settings.schedule is JobSchedule.Never) {
-			logger.debug { "Not scheduling job for workflow ${workflow._id} as it is set to never run" }
+			logger.debug { "Not scheduling job for workflow ${workflow.id} as it is set to never run" }
 			return
 		}
 		jobRunrScheduler.scheduleRecurringJob(jobId(workflow), createJob(workflow, jobRequest))

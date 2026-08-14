@@ -1,10 +1,10 @@
 package me.snoty.integration.common.wiring.flow
 
 import me.snoty.backend.hooks.LifecycleHook
-import me.snoty.integration.common.wiring.Node
+import me.snoty.integration.common.wiring.NodeWithSettings
 
 interface FlowManagementService {
 	suspend fun deleteFlowCascading(workflow: Workflow)
 }
 
-fun interface NodeDeletedHook : LifecycleHook<Node>
+fun interface NodeDeletedHook : LifecycleHook<NodeWithSettings>

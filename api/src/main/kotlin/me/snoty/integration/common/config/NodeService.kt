@@ -4,41 +4,43 @@ import io.ktor.http.*
 import kotlinx.coroutines.flow.Flow
 import me.snoty.backend.errors.ServiceResult
 import me.snoty.core.FlowId
+import me.snoty.core.Node
 import me.snoty.core.NodeId
 import me.snoty.core.UserId
 import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.StandaloneNode
+import me.snoty.integration.common.wiring.flow.Workflow
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.slf4j.event.Level
 
 interface NodeService {
-	suspend fun get(id: NodeId): StandaloneNode?
+	suspend fun get(userId: UserId?, id: NodeId): StandaloneNode?
 	fun getByFlow(flowId: FlowId): Flow<FlowNode>
 
 	suspend fun <S : NodeSettings> create(
 		userId: UserId,
-		flowId: FlowId,
+		flow: Workflow,
 		descriptor: NodeDescriptor,
 		position: NodePosition,
 		settings: S,
 	): StandaloneNode
 
-	suspend fun connect(from: NodeId, to: NodeId): ServiceResult
-	suspend fun disconnect(from: NodeId, to: NodeId): ServiceResult
+	suspend fun connect(from: Node, to: Node): ServiceResult
+	suspend fun disconnect(from: Node, to: Node): ServiceResult
 
-	suspend fun updatePosition(id: NodeId, position: NodePosition): ServiceResult
-	suspend fun updateSettings(id: NodeId, settings: NodeSettings): ServiceResult
-	suspend fun updateLogLevel(id: NodeId, logLevel: Level?): ServiceResult
+	suspend fun updatePosition(node: Node, position: NodePosition): ServiceResult
+	suspend fun updateSettings(node: Node, settings: NodeSettings): ServiceResult
+	suspend fun updateLogLevel(node: Node, logLevel: Level?): ServiceResult
 
-	suspend fun delete(id: NodeId): ServiceResult
+	suspend fun delete(node: Node): ServiceResult
 }
 
 object NodeServiceResults {
 	class NodeNotFoundError(id: NodeId) : ServiceResult(HttpStatusCode.NotFound, "Node with ID $id not found")
-	class NodeConnected(from: NodeId, to: NodeId) : ServiceResult(HttpStatusCode.OK, "Connected $from to $to")
-	class NodeDisconnected(from: NodeId, to: NodeId) : ServiceResult(HttpStatusCode.OK, "Disconnected $from from $to")
-	class NodeUpdated(id: NodeId) : ServiceResult(HttpStatusCode.OK, "Aspect of node $id updated")
-	class NodeDeleted(id: NodeId) : ServiceResult(HttpStatusCode.OK, "Node $id deleted")
+	class NodeConnected(from: Node, to: Node) : ServiceResult(HttpStatusCode.OK, "Connected ${from.id} to ${to.id}")
+	class NodeDisconnected(from: Node, to: Node) : ServiceResult(HttpStatusCode.OK, "Disconnected ${from.id} from ${to.id}")
+	class NodeUpdated(node: Node) : ServiceResult(HttpStatusCode.OK, "Aspect of node ${node.id} updated")
+	class NodeDeleted(node: Node) : ServiceResult(HttpStatusCode.OK, "Node ${node.id} deleted")
 }
