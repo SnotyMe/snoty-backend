@@ -1,8 +1,8 @@
 package me.snoty.integration.common.wiring.data
 
+import me.snoty.core.node.NodeWithSettings
+import me.snoty.core.node.getConfig
 import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.NodeWithSettings
-import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.node.NodeSettings
 
 context(ctx: NodeHandleContext)

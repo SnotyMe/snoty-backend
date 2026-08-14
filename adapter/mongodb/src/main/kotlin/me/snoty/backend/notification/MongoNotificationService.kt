@@ -13,7 +13,7 @@ import me.snoty.backend.database.mongo.objectId
 import me.snoty.backend.notifications.Notification
 import me.snoty.backend.notifications.NotificationAttributes
 import me.snoty.backend.notifications.NotificationService
-import me.snoty.core.UserId
+import me.snoty.core.user.UserId
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.koin.core.annotation.Single

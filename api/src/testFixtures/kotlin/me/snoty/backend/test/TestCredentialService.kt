@@ -8,7 +8,7 @@ import me.snoty.backend.wiring.credential.Credential
 import me.snoty.backend.wiring.credential.CredentialService
 import me.snoty.backend.wiring.credential.ResolvedCredential
 import me.snoty.backend.wiring.credential.dto.*
-import me.snoty.core.UserId
+import me.snoty.core.user.UserId
 import kotlin.reflect.KClass
 import kotlin.uuid.Uuid
 

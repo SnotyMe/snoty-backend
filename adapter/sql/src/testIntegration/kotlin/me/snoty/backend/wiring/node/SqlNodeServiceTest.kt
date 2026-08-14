@@ -5,10 +5,10 @@ import me.snoty.backend.database.sql.PostgresTest
 import me.snoty.backend.utils.randomV7
 import me.snoty.backend.wiring.flow.FlowTable
 import me.snoty.backend.wiring.flow.SqlFlowService
-import me.snoty.core.UserId
+import me.snoty.core.flow.WorkflowSettings
+import me.snoty.core.user.UserId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.snotyJson
-import me.snoty.integration.common.wiring.flow.WorkflowSettings
 import kotlin.uuid.Uuid
 
 class SqlNodeServiceTest : NodeServiceSpec() {

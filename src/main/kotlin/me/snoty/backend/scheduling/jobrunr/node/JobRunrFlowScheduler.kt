@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNot
 import me.snoty.backend.scheduling.*
 import me.snoty.backend.scheduling.jobrunr.JobRunrScheduler
+import me.snoty.core.flow.Workflow
 import me.snoty.integration.common.wiring.flow.FlowService
-import me.snoty.integration.common.wiring.flow.Workflow
 import org.jobrunr.storage.StorageProvider
 import org.koin.core.annotation.Single
 

@@ -1,7 +1,7 @@
 package me.snoty.integration.common.wiring.node
 
+import me.snoty.core.node.NodeWithSettings
 import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.NodeWithSettings
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
 

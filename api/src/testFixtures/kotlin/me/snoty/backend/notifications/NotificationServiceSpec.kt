@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import me.snoty.backend.test.randomString
-import me.snoty.core.UserId
+import me.snoty.core.user.UserId
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNotNull
 import org.junit.jupiter.api.assertNull

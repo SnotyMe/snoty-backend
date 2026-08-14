@@ -12,7 +12,7 @@ import me.snoty.backend.database.mongo.mongoCollectionPrefix
 import me.snoty.backend.database.mongo.upsertOne
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.register
-import me.snoty.core.Node
+import me.snoty.core.node.Node
 import me.snoty.integration.common.wiring.flow.NodeDeletedHook
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePersistenceFactory

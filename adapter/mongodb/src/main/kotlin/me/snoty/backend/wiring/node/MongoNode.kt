@@ -2,9 +2,9 @@ package me.snoty.backend.wiring.node
 
 import me.snoty.backend.database.mongo.toFlowId
 import me.snoty.backend.database.mongo.toNodeId
-import me.snoty.core.UserId
-import me.snoty.integration.common.wiring.FlowNode
-import me.snoty.integration.common.wiring.StandaloneNode
+import me.snoty.core.node.FlowNode
+import me.snoty.core.node.StandaloneNode
+import me.snoty.core.user.UserId
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeSettings

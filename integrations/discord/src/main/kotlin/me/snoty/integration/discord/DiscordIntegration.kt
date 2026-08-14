@@ -8,6 +8,7 @@ import me.snoty.backend.wiring.credential.Credential
 import me.snoty.backend.wiring.credential.CredentialRef
 import me.snoty.backend.wiring.credential.RegisterCredential
 import me.snoty.backend.wiring.credential.resolve
+import me.snoty.core.node.NodeWithSettings
 import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
@@ -15,7 +16,6 @@ import me.snoty.integration.common.model.metadata.FieldCensored
 import me.snoty.integration.common.model.metadata.FieldDescription
 import me.snoty.integration.common.model.metadata.FieldName
 import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.NodeWithSettings
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.eachWithSettings
 import me.snoty.integration.common.wiring.logger

@@ -9,11 +9,11 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.serializerOrNull
 import me.snoty.backend.server.plugins.void
 import me.snoty.backend.utils.getUser
-import me.snoty.core.NodeId
+import me.snoty.core.node.NodeId
+import me.snoty.core.node.StandaloneNode
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.http.invalidNodeId
 import me.snoty.integration.common.model.metadata.NodeMetadata
-import me.snoty.integration.common.wiring.StandaloneNode
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.NodeSettings

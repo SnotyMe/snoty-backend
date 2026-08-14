@@ -6,12 +6,12 @@ import me.snoty.backend.wiring.flow.CensoredField
 import me.snoty.backend.wiring.flow.ExportFlow
 import me.snoty.backend.wiring.flow.ExportNode
 import me.snoty.backend.wiring.flow.FlowExportImportSchema
-import me.snoty.core.NodeId
+import me.snoty.core.flow.Workflow
+import me.snoty.core.node.NodeId
 import me.snoty.integration.common.model.metadata.NodeField
 import me.snoty.integration.common.model.metadata.NodeFieldDetails
 import me.snoty.integration.common.model.metadata.ObjectSchema
 import me.snoty.integration.common.wiring.flow.FlowService
-import me.snoty.integration.common.wiring.flow.Workflow
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.NodeSettings

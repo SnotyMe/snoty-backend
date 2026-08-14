@@ -11,10 +11,10 @@ import me.snoty.backend.hooks.register
 import me.snoty.backend.utils.BadRequestException
 import me.snoty.backend.utils.getUserOrNull
 import me.snoty.backend.utils.respondStatus
-import me.snoty.core.NodeId
+import me.snoty.core.node.NodeId
+import me.snoty.core.node.NodeWithSettings
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.http.nodeNotFound
-import me.snoty.integration.common.wiring.NodeWithSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRouteFactory
 import org.koin.core.annotation.Factory

@@ -1,7 +1,7 @@
 package me.snoty.backend.notification
 
 import me.snoty.backend.notifications.Notification
-import me.snoty.core.UserId
+import me.snoty.core.user.UserId
 import org.bson.Document
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId

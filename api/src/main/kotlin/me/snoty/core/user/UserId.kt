@@ -1,7 +1,7 @@
-package me.snoty.core
+package me.snoty.core.user
 
 import kotlinx.serialization.Serializable
 
 @JvmInline
 @Serializable
-value class NodeId(val value: String)
+value class UserId(val value: String)

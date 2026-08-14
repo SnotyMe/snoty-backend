@@ -1,11 +1,11 @@
 package me.snoty.integration.mail.smtp
 
 import jakarta.mail.Session
+import me.snoty.core.node.NodeWithSettings
 import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.NodeWithSettings
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.data.each

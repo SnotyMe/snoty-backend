@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import me.snoty.backend.database.sql.flowTransaction
 import me.snoty.backend.database.sql.suspendTransaction
 import me.snoty.backend.utils.bson.getIdAsString
-import me.snoty.core.Node
+import me.snoty.core.node.Node
 import me.snoty.integration.common.diff.DiffResult
 import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.diff.checksum

@@ -1,11 +1,10 @@
-package me.snoty.integration.common.wiring.flow
+package me.snoty.core.flow
 
 import kotlinx.serialization.Serializable
 import me.snoty.backend.scheduling.DEFAULT_SCHEDULE
 import me.snoty.backend.scheduling.JobSchedule
-import me.snoty.core.FlowId
-import me.snoty.core.UserId
-import me.snoty.integration.common.wiring.FlowNode
+import me.snoty.core.node.FlowNode
+import me.snoty.core.user.UserId
 import org.jobrunr.scheduling.cron.CronExpression
 import org.jobrunr.scheduling.cron.InvalidCronExpressionException
 import java.util.*
@@ -71,7 +70,7 @@ data class StandaloneWorkflow(
 /**
  * High-Level representation of a workflow, with the involved nodes.
  */
- @Serializable
+@Serializable
 data class WorkflowWithNodes(
 	override val id: FlowId,
 	override val name: String,

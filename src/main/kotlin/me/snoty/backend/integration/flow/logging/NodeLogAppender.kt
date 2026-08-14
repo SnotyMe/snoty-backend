@@ -12,9 +12,9 @@ import me.snoty.backend.observability.*
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEvent
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
-import me.snoty.core.FlowId
-import me.snoty.core.NodeId
-import me.snoty.core.UserId
+import me.snoty.core.flow.FlowId
+import me.snoty.core.node.NodeId
+import me.snoty.core.user.UserId
 import me.snoty.integration.common.wiring.flow.NodeLogEntry
 import org.slf4j.event.Level
 import kotlin.time.Instant

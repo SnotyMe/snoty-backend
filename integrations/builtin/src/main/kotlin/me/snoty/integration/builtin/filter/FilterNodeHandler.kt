@@ -2,6 +2,8 @@ package me.snoty.integration.builtin.filter
 
 import kotlinx.serialization.Serializable
 import liqp.TemplateParser
+import me.snoty.core.node.NodeWithSettings
+import me.snoty.core.node.getConfig
 import me.snoty.integration.builtin.utils.encodeObjects
 import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
@@ -9,11 +11,9 @@ import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.FieldDescription
 import me.snoty.integration.common.model.metadata.Language
 import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.NodeWithSettings
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.data.get
-import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.Document

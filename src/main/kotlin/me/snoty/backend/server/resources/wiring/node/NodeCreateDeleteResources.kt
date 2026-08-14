@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.respondServiceResult
-import me.snoty.core.FlowId
+import me.snoty.core.flow.FlowId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.http.flowNotFound
 import me.snoty.integration.common.wiring.flow.FlowService

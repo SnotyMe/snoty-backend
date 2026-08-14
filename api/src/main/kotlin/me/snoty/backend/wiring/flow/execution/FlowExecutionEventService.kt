@@ -1,8 +1,8 @@
 package me.snoty.backend.wiring.flow.execution
 
 import kotlinx.coroutines.flow.Flow
-import me.snoty.core.FlowId
-import me.snoty.core.UserId
+import me.snoty.core.flow.FlowId
+import me.snoty.core.user.UserId
 
 interface FlowExecutionEventService {
     suspend fun provideFlowBus(flowId: FlowId): Flow<FlowExecutionEvent>

@@ -1,6 +1,6 @@
 package me.snoty.backend.test
 
-import me.snoty.core.UserId
+import me.snoty.core.user.UserId
 import kotlin.uuid.Uuid
 
 object TestIds {

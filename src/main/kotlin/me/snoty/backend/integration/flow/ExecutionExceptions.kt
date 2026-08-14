@@ -1,6 +1,6 @@
 package me.snoty.backend.integration.flow
 
-import me.snoty.core.Node
+import me.snoty.core.node.Node
 
 /**
  * A single node has failed to execute.

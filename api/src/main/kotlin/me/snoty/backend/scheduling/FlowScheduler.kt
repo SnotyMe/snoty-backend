@@ -1,7 +1,7 @@
 package me.snoty.backend.scheduling
 
+import me.snoty.core.flow.Workflow
 import me.snoty.integration.common.wiring.flow.FlowService
-import me.snoty.integration.common.wiring.flow.Workflow
 
 interface FlowScheduler {
 	/**

@@ -3,8 +3,8 @@ package me.snoty.backend.wiring.flow.execution
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filter
-import me.snoty.core.FlowId
-import me.snoty.core.UserId
+import me.snoty.core.flow.FlowId
+import me.snoty.core.user.UserId
 import org.koin.core.annotation.Single
 
 @Single

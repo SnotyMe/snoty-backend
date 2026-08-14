@@ -3,7 +3,7 @@ package me.snoty.backend.wiring.credential
 import kotlinx.coroutines.flow.Flow
 import me.snoty.backend.authentication.Role
 import me.snoty.backend.wiring.credential.dto.*
-import me.snoty.core.UserId
+import me.snoty.core.user.UserId
 import kotlin.reflect.KClass
 
 interface CredentialService {

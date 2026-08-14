@@ -1,8 +1,8 @@
 package me.snoty.backend.test
 
-import me.snoty.core.NodeId
+import me.snoty.core.node.NodeId
+import me.snoty.core.node.NodeWithSettings
 import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.NodeWithSettings
 import me.snoty.integration.common.wiring.data.*
 import me.snoty.integration.common.wiring.node.NodeHandler
 
@@ -16,7 +16,7 @@ abstract class TestNodeHandler : NodeHandler
 
 object NoOpNodeHandler : TestNodeHandler() {
 	context(_: NodeHandleContext)
-	override suspend fun process(node: NodeWithSettings, input: NodeInput) =
+	override suspend fun process(node: NodeWithSettings, input: NodeInput): NodeOutput =
 		iterableStructOutput(
 			input.map { it.value }
 		)

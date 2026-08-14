@@ -4,9 +4,9 @@ import kotlinx.serialization.json.Json
 import me.snoty.backend.database.sql.utils.flowId
 import me.snoty.backend.database.sql.utils.userId
 import me.snoty.backend.utils.randomV7
-import me.snoty.core.FlowId
-import me.snoty.integration.common.wiring.flow.StandaloneWorkflow
-import me.snoty.integration.common.wiring.flow.WorkflowSettings
+import me.snoty.core.flow.FlowId
+import me.snoty.core.flow.StandaloneWorkflow
+import me.snoty.core.flow.WorkflowSettings
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.core.dao.id.IdTable

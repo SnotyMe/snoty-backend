@@ -2,7 +2,8 @@ package me.snoty.backend.wiring.flow.execution
 
 import kotlinx.coroutines.flow.Flow
 import me.snoty.backend.scheduling.FlowTriggerReason
-import me.snoty.core.UserId
+import me.snoty.core.flow.Workflow
+import me.snoty.core.user.UserId
 import me.snoty.integration.common.wiring.flow.*
 
 interface FlowExecutionService {

@@ -9,7 +9,7 @@ import kotlinx.serialization.json.*
 import me.snoty.backend.utils.BadRequestException
 import me.snoty.backend.utils.respondServiceResult
 import me.snoty.backend.utils.respondStatus
-import me.snoty.core.Node
+import me.snoty.core.node.Node
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.wiring.node.NodePosition
 import org.slf4j.event.Level

@@ -13,7 +13,7 @@ import me.snoty.backend.wiring.flow.FlowTable
 import me.snoty.backend.wiring.flow.SqlFlowService
 import me.snoty.backend.wiring.node.NodeTable
 import me.snoty.backend.wiring.node.SqlNodeService
-import me.snoty.core.NodeId
+import me.snoty.core.node.NodeId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.diff.provideStateCodecRegistry

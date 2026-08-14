@@ -15,7 +15,7 @@ import me.snoty.backend.database.mongo.upsertOne
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.register
 import me.snoty.backend.utils.bson.getIdAsString
-import me.snoty.core.Node
+import me.snoty.core.node.Node
 import me.snoty.integration.common.diff.DiffResult
 import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.diff.STATE_CODEC_REGISTRY

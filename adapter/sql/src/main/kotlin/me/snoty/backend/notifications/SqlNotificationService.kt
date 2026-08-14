@@ -3,7 +3,7 @@ package me.snoty.backend.notifications
 import me.snoty.backend.database.sql.flowTransaction
 import me.snoty.backend.database.sql.suspendTransaction
 import me.snoty.backend.utils.toUuid
-import me.snoty.core.UserId
+import me.snoty.core.user.UserId
 import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq

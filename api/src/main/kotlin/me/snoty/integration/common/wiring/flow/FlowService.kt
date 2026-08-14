@@ -1,8 +1,8 @@
 package me.snoty.integration.common.wiring.flow
 
 import kotlinx.coroutines.flow.Flow
-import me.snoty.core.FlowId
-import me.snoty.core.UserId
+import me.snoty.core.flow.*
+import me.snoty.core.user.UserId
 
 interface FlowService {
 	suspend fun create(userId: UserId, name: String, settings: WorkflowSettings): StandaloneWorkflow

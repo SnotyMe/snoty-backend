@@ -22,10 +22,11 @@ import me.snoty.backend.wiring.credential.CredentialService
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEvent
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
-import me.snoty.core.Node
-import me.snoty.core.NodeId
+import me.snoty.core.flow.WorkflowWithNodes
+import me.snoty.core.node.FlowNode
+import me.snoty.core.node.Node
+import me.snoty.core.node.NodeId
 import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.wiring.FlowNode
 import me.snoty.integration.common.wiring.NodeHandleContextImpl
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
@@ -33,7 +34,6 @@ import me.snoty.integration.common.wiring.data.NodeInput
 import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
 import me.snoty.integration.common.wiring.flow.FlowRunner
-import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import org.koin.core.Koin
 import org.koin.core.annotation.Single

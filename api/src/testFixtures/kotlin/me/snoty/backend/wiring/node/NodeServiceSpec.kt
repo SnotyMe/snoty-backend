@@ -2,7 +2,7 @@ package me.snoty.backend.wiring.node
 
 import me.snoty.backend.test.NoOpNodeHandler
 import me.snoty.backend.test.nodeMetadata
-import me.snoty.core.FlowId
+import me.snoty.core.flow.FlowId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.node.NodeDescriptor

@@ -5,8 +5,8 @@ import me.snoty.backend.wiring.flow.ImportFlow
 import me.snoty.backend.wiring.node.NodeConnectionTable
 import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
 import me.snoty.backend.wiring.node.SqlNodeService
-import me.snoty.core.FlowId
-import me.snoty.core.UserId
+import me.snoty.core.flow.FlowId
+import me.snoty.core.user.UserId
 import me.snoty.integration.common.wiring.flow.FlowService
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.batchInsert

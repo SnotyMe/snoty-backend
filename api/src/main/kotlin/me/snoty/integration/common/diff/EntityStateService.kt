@@ -1,7 +1,7 @@
 package me.snoty.integration.common.diff
 
 import kotlinx.coroutines.flow.Flow
-import me.snoty.core.Node
+import me.snoty.core.node.Node
 import me.snoty.integration.common.diff.state.EntityState
 import me.snoty.integration.common.wiring.node.NodeScopedPersistenceService
 import org.bson.Document

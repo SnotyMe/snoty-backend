@@ -3,6 +3,7 @@ package me.snoty.integration.builtin.split
 import kotlinx.serialization.Serializable
 import me.snoty.backend.utils.bson.getByPath
 import me.snoty.backend.utils.bson.setByPath
+import me.snoty.core.node.NodeWithSettings
 import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
@@ -11,7 +12,6 @@ import me.snoty.integration.common.model.metadata.FieldDefaultValue
 import me.snoty.integration.common.model.metadata.FieldDescription
 import me.snoty.integration.common.model.metadata.FieldHidden
 import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.NodeWithSettings
 import me.snoty.integration.common.wiring.data.*
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings

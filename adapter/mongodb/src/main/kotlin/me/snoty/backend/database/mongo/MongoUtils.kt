@@ -9,10 +9,10 @@ import com.mongodb.kotlin.client.model.Projections.projection
 import me.snoty.backend.errors.InvalidIdException
 import me.snoty.backend.wiring.node.MongoNode
 import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
-import me.snoty.core.FlowId
-import me.snoty.core.Node
-import me.snoty.core.NodeId
-import me.snoty.integration.common.wiring.flow.Workflow
+import me.snoty.core.flow.FlowId
+import me.snoty.core.flow.Workflow
+import me.snoty.core.node.Node
+import me.snoty.core.node.NodeId
 import org.bson.Document
 import org.bson.conversions.Bson
 import org.bson.types.ObjectId

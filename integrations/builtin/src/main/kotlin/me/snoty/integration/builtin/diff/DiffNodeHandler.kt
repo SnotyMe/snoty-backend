@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.toList
 import me.snoty.backend.utils.NULL_UUID
 import me.snoty.backend.utils.bson.encode
 import me.snoty.backend.utils.bson.getIdAsString
-import me.snoty.core.Node
+import me.snoty.core.node.Node
 import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.diff.checksum
 import me.snoty.integration.common.diff.diff

@@ -15,12 +15,12 @@ import me.snoty.backend.server.resources.wiring.flow.flowExportImportResource
 import me.snoty.backend.server.resources.wiring.flow.getPersonalFlowOrNull
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
-import me.snoty.core.FlowId
+import me.snoty.core.flow.FlowId
+import me.snoty.core.flow.WorkflowSettings
 import me.snoty.integration.common.http.flowNotFound
 import me.snoty.integration.common.http.invalidFlowId
 import me.snoty.integration.common.wiring.flow.FlowManagementService
 import me.snoty.integration.common.wiring.flow.FlowService
-import me.snoty.integration.common.wiring.flow.WorkflowSettings
 import org.koin.ktor.ext.get
 import org.slf4j.event.Level
 

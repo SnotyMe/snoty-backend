@@ -22,11 +22,11 @@ import me.snoty.backend.test.*
 import me.snoty.backend.wiring.flow.FlowFeatureFlags
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
 import me.snoty.backend.wiring.node.NodeRegistryImpl
+import me.snoty.core.flow.WorkflowWithNodes
 import me.snoty.integration.common.snotyJson
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeInput
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
-import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings

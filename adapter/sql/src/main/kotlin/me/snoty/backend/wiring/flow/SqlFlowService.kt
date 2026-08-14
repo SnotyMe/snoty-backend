@@ -5,10 +5,10 @@ import kotlinx.coroutines.flow.toList
 import me.snoty.backend.database.sql.flowTransaction
 import me.snoty.backend.database.sql.suspendTransaction
 import me.snoty.backend.scheduling.FlowScheduler
-import me.snoty.core.FlowId
-import me.snoty.core.UserId
+import me.snoty.core.flow.*
+import me.snoty.core.user.UserId
 import me.snoty.integration.common.config.NodeService
-import me.snoty.integration.common.wiring.flow.*
+import me.snoty.integration.common.wiring.flow.FlowService
 import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq

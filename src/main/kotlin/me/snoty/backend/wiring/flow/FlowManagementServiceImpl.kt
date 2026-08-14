@@ -3,11 +3,11 @@ package me.snoty.backend.wiring.flow
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
+import me.snoty.core.flow.Workflow
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.wiring.flow.FlowManagementService
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.flow.NodeDeletedHook
-import me.snoty.integration.common.wiring.flow.Workflow
 import org.koin.core.annotation.Single
 
 @Single

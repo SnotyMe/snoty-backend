@@ -13,7 +13,7 @@ import me.snoty.backend.utils.NotFoundException
 import me.snoty.backend.utils.hasAnyRole
 import me.snoty.backend.utils.toUuid
 import me.snoty.backend.wiring.credential.dto.*
-import me.snoty.core.UserId
+import me.snoty.core.user.UserId
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
 import org.koin.core.annotation.Single

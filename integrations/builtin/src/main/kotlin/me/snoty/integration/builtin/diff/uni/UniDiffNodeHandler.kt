@@ -1,6 +1,7 @@
 package me.snoty.integration.builtin.diff.uni
 
 import kotlinx.serialization.Serializable
+import me.snoty.core.node.NodeWithSettings
 import me.snoty.integration.builtin.diff.injector.HasDiff
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.diff.Change
@@ -10,7 +11,6 @@ import me.snoty.integration.common.diff.getOld
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.EmptySchema
 import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.NodeWithSettings
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.data.get

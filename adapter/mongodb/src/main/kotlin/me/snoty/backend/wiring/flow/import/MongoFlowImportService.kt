@@ -7,8 +7,8 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import me.snoty.backend.database.mongo.objectId
 import me.snoty.backend.wiring.flow.ImportFlow
 import me.snoty.backend.wiring.node.MongoNode
-import me.snoty.core.FlowId
-import me.snoty.core.UserId
+import me.snoty.core.flow.FlowId
+import me.snoty.core.user.UserId
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.flow.NODE_COLLECTION_NAME
 import org.koin.core.annotation.Single

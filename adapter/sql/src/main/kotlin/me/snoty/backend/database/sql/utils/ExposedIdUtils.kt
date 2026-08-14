@@ -1,9 +1,9 @@
 package me.snoty.backend.database.sql.utils
 
 import me.snoty.backend.utils.toUuid
-import me.snoty.core.FlowId
-import me.snoty.core.NodeId
-import me.snoty.core.UserId
+import me.snoty.core.flow.FlowId
+import me.snoty.core.node.NodeId
+import me.snoty.core.user.UserId
 import org.jetbrains.exposed.v1.core.*
 
 class UserIdColumnType : ColumnType<UserId>() {

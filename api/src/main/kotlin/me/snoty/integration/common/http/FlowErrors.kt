@@ -3,7 +3,7 @@ package me.snoty.integration.common.http
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
-import me.snoty.core.FlowId
+import me.snoty.core.flow.FlowId
 
 suspend fun ApplicationCall.flowNotFound(flowId: FlowId?) {
 	val message = when {

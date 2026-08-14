@@ -1,0 +1,69 @@
+package me.snoty.core.node
+
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
+import me.snoty.core.flow.FlowId
+import me.snoty.core.user.UserId
+import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.integration.common.wiring.node.NodePosition
+import me.snoty.integration.common.wiring.node.NodeSettings
+import org.slf4j.event.Level
+
+interface Node {
+	val id: NodeId
+	val flowId: FlowId
+	val userId: UserId
+	val descriptor: NodeDescriptor
+	val logLevel: Level?
+	val position: NodePosition
+}
+
+/**
+ * Node interface with already serialized NodeSettings
+ */
+interface NodeWithSettings : Node {
+	val settings: NodeSettings
+}
+
+/**
+ * High-level representation of a node in the context of a flow.
+ * Contains a list of the next nodes in the flow.
+ */
+@Serializable
+data class FlowNode(
+	override val id: NodeId,
+	override val flowId: FlowId,
+	override val userId: UserId,
+	override val descriptor: NodeDescriptor,
+	override val logLevel: Level?,
+	override val position: NodePosition,
+	override val settings: NodeSettings,
+	val next: List<NodeId> = emptyList()
+) : NodeWithSettings
+
+@Serializable
+data class StandaloneNode(
+	override val id: NodeId,
+	override val flowId: FlowId,
+	override val userId: UserId,
+	override val descriptor: NodeDescriptor,
+	override val logLevel: Level?,
+	override val position: NodePosition,
+	@Contextual
+	override val settings: NodeSettings,
+) : NodeWithSettings
+
+fun StandaloneNode.toRelational(next: List<NodeId>?) = FlowNode(
+	id = id,
+	flowId = flowId,
+	userId = userId,
+	descriptor = descriptor,
+	logLevel = logLevel,
+	settings = settings,
+	position = position,
+	next = next ?: emptyList(),
+)
+
+inline fun <reified T : NodeSettings> NodeWithSettings.getConfig(): T {
+	return settings as T
+}

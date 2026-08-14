@@ -4,15 +4,15 @@ import me.snoty.backend.notifications.NotificationAttributes
 import me.snoty.backend.notifications.NotificationService
 import me.snoty.backend.utils.filterIfNot
 import me.snoty.backend.wiring.credential.resolve
+import me.snoty.core.node.NodeWithSettings
+import me.snoty.core.node.getConfig
 import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.NodeWithSettings
 import me.snoty.integration.common.wiring.data.NodeInput
 import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.data.iterableStructOutput
-import me.snoty.integration.common.wiring.getConfig
 import me.snoty.integration.common.wiring.logger
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.moodle.model.MoodleAssignment

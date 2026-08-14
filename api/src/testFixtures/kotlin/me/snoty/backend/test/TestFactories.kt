@@ -1,10 +1,10 @@
 package me.snoty.backend.test
 
 import me.snoty.backend.utils.randomV7
-import me.snoty.core.FlowId
-import me.snoty.core.NodeId
-import me.snoty.core.UserId
-import me.snoty.integration.common.wiring.FlowNode
+import me.snoty.core.flow.FlowId
+import me.snoty.core.node.FlowNode
+import me.snoty.core.node.NodeId
+import me.snoty.core.user.UserId
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePosition

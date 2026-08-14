@@ -2,12 +2,12 @@ package me.snoty.integration.builtin.mapper
 
 import kotlinx.serialization.Serializable
 import me.snoty.backend.utils.bson.encode
+import me.snoty.core.node.NodeWithSettings
 import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.*
 import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.NodeWithSettings
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.mapInputWithSettings
 import me.snoty.integration.common.wiring.data.structOutput

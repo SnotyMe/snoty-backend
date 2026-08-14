@@ -18,9 +18,11 @@ import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.wiring.node.MongoNode
 import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
 import me.snoty.backend.wiring.node.toRelational
-import me.snoty.core.FlowId
-import me.snoty.core.UserId
-import me.snoty.integration.common.wiring.flow.*
+import me.snoty.core.flow.*
+import me.snoty.core.user.UserId
+import me.snoty.integration.common.wiring.flow.FLOW_COLLECTION_NAME
+import me.snoty.integration.common.wiring.flow.FlowService
+import me.snoty.integration.common.wiring.flow.NODE_COLLECTION_NAME
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
 import org.koin.core.annotation.Single

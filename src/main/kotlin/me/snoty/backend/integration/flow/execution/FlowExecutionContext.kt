@@ -1,8 +1,8 @@
 package me.snoty.backend.integration.flow.execution
 
 import io.github.oshai.kotlinlogging.slf4j.internal.Slf4jLogger
-import me.snoty.core.NodeId
-import me.snoty.integration.common.wiring.FlowNode
+import me.snoty.core.node.FlowNode
+import me.snoty.core.node.NodeId
 import org.slf4j.Logger
 import org.slf4j.event.Level
 

@@ -17,7 +17,8 @@ import me.snoty.backend.database.mongo.*
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.wiring.flow.FlowFeatureFlags
 import me.snoty.backend.wiring.flow.MongoWorkflow
-import me.snoty.core.UserId
+import me.snoty.core.flow.Workflow
+import me.snoty.core.user.UserId
 import me.snoty.integration.common.wiring.flow.*
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
