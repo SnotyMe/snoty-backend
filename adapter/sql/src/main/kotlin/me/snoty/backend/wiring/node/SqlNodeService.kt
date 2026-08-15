@@ -138,7 +138,7 @@ class SqlNodeService(
 	}
 
 	override suspend fun delete(node: Node): ServiceResult = db.suspendTransaction {
-		when (nodeTable.deleteWhere { nodeTable.id eq id }) {
+		when (nodeTable.deleteWhere { nodeTable.id eq node.id }) {
 			0 -> NodeServiceResults.NodeNotFoundError(node.id)
 			else -> NodeServiceResults.NodeDeleted(node)
 		}
