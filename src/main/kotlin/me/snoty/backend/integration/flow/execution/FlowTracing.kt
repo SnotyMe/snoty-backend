@@ -55,5 +55,5 @@ class FlowTracingImpl(
 	}
 
 	override fun traceName(node: Node) =
-		"Node ${node.descriptor.id} (${node.id})"
+		"Node ${node.descriptor.id} (${node.id.value})"
 }

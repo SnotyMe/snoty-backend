@@ -13,6 +13,7 @@ import me.snoty.core.node.NodeId
 import me.snoty.core.node.StandaloneNode
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.http.invalidNodeId
+import me.snoty.integration.common.http.nodeNotFound
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRegistry
@@ -26,7 +27,7 @@ suspend fun RoutingContext.getPersonalNodeOrNull(): StandaloneNode? {
 	val id = call.parameters["id"]?.let(::NodeId)
 		?: return void { call.invalidNodeId() }
 
-	return nodeService.get(user.id, id) ?: void { call.invalidNodeId() }
+	return nodeService.get(user.id, id) ?: void { call.nodeNotFound(id) }
 }
 
 @OptIn(InternalSerializationApi::class)

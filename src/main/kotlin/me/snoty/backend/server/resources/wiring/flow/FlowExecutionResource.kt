@@ -49,7 +49,7 @@ fun Route.flowExecutionResource() = route("flow") {
 			}
 			val eventTypes = call.request.queryParameters["eventTypes"]?.split(",")?.map { it.trim() } ?: emptyList()
 
-			flowExecutionEventService.provideFlowBus(flowId = flow.id)
+			flowExecutionEventService.provideFlowBus(flow)
 				.filter { eventTypes.isEmpty() || it.eventType in eventTypes }
 				.collect {
 					send(
