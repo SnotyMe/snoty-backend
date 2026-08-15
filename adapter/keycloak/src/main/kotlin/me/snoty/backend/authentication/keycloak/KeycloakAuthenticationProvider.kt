@@ -6,7 +6,7 @@ import me.snoty.backend.authentication.Role
 import me.snoty.backend.authentication.oidc.OidcAuthenticationProvider
 import me.snoty.backend.config.Config
 import me.snoty.backend.utils.http.INTERNAL_HTTP_CLIENT
-import me.snoty.core.UserId
+import me.snoty.core.user.UserId
 import org.keycloak.admin.client.resource.RealmResource
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single

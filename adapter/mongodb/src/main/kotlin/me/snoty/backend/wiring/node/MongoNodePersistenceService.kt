@@ -12,7 +12,7 @@ import me.snoty.backend.database.mongo.mongoCollectionPrefix
 import me.snoty.backend.database.mongo.upsertOne
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.register
-import me.snoty.integration.common.wiring.Node
+import me.snoty.core.node.Node
 import me.snoty.integration.common.wiring.flow.NodeDeletedHook
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePersistenceFactory
@@ -37,14 +37,14 @@ class MongoNodePersistenceService<T : Any>(
 
 	override suspend fun persistEntity(node: Node, entityId: String, entity: T) {
 		collection.upsertOne(
-			Filters.eq(node._id),
+			Filters.eq(node.id),
 			Updates.set("${NodeEntities<T>::entities.name}.$entityId", entity)
 		)
 	}
 
 	override suspend fun setEntities(node: Node, entities: List<T>, idGetter: (T) -> String) {
 		collection.upsertOne(
-			Filters.eq(node._id),
+			Filters.eq(node.id),
 			Updates.set(NodeEntities<T>::entities.name, entities.associateBy(idGetter))
 		)
 	}
@@ -52,7 +52,7 @@ class MongoNodePersistenceService<T : Any>(
 	override fun getEntities(node: Node): Flow<T> {
 		return collection.aggregate(
 			listOf(
-				Aggregates.match(Filters.eq(node._id)),
+				Aggregates.match(Filters.eq(node.id)),
 				Aggregates.project(
 					Projections.computed(NodeEntities<T>::entities.name,
 						Stages.objectToArray(NodeEntities<T>::entities.name)
@@ -67,13 +67,13 @@ class MongoNodePersistenceService<T : Any>(
 
 	override suspend fun deleteEntity(node: Node, entityId: String) {
 		collection.updateOne(
-			Filters.eq(node._id),
+			Filters.eq(node.id),
 			Updates.unset("${NodeEntities<T>::entities.name}.$entityId")
 		)
 	}
 
 	override suspend fun delete(node: Node) {
-		collection.deleteOne(Filters.eq(NodeEntities<T>::_id.name, node._id))
+		collection.deleteOne(Filters.eq(NodeEntities<T>::_id.name, node.id))
 	}
 }
 

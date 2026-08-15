@@ -9,7 +9,7 @@ import me.snoty.backend.utils.bson.getIdAsString
 import me.snoty.backend.wiring.credential.CredentialRef
 import me.snoty.backend.wiring.credential.CredentialService
 import me.snoty.backend.wiring.credential.ResolvedCredential
-import me.snoty.integration.common.wiring.Node
+import me.snoty.core.node.NodeWithSettings
 import me.snoty.integration.common.wiring.NodeHandleContextImpl
 import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
 import me.snoty.integration.moodle.model.raw.MoodleAction
@@ -116,7 +116,7 @@ class MoodleIntegrationTest {
 					koin = Koin(),
 				)
 				val output = context(ctx) {
-					val node: Node = mockk(relaxed = true)
+					val node: NodeWithSettings = mockk(relaxed = true)
 					every { node.settings } returns settings
 
 					integration.process(node, listOf(mockk()))

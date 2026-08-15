@@ -9,15 +9,19 @@ import com.mongodb.kotlin.client.model.Projections.projection
 import me.snoty.backend.errors.InvalidIdException
 import me.snoty.backend.wiring.node.MongoNode
 import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
-import me.snoty.core.FlowId
-import me.snoty.core.NodeId
+import me.snoty.core.flow.FlowId
+import me.snoty.core.flow.Workflow
+import me.snoty.core.node.Node
+import me.snoty.core.node.NodeId
 import org.bson.Document
 import org.bson.conversions.Bson
 import org.bson.types.ObjectId
 import kotlin.reflect.KProperty
 
 val FlowId.objectId get() = this.value.objectId
+val Workflow.objectId get() = this.id.objectId
 val NodeId.objectId get() = this.value.objectId
+val Node.objectId get() = this.id.objectId
 
 val String.objectId get() = try {
 	ObjectId(this)

@@ -1,21 +1,16 @@
-package me.snoty.integration.common.wiring
+package me.snoty.core.node
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import me.snoty.core.FlowId
-import me.snoty.core.NodeId
-import me.snoty.core.UserId
+import me.snoty.core.flow.FlowId
+import me.snoty.core.user.UserId
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.slf4j.event.Level
 
-/**
- * Node interface without any specifics regarding settings.
- * No relations are guaranteed.
- */
-interface GenericNode {
-	val _id: NodeId
+interface Node {
+	val id: NodeId
 	val flowId: FlowId
 	val userId: UserId
 	val descriptor: NodeDescriptor
@@ -26,7 +21,7 @@ interface GenericNode {
 /**
  * Node interface with already serialized NodeSettings
  */
-interface Node : GenericNode {
+interface NodeWithSettings : Node {
 	val settings: NodeSettings
 }
 
@@ -36,7 +31,7 @@ interface Node : GenericNode {
  */
 @Serializable
 data class FlowNode(
-	override val _id: NodeId,
+	override val id: NodeId,
 	override val flowId: FlowId,
 	override val userId: UserId,
 	override val descriptor: NodeDescriptor,
@@ -44,11 +39,11 @@ data class FlowNode(
 	override val position: NodePosition,
 	override val settings: NodeSettings,
 	val next: List<NodeId> = emptyList()
-) : Node
+) : NodeWithSettings
 
 @Serializable
 data class StandaloneNode(
-	override val _id: NodeId,
+	override val id: NodeId,
 	override val flowId: FlowId,
 	override val userId: UserId,
 	override val descriptor: NodeDescriptor,
@@ -56,10 +51,10 @@ data class StandaloneNode(
 	override val position: NodePosition,
 	@Contextual
 	override val settings: NodeSettings,
-) : Node
+) : NodeWithSettings
 
 fun StandaloneNode.toRelational(next: List<NodeId>?) = FlowNode(
-	_id = _id,
+	id = id,
 	flowId = flowId,
 	userId = userId,
 	descriptor = descriptor,
@@ -69,6 +64,6 @@ fun StandaloneNode.toRelational(next: List<NodeId>?) = FlowNode(
 	next = next ?: emptyList(),
 )
 
-inline fun <reified T : NodeSettings> Node.getConfig(): T {
+inline fun <reified T : NodeSettings> NodeWithSettings.getConfig(): T {
 	return settings as T
 }

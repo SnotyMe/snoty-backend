@@ -8,18 +8,18 @@ import kotlinx.serialization.json.Json
 import me.snoty.backend.logging.KMDC
 import me.snoty.backend.observability.*
 import me.snoty.backend.wiring.flow.FlowFeatureFlags
-import me.snoty.integration.common.wiring.GenericNode
-import me.snoty.integration.common.wiring.Node
+import me.snoty.core.flow.Workflow
+import me.snoty.core.node.Node
+import me.snoty.core.node.NodeWithSettings
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.flow.FlowRunner
-import me.snoty.integration.common.wiring.flow.Workflow
 import me.snoty.integration.common.wiring.node.setAttribute
 import org.koin.core.annotation.Single
 
 interface FlowTracing : Tracer {
 	fun createRootSpan(jobId: String, flow: Workflow): Span
-	fun SpanBuilder.setNodeAttributes(node: Node, input: Collection<IntermediateData>?): SpanBuilder
-	fun traceName(node: GenericNode): String
+	fun SpanBuilder.setNodeAttributes(node: NodeWithSettings, input: Collection<IntermediateData>?): SpanBuilder
+	fun traceName(node: Node): String
 }
 
 @Single(binds = [FlowTracing::class])
@@ -29,7 +29,7 @@ class FlowTracingImpl(
 	openTelemetry: OpenTelemetry,
 ) : FlowTracing, Tracer by openTelemetry.getTracer(FlowRunner::class) {
 	override fun createRootSpan(jobId: String, flow: Workflow): Span {
-		val flowId = flow._id
+		val flowId = flow.id
 
 		val rootSpan = spanBuilder("Flow $flowId")
 			.setAttribute(USER_ID, flow.userId.value)
@@ -41,9 +41,9 @@ class FlowTracingImpl(
 		return rootSpan
 	}
 
-	override fun SpanBuilder.setNodeAttributes(node: Node, input: Collection<IntermediateData>?) = apply {
-		setAttribute(NODE_ID, node._id.value)
-		KMDC.put(NODE_ID, node._id.value)
+	override fun SpanBuilder.setNodeAttributes(node: NodeWithSettings, input: Collection<IntermediateData>?) = apply {
+		setAttribute(NODE_ID, node.id.value)
+		KMDC.put(NODE_ID, node.id.value)
 		setAttribute("node.descriptor", node.descriptor)
 
 		if (featureFlags.traceConfig) {
@@ -54,6 +54,6 @@ class FlowTracingImpl(
 		}
 	}
 
-	override fun traceName(node: GenericNode) =
-		"Node ${node.descriptor.id} (${node._id})"
+	override fun traceName(node: Node) =
+		"Node ${node.descriptor.id} (${node.id.value})"
 }

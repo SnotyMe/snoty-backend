@@ -1,11 +1,11 @@
 package me.snoty.backend.integration.flow
 
-import me.snoty.integration.common.wiring.GenericNode
+import me.snoty.core.node.Node
 
 /**
  * A single node has failed to execute.
  */
-class NodeExecutionException(val node: GenericNode, wrapped: Throwable) : Exception(wrapped)
+class NodeExecutionException(val node: Node, wrapped: Throwable) : Exception(wrapped)
 
 /**
  * An entire flow has failed to execute.

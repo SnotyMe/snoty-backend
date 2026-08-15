@@ -29,7 +29,7 @@ fun Route.flowExecutionResource() = route("flow") {
 			val startFrom = call.queryParameters["startFrom"]?.orNull()
 			val limit = call.queryParameters["limit"]?.toIntOrNull() ?: 10
 			val flow = getPersonalFlowOrNull() ?: return@get
-			val executions = flowExecutionService.query(flowId = flow._id, startFrom = startFrom, limit = limit)
+			val executions = flowExecutionService.query(flow, startFrom = startFrom, limit = limit)
 
 			call.respond(executions)
 		}.describe {
@@ -49,7 +49,7 @@ fun Route.flowExecutionResource() = route("flow") {
 			}
 			val eventTypes = call.request.queryParameters["eventTypes"]?.split(",")?.map { it.trim() } ?: emptyList()
 
-			flowExecutionEventService.provideFlowBus(flowId = flow._id)
+			flowExecutionEventService.provideFlowBus(flow)
 				.filter { eventTypes.isEmpty() || it.eventType in eventTypes }
 				.collect {
 					send(

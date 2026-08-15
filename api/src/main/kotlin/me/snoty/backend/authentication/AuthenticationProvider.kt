@@ -1,7 +1,7 @@
 package me.snoty.backend.authentication
 
 import io.ktor.server.application.*
-import me.snoty.core.UserId
+import me.snoty.core.user.UserId
 
 interface AuthenticationProvider {
 	suspend fun getUserById(userId: UserId): User?

@@ -1,7 +1,7 @@
-package me.snoty.core
+package me.snoty.core.flow
 
 import kotlinx.serialization.Serializable
 
 @JvmInline
 @Serializable
-value class UserId(val value: String)
+value class FlowId(val value: String)

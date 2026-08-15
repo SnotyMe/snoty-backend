@@ -19,7 +19,7 @@ fun Route.flowExportImportResource() {
 		get("export") {
 			val flow = getPersonalFlowOrNull() ?: return@get
 
-			val exported = exportService.export(flow._id)
+			val exported = exportService.export(flow)
 
 			call.response.header(
 				HttpHeaders.ContentDisposition,
@@ -39,7 +39,7 @@ fun Route.flowExportImportResource() {
 			val flow = getPersonalFlowOrNull() ?: return@post
 
 			val censor = options?.withSensitiveData?.let { !it } ?: true
-			val exported = exportService.export(flow._id, censor = censor)
+			val exported = exportService.export(flow, censor = censor)
 			
 			call.respond(exported)
 		}

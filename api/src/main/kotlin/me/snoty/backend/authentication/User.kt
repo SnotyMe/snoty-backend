@@ -1,7 +1,7 @@
 package me.snoty.backend.authentication
 
 import kotlinx.serialization.Serializable
-import me.snoty.core.UserId
+import me.snoty.core.user.UserId
 
 @Serializable
 data class User(

@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.scheduling.JobRequest
 import me.snoty.backend.utils.Slf4jLevelSerializer
-import me.snoty.core.FlowId
+import me.snoty.core.flow.FlowId
 import org.slf4j.event.Level
 
 @Serializable

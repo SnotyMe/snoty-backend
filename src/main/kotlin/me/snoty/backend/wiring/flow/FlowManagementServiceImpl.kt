@@ -3,11 +3,11 @@ package me.snoty.backend.wiring.flow
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
+import me.snoty.core.flow.Workflow
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.wiring.flow.FlowManagementService
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.flow.NodeDeletedHook
-import me.snoty.integration.common.wiring.flow.Workflow
 import org.koin.core.annotation.Single
 
 @Single
@@ -20,11 +20,11 @@ class FlowManagementServiceImpl(
 ) : FlowManagementService {
     override suspend fun deleteFlowCascading(workflow: Workflow) {
         flowScheduler.deleteAll(workflow)
-        flowExecutionService.deleteAll(workflow._id)
-        flowService.getWithNodes(workflow._id)?.nodes?.forEach {
+        flowExecutionService.deleteAll(workflow)
+        flowService.getWithNodes(workflow.userId, workflow.id)?.nodes?.forEach {
             hookRegistry.executeHooks(NodeDeletedHook::class, it)
-            nodeService.delete(it._id)
+            nodeService.delete(it)
         }
-        flowService.delete(workflow._id)
+        flowService.delete(workflow)
     }
 }

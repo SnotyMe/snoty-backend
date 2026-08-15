@@ -2,7 +2,7 @@ package me.snoty.integration.common.wiring.flow
 
 import kotlinx.serialization.Serializable
 import me.snoty.backend.scheduling.FlowTriggerReason
-import me.snoty.core.FlowId
+import me.snoty.core.flow.FlowId
 import kotlin.time.Instant
 
 @Serializable

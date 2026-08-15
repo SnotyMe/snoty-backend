@@ -46,7 +46,7 @@ class JobRunrFlowJobHandler(
 		KMDC.put(APPENDER_LOG_LEVEL, jobRequest.logLevel.name)
 
 		runBlocking(MDCContext()) {
-			val flow = flowService.getWithNodes(jobRequest.flowId) ?: let {
+			val flow = flowService.getWithNodes(userId = null, flowId = jobRequest.flowId) ?: let {
 				logger.error("Flow not found: {}", jobRequest.flowId)
 				return@runBlocking
 			}

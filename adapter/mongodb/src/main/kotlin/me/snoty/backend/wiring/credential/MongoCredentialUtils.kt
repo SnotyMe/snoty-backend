@@ -4,7 +4,7 @@ import com.mongodb.client.model.Filters
 import me.snoty.backend.authentication.Role
 import me.snoty.backend.utils.hasAnyRole
 import me.snoty.backend.wiring.credential.dto.CredentialScope
-import me.snoty.core.UserId
+import me.snoty.core.user.UserId
 import org.bson.conversions.Bson
 
 object CredentialFilters {

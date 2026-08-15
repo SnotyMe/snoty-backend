@@ -4,7 +4,7 @@ import me.snoty.backend.database.sql.PostgresTest
 import me.snoty.backend.wiring.node.NodeConnectionTable
 import me.snoty.backend.wiring.node.NodeTable
 import me.snoty.backend.wiring.node.SqlNodeService
-import me.snoty.core.FlowId
+import me.snoty.core.flow.FlowId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.snotyJson
 import me.snoty.integration.common.wiring.flow.FlowService

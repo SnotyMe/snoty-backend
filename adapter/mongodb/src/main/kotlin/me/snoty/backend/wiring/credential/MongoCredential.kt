@@ -5,7 +5,7 @@ import me.snoty.backend.utils.bson.decode
 import me.snoty.backend.wiring.credential.dto.CredentialDto
 import me.snoty.backend.wiring.credential.dto.CredentialScope
 import me.snoty.backend.wiring.credential.dto.PotentiallyAccessibleCredentialDto
-import me.snoty.core.UserId
+import me.snoty.core.user.UserId
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
 import org.bson.codecs.pojo.annotations.BsonId

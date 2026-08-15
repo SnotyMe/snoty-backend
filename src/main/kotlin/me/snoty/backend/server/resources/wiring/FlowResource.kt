@@ -15,12 +15,12 @@ import me.snoty.backend.server.resources.wiring.flow.flowExportImportResource
 import me.snoty.backend.server.resources.wiring.flow.getPersonalFlowOrNull
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
-import me.snoty.core.FlowId
+import me.snoty.core.flow.FlowId
+import me.snoty.core.flow.WorkflowSettings
 import me.snoty.integration.common.http.flowNotFound
 import me.snoty.integration.common.http.invalidFlowId
 import me.snoty.integration.common.wiring.flow.FlowManagementService
 import me.snoty.integration.common.wiring.flow.FlowService
-import me.snoty.integration.common.wiring.flow.WorkflowSettings
 import org.koin.ktor.ext.get
 import org.slf4j.event.Level
 
@@ -81,10 +81,7 @@ fun Route.flowResource() = route("flow") {
 		val user = call.getUser()
 		val id = call.parameters["id"]?.let(::FlowId) ?: return@get call.invalidFlowId()
 
-		val flow = flowService.getWithNodes(id)
-		if (flow?.userId != user.id) {
-			return@get call.flowNotFound(flow)
-		}
+		val flow = flowService.getWithNodes(user.id, id) ?: return@get call.flowNotFound(id)
 
 		call.respond(flow)
 	}
@@ -93,7 +90,7 @@ fun Route.flowResource() = route("flow") {
 		val flow = getPersonalFlowOrNull() ?: return@put
 
 		val name = call.receiveText()
-		flowService.rename(flow._id, name)
+		flowService.rename(flow, name)
 
 		call.respond(HttpStatusCode.NoContent)
 	}.describe {
@@ -110,7 +107,7 @@ fun Route.flowResource() = route("flow") {
 		val flow = getPersonalFlowOrNull() ?: return@put
 
 		val settings = call.receive<WorkflowSettings>()
-		flowService.updateSettings(flow._id, settings)
+		flowService.updateSettings(flow, settings)
 
 		call.respond(HttpStatusCode.NoContent)
 	}

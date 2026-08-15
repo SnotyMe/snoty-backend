@@ -1,7 +1,7 @@
 package me.snoty.backend.notifications
 
 import kotlinx.coroutines.flow.Flow
-import me.snoty.core.UserId
+import me.snoty.core.user.UserId
 
 interface NotificationService {
 	suspend fun send(userId: UserId, attributes: NotificationAttributes, title: String, description: String? = null)

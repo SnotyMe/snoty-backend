@@ -1,7 +1,7 @@
 package me.snoty.backend.test
 
-import me.snoty.core.NodeId
-import me.snoty.integration.common.wiring.Node
+import me.snoty.core.node.NodeId
+import me.snoty.core.node.NodeWithSettings
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.*
 import me.snoty.integration.common.wiring.node.NodeHandler
@@ -16,7 +16,7 @@ abstract class TestNodeHandler : NodeHandler
 
 object NoOpNodeHandler : TestNodeHandler() {
 	context(_: NodeHandleContext)
-	override suspend fun process(node: Node, input: NodeInput) =
+	override suspend fun process(node: NodeWithSettings, input: NodeInput): NodeOutput =
 		iterableStructOutput(
 			input.map { it.value }
 		)
@@ -28,7 +28,7 @@ object NoOpNodeHandler : TestNodeHandler() {
  */
 object QuoteHandler : TestNodeHandler() {
 	context(_: NodeHandleContext)
-	override suspend fun process(node: Node, input: NodeInput) = mapInput<Any>(input) {
+	override suspend fun process(node: NodeWithSettings, input: NodeInput) = mapInput<Any>(input) {
 		simpleOutput("'${it}'")
 	}
 }
@@ -37,7 +37,7 @@ object ExceptionHandler : TestNodeHandler() {
 	val exception = IllegalStateException("This is an exception")
 
 	context(_: NodeHandleContext)
-	override suspend fun process(node: Node, input: NodeInput)
+	override suspend fun process(node: NodeWithSettings, input: NodeInput)
 		= throw exception
 }
 
@@ -45,11 +45,11 @@ open class GlobalMapHandler(
 	private val map: MutableMap<NodeId, NodeInput> = mutableMapOf()
 ) : TestNodeHandler(), Map<NodeId, NodeInput> by map {
 	context(_: NodeHandleContext)
-	override suspend fun process(node: Node, input: NodeInput) = processImpl(node, input)
+	override suspend fun process(node: NodeWithSettings, input: NodeInput) = processImpl(node, input)
 
 	context(_: NodeHandleContext)
-	fun processImpl(node: Node, input: NodeInput): NodeOutput {
-		map[node._id] = input
+	fun processImpl(node: NodeWithSettings, input: NodeInput): NodeOutput {
+		map[node.id] = input
 
 		return mapInput<Any>(input) {
 			simpleOutput(it)
@@ -63,7 +63,7 @@ class WantsEmptyProvidesNonEmptyHandler : GlobalMapHandler() {
 	}
 
 	context(_: NodeHandleContext)
-	override suspend fun process(node: Node, input: NodeInput): NodeOutput {
+	override suspend fun process(node: NodeWithSettings, input: NodeInput): NodeOutput {
 		super.processImpl(node, input)
 		return simpleOutput(OUTPUT)
 	}
@@ -71,7 +71,7 @@ class WantsEmptyProvidesNonEmptyHandler : GlobalMapHandler() {
 
 class WantsNonEmptyProvidesEmptyHandler : GlobalMapHandler() {
 	context(_: NodeHandleContext)
-	override suspend fun process(node: Node, input: NodeInput) =
+	override suspend fun process(node: NodeWithSettings, input: NodeInput) =
 		if (input.isNotEmpty()) {
 			super.processImpl(node, input)
 			iterableStructOutput<Unit>(emptyList())

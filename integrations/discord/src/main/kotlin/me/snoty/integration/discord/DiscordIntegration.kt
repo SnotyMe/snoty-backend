@@ -8,13 +8,13 @@ import me.snoty.backend.wiring.credential.Credential
 import me.snoty.backend.wiring.credential.CredentialRef
 import me.snoty.backend.wiring.credential.RegisterCredential
 import me.snoty.backend.wiring.credential.resolve
+import me.snoty.core.node.NodeWithSettings
 import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.FieldCensored
 import me.snoty.integration.common.model.metadata.FieldDescription
 import me.snoty.integration.common.model.metadata.FieldName
-import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.eachWithSettings
@@ -54,7 +54,7 @@ class DiscordNodeHandler(
 ) : NodeHandler {
 	context(_: NodeHandleContext)
 	override suspend fun process(
-		node: Node,
+		node: NodeWithSettings,
 		input: Collection<IntermediateData>,
 	) = eachWithSettings<DiscordWebhook.Message, DiscordSettings>(input, node) { data, config ->
 		if (data.content.isNullOrEmpty() && data.embeds.isEmpty()) {

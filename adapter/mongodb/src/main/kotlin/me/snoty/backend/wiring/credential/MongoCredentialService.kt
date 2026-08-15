@@ -17,7 +17,7 @@ import me.snoty.backend.utils.NotFoundException
 import me.snoty.backend.utils.bson.decode
 import me.snoty.backend.utils.bson.encode
 import me.snoty.backend.wiring.credential.dto.*
-import me.snoty.core.UserId
+import me.snoty.core.user.UserId
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Single

@@ -8,8 +8,8 @@ import me.snoty.backend.database.sql.utils.rawJsonb
 import me.snoty.backend.database.sql.utils.userId
 import me.snoty.backend.utils.randomV7
 import me.snoty.backend.wiring.flow.FlowTable
-import me.snoty.core.NodeId
-import me.snoty.integration.common.wiring.StandaloneNode
+import me.snoty.core.node.NodeId
+import me.snoty.core.node.StandaloneNode
 import me.snoty.integration.common.wiring.node.*
 import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.ResultRow
@@ -46,7 +46,7 @@ fun ResultRow.toStandalone(nodeTable: NodeTable, json: Json, nodeRegistry: NodeR
 	val descriptor = NodeDescriptor(namespace = this[nodeTable.descriptor_namespace], name = this[nodeTable.descriptor_name])
 
 	return StandaloneNode(
-		_id = this[nodeTable.id].value,
+		id = this[nodeTable.id].value,
 		flowId = this[nodeTable.flowId].value,
 		userId = this[nodeTable.userId],
 		descriptor = descriptor,

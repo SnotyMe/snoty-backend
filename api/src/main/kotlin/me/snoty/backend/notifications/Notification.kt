@@ -3,9 +3,9 @@ package me.snoty.backend.notifications
 import kotlinx.serialization.Serializable
 import me.snoty.backend.observability.FLOW_ID
 import me.snoty.backend.observability.NODE_ID
-import me.snoty.core.FlowId
-import me.snoty.core.NodeId
-import me.snoty.core.UserId
+import me.snoty.core.flow.FlowId
+import me.snoty.core.node.NodeId
+import me.snoty.core.user.UserId
 import kotlin.time.Instant
 
 typealias NotificationAttributes = Map<String, String>

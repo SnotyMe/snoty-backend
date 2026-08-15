@@ -1,6 +1,6 @@
 package me.snoty.backend.wiring.credential
 
-import me.snoty.core.UserId
+import me.snoty.core.user.UserId
 import me.snoty.integration.common.wiring.NodeHandleContext
 
 class CredentialMissingException(credentialType: String) :

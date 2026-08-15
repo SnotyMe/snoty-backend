@@ -17,8 +17,8 @@ import me.snoty.backend.database.mongo.*
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.wiring.flow.FlowFeatureFlags
 import me.snoty.backend.wiring.flow.MongoWorkflow
-import me.snoty.core.FlowId
-import me.snoty.core.UserId
+import me.snoty.core.flow.Workflow
+import me.snoty.core.user.UserId
 import me.snoty.integration.common.wiring.flow.*
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
@@ -71,12 +71,12 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 		}
 	}
 
-	override suspend fun create(jobId: String, flowId: FlowId, triggeredBy: FlowTriggerReason) {
+	override suspend fun create(jobId: String, flow: Workflow, triggeredBy: FlowTriggerReason) {
 		runCatching {
 			collection.insertOne(
 				MongoFlowLogs(
 					_id = jobId,
-					flowId = flowId.objectId,
+					flowId = flow.objectId,
 					triggeredBy = triggeredBy,
 					creationDate = Clock.System.now(),
 					status = FlowExecutionStatus.RUNNING,
@@ -163,10 +163,10 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 		).map { it.toFlowExecution() }
 	}
 
-	override fun query(flowId: FlowId, startFrom: String?, limit: Int): Flow<FlowExecution> =
+	override fun query(flow: Workflow, startFrom: String?, limit: Int): Flow<FlowExecution> =
 		collection.find(
 			Filters.and(
-				Filters.eq(MongoFlowLogs::flowId.name, flowId.objectId),
+				Filters.eq(MongoFlowLogs::flowId.name, flow.objectId),
 				if (startFrom != null) Filters.lt(MongoFlowLogs::_id.name, startFrom) else Filters.empty(),
 			)
 		)
@@ -176,7 +176,7 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 				it.run {
 					FlowExecution(
 						jobId = _id,
-						flowId = flowId,
+						flowId = flow.id,
 						triggeredBy = triggeredBy ?: FlowTriggerReason.Unknown,
 						timestamp = creationDate,
 						status = status,
@@ -185,7 +185,7 @@ class MongoFlowExecutionService(mongoDB: MongoDatabase, featureFlags: FlowFeatur
 				}
 			}
 
-	override suspend fun deleteAll(flowId: FlowId) {
-		collection.deleteMany(Filters.eq(MongoFlowLogs::flowId.name, flowId.objectId))
+	override suspend fun deleteAll(flow: Workflow) {
+		collection.deleteMany(Filters.eq(MongoFlowLogs::flowId.name, flow.id.objectId))
 	}
 }

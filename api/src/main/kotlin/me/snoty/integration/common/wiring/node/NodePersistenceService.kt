@@ -1,7 +1,7 @@
 package me.snoty.integration.common.wiring.node
 
 import kotlinx.coroutines.flow.Flow
-import me.snoty.integration.common.wiring.Node
+import me.snoty.core.node.Node
 import kotlin.reflect.KClass
 
 interface NodePersistenceService<T : Any> : NodeScopedPersistenceService {

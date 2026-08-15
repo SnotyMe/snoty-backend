@@ -22,11 +22,11 @@ import me.snoty.backend.test.*
 import me.snoty.backend.wiring.flow.FlowFeatureFlags
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
 import me.snoty.backend.wiring.node.NodeRegistryImpl
+import me.snoty.core.flow.WorkflowWithNodes
 import me.snoty.integration.common.snotyJson
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeInput
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
-import me.snoty.integration.common.wiring.flow.WorkflowWithNodes
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings
@@ -108,12 +108,12 @@ class FlowRunnerImplTest {
 		val flow = relationalFlow(emit, node)
 		val jobId = "basic"
 		runner.executeStartNode(jobId, flow, listOf(intermediateData))
-		assertEquals(listOf(intermediateData), mapHandler[node._id])
+		assertEquals(listOf(intermediateData), mapHandler[node.id])
 		val spans = otel.spanExporter.finishedSpanItems
 			.sortedBy { it.startEpochNanos }
 
 		assertEquals(3, spans.size)
-		assertTrue(spans[0].name.contains(flow._id.value))
+		assertTrue(spans[0].name.contains(flow.id.value))
 		assertEquals(tracing.traceName(emit), spans[1].name)
 		assertEquals(tracing.traceName(node), spans[2].name)
 		assertAny(spans) {
@@ -129,7 +129,7 @@ class FlowRunnerImplTest {
 		val flow = relationalFlow(emit, processor, map)
 
 		runner.executeStartNode("basic withQuote", flow, listOf(intermediateData))
-		assertEquals("'test'", mapHandler[map._id]?.single()?.value)
+		assertEquals("'test'", mapHandler[map.id]?.single()?.value)
 
 		val spans = otel.spanExporter.finishedSpanItems
 		assertEquals(4, spans.size)
@@ -147,13 +147,13 @@ class FlowRunnerImplTest {
 
 		suspend fun verifyTrace(flow: WorkflowWithNodes, input: IntermediateData, withConfig: Boolean) {
 			runner.executeStartNode("traces config attribute", flow, listOf(input))
-			assertEquals(input, mapHandler[node._id]?.single())
+			assertEquals(input, mapHandler[node.id]?.single())
 			val spans = otel.spanExporter.finishedSpanItems
 				.sortedBy { it.startEpochNanos }
 
 			assertEquals(3, spans.size)
 			// root node
-			assertTrue(spans[0].name.contains(flow._id.value))
+			assertTrue(spans[0].name.contains(flow.id.value))
 			assertEquals(tracing.traceName(emit), spans[1].name)
 			// execution node (the one with an actual config)
 			assertEquals(tracing.traceName(node), spans[2].name)
@@ -183,15 +183,15 @@ class FlowRunnerImplTest {
 		assertThrows<FlowExecutionException> {
 			runner.executeStartNode("traces exception attributes", flow, listOf(intermediateData))
 		}
-		assertNull(mapHandler[exNode._id])
+		assertNull(mapHandler[exNode.id])
 		val spans = otel.spanExporter.finishedSpanItems
 		assertEquals(4, spans.size)
 		val flowSpan = assertAny(spans) {
-			it.name.contains(flow._id.value)
+			it.name.contains(flow.id.value)
 		}
 		assertEquals(SpanId.getInvalid(), flowSpan.parentSpanId)
 		assertNull(flowSpan.attributes.get(AttributeKey.stringKey("node.id")))
-		assertEquals(flow._id.value, flowSpan.attributes.get(AttributeKey.stringKey("flow.id")))
+		assertEquals(flow.id.value, flowSpan.attributes.get(AttributeKey.stringKey("flow.id")))
 
 		val emitSpan = assertAny(spans) { it.name.contains(tracing.traceName(emit)) }
 		assertEquals(flowSpan.spanId, emitSpan.parentSpanId)
@@ -227,16 +227,16 @@ class FlowRunnerImplTest {
 		val emit = emitNode(nodex4) // won't emit anything
 
 		val flow = relationalFlow(emit, nodex4, nodex3, nodex2, nodex1, nodex)
-		println(flow.nodes.joinToString("\n") { "${it._id}: ${it.descriptor.name}" })
+		println(flow.nodes.joinToString("\n") { "${it.id}: ${it.descriptor.name}" })
 
 		runner.executeStartNode("receive empty input transitively", flow, emptyList())
 
-		assertFalse(nodex4._id in wantsNonEmptyProvidesEmptyHandler)
-		assertFalse(nodex3._id in wantsNonEmptyProvidesEmptyHandler)
-		assertEquals(emptyList<SimpleIntermediateData>(), wantsEmptyProvidesNonEmptyHandler[nodex2._id])
+		assertFalse(nodex4.id in wantsNonEmptyProvidesEmptyHandler)
+		assertFalse(nodex3.id in wantsNonEmptyProvidesEmptyHandler)
+		assertEquals(emptyList<SimpleIntermediateData>(), wantsEmptyProvidesNonEmptyHandler[nodex2.id])
 		assertEquals(
 			listOf(SimpleIntermediateData("'${WantsEmptyProvidesNonEmptyHandler.OUTPUT}'")),
-			wantsEmptyProvidesNonEmptyHandler[nodex._id]
+			wantsEmptyProvidesNonEmptyHandler[nodex.id]
 		)
 	}
 }

@@ -1,6 +1,6 @@
 package me.snoty.integration.common.wiring.node
 
-import me.snoty.integration.common.wiring.Node
+import me.snoty.core.node.NodeWithSettings
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
@@ -13,5 +13,5 @@ import me.snoty.integration.common.wiring.data.NodeOutput
  */
 interface NodeHandler {
 	context(_: NodeHandleContext)
-	suspend fun process(node: Node, input: Collection<IntermediateData>): NodeOutput
+	suspend fun process(node: NodeWithSettings, input: Collection<IntermediateData>): NodeOutput
 }

@@ -21,7 +21,7 @@ import me.snoty.backend.utils.UnauthorizedException
 import me.snoty.backend.utils.http.INTERNAL_HTTP_CLIENT
 import me.snoty.backend.utils.parseAuthHeader
 import me.snoty.backend.utils.respondStatus
-import me.snoty.core.UserId
+import me.snoty.core.user.UserId
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 import java.net.URI

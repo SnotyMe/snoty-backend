@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.toList
 import me.snoty.backend.utils.NULL_UUID
 import me.snoty.backend.utils.bson.encode
 import me.snoty.backend.utils.bson.getIdAsString
+import me.snoty.core.node.Node
 import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.diff.checksum
 import me.snoty.integration.common.diff.diff
 import me.snoty.integration.common.diff.state.EntityState
-import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.NodeInput
 import me.snoty.integration.common.wiring.data.get
@@ -36,7 +36,7 @@ abstract class DiffNodeHandler(
 
 			data class States(val states: List<EntityState>)
 
-			val states = States(entityStateService.getLastStates(node._id).toList())
+			val states = States(entityStateService.getLastStates(node).toList())
 
 			val mapped = codecRegistry.encode(states).toJson()
 
@@ -73,7 +73,7 @@ abstract class DiffNodeHandler(
 			}
 			.toMap()
 
-		val rawOldStates: Map<String, EntityState> = entityStateService.getLastStates(node._id)
+		val rawOldStates: Map<String, EntityState> = entityStateService.getLastStates(node)
 			.fold(mutableMapOf()) { acc, state ->
 				acc[state.id] = state
 				acc
@@ -81,7 +81,7 @@ abstract class DiffNodeHandler(
 		
 		val (oldStates, changes) = processStates(rawOldStates, Data(newData), excludedFields)
 
-		entityStateService.updateStates(node._id, changes.values)
+		entityStateService.updateStates(node, changes.values)
 		val allData = newData + oldStates
 			.filterKeys { it !in newData }
 			.mapValues { it.value.state }

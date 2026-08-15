@@ -2,7 +2,7 @@ package me.snoty.backend.wiring.flow
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import me.snoty.integration.common.wiring.flow.WorkflowSettings
+import me.snoty.core.flow.WorkflowSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePosition
 import org.bson.Document

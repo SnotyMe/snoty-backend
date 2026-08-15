@@ -8,7 +8,7 @@ import io.ktor.server.request.*
 import me.snoty.backend.authentication.AuthenticationProvider
 import me.snoty.backend.authentication.Role
 import me.snoty.backend.authentication.User
-import me.snoty.core.UserId
+import me.snoty.core.user.UserId
 import org.koin.ktor.ext.get
 
 fun ApplicationRequest.parseAuthHeader() =
