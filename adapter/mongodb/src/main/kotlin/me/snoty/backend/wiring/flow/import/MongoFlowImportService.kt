@@ -12,6 +12,7 @@ import me.snoty.core.user.UserId
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.flow.NODE_COLLECTION_NAME
 import org.koin.core.annotation.Single
+import kotlin.time.Clock
 
 @Single
 class MongoFlowImportService(
@@ -23,6 +24,7 @@ class MongoFlowImportService(
 	override suspend fun import(userId: UserId, flow: ImportFlow): FlowId {
 		val createdFlow = flowService.create(userId, flow.name, flow.settings)
 
+		val now = Clock.System.now()
 		val nodesToInsert = flow.nodes.map {
 			MongoNode(
 				flowId = createdFlow.objectId,
@@ -30,7 +32,9 @@ class MongoFlowImportService(
 				descriptor = it.descriptor,
 				position = it.position,
 				settings = it.settings,
-				next = emptyList()
+				next = emptyList(),
+				createdAt = now,
+				modifiedAt = now,
 			)
 		}
 		val createdNodes = nodeCollection.insertMany(nodesToInsert)

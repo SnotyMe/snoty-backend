@@ -21,6 +21,7 @@ import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.inList
 import org.jetbrains.exposed.v1.core.statements.UpdateStatement
+import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
 import org.jetbrains.exposed.v1.jdbc.*
 import org.koin.core.annotation.Single
 import org.slf4j.event.Level
@@ -85,6 +86,10 @@ class SqlNodeService(
 			it[nodeConnectionTable.to] = to.id
 		}.insertedCount
 
+		nodeTable.update({ nodeTable.id eq from.id }) {
+			it[nodeTable.modifiedAt] = CurrentTimestamp
+		}
+
 		when (insertCount) {
 			0 -> NodeServiceResults.NodeNotFoundError(from.id)
 			else -> NodeServiceResults.NodeConnected(from, to)
@@ -94,6 +99,10 @@ class SqlNodeService(
 	override suspend fun disconnect(from: Node, to: Node): ServiceResult = db.suspendTransaction {
 		val deleteCount = nodeConnectionTable.deleteWhere {
 			(nodeConnectionTable.from eq from.id) and (nodeConnectionTable.to eq to.id)
+		}
+
+		nodeTable.update({ nodeTable.id eq from.id }) {
+			it[nodeTable.modifiedAt] = CurrentTimestamp
 		}
 
 		when (deleteCount) {
@@ -119,7 +128,10 @@ class SqlNodeService(
 
 	private suspend fun updateNode(node: Node, update: NodeTable.(UpdateStatement) -> Unit): ServiceResult {
 		val changeCount = db.suspendTransaction {
-			nodeTable.update(where = { nodeTable.id eq node.id }, body = update)
+			nodeTable.update(where = { nodeTable.id eq node.id }) {
+				update(it)
+				it[nodeTable.modifiedAt] = CurrentTimestamp
+			}
 		}
 		return when (changeCount) {
 			0 -> NodeServiceResults.NodeNotFoundError(node.id)

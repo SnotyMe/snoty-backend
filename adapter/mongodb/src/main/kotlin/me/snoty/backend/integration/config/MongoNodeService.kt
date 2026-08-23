@@ -30,6 +30,7 @@ import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.conversions.Bson
 import org.koin.core.annotation.Single
 import org.slf4j.event.Level
+import kotlin.time.Clock
 
 @Single
 class MongoNodeService(
@@ -64,13 +65,16 @@ class MongoNodeService(
 		position: NodePosition,
 		settings: S,
 	): StandaloneNode {
+		val now = Clock.System.now()
 		val node = MongoNode(
 			flowId = flow.objectId,
 			userId = userId,
 			descriptor = descriptor,
 			position = position,
 			settings = collection.codecRegistry.encode(settings),
-			next = emptyList()
+			next = emptyList(),
+			createdAt = now,
+			modifiedAt = now,
 		)
 
 		collection.insertOne(node)
@@ -81,7 +85,10 @@ class MongoNodeService(
 	override suspend fun connect(from: Node, to: Node): ServiceResult {
 		collection.updateOne(
 			Filters.eq(MongoNode::_id.name, from.objectId),
-			Updates.addToSet(MongoNode::next.name, to.objectId)
+			Updates.combine(
+				Updates.addToSet(MongoNode::next.name, to.objectId),
+				Updates.set(MongoNode::modifiedAt.name, Clock.System.now())
+			)
 		)
 
 		return NodeServiceResults.NodeConnected(from, to)
@@ -90,7 +97,10 @@ class MongoNodeService(
 	override suspend fun disconnect(from: Node, to: Node): ServiceResult {
 		collection.updateOne(
 			Filters.eq(MongoNode::_id.name, from.objectId),
-			Updates.pull(MongoNode::next.name, to.objectId)
+			Updates.combine(
+				Updates.pull(MongoNode::next.name, to.objectId),
+				Updates.set(MongoNode::modifiedAt.name, Clock.System.now())
+			)
 		)
 
 		return NodeServiceResults.NodeDisconnected(from, to)
@@ -117,7 +127,7 @@ class MongoNodeService(
 	private suspend fun updateNode(node: Node, update: Bson): ServiceResult {
 		val result = collection.updateOne(
 			Filters.eq(MongoNode::_id.name, node.objectId),
-			update
+			Updates.combine(update, Updates.set(MongoNode::modifiedAt.name, Clock.System.now()))
 		)
 		return when {
 			result.matchedCount == 0L -> NodeServiceResults.NodeNotFoundError(node.id)

@@ -15,6 +15,8 @@ import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.core.dao.id.IdTable
+import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
+import org.jetbrains.exposed.v1.datetime.timestamp
 import org.koin.core.annotation.Single
 import org.slf4j.event.Level
 import kotlin.uuid.Uuid
@@ -39,6 +41,9 @@ class NodeTable(flowTable: FlowTable) : IdTable<NodeId>("node") {
 	val height = integer("height")
 	@OptIn(InternalSerializationApi::class)
 	val settings = rawJsonb<NodeSettings>("settings")
+
+	val createdAt = timestamp("created_at").defaultExpression(CurrentTimestamp)
+	val modifiedAt = timestamp("modified_at").defaultExpression(CurrentTimestamp)
 }
 
 @OptIn(InternalSerializationApi::class)
@@ -57,6 +62,8 @@ fun ResultRow.toStandalone(nodeTable: NodeTable, json: Json, nodeRegistry: NodeR
 			width = this[nodeTable.width],
 			height = this[nodeTable.height]
 		),
+		createdAt = this[nodeTable.createdAt],
+		modifiedAt = this[nodeTable.modifiedAt],
 		settings = tryDeserializeNodeSettings(descriptor, nodeRegistry) {
 			json.decodeFromString(it.serializer(), this[nodeTable.settings])
 		}

@@ -16,6 +16,7 @@ import me.snoty.integration.common.wiring.data.NodeInput
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeRegistry
+import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
 fun relationalFlow(
@@ -25,6 +26,8 @@ fun relationalFlow(
 	userId = UserId(Uuid.randomV7().toString()),
 	name = randomString(),
 	settings = WorkflowSettings(),
+	createdAt = Clock.System.now(),
+	modifiedAt = Clock.System.now(),
 	nodes = nodes.toList(),
 )
 

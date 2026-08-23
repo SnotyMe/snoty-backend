@@ -11,12 +11,15 @@ import java.util.*
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 
 interface Workflow {
 	val id: FlowId
 	val name: String
 	val userId: UserId
 	val settings: WorkflowSettings
+	val createdAt: Instant
+	val modifiedAt: Instant
 }
 
 @Serializable
@@ -65,6 +68,8 @@ data class StandaloneWorkflow(
 	override val name: String,
 	override val userId: UserId,
 	override val settings: WorkflowSettings,
+	override val createdAt: Instant,
+	override val modifiedAt: Instant,
 ) : Workflow
 
 /**
@@ -76,6 +81,8 @@ data class WorkflowWithNodes(
 	override val name: String,
 	override val userId: UserId,
 	override val settings: WorkflowSettings,
+	override val createdAt: Instant,
+	override val modifiedAt: Instant,
 	/**
 	 * A list of all nodes.
 	 * These nodes are normalized. Can include nodes not connected to anything.

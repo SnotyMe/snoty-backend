@@ -12,6 +12,7 @@ import org.bson.Document
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
 import org.slf4j.event.Level
+import kotlin.time.Instant
 
 /**
  * Low-level representation of a flow graph node gotten using `$graphLookup`
@@ -27,6 +28,8 @@ data class MongoNode(
 	val position: NodePosition,
 	val settings: Document,
 	val next: List<ObjectId>?,
+	val createdAt: Instant,
+	val modifiedAt: Instant,
 )
 
 fun MongoNode.toStandalone(
@@ -38,6 +41,8 @@ fun MongoNode.toStandalone(
 	descriptor = descriptor,
 	logLevel = logLevel,
 	position = position,
+	createdAt = createdAt,
+	modifiedAt = modifiedAt,
 	settings = settings,
 )
 
@@ -51,5 +56,7 @@ fun MongoNode.toRelational(
 	logLevel = logLevel,
 	position = position,
 	settings = settings,
+	createdAt = createdAt,
+	modifiedAt = modifiedAt,
 	next = next?.map(ObjectId::toNodeId) ?: emptyList(),
 )

@@ -10,6 +10,8 @@ import me.snoty.core.flow.WorkflowSettings
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.core.dao.id.IdTable
+import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
+import org.jetbrains.exposed.v1.datetime.timestamp
 import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.json.jsonb
 import org.koin.core.annotation.Single
@@ -26,7 +28,10 @@ class FlowTable(json: Json) : IdTable<FlowId>("flow") {
 	val name = text("name")
 	val settings = jsonb<WorkflowSettings>("settings", json).nullable() // nullable for backwards compatibility
 
-	val standaloneColumns = listOf(id, userId, name, settings)
+	val createdAt = timestamp("created_at").defaultExpression(CurrentTimestamp)
+	val modifiedAt = timestamp("modified_at").defaultExpression(CurrentTimestamp)
+
+	val standaloneColumns = listOf(id, userId, name, settings, createdAt, modifiedAt)
 	fun selectStandalone() = select(standaloneColumns)
 }
 
@@ -35,4 +40,6 @@ fun ResultRow.toStandalone(flowTable: FlowTable) = StandaloneWorkflow(
 	userId = this[flowTable.userId],
 	name = this[flowTable.name],
 	settings = this[flowTable.settings] ?: WorkflowSettings(),
+	createdAt = this[flowTable.createdAt],
+	modifiedAt = this[flowTable.modifiedAt],
 )

@@ -12,6 +12,7 @@ import me.snoty.integration.common.wiring.flow.FlowService
 import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
 import org.jetbrains.exposed.v1.jdbc.*
 import org.koin.core.annotation.Single
 
@@ -61,6 +62,8 @@ class SqlFlowService(
 				userId = it[flowTable.userId],
 				name = it[flowTable.name],
 				settings = it[flowTable.settings] ?: WorkflowSettings(),
+				createdAt = it[flowTable.createdAt],
+				modifiedAt = it[flowTable.modifiedAt],
 				nodes = nodes,
 			)
 		}
@@ -73,12 +76,14 @@ class SqlFlowService(
 	override suspend fun rename(flow: Workflow, name: String) = db.suspendTransaction<Unit> {
 		flowTable.update({ flowTable.id eq flow.id }) {
 			it[flowTable.name] = name
+			it[flowTable.modifiedAt] = CurrentTimestamp
 		}
 	}
 
 	override suspend fun updateSettings(flow: Workflow, settings: WorkflowSettings) = db.suspendTransaction {
 		val flow = flowTable.updateReturning(flowTable.standaloneColumns, { flowTable.id eq flow.id }) {
 			it[flowTable.settings] = settings
+			it[flowTable.modifiedAt] = CurrentTimestamp
 		}
 			.first()
 			.toStandalone(flowTable)

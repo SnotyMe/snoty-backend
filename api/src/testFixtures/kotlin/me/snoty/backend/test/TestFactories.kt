@@ -9,6 +9,7 @@ import me.snoty.integration.common.wiring.node.EmptyNodeSettings
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeSettings
+import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
 fun node(
@@ -25,5 +26,7 @@ fun node(
 	position = NodePosition(0, 0, 300, 200),
 	logLevel = null,
 	settings = settings,
+	createdAt = Clock.System.now(),
+	modifiedAt = Clock.System.now(),
 	next = next.map(FlowNode::id),
 )

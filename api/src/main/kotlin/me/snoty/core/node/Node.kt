@@ -8,6 +8,7 @@ import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.slf4j.event.Level
+import kotlin.time.Instant
 
 interface Node {
 	val id: NodeId
@@ -16,6 +17,8 @@ interface Node {
 	val descriptor: NodeDescriptor
 	val logLevel: Level?
 	val position: NodePosition
+	val createdAt: Instant
+	val modifiedAt: Instant
 }
 
 /**
@@ -38,6 +41,8 @@ data class FlowNode(
 	override val logLevel: Level?,
 	override val position: NodePosition,
 	override val settings: NodeSettings,
+	override val createdAt: Instant,
+	override val modifiedAt: Instant,
 	val next: List<NodeId> = emptyList()
 ) : NodeWithSettings
 
@@ -49,6 +54,8 @@ data class StandaloneNode(
 	override val descriptor: NodeDescriptor,
 	override val logLevel: Level?,
 	override val position: NodePosition,
+	override val createdAt: Instant,
+	override val modifiedAt: Instant,
 	@Contextual
 	override val settings: NodeSettings,
 ) : NodeWithSettings
@@ -61,6 +68,8 @@ fun StandaloneNode.toRelational(next: List<NodeId>?) = FlowNode(
 	logLevel = logLevel,
 	settings = settings,
 	position = position,
+	createdAt = createdAt,
+	modifiedAt = modifiedAt,
 	next = next ?: emptyList(),
 )
 

@@ -26,6 +26,8 @@ import me.snoty.integration.common.wiring.flow.NODE_COLLECTION_NAME
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
 import org.koin.core.annotation.Single
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 @Single
 class MongoFlowService(
@@ -36,7 +38,14 @@ class MongoFlowService(
 	private val collection = db.getCollection<MongoWorkflow>(FLOW_COLLECTION_NAME)
 
 	override suspend fun create(userId: UserId, name: String, settings: WorkflowSettings): StandaloneWorkflow {
-		val mongoWorkflow = MongoWorkflow(name = name, userId = userId, settings = settings)
+		val now = Clock.System.now()
+		val mongoWorkflow = MongoWorkflow(
+			name = name,
+			userId = userId,
+			settings = settings,
+			createdAt = now,
+			modifiedAt = now,
+		)
 		collection.insertOne(mongoWorkflow)
 		val workflow = mongoWorkflow.toStandalone()
 		flowScheduler.schedule(workflow)
@@ -84,14 +93,20 @@ class MongoFlowService(
 	override suspend fun rename(flow: Workflow, name: String) {
 		collection.updateOne(
 			Filters.eq(MongoWorkflow::_id.name, flow.objectId),
-			Updates.set(MongoWorkflow::name.name, name)
+			Updates.combine(
+				Updates.set(MongoWorkflow::name.name, name),
+				Updates.set(MongoWorkflow::modifiedAt.name, Clock.System.now())
+			)
 		)
 	}
 
 	override suspend fun updateSettings(flow: Workflow, settings: WorkflowSettings) {
 		val workflow = collection.findOneAndUpdate(
 			Filters.eq(MongoWorkflow::_id.name, flow.objectId),
-			Updates.set(MongoWorkflow::settings.name, settings),
+			Updates.combine(
+				Updates.set(MongoWorkflow::settings.name, settings),
+				Updates.set(MongoWorkflow::modifiedAt.name, Clock.System.now())
+			),
 			FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
 		)!!.toStandalone()
 
@@ -109,12 +124,16 @@ data class MongoWorkflow(
 	val name: String,
 	val userId: UserId,
 	val settings: WorkflowSettings?,
+	val createdAt: Instant,
+	val modifiedAt: Instant,
 ) {
 	fun toStandalone() = StandaloneWorkflow(
 		id = _id.toFlowId(),
 		name = name,
 		userId = userId,
 		settings = settings ?: WorkflowSettings(),
+		createdAt = createdAt,
+		modifiedAt = modifiedAt,
 	)
 }
 
@@ -124,6 +143,8 @@ data class MongoWorkflowWithNodes(
 	val name: String,
 	val userId: UserId,
 	val settings: WorkflowSettings?,
+	val createdAt: Instant,
+	val modifiedAt: Instant,
 	val nodes: List<MongoNode>,
 ) {
 	fun toRelational(settingsLookup: NodeSettingsDeserializationService) = WorkflowWithNodes(
@@ -131,6 +152,8 @@ data class MongoWorkflowWithNodes(
 		name = name,
 		userId = userId,
 		settings = settings ?: WorkflowSettings(),
+		createdAt = createdAt,
+		modifiedAt = modifiedAt,
 		nodes = nodes.map {
 			val settings = settingsLookup.deserializeOrInvalid(it)
 			it.toRelational(settings)
