@@ -23,13 +23,13 @@ class SqlFlowService(
 	private val flowTable: FlowTable,
 ) : FlowService {
 	override suspend fun create(userId: UserId, name: String, settings: WorkflowSettings): StandaloneWorkflow = db.suspendTransaction {
-		val id = flowTable.insertAndGetId {
+		val row = flowTable.insertReturning(flowTable.standaloneColumns) {
 			it[flowTable.userId] = userId
 			it[flowTable.name] = name
 			it[flowTable.settings] = settings
-		}
+		}.first()
 
-		StandaloneWorkflow(id = id.value, userId = userId, name = name, settings = settings)
+		row.toStandalone(flowTable)
 			.also {
 				flowScheduler.schedule(it)
 			}

@@ -64,8 +64,8 @@ class SqlNodeService(
 		position: NodePosition,
 		settings: S
 	): StandaloneNode {
-		val id = db.suspendTransaction {
-			nodeTable.insertAndGetId {
+		return db.suspendTransaction {
+			nodeTable.insertReturning(nodeTable.columns) {
 				it[nodeTable.flowId] = flow.id
 				it[nodeTable.userId] = userId
 				it[nodeTable.descriptor_namespace] = descriptor.namespace
@@ -75,18 +75,8 @@ class SqlNodeService(
 				it[nodeTable.width] = position.width
 				it[nodeTable.height] = position.height
 				it[nodeTable.settings] = json.hackyEncodeToString(settings)
-			}
+			}.first().toStandalone(nodeTable, json, nodeRegistry)
 		}
-
-		return StandaloneNode(
-			id = id.value,
-			flowId = flow.id,
-			userId = userId,
-			descriptor = descriptor,
-			logLevel = null,
-			position = position,
-			settings = settings,
-		)
 	}
 
 	override suspend fun connect(from: Node, to: Node): ServiceResult = db.suspendTransaction {
