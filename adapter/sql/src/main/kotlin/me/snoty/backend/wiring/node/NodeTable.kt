@@ -6,7 +6,6 @@ import kotlinx.serialization.serializer
 import me.snoty.backend.database.sql.utils.nodeId
 import me.snoty.backend.database.sql.utils.rawJsonb
 import me.snoty.backend.database.sql.utils.userId
-import me.snoty.backend.utils.randomV7
 import me.snoty.backend.wiring.flow.FlowTable
 import me.snoty.core.node.NodeId
 import me.snoty.core.node.StandaloneNode
@@ -24,7 +23,7 @@ import kotlin.uuid.Uuid
 @Single(binds = [Table::class])
 class NodeTable(flowTable: FlowTable) : IdTable<NodeId>("node") {
 	override val id = nodeId("id").clientDefault {
-		NodeId(Uuid.randomV7().toString())
+		NodeId(Uuid.generateV7().toString())
 	}.entityId()
 	override val primaryKey = PrimaryKey(id)
 

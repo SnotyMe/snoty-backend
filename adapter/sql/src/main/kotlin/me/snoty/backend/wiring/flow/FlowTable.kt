@@ -3,7 +3,6 @@ package me.snoty.backend.wiring.flow
 import kotlinx.serialization.json.Json
 import me.snoty.backend.database.sql.utils.flowId
 import me.snoty.backend.database.sql.utils.userId
-import me.snoty.backend.utils.randomV7
 import me.snoty.core.flow.FlowId
 import me.snoty.core.flow.StandaloneWorkflow
 import me.snoty.core.flow.WorkflowSettings
@@ -20,7 +19,7 @@ import kotlin.uuid.Uuid
 @Single(binds = [Table::class])
 class FlowTable(json: Json) : IdTable<FlowId>("flow") {
 	override val id = flowId("id").clientDefault {
-		FlowId(Uuid.randomV7().toString())
+		FlowId(Uuid.generateV7().toString())
 	}.entityId()
 	override val primaryKey = PrimaryKey(id)
 

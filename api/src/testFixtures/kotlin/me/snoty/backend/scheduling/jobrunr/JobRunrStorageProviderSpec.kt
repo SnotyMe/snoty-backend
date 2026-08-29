@@ -2,7 +2,6 @@ package me.snoty.backend.scheduling.jobrunr
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
-import me.snoty.backend.utils.randomV7
 import org.jobrunr.jobs.Job
 import org.jobrunr.jobs.JobDetails
 import org.jobrunr.jobs.mappers.JobMapper
@@ -24,7 +23,7 @@ abstract class JobRunrStorageProviderSpec {
 		storageProvider.setJobMapper(JobMapper(KotlinxSerializationJsonMapper()))
 	}
 
-	fun aJob() = Job(Uuid.randomV7().toJavaUuid(), JobDetails("", "", "", emptyList())).apply {
+	fun aJob() = Job(Uuid.generateV7().toJavaUuid(), JobDetails("", "", "", emptyList())).apply {
 		jobName = "test-job"
 	}
 
