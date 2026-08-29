@@ -115,10 +115,10 @@ class MongoCredentialService(
 
 	override suspend fun listCredentials(
 		userId: UserId,
-		credentialType: String
+		credentialType: String?
 	): Flow<PotentiallyAccessibleCredentialDto> {
 		val userRoles = authenticationProvider.getRolesById(userId)
-		val definition = registry.lookupByType(credentialType)
+		val credentialTypeDefinition = credentialType?.let(registry::lookupByType)
 
 		return collection.find(
 			Filters.and(
@@ -129,7 +129,7 @@ class MongoCredentialService(
 			val accessible = credential.canReadAndWrite(userId, userRoles)
 			credential.toPotentiallyAccessibleDto(
 				codecRegistry = codecRegistry,
-				definition = definition,
+				definition = credentialTypeDefinition ?: registry.lookupByType(credential.type),
 				accessible = accessible,
 			)
 		}

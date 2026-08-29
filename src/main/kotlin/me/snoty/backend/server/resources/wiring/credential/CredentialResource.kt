@@ -98,6 +98,15 @@ fun Route.credentialResource() = route("credential") {
 		call.respond(credentials)
 	}
 
+	get("search") {
+		val user = call.getUser()
+		val credentialType = call.queryParameters["type"]
+
+		val credentials = credentialService.listCredentials(userId = user.id, credentialType = credentialType)
+
+		call.respond(credentials)
+	}
+
 	route("{credentialType}") {
 		get("enumerate") {
 			val user = call.getUser()

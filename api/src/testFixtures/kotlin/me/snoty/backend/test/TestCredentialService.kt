@@ -16,8 +16,8 @@ import kotlin.uuid.Uuid
 object TestCredentialService : CredentialService {
 	data class CredentialValue(
 		val userId: UserId,
-		val name: String,
 		val type: String,
+		val name: String,
 		val data: Credential,
 	)
 
@@ -27,14 +27,15 @@ object TestCredentialService : CredentialService {
 		val id = Uuid.random()
 		credentials[id] = CredentialValue(
 			userId = userId,
-			name = name,
 			type = credentialType,
+			name = name,
 			data = data,
 		)
 		return CredentialDto(
 			id = id.toString(),
-			name = name,
+			type = credentialType,
 			scope = CredentialScope.USER,
+			name = name,
 			data = data,
 		)
 	}
@@ -49,13 +50,14 @@ object TestCredentialService : CredentialService {
 		.map { (id, value) -> EnumeratedCredentialDto(CredentialScope.USER, id = id.toString(), name = value.name) }
 		.asFlow()
 
-	override suspend fun listCredentials(userId: UserId, credentialType: String): Flow<PotentiallyAccessibleCredentialDto> = credentials
-		.filterValues { it.userId == userId && it.type == credentialType }
+	override suspend fun listCredentials(userId: UserId, credentialType: String?): Flow<PotentiallyAccessibleCredentialDto> = credentials
+		.filterValues { it.userId == userId && (credentialType == null || it.type == credentialType) }
 		.map { (id, value) ->
 			PotentiallyAccessibleCredentialDto(
 				id = id.toString(),
-				name = value.name,
+				type = value.type,
 				scope = CredentialScope.USER,
+				name = value.name,
 				requiredRole = null,
 				data = value.data,
 			)
@@ -92,14 +94,15 @@ object TestCredentialService : CredentialService {
 		}
 		credentials[id] = CredentialValue(
 			userId = userId,
-			name = name,
 			type = existing.type,
+			name = name,
 			data = data,
 		)
 		return CredentialDto(
 			id = credential.id,
-			name = name,
 			scope = CredentialScope.USER,
+			type = existing.type,
+			name = name,
 			data = data,
 		)
 	}

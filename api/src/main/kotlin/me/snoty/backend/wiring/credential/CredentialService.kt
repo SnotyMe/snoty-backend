@@ -12,7 +12,7 @@ interface CredentialService {
 	suspend fun listDefinitionsWithStatistics(userId: UserId): List<CredentialDefinitionWithStatisticsDto>
 
 	suspend fun enumerateCredentials(userId: UserId, credentialType: String): Flow<EnumeratedCredentialDto>
-	suspend fun listCredentials(userId: UserId, credentialType: String): Flow<PotentiallyAccessibleCredentialDto>
+	suspend fun listCredentials(userId: UserId, credentialType: String?): Flow<PotentiallyAccessibleCredentialDto>
 
 	suspend fun get(userId: UserId, credentialId: String): PotentiallyAccessibleCredentialDto?
 	suspend fun resolve(userId: UserId, credentialId: String): ResolvedCredential<out Credential>?

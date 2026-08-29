@@ -23,6 +23,7 @@ data class MongoCredential(
 ) {
 	fun toDto(codecRegistry: CodecRegistry, definition: CredentialDefinition) = CredentialDto(
 		id = _id.toHexString(),
+		type = definition.type,
 		scope = scope,
 		name = name,
 		data = codecRegistry.decode(definition.clazz.kotlin, data)
@@ -34,6 +35,7 @@ data class MongoCredential(
 		accessible: Boolean
 	) = PotentiallyAccessibleCredentialDto(
 		id = _id.toHexString(),
+		type = definition.type,
 		scope = scope,
 		name = name,
 		requiredRole = roleRequired?.let { Role(it) },

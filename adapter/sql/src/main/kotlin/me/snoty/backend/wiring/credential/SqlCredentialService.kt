@@ -90,8 +90,9 @@ class SqlCredentialService(
 		}.single()
 
 		CredentialDto(
-			scope = scope,
 			id = result[credentialTable.id].value.toString(),
+			type = definition.type,
+			scope = scope,
 			name = result[credentialTable.name],
 			data = result.dataJson(definition),
 		)
@@ -133,29 +134,32 @@ class SqlCredentialService(
 			)
 		}
 
-	override suspend fun listCredentials(userId: UserId, credentialType: String) =
+	override suspend fun listCredentials(userId: UserId, credentialType: String?) =
 		listCredentialsRaw(userId = userId, credentialType = credentialType) { it, definition, userRoles ->
 			val role = it[credentialTable.roleRequired]
 				?.let { Role(it) }
 			PotentiallyAccessibleCredentialDto(
-				scope = it[credentialTable.scope],
 				id = it[credentialTable.id].value.toString(),
+				type = definition.type,
+				scope = it[credentialTable.scope],
 				name = it[credentialTable.name],
 				requiredRole = role,
 				data = it.dataJsonIfAccessible(definition, userId, userRoles)
 			)
 		}
 
-	private suspend fun <DTO> listCredentialsRaw(userId: UserId, credentialType: String, mapResultRow: (ResultRow, CredentialDefinition, List<Role>) -> DTO): Flow<DTO> {
-		val definition = registry.lookupByType(credentialType)
+	private suspend fun <DTO> listCredentialsRaw(userId: UserId, credentialType: String?, mapResultRow: (ResultRow, CredentialDefinition, List<Role>) -> DTO): Flow<DTO> {
+		val credentialTypeDefinition = credentialType?.let(registry::lookupByType)
 		val userRoles = authenticationProvider.getRolesById(userId)
 
 		return db.flowTransaction {
 			credentialTable.selectAll()
 				.where {
-					(credentialTable.type eq definition.type) and useVisibleFilter(userId = userId, userRoles = userRoles)
+					(credentialType?.let { credentialTable.type eq it } ?: Op.TRUE) and
+						useVisibleFilter(userId = userId, userRoles = userRoles)
 				}
 				.map {
+					val definition = credentialTypeDefinition ?: registry.lookupByType(it[credentialTable.type])
 					mapResultRow(it, definition, userRoles)
 				}
 		}
@@ -171,9 +175,10 @@ class SqlCredentialService(
 
 		val definition = registry.lookupByType(row[credentialTable.type])
 		PotentiallyAccessibleCredentialDto(
+			id = row[credentialTable.id].value.toString(),
+			type = definition.type,
 			scope = row[credentialTable.scope],
 			requiredRole = row[credentialTable.roleRequired]?.let { Role(it) },
-			id = row[credentialTable.id].value.toString(),
 			name = row[credentialTable.name],
 			data = row.dataJsonIfAccessible(definition, userId, userRoles)
 		)
@@ -241,8 +246,9 @@ class SqlCredentialService(
 		if (!access) throw notFoundException
 
 		CredentialDto(
-			scope = row[credentialTable.scope],
 			id = row[credentialTable.id].toString(),
+			type = definition.type,
+			scope = row[credentialTable.scope],
 			name = row[credentialTable.name],
 			data = row.dataJson(definition)
 		)

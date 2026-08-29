@@ -7,6 +7,7 @@ import me.snoty.backend.wiring.credential.Credential
 @Serializable
 data class PotentiallyAccessibleCredentialDto(
 	val id: String,
+	val type: String,
 	val scope: CredentialScope,
 	val name: String,
 	val requiredRole: Role?,
@@ -19,6 +20,7 @@ data class PotentiallyAccessibleCredentialDto(
 @Serializable
 data class CredentialDto(
 	val id: String,
+	val type: String,
 	val scope: CredentialScope,
 	val name: String,
 	val data: Credential,
