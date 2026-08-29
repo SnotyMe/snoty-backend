@@ -19,6 +19,7 @@ dependencies { with (libs) {
 	implementation(database.hikari)
 	implementation(database.postgres)
 	implementation(database.jdbc.opentelemetry)
+	implementation(database.p6spy)
 
 	implementation(cohort.api)
 	implementation(cohort.hikari)

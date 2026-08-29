@@ -61,6 +61,7 @@ database-exposed-migration-core = { module = "org.jetbrains.exposed:exposed-migr
 database-exposed-migration-jdbc = { module = "org.jetbrains.exposed:exposed-migration-jdbc", version.ref = "exposed" }
 database-hikari = { module = "com.zaxxer:HikariCP", version = "7.0.0" }
 database-postgres = { group = "org.postgresql", name = "postgresql", version = "42.7.7" }
+database-p6spy = { group = "p6spy", name = "p6spy", version = "3.9.1" }
 database-jdbc-opentelemetry = { group = "io.opentelemetry.instrumentation", name = "opentelemetry-jdbc", version.ref = "opentelemetry-instrumentation" }
 database-flyway-core = { group = "org.flywaydb", name = "flyway-core", version.ref = "flyway" }
 database-flyway-postgres = { group = "org.flywaydb", name = "flyway-database-postgresql", version.ref = "flyway" }

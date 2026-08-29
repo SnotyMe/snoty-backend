@@ -1,15 +1,13 @@
 package me.snoty.backend.database.sql
 
+import com.p6spy.engine.spy.P6DataSource
 import com.sksamuel.hoplite.ConfigAlias
 import com.sksamuel.hoplite.ConfigLoaderBuilder
 import com.sksamuel.hoplite.Masked
 import com.zaxxer.hikari.HikariDataSource
 import io.opentelemetry.api.OpenTelemetry
 import io.opentelemetry.instrumentation.jdbc.datasource.JdbcTelemetry
-import me.snoty.backend.config.ConfigLoader
-import me.snoty.backend.config.addProperties
-import me.snoty.backend.config.load
-import me.snoty.backend.config.loadContainerConfig
+import me.snoty.backend.config.*
 import me.snoty.backend.database.DatabaseAdapter
 import me.snoty.backend.injection.DiModule
 import org.koin.core.annotation.ComponentScan
@@ -39,7 +37,7 @@ data class SqlConfigWrapper(
 )
 
 @Single
-fun provideDataSource(configLoader: ConfigLoader, openTelemetry: OpenTelemetry): DataSource =
+fun provideDataSource(environment: Environment, configLoader: ConfigLoader, openTelemetry: OpenTelemetry): DataSource =
 	configLoader.load<SqlConfigWrapper>(DatabaseAdapter.CONFIG_GROUP) {
 		defaultConfig()
 		autoconfigForSql()
@@ -49,6 +47,12 @@ fun provideDataSource(configLoader: ConfigLoader, openTelemetry: OpenTelemetry):
 			JdbcTelemetry
 				.create(openTelemetry)
 				.wrap(it)
+		}
+		.let {
+			when {
+				environment.isDev() -> P6DataSource(it)
+				else -> it
+			}
 		}
 
 fun ConfigLoaderBuilder.defaultConfig() = addProperties(mapOf(
