@@ -36,7 +36,7 @@ class SqlFlowImportService(
 			.flatMap { node ->
 				node.next.map { nextNode -> node.id to nextNode }
 			}
-		nodeConnectionTable.batchInsert(connections) { (from, to) ->
+		nodeConnectionTable.batchInsert(connections, useMultiRowValues = true) { (from, to) ->
 			this[nodeConnectionTable.from] = createdNodes[from]!!
 			this[nodeConnectionTable.to] = createdNodes[to]!!
 		}

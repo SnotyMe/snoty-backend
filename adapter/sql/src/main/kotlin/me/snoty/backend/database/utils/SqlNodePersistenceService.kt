@@ -42,7 +42,7 @@ class SqlNodePersistenceService<T : Any>(
 
 	override suspend fun setEntities(node: Node, entities: List<T>, idGetter: (T) -> String): Unit = db.suspendTransaction {
 		nodePersistenceTable.deleteWhere { nodePersistenceTable.nodeId eq node.id }
-		nodePersistenceTable.batchInsert(entities) { entity ->
+		nodePersistenceTable.batchInsert(entities, useMultiRowValues = true) { entity ->
 			this[nodePersistenceTable.nodeId] = node.id
 			this[nodePersistenceTable.entityId] = idGetter(entity)
 			this[nodePersistenceTable.entity] = json.hackyEncodeToString(entity)
