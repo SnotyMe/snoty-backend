@@ -51,7 +51,6 @@ class WebUntisTimetableNodeHandler(
 
 @Serializable
 data class WebUntisTimetableSettings(
-	override val name: String = "WebUntis Timetable",
 	override val baseUrl: String,
 	override val school: String,
 	override val username: String,

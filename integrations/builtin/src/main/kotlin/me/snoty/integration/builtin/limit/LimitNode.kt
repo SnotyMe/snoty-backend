@@ -17,7 +17,6 @@ import org.koin.core.annotation.Single
 
 @Serializable
 data class LimitSettings(
-	override val name: String = "Limit",
 	@FieldDescription("The maximum number of items to forward.")
 	@FieldDefaultValue("10")
 	val count: Int = 10,

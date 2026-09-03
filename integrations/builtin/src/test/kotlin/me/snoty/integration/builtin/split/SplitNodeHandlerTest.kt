@@ -1,11 +1,11 @@
 package me.snoty.integration.builtin.split
 
-import io.mockk.mockk
 import me.snoty.backend.test.node
 import me.snoty.integration.common.runNodeHandlerTest
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
+import me.snoty.integration.common.wiring.node.NodeDescriptor
 import org.bson.Document
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -16,7 +16,7 @@ class SplitNodeHandlerTest {
 
 	context(context: NodeHandleContext, handler: SplitNodeHandler)
 	private suspend fun `replace root impl`() {
-		val node = node(mockk(), settings = SplitSettings(key = "key", behavior = SplitBehavior.REPLACE_ROOT))
+		val node = node(NodeDescriptor("", "split"), settings = SplitSettings(key = "key", behavior = SplitBehavior.REPLACE_ROOT))
 		val input = listOf(
 			mapOf("key" to listOf(Document("value1", true), "value2"), "other" to "sharedValue")
 		).map { context.intermediateDataMapperRegistry[BsonIntermediateData::class].serialize(it) }
@@ -36,7 +36,7 @@ class SplitNodeHandlerTest {
 
 	context(context: NodeHandleContext, handler: SplitNodeHandler)
 	private suspend fun `replace key impl`() {
-		val node = node(mockk(), settings = SplitSettings(key = "key", behavior = SplitBehavior.REPLACE_KEY))
+		val node = node(NodeDescriptor("", "split"), settings = SplitSettings(key = "key", behavior = SplitBehavior.REPLACE_KEY))
 		val input = listOf(
 			mapOf("key" to listOf(Document("value1", true), "value2"), "other" to "sharedValue")
 		).map { context.intermediateDataMapperRegistry[BsonIntermediateData::class].serialize(it) }

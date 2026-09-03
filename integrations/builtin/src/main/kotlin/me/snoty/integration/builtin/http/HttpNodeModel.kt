@@ -17,8 +17,6 @@ enum class HttpNodeSerializer {
 
 @Serializable
 data class HttpNodeSettings(
-	override val name: String = "http",
-
 	val serializeOutputAs: HttpNodeSerializer,
 	val requests: List<HttpNodeInput>,
 

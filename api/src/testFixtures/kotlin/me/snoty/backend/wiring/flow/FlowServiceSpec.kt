@@ -97,8 +97,9 @@ abstract class FlowServiceSpec(private val makeId: () -> FlowId) {
 			userId = userId,
 			flow = flow,
 			descriptor = NodeDescriptor(javaClass.packageName, name),
+			name = name,
 			position = NodePosition(0, 0, 300, 200),
-			settings = EmptyNodeSettings(name)
+			settings = EmptyNodeSettings()
 		)
 
 		nodeRegistry.registerHandler(NodeMetadata(

@@ -9,21 +9,15 @@ import org.bson.codecs.DecoderContext
 import org.bson.codecs.EncoderContext
 import kotlin.reflect.KClass
 
-interface NodeSettings {
-	/**
-	 * Name of the node
-	 */
-	val name: String
-}
+interface NodeSettings
 
 @Serializable
 data class EmptyNodeSettings(
-	override val name: String = "Empty"
+	private val _empty: Boolean = true
 ) : NodeSettings
 
 @Serializable
 data class InvalidNodeSettings(
-	override val name: String,
 	private val _invalid: Boolean = true
 ) : NodeSettings
 
@@ -42,7 +36,7 @@ fun tryDeserializeNodeSettings(nodeDescriptor: NodeDescriptor, nodeRegistry: Nod
 		deserialize(InvalidNodeSettings::class)
 	}.getOrElse {
 		logger.error(it) { "Failed to deserialize to ${InvalidNodeSettings::class} for node $nodeDescriptor" }
-		InvalidNodeSettings(name = nodeDescriptor.name)
+		InvalidNodeSettings()
 	}
 
 	if (metadata == null) {

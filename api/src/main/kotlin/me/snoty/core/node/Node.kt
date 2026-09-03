@@ -15,6 +15,7 @@ interface Node {
 	val flowId: FlowId
 	val userId: UserId
 	val descriptor: NodeDescriptor
+	val name: String
 	val logLevel: Level?
 	val position: NodePosition
 	val createdAt: Instant
@@ -38,6 +39,7 @@ data class FlowNode(
 	override val flowId: FlowId,
 	override val userId: UserId,
 	override val descriptor: NodeDescriptor,
+	override val name: String,
 	override val logLevel: Level?,
 	override val position: NodePosition,
 	override val settings: NodeSettings,
@@ -52,6 +54,7 @@ data class StandaloneNode(
 	override val flowId: FlowId,
 	override val userId: UserId,
 	override val descriptor: NodeDescriptor,
+	override val name: String,
 	override val logLevel: Level?,
 	override val position: NodePosition,
 	override val createdAt: Instant,
@@ -65,6 +68,7 @@ fun StandaloneNode.toRelational(next: List<NodeId>?) = FlowNode(
 	flowId = flowId,
 	userId = userId,
 	descriptor = descriptor,
+	name = name,
 	logLevel = logLevel,
 	settings = settings,
 	position = position,

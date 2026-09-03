@@ -22,14 +22,15 @@ fun Route.nodeCreate(flowService: FlowService, nodeService: NodeService) = post(
 	data class NodeCreateRequest(
 		val flowId: FlowId,
 		val descriptor: NodeDescriptor,
+		val name: String,
 		val position: NodePosition,
 		val settings: JsonElement,
 	)
 
-	val (requestedFlowId, descriptor, position, settingsJson) = call.receive<NodeCreateRequest>()
+	val (requestedFlowId, descriptor, name, position, settingsJson) = call.receive<NodeCreateRequest>()
 	val flow = flowService.getStandalone(user.id, requestedFlowId) ?: return@post call.flowNotFound(requestedFlowId)
 	val settingsObj = deserializeSettings(descriptor, settingsJson) ?: return@post
-	val createdNode = nodeService.create(user.id, flow, descriptor, position, settingsObj)
+	val createdNode = nodeService.create(user.id, flow, descriptor, name, position, settingsObj)
 
 	call.respond(status = HttpStatusCode.Created, message = createdNode)
 }

@@ -53,7 +53,6 @@ class WebUntisExamNodeHandler(
 
 @Serializable
 data class WebUntisExamSettings(
-	override val name: String = "WebUntis Exams",
 	override val baseUrl: String,
 	override val school: String,
 	override val username: String,

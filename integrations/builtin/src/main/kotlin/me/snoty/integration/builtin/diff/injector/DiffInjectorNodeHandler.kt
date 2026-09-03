@@ -25,7 +25,6 @@ import org.koin.core.annotation.Single
 
 @Serializable
 data class DiffInjectorSettings(
-	override val name: String = "Diff Injector",
 	val excludeFields: List<String>,
 	@FieldDefaultValue("true")
 	val emitCreated: Boolean = true,

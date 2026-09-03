@@ -62,6 +62,7 @@ class MongoNodeService(
 		userId: UserId,
 		flow: Workflow,
 		descriptor: NodeDescriptor,
+		name: String,
 		position: NodePosition,
 		settings: S,
 	): StandaloneNode {
@@ -70,6 +71,7 @@ class MongoNodeService(
 			flowId = flow.objectId,
 			userId = userId,
 			descriptor = descriptor,
+			name = name,
 			position = position,
 			settings = collection.codecRegistry.encode(settings),
 			next = emptyList(),
@@ -105,6 +107,11 @@ class MongoNodeService(
 
 		return NodeServiceResults.NodeDisconnected(from, to)
 	}
+
+	override suspend fun updateName(node: Node, name: String) = updateNode(
+		node,
+		Updates.set(MongoNode::name.name, name)
+	)
 
 	override suspend fun updatePosition(node: Node, position: NodePosition) = updateNode(
 		node,

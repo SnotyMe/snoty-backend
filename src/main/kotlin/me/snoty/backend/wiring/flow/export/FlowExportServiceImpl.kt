@@ -36,6 +36,7 @@ class FlowExportServiceImpl(
 				ExportNode(
 					id = it.id.hash(),
 					descriptor = it.descriptor,
+					name = it.name,
 					position = it.position,
 					settings = settings,
 					next = it.next.map(NodeId::hash),

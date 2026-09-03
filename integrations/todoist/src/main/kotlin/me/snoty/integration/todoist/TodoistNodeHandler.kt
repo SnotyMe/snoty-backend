@@ -24,7 +24,6 @@ import org.koin.core.annotation.Single
 
 @Serializable
 data class TodoistSettings(
-	override val name: String = "Todoist",
 	@FieldCensored
 	val token: String,
 	val projectId: String?,

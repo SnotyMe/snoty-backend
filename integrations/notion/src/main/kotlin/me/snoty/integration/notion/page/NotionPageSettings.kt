@@ -10,8 +10,6 @@ import me.snoty.integration.notion.model.NotionParent
 
 @Serializable
 data class NotionPageSettings(
-	override val name: String = "Notion Page",
-
 	val parent: NotionParent,
 	@FieldDescription("Whether to archive pages when deletions are detected.")
 	@FieldDefaultValue("true")

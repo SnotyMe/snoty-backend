@@ -20,7 +20,6 @@ import org.koin.core.annotation.Single
 
 @Serializable
 data class SplitSettings(
-	override val name: String = "Split",
 	@FieldDescription("The key on which to split the input data. Other elements will be shared between the individual outputs.")
 	val key: String,
 	@FieldDescription("If false, the Node will throw an error instead of looping through object values.")

@@ -39,6 +39,7 @@ abstract class EntityStateServiceSpec(val makeId: () -> NodeId) {
 			userId = USER_ID_1,
 			flow = flow,
 			descriptor = nodeDescriptor,
+			name = "test",
 			position = NodePosition(0, 0, 300, 200),
 			settings = EmptyNodeSettings(),
 		)

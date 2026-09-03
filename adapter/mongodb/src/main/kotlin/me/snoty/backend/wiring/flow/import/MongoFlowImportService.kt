@@ -30,6 +30,7 @@ class MongoFlowImportService(
 				flowId = createdFlow.objectId,
 				userId = userId,
 				descriptor = it.descriptor,
+				name = it.name,
 				position = it.position,
 				settings = it.settings,
 				next = emptyList(),

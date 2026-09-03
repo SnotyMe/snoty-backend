@@ -13,6 +13,7 @@ import kotlin.uuid.Uuid
 
 fun node(
 	descriptor: NodeDescriptor,
+	name: String = descriptor.name,
 	settings: NodeSettings = EmptyNodeSettings(),
 	next: List<FlowNode> = emptyList(),
 	userId: UserId = UserId(Uuid.generateV7().toString()),
@@ -22,6 +23,7 @@ fun node(
 	flowId = FlowId(makeId()),
 	userId = userId,
 	descriptor = descriptor,
+	name = name,
 	position = NodePosition(0, 0, 300, 200),
 	logLevel = null,
 	settings = settings,

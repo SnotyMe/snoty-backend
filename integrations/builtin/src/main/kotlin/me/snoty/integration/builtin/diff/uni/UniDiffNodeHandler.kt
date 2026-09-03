@@ -23,7 +23,6 @@ import org.koin.core.annotation.Single
 
 @Serializable
 data class UniDiffSettings(
-	override val name: String = "Uni Diff",
 	val fields: List<String>,
 ) : NodeSettings
 

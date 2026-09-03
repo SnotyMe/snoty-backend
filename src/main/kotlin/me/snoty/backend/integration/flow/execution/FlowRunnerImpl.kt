@@ -165,7 +165,7 @@ class FlowRunnerImpl(
 			return emptyFlow()
 		}
 
-		val nodeLogName = "${node.descriptor.name} node \"${node.settings.name}\" (${node.id.value})"
+		val nodeLogName = "${node.descriptor.name} node \"${node.name}\" (${node.id.value})"
 
 		val handler = nodeRegistry.lookupHandler(node.descriptor)
 			?: let {
@@ -210,7 +210,7 @@ class FlowRunnerImpl(
 			val data = with(context) { with(handler) { process(node, input) } }
 			logger.debug { "Processed $nodeLogName" }
 			if (metadata.position.logOutput && node.next.isEmpty()) {
-				logger.debug { "Node \"${node.settings.name}\" (${node.id.value}) has no output nodes, would have emitted $data" }
+				logger.debug { "Node \"${node.name}\" (${node.id.value}) has no output nodes, would have emitted $data" }
 			}
 
 			emit(data)

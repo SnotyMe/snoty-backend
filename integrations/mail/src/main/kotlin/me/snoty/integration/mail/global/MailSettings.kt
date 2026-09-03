@@ -8,7 +8,6 @@ import me.snoty.integration.mail.smtp.TEXT_HTML_UTF8
 
 @Serializable
 data class MailSettings(
-	override val name: String,
 	val to: String,
 	@FieldHidden
 	@FieldDefaultValue(TEXT_HTML_UTF8)

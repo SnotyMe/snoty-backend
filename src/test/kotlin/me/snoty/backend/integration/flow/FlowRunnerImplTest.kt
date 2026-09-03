@@ -43,7 +43,7 @@ class FlowRunnerImplTest {
 	private val namespace = javaClass.packageName
 
 	@Serializable
-	data class TestNodeSettings(override val name: String) : NodeSettings
+	data object TestNodeSettings : NodeSettings
 
 	private val json = snotyJson {
 		serializersModule += SerializersModule {
@@ -140,7 +140,7 @@ class FlowRunnerImplTest {
 
 	@Test
 	fun `test traces config attribute`() = runBlocking {
-		val config = TestNodeSettings("test")
+		val config = TestNodeSettings
 		val node = node(NodeDescriptor(namespace, TYPE_MAP), settings = config)
 		val emit = emitNode(node)
 		val flow = relationalFlow(emit, node)

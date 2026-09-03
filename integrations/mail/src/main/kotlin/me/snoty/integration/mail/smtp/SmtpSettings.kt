@@ -10,7 +10,6 @@ import me.snoty.integration.common.wiring.node.NodeSettings
 
 @Serializable
 data class SmtpSettings(
-	override val name: String = "SMTP",
 	val host: String,
 	val port: Int,
 	@FieldName("STARTTLS")

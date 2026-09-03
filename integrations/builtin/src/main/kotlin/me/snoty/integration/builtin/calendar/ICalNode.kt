@@ -25,7 +25,6 @@ import java.nio.charset.StandardCharsets
 
 @Serializable
 data class ICalSettings(
-	override val name: String = "Calendar",
 	@FieldDescription("A secret that has to be provided to access the calendar")
 	@FieldCensored
 	val secret: String? = null,
@@ -58,7 +57,7 @@ class ICalNodeHandler(
 
 			val events = eventPersistenceService.getEntities(node)
 
-			val calendar = iCalBuilder.build(node.id.value, settings.name, events)
+			val calendar = iCalBuilder.build(node.id.value, node.name, events)
 
 			val contentType = calendar.getContentType(StandardCharsets.UTF_8)
 			val outputter = CalendarOutputter()

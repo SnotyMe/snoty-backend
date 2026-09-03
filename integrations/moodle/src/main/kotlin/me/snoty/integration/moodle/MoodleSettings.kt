@@ -20,7 +20,6 @@ data class MoodleCredential(
 
 @Serializable
 data class MoodleSettings(
-	override val name: String = "Moodle",
 	val credentials: CredentialRef<MoodleCredential>? = null,
 	@FieldDefaultValue("false")
 	@FieldDescription("Whether to emit 'done' assignments (may break auto deletions on assignment completion)")

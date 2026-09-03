@@ -32,6 +32,7 @@ class NodeTable(flowTable: FlowTable) : IdTable<NodeId>("node") {
 
 	val descriptor_namespace = text("descriptor_namespace")
 	val descriptor_name = text("descriptor_name")
+	val name = text("name")
 
 	val logLevel = enumerationByName("log_level", 10, Level::class).nullable()
 	val positionX = integer("position_x")
@@ -54,6 +55,7 @@ fun ResultRow.toStandalone(nodeTable: NodeTable, json: Json, nodeRegistry: NodeR
 		flowId = this[nodeTable.flowId].value,
 		userId = this[nodeTable.userId],
 		descriptor = descriptor,
+		name = this[nodeTable.name],
 		logLevel = this[nodeTable.logLevel],
 		position = NodePosition(
 			x = this[nodeTable.positionX],

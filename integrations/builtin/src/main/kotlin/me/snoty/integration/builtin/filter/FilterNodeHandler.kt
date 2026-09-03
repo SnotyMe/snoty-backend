@@ -22,8 +22,6 @@ import org.koin.core.annotation.Single
 
 @Serializable
 data class FilterSettings(
-	override val name: String = "Filter",
-	
 	@Language("liquid")
 	@FieldDescription("Liquid template returning `true` (keep element) or `false` (drop element)")
 	val expression: String,

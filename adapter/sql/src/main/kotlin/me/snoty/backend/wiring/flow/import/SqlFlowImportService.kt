@@ -28,6 +28,7 @@ class SqlFlowImportService(
 				userId = userId,
 				flow = createdFlow,
 				descriptor = it.descriptor,
+				name = it.name,
 				position = it.position,
 				settings = nodeSettingsDeserializationService.deserializeOrInvalid(it.descriptor, it.settings)
 			).id

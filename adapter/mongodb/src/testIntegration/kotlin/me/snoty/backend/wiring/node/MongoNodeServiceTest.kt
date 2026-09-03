@@ -15,7 +15,7 @@ class MongoNodeServiceTest : NodeServiceSpec() {
 		override fun deserializeOrInvalid(
 			nodeDescriptor: NodeDescriptor,
 			nodeSettings: Document
-		): NodeSettings = EmptyNodeSettings(nodeSettings.getString(NodeSettings::name.name))
+		): NodeSettings = EmptyNodeSettings()
 	})
 
 	override val makeFlowId = suspend { ObjectId().toFlowId() }

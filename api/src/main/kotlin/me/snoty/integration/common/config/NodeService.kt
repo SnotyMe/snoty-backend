@@ -23,6 +23,7 @@ interface NodeService {
 		userId: UserId,
 		flow: Workflow,
 		descriptor: NodeDescriptor,
+		name: String,
 		position: NodePosition,
 		settings: S,
 	): StandaloneNode
@@ -30,6 +31,7 @@ interface NodeService {
 	suspend fun connect(from: Node, to: Node): ServiceResult
 	suspend fun disconnect(from: Node, to: Node): ServiceResult
 
+	suspend fun updateName(node: Node, name: String): ServiceResult
 	suspend fun updatePosition(node: Node, position: NodePosition): ServiceResult
 	suspend fun updateSettings(node: Node, settings: NodeSettings): ServiceResult
 	suspend fun updateLogLevel(node: Node, logLevel: Level?): ServiceResult

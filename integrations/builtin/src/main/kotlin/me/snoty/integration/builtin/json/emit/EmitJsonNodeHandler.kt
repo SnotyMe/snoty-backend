@@ -19,7 +19,6 @@ import org.koin.core.annotation.Single
 
 @Serializable
 data class EmitJsonSettings(
-	override val name: String = "Emit JSON",
 	val data: List<@Language("json") String>,
 ) : NodeSettings
 

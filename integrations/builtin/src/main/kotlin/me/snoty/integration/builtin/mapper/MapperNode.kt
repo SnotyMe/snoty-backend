@@ -21,7 +21,6 @@ import org.koin.core.component.KoinComponent
 
 @Serializable
 data class MapperSettings(
-	override val name: String = "Mapper",
 	val engine: MapperEngine,
 	@FieldDescription("The fields to map - every key will be part of the output object")
 	val fields: Map<String, @Language("liquid") String>,

@@ -21,7 +21,6 @@ import org.koin.core.annotation.Single
 
 @Serializable
 data class UnchangedFilterSettings(
-	override val name: String = "Unchanged Filter",
 	val excludeFields: List<String>,
 ) : NodeSettings
 

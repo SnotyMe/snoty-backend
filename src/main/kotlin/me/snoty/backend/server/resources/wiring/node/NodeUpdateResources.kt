@@ -17,6 +17,7 @@ import java.util.*
 
 @Serializable
 data class NodePatchRequest(
+	val name: String? = null,
 	val position: NodePosition? = null,
 	val logLevel: JsonElement? = null,
 	val settings: JsonElement? = null,
@@ -37,6 +38,10 @@ fun Route.nodeUpdate(nodeService: NodeService) {
 	patch("{id}") {
 		val node = getPersonalNodeOrNull() ?: return@patch
 		val request: NodePatchRequest = call.receive()
+
+		request.name?.let { name ->
+			nodeService.updateName(node, name)
+		}
 
 		request.position?.let { position ->
 			nodeService.updatePosition(node, position)

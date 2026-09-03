@@ -23,7 +23,6 @@ import org.koin.core.annotation.Single
 
 @Serializable
 data class ParseJsonNodeSettings(
-	override val name: String,
 	val fields: List<String>,
 ) : NodeSettings
 

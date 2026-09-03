@@ -62,6 +62,7 @@ class SqlNodeService(
 		userId: UserId,
 		flow: Workflow,
 		descriptor: NodeDescriptor,
+		name: String,
 		position: NodePosition,
 		settings: S
 	): StandaloneNode {
@@ -71,6 +72,7 @@ class SqlNodeService(
 				it[nodeTable.userId] = userId
 				it[nodeTable.descriptor_namespace] = descriptor.namespace
 				it[nodeTable.descriptor_name] = descriptor.name
+				it[nodeTable.name] = name
 				it[nodeTable.positionX] = position.x
 				it[nodeTable.positionY] = position.y
 				it[nodeTable.width] = position.width
@@ -109,6 +111,10 @@ class SqlNodeService(
 			0 -> NodeServiceResults.NodeNotFoundError(from.id)
 			else -> NodeServiceResults.NodeDisconnected(from, to)
 		}
+	}
+
+	override suspend fun updateName(node: Node, name: String) = updateNode(node) {
+		it[nodeTable.name] = name
 	}
 
 	override suspend fun updatePosition(node: Node, position: NodePosition) = updateNode(node) {
