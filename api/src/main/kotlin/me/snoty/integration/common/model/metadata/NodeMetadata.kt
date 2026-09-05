@@ -1,10 +1,10 @@
 package me.snoty.integration.common.model.metadata
 
+import io.ktor.openapi.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import kotlinx.serialization.json.JsonClassDiscriminator
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings
@@ -52,7 +52,8 @@ data class NodeField(
 
 @Serializable
 @OptIn(ExperimentalSerializationApi::class)
-@JsonClassDiscriminator("type")
+@SerialName("NodeFieldDetails")
+@JsonSchema.Title("NodeFieldDetails") // workaround for kotlinx.serialization using `NodeFieldDetails?` as the title for some reason
 sealed class NodeFieldDetails {
 	@Serializable
 	@SerialName("Enum")

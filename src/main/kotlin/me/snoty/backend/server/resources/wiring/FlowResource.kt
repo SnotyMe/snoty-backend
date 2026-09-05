@@ -24,15 +24,18 @@ import me.snoty.integration.common.wiring.flow.FlowService
 import org.koin.ktor.ext.get
 import org.slf4j.event.Level
 
+@Serializable
+data class FlowCreateRequest(val name: String, val settings: WorkflowSettings = WorkflowSettings())
+
+@Serializable
+private data class FlowJobRequestRequest(val logLevel: Level)
+
 fun Route.flowResource() = route("flow") {
 	val flowService: FlowService = get()
 	val flowExecutionService: FlowExecutionService = get()
 
 	post {
 		val user = call.getUser()
-
-		@Serializable
-		data class FlowCreateRequest(val name: String, val settings: WorkflowSettings = WorkflowSettings())
 		val request = call.receive<FlowCreateRequest>()
 
 		val flow = flowService.create(user.id, request.name, request.settings)
@@ -59,9 +62,6 @@ fun Route.flowResource() = route("flow") {
 	val flowScheduler: FlowScheduler = get()
 	post("{id}/trigger") {
 		val flow = getPersonalFlowOrNull() ?: return@post
-
-		@Serializable
-		data class FlowJobRequestRequest(val logLevel: Level)
 
 		fun FlowJobRequestRequest?.toFlowJobRequest() = FlowJobRequest(
 			// don't retry (#94)

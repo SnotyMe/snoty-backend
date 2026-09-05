@@ -1,5 +1,6 @@
 package me.snoty.backend.wiring.flow.execution
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.core.flow.FlowId
@@ -16,6 +17,7 @@ sealed class FlowExecutionEvent(val eventType: String) {
 	val timestamp = Clock.System.now()
 	
 	@Serializable
+	@SerialName("FlowStartedEvent")
 	data class FlowStartedEvent(
 		override val userId: UserId,
 		override val flowId: FlowId,
@@ -26,6 +28,7 @@ sealed class FlowExecutionEvent(val eventType: String) {
 	}
 	
 	@Serializable
+	@SerialName("FlowLogEvent")
 	data class FlowLogEvent(
 		override val userId: UserId,
 		override val flowId: FlowId,
@@ -36,6 +39,7 @@ sealed class FlowExecutionEvent(val eventType: String) {
 	}
 
 	@Serializable
+	@SerialName("FlowEndedEvent")
 	data class FlowEndedEvent(
 		override val userId: UserId,
 		override val flowId: FlowId,

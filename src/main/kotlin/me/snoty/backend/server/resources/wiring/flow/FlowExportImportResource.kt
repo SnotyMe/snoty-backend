@@ -11,6 +11,11 @@ import me.snoty.backend.wiring.flow.export.FlowExportService
 import me.snoty.backend.wiring.flow.import.FlowImportService
 import org.koin.ktor.ext.get
 
+@Serializable
+private data class ExportOptions(
+	val withSensitiveData: Boolean = false,
+)
+
 fun Route.flowExportImportResource() {
 	val exportService: FlowExportService = get()
 	val importService: FlowImportService = get()
@@ -30,11 +35,6 @@ fun Route.flowExportImportResource() {
 		}
 		
 		post("export") {
-			@Serializable
-			data class ExportOptions(
-				val withSensitiveData: Boolean = false,
-			)
-
 			val options: ExportOptions? = call.receiveNullable()
 			val flow = getPersonalFlowOrNull() ?: return@post
 

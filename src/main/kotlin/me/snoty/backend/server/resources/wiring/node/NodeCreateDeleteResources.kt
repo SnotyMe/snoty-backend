@@ -15,17 +15,17 @@ import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePosition
 
+@Serializable
+private data class NodeCreateRequest(
+	val flowId: FlowId,
+	val descriptor: NodeDescriptor,
+	val name: String,
+	val position: NodePosition,
+	val settings: JsonElement,
+)
+
 fun Route.nodeCreate(flowService: FlowService, nodeService: NodeService) = post("create") {
 	val user = call.getUser()
-
-	@Serializable
-	data class NodeCreateRequest(
-		val flowId: FlowId,
-		val descriptor: NodeDescriptor,
-		val name: String,
-		val position: NodePosition,
-		val settings: JsonElement,
-	)
 
 	val (requestedFlowId, descriptor, name, position, settingsJson) = call.receive<NodeCreateRequest>()
 	val flow = flowService.getStandalone(user.id, requestedFlowId) ?: return@post call.flowNotFound(requestedFlowId)

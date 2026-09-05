@@ -41,6 +41,12 @@ fun Application.setupOpenApi(koin: Koin) = routing {
 	get("/openapi.json") {
 		val doc = OpenApiDoc(info = info, components = components) + application.routingRoot.descendants()
 		call.respondText(openApiJson.encodeToString(doc), contentType = ContentType.Application.Json)
+	}.describe {
+		responses {
+			HttpStatusCode.OK {
+				schema = jsonSchema<GenericElement>()
+			}
+		}
 	}
 
 	swaggerUI(path = "/swagger") {
