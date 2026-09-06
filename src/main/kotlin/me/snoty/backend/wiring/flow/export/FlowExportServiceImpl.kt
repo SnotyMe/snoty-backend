@@ -8,7 +8,6 @@ import me.snoty.backend.wiring.flow.ExportNode
 import me.snoty.backend.wiring.flow.FlowExportImportSchema
 import me.snoty.core.flow.Workflow
 import me.snoty.core.node.NodeId
-import me.snoty.integration.common.model.metadata.NodeField
 import me.snoty.integration.common.model.metadata.NodeFieldDetails
 import me.snoty.integration.common.model.metadata.ObjectSchema
 import me.snoty.integration.common.wiring.flow.FlowService
@@ -59,12 +58,15 @@ class FlowExportServiceImpl(
 	}
 
 	private fun Document.censorRecursively(fields: ObjectSchema, parts: Array<String> = emptyArray()) {
-		fields
-			.filter(NodeField::censored)
-			.forEach { field ->
-				val pathKey = (parts + field.name).joinToString(".")
-				this.setByPath(pathKey, CensoredField(default = field.defaultValue))
+		fields.forEach { field ->
+			val replacement = when {
+				field.details is NodeFieldDetails.CredentialDetails -> null
+				field.censored -> CensoredField(field.name)
+				else -> return@forEach
 			}
+			val pathKey = (parts + field.name).joinToString(".")
+			this.setByPath(pathKey, replacement)
+		}
 
 		fields
 			.forEach { field ->
