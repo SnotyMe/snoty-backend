@@ -13,7 +13,6 @@ import me.snoty.core.user.UserId
 import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeSettings
-import org.slf4j.event.Level
 
 interface NodeService {
 	suspend fun get(userId: UserId?, id: NodeId): StandaloneNode?
@@ -31,10 +30,8 @@ interface NodeService {
 	suspend fun connect(from: Node, to: Node): ServiceResult
 	suspend fun disconnect(from: Node, to: Node): ServiceResult
 
-	suspend fun updateName(node: Node, name: String): ServiceResult
-	suspend fun updatePosition(node: Node, position: NodePosition): ServiceResult
+	suspend fun patch(node: Node, patchRequest: NodePatch): ServiceResult
 	suspend fun updateSettings(node: Node, settings: NodeSettings): ServiceResult
-	suspend fun updateLogLevel(node: Node, logLevel: Level?): ServiceResult
 
 	suspend fun delete(node: Node): ServiceResult
 }

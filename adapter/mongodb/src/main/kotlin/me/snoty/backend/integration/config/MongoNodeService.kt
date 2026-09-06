@@ -1,11 +1,12 @@
 package me.snoty.backend.integration.config
 
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
+import com.mongodb.kotlin.client.model.Filters
+import com.mongodb.kotlin.client.model.Updates
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import me.snoty.backend.database.mongo.EMPTY
 import me.snoty.backend.database.mongo.deserializeOrInvalid
 import me.snoty.backend.database.mongo.objectId
 import me.snoty.backend.errors.ServiceResult
@@ -21,6 +22,7 @@ import me.snoty.core.node.Node
 import me.snoty.core.node.NodeId
 import me.snoty.core.node.StandaloneNode
 import me.snoty.core.user.UserId
+import me.snoty.integration.common.config.NodePatch
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.config.NodeServiceResults
 import me.snoty.integration.common.wiring.flow.NODE_COLLECTION_NAME
@@ -29,7 +31,6 @@ import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.conversions.Bson
 import org.koin.core.annotation.Single
-import org.slf4j.event.Level
 import kotlin.time.Clock
 
 @Single
@@ -42,8 +43,8 @@ class MongoNodeService(
 	override suspend fun get(userId: UserId?, id: NodeId): StandaloneNode? {
 		val mongoNode = collection.find(
 			Filters.and(
-				if (userId != null) Filters.eq(MongoNode::userId.name, userId) else Filters.empty(),
-				Filters.eq(MongoNode::_id.name, id.objectId),
+				if (userId != null) Filters.eq(MongoNode::userId, userId) else Filters.EMPTY,
+				Filters.eq(MongoNode::_id, id.objectId),
 			)
 		).firstOrNull() ?: return null
 
@@ -52,7 +53,7 @@ class MongoNodeService(
 	}
 
 	override fun getByFlow(flowId: FlowId): Flow<FlowNode> = collection.find(
-		Filters.eq(MongoNode::flowId.name, flowId.objectId)
+		Filters.eq(MongoNode::flowId, flowId.objectId)
 	).map { node ->
 		val settings = settingsDeserializationService.deserializeOrInvalid(node)
 		node.toRelational(settings)
@@ -86,10 +87,10 @@ class MongoNodeService(
 
 	override suspend fun connect(from: Node, to: Node): ServiceResult {
 		collection.updateOne(
-			Filters.eq(MongoNode::_id.name, from.objectId),
+			Filters.eq(MongoNode::_id, from.objectId),
 			Updates.combine(
-				Updates.addToSet(MongoNode::next.name, to.objectId),
-				Updates.set(MongoNode::modifiedAt.name, Clock.System.now())
+				Updates.addToSet(MongoNode::next, to.objectId),
+				Updates.set(MongoNode::modifiedAt, Clock.System.now())
 			)
 		)
 
@@ -98,43 +99,42 @@ class MongoNodeService(
 
 	override suspend fun disconnect(from: Node, to: Node): ServiceResult {
 		collection.updateOne(
-			Filters.eq(MongoNode::_id.name, from.objectId),
+			Filters.eq(MongoNode::_id, from.objectId),
 			Updates.combine(
-				Updates.pull(MongoNode::next.name, to.objectId),
-				Updates.set(MongoNode::modifiedAt.name, Clock.System.now())
+				Updates.pull(MongoNode::next, to.objectId),
+				Updates.set(MongoNode::modifiedAt, Clock.System.now())
 			)
 		)
 
 		return NodeServiceResults.NodeDisconnected(from, to)
 	}
 
-	override suspend fun updateName(node: Node, name: String) = updateNode(
-		node,
-		Updates.set(MongoNode::name.name, name)
-	)
-
-	override suspend fun updatePosition(node: Node, position: NodePosition) = updateNode(
-		node,
-		Updates.set(MongoNode::position.name, position)
-	)
-
 	override suspend fun updateSettings(node: Node, settings: NodeSettings) = updateNode(
 		node,
-		Updates.set(MongoNode::settings.name, collection.codecRegistry.encode(settings))
+		listOf(Updates.set(MongoNode::settings, collection.codecRegistry.encode(settings)))
 	)
 
-	override suspend fun updateLogLevel(node: Node, logLevel: Level?) = updateNode(
+	override suspend fun patch(node: Node, patchRequest: NodePatch): ServiceResult = updateNode(
 		node,
-		when {
-			logLevel != null -> Updates.set(MongoNode::logLevel.name, logLevel)
-			else -> Updates.unset(MongoNode::logLevel.name)
-		}
+		listOfNotNull(
+			patchRequest.name?.let { Updates.set(MongoNode::name, it) },
+			patchRequest.position?.let { Updates.set(MongoNode::position, it) },
+			patchRequest.logLevel?.let { logLevel ->
+				when {
+					logLevel.isPresent -> Updates.set(MongoNode::logLevel, logLevel.get())
+					else -> Updates.unset(MongoNode::logLevel)
+				}
+			},
+			patchRequest.settings?.let {
+				Updates.set(MongoNode::settings, collection.codecRegistry.encode(it))
+			}
+		)
 	)
 
-	private suspend fun updateNode(node: Node, update: Bson): ServiceResult {
+	private suspend fun updateNode(node: Node, updates: Collection<Bson>): ServiceResult {
 		val result = collection.updateOne(
-			Filters.eq(MongoNode::_id.name, node.objectId),
-			Updates.combine(update, Updates.set(MongoNode::modifiedAt.name, Clock.System.now()))
+			Filters.eq(MongoNode::_id, node.objectId),
+			Updates.combine(*updates.toTypedArray(), Updates.set(MongoNode::modifiedAt, Clock.System.now()))
 		)
 		return when {
 			result.matchedCount == 0L -> NodeServiceResults.NodeNotFoundError(node.id)
@@ -143,10 +143,10 @@ class MongoNodeService(
 	}
 
 	override suspend fun delete(node: Node): ServiceResult {
-		val result = collection.deleteOne(Filters.eq(MongoNode::_id.name, node.objectId))
+		val result = collection.deleteOne(Filters.eq(MongoNode::_id, node.objectId))
 		collection.updateMany(
-			Filters.eq(MongoNode::flowId.name, node.flowId.objectId),
-			Updates.pull(MongoNode::next.name, node.objectId)
+			Filters.eq(MongoNode::flowId, node.flowId.objectId),
+			Updates.pull(MongoNode::next, node.objectId)
 		)
 		return when {
 			result.deletedCount == 0L -> NodeServiceResults.NodeNotFoundError(node.id)

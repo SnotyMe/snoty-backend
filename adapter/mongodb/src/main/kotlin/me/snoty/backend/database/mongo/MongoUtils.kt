@@ -5,6 +5,7 @@ import com.mongodb.client.model.Projections
 import com.mongodb.client.model.UpdateOptions
 import com.mongodb.kotlin.client.coroutine.AggregateFlow
 import com.mongodb.kotlin.client.coroutine.MongoCollection
+import com.mongodb.kotlin.client.model.Filters
 import com.mongodb.kotlin.client.model.Projections.projection
 import me.snoty.backend.errors.InvalidIdException
 import me.snoty.backend.wiring.node.MongoNode
@@ -17,6 +18,7 @@ import org.bson.Document
 import org.bson.conversions.Bson
 import org.bson.types.ObjectId
 import kotlin.reflect.KProperty
+import com.mongodb.client.model.Filters as JavaFilters
 
 val FlowId.objectId get() = this.value.objectId
 val Workflow.objectId get() = this.id.objectId
@@ -57,3 +59,7 @@ object Stages {
 
 fun NodeSettingsDeserializationService.deserializeOrInvalid(node: MongoNode) =
 	deserializeOrInvalid(node.descriptor, node.settings)
+
+@Suppress("UnusedReceiverParameter") // namespacing - on purpose
+val Filters.EMPTY: Bson
+	get() = JavaFilters.empty()

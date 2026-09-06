@@ -6,10 +6,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
-import me.snoty.backend.utils.BadRequestException
-import me.snoty.backend.utils.respondServiceResult
-import me.snoty.backend.utils.respondStatus
+import me.snoty.backend.utils.*
 import me.snoty.core.node.Node
+import me.snoty.integration.common.config.NodePatch
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.wiring.node.NodePosition
 import org.slf4j.event.Level
@@ -19,7 +18,7 @@ import java.util.*
 data class NodePatchRequest(
 	val name: String? = null,
 	val position: NodePosition? = null,
-	val logLevel: JsonElement? = null,
+	val logLevel: JsonElement? = JsonNull,
 	val settings: JsonElement? = null,
 )
 
@@ -39,35 +38,31 @@ fun Route.nodeUpdate(nodeService: NodeService) {
 		val node = getPersonalNodeOrNull() ?: return@patch
 		val request: NodePatchRequest = call.receive()
 
-		request.name?.let { name ->
-			nodeService.updateName(node, name)
-		}
+		val logLevel: Optional<Level?>? = when (val level = request.logLevel) {
+			JsonNull -> null // not set in the request -> don't change the level
+			null -> optionalOf(null) // explicitly set to null in the request -> unset the level
+			else -> {
+				if (level !is JsonPrimitive || !level.jsonPrimitive.isString) {
+					return@patch call.respondStatus(BadRequestException("Expected ${Node::logLevel.name} to be a string"))
+				}
 
-		request.position?.let { position ->
-			nodeService.updatePosition(node, position)
-		}
-
-		request.logLevel?.let { level ->
-			if (level is JsonNull) {
-				// explicitly set to null in the request -> unset the level
-				nodeService.updateLogLevel(node, null)
-				return@let
+				val logLevelString = level.jsonPrimitive.contentOrNull?.uppercase() ?: return@patch
+				letOrNull { Level.valueOf(logLevelString) }?.let(::optionalOf)
+					?: return@patch call.respondStatus(BadRequestException("Couldn't parse ${Node::logLevel.name} level"))
 			}
-
-			if (level !is JsonPrimitive || !level.jsonPrimitive.isString) {
-				return@patch call.respondStatus(BadRequestException("Expected ${Node::logLevel.name} to be a string"))
-			}
-
-			val logLevelString = level.jsonPrimitive.contentOrNull ?: return@patch
-			val logLevel = runCatching { Level.valueOf(logLevelString.uppercase(Locale.ROOT)) }.getOrNull()
-				?: return@patch call.respondStatus(BadRequestException("Couldn't parse ${Node::logLevel.name} level"))
-			nodeService.updateLogLevel(node, logLevel)
 		}
 
-		request.settings?.let { settingsJson ->
-			val settings = deserializeSettings(node.descriptor, settingsJson) ?: return@patch
-			nodeService.updateSettings(node, settings)
+		val settings = request.settings?.let { settingsJson ->
+			deserializeSettings(node.descriptor, settingsJson) ?: return@patch
 		}
+
+		val patch = NodePatch(
+			name = request.name,
+			position = request.position,
+			logLevel = logLevel,
+			settings = settings,
+		)
+		nodeService.patch(node, patch)
 
 		call.respond(HttpStatusCode.NoContent)
 	}

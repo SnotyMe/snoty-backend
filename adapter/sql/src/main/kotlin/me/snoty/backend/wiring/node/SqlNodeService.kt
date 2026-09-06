@@ -10,6 +10,7 @@ import me.snoty.core.flow.FlowId
 import me.snoty.core.flow.Workflow
 import me.snoty.core.node.*
 import me.snoty.core.user.UserId
+import me.snoty.integration.common.config.NodePatch
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.config.NodeServiceResults
 import me.snoty.integration.common.wiring.node.NodeDescriptor
@@ -24,7 +25,6 @@ import org.jetbrains.exposed.v1.core.statements.UpdateStatement
 import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
 import org.jetbrains.exposed.v1.jdbc.*
 import org.koin.core.annotation.Single
-import org.slf4j.event.Level
 
 @Single
 class SqlNodeService(
@@ -65,21 +65,19 @@ class SqlNodeService(
 		name: String,
 		position: NodePosition,
 		settings: S
-	): StandaloneNode {
-		return db.suspendTransaction {
-			nodeTable.insertReturning(nodeTable.columns) {
-				it[nodeTable.flowId] = flow.id
-				it[nodeTable.userId] = userId
-				it[nodeTable.descriptor_namespace] = descriptor.namespace
-				it[nodeTable.descriptor_name] = descriptor.name
-				it[nodeTable.name] = name
-				it[nodeTable.positionX] = position.x
-				it[nodeTable.positionY] = position.y
-				it[nodeTable.width] = position.width
-				it[nodeTable.height] = position.height
-				it[nodeTable.settings] = json.hackyEncodeToString(settings)
-			}.first().toStandalone(nodeTable, json, nodeRegistry)
-		}
+	): StandaloneNode = db.suspendTransaction {
+		nodeTable.insertReturning(nodeTable.columns) {
+			it[nodeTable.flowId] = flow.id
+			it[nodeTable.userId] = userId
+			it[nodeTable.descriptor_namespace] = descriptor.namespace
+			it[nodeTable.descriptor_name] = descriptor.name
+			it[nodeTable.name] = name
+			it[nodeTable.positionX] = position.x
+			it[nodeTable.positionY] = position.y
+			it[nodeTable.width] = position.width
+			it[nodeTable.height] = position.height
+			it[nodeTable.settings] = json.hackyEncodeToString(settings)
+		}.first().toStandalone(nodeTable, json, nodeRegistry)
 	}
 
 	override suspend fun connect(from: Node, to: Node): ServiceResult = db.suspendTransaction {
@@ -113,23 +111,29 @@ class SqlNodeService(
 		}
 	}
 
-	override suspend fun updateName(node: Node, name: String) = updateNode(node) {
-		it[nodeTable.name] = name
-	}
+	override suspend fun patch(node: Node, patchRequest: NodePatch) = updateNode(node) {
+		patchRequest.name?.let {  name ->
+			it[nodeTable.name] = name
+		}
 
-	override suspend fun updatePosition(node: Node, position: NodePosition) = updateNode(node) {
-		it[nodeTable.positionX] = position.x
-		it[nodeTable.positionY] = position.y
-		it[nodeTable.width] = position.width
-		it[nodeTable.height] = position.height
+		patchRequest.position?.let { position ->
+			it[nodeTable.positionX] = position.x
+			it[nodeTable.positionY] = position.y
+			it[nodeTable.width] = position.width
+			it[nodeTable.height] = position.height
+		}
+
+		patchRequest.logLevel?.let { logLevel ->
+			it[nodeTable.logLevel] = logLevel.orElse(null)
+		}
+
+		patchRequest.settings?.let { settings ->
+			it[nodeTable.settings] = json.hackyEncodeToString(settings)
+		}
 	}
 
 	override suspend fun updateSettings(node: Node, settings: NodeSettings) = updateNode(node) {
 		it[nodeTable.settings] = json.hackyEncodeToString(settings)
-	}
-
-	override suspend fun updateLogLevel(node: Node, logLevel: Level?) = updateNode(node) {
-		it[nodeTable.logLevel] = logLevel
 	}
 
 	private suspend fun updateNode(node: Node, update: NodeTable.(UpdateStatement) -> Unit): ServiceResult {
