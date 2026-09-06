@@ -1,9 +1,11 @@
 package me.snoty.integration.builtin.mapper.filter
 
+import com.github.difflib.DiffUtils
+import com.github.difflib.UnifiedDiffUtils
 import liqp.TemplateContext
 import liqp.filters.Filter
 import me.snoty.backend.utils.orNull
-import me.snoty.integration.builtin.diff.uni.computeDiff
+import me.snoty.backend.utils.skip
 import me.snoty.integration.builtin.mapper.FilterFactory
 import me.snoty.integration.common.diff.getNew
 import me.snoty.integration.common.diff.getOld
@@ -41,4 +43,24 @@ class UniDiffFilter : Filter("unidiff") {
 
 		return computeDiff(old, new)
 	}
+}
+
+fun computeDiff(old: String?, new: String?): String {
+	fun String?.toList() = this?.split("\n")
+		?.ifEmpty { emptyList() }
+		?: emptyList()
+
+	val old = old.toList()
+	val diff = DiffUtils.diff(old, new.toList())
+
+	val unifiedDiff = UnifiedDiffUtils.generateUnifiedDiff(
+		/* originalFileName = */ "old",
+		/* revisedFileName = */ "new",
+		/* originalLines = */ old,
+		/* patch = */ diff,
+		/* contextSize = */ 2
+	)
+
+	// skip the `--- old` and `+++ new` lines
+	return unifiedDiff.skip(2).joinToString(separator = "\n")
 }

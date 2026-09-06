@@ -1,9 +1,9 @@
-package me.snoty.integration.builtin.diff.uni
+package me.snoty.integration.builtin.mapper.filter
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-class DiffTest {
+class UniDiffTest {
 	@Test
 	fun `basic one liner`() {
 		val diff = computeDiff("Hello World", "Hallo Welt")
