@@ -1,10 +1,11 @@
-name: Test
+name: Test & Publish Snapshot
 on:
   pull_request:
     types: [opened, reopened]
   push:
 permissions:
   checks: write
+  packages: write
 jobs:
   test:
     name: Build and run Tests
