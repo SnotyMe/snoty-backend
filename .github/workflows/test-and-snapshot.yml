@@ -60,7 +60,7 @@ jobs:
             -Pme.snoty.docker.image="ghcr.io/snotyme/snoty-backend-snapshot" \
             -Pme.snoty.docker.tags="${branch_tag}-${sha_short}" \
             -Pme.snoty.github.run="${{github.run_id}}:${{github.run_number}}" \
-            build jibDockerBuild \
+            jibDockerBuild \
             --scan
 
       - name: Log in to GHCR
