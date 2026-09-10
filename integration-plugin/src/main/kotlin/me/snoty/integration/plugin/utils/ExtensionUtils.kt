@@ -5,6 +5,7 @@ import com.google.devtools.ksp.processing.Resolver
 
 @OptIn(KspExperimental::class)
 fun Resolver.getExtensionName() = getModuleName().getShortName()
+    .substringAfterLast(":")
     .replaceFirstChar(Char::uppercase)
     .replace("-(\\w)".toRegex()) { matchResult ->
         matchResult.groupValues[1].uppercase()
