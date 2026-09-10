@@ -35,7 +35,7 @@ jib = { id = "com.google.cloud.tools.jib", version = "3.4.4" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.1" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-ktor = { id = "io.ktor.plugin", version = "3.4.2-eap-191" }
+ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 
 [libraries]
 configuration-hoplite-core = { group = "com.sksamuel.hoplite", name = "hoplite-core", version.ref = "hoplite" }
