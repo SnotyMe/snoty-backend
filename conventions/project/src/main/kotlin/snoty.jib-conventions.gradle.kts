@@ -5,15 +5,16 @@ plugins {
 }
 
 jib {
+	val fullImageName = providers.gradleProperty("me.snoty.docker.image")
+		.getOrElse("ghcr.io/snotyme/snoty-backend")
+
 	from {
 		image = "eclipse-temurin:21-jre-alpine"
 	}
 	to {
-		val allTags = project.properties["me.snoty.docker.tags"]?.toString()?.trim()?.split(" ")?.toSet()
+		val allTags = providers.gradleProperty("me.snoty.docker.tags").orNull?.trim()?.split(" ")?.toSet()
 			?: setOf(version.toString())
-		val imageName = project.properties["me.snoty.docker.image"]?.toString()?.trim()
-			?: "ghcr.io/snotyme/snoty-backend"
-		image = "$imageName:${allTags.first()}"
+		image = "$fullImageName:${allTags.first()}"
 		// workaround for the TERRIBLE design decisions of the JIB developers to
 		// still generate the `latest` tag even when tags are specified...
 		if (allTags.size > 1) {
@@ -30,7 +31,7 @@ jib {
 		ports = listOf("8080")
 
 		val (ghaRunId, ghaRunNumber) =
-			project.properties["me.snoty.github.run"]?.toString()?.split(":") ?: listOf(null, null)
+			providers.gradleProperty("me.snoty.github.run").orNull?.split(":") ?: listOf(null, null)
 
 		Git.open(project.rootDir).use { git ->
 			val repoUrl = git.repository.config
@@ -40,10 +41,11 @@ jib {
 				.replace(".git", "")
 			val headRef = git.repository.resolve("HEAD").name
 
+			val imageTitle = fullImageName.substringAfterLast("/")
 			labels = mapOf(
-				"org.opencontainers.image.title" to "snoty-backend",
+				"org.opencontainers.image.title" to imageTitle,
 				"org.opencontainers.image.description" to "Backend for the snoty project",
-				"org.opencontainers.image.url" to "$repoUrl/pkgs/container/snoty-backend",
+				"org.opencontainers.image.url" to "$repoUrl/pkgs/container/$imageTitle",
 				"org.opencontainers.image.revision" to headRef,
 				"org.opencontainers.image.source" to "$repoUrl/tree/$headRef",
 				*if (ghaRunId != null && ghaRunNumber != null) arrayOf(

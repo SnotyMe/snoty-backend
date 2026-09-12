@@ -1,0 +1,76 @@
+name: Test & Publish Snapshot
+on:
+  pull_request:
+    types: [opened, reopened]
+  push:
+    branches:
+      - '**'
+permissions:
+  checks: write
+  packages: write
+jobs:
+  test:
+    name: Build and run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          java-version: 21
+          distribution: temurin
+
+      - name: Setup gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-provider: basic
+          build-scan-terms-of-use-url: https://gradle.com/terms-of-service
+          build-scan-terms-of-use-agree: yes
+
+      - name: Run tests
+        run: ./gradlew check koverXmlReport
+
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v6
+        if: always()
+        with:
+          report_paths: '**/build/test-results/*/TEST-*.xml'
+
+      - name: Upload Test Results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/codecov-action@v7
+        with:
+          report_type: test_results
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: '**build/test-results/**/TEST-*.xml'
+
+      - name: Upload Coverage Report
+        if: ${{ !cancelled() }}
+        uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Build docker image
+        run: |
+          branch="${GITHUB_REF#refs/heads/}"
+          branch_tag="${branch//\//-}"
+          sha_short="${GITHUB_SHA::7}"
+
+          ./gradlew \
+            -Pme.snoty.docker.image="ghcr.io/snotyme/snoty-backend-snapshot" \
+            -Pme.snoty.docker.tags="${branch_tag}-${sha_short}" \
+            -Pme.snoty.github.run="${{github.run_id}}:${{github.run_number}}" \
+            jibDockerBuild
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        if: github.event_name == 'push'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push docker image
+        if: github.event_name == 'push'
+        run: docker push --all-tags ghcr.io/snotyme/snoty-backend-snapshot
