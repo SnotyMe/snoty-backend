@@ -23,7 +23,6 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
         with:
           cache-provider: basic
-          build-scan-publish: true
           build-scan-terms-of-use-url: https://gradle.com/terms-of-service
           build-scan-terms-of-use-agree: yes
 
@@ -60,8 +59,7 @@ jobs:
             -Pme.snoty.docker.image="ghcr.io/snotyme/snoty-backend-snapshot" \
             -Pme.snoty.docker.tags="${branch_tag}-${sha_short}" \
             -Pme.snoty.github.run="${{github.run_id}}:${{github.run_number}}" \
-            jibDockerBuild \
-            --scan
+            jibDockerBuild
 
       - name: Log in to GHCR
         uses: docker/login-action@v4
