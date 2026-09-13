@@ -5,12 +5,8 @@ import kotlinx.coroutines.flow.Flow
 import me.snoty.backend.errors.ServiceResult
 import me.snoty.core.flow.FlowId
 import me.snoty.core.flow.Workflow
-import me.snoty.core.node.FlowNode
-import me.snoty.core.node.Node
-import me.snoty.core.node.NodeId
-import me.snoty.core.node.StandaloneNode
+import me.snoty.core.node.*
 import me.snoty.core.user.UserId
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeSettings
 
@@ -21,7 +17,7 @@ interface NodeService {
 	suspend fun <S : NodeSettings> create(
 		userId: UserId,
 		flow: Workflow,
-		descriptor: NodeDescriptor,
+		type: NodeType,
 		name: String,
 		position: NodePosition,
 		settings: S,

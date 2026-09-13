@@ -17,16 +17,12 @@ import me.snoty.backend.wiring.node.toRelational
 import me.snoty.backend.wiring.node.toStandalone
 import me.snoty.core.flow.FlowId
 import me.snoty.core.flow.Workflow
-import me.snoty.core.node.FlowNode
-import me.snoty.core.node.Node
-import me.snoty.core.node.NodeId
-import me.snoty.core.node.StandaloneNode
+import me.snoty.core.node.*
 import me.snoty.core.user.UserId
 import me.snoty.integration.common.config.NodePatch
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.config.NodeServiceResults
 import me.snoty.integration.common.wiring.flow.NODE_COLLECTION_NAME
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.conversions.Bson
@@ -62,7 +58,7 @@ class MongoNodeService(
 	override suspend fun <S : NodeSettings> create(
 		userId: UserId,
 		flow: Workflow,
-		descriptor: NodeDescriptor,
+		type: NodeType,
 		name: String,
 		position: NodePosition,
 		settings: S,
@@ -71,7 +67,7 @@ class MongoNodeService(
 		val node = MongoNode(
 			flowId = flow.objectId,
 			userId = userId,
-			descriptor = descriptor,
+			type = type,
 			name = name,
 			position = position,
 			settings = collection.codecRegistry.encode(settings),

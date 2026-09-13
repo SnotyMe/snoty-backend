@@ -13,7 +13,6 @@ import me.snoty.core.user.UserId
 import me.snoty.integration.common.config.NodePatch
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.config.NodeServiceResults
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.NodeSettings
@@ -61,7 +60,7 @@ class SqlNodeService(
 	override suspend fun <S : NodeSettings> create(
 		userId: UserId,
 		flow: Workflow,
-		descriptor: NodeDescriptor,
+		type: NodeType,
 		name: String,
 		position: NodePosition,
 		settings: S
@@ -69,8 +68,7 @@ class SqlNodeService(
 		nodeTable.insertReturning(nodeTable.columns) {
 			it[nodeTable.flowId] = flow.id
 			it[nodeTable.userId] = userId
-			it[nodeTable.descriptor_namespace] = descriptor.namespace
-			it[nodeTable.descriptor_name] = descriptor.name
+			it[nodeTable.type] = type
 			it[nodeTable.name] = name
 			it[nodeTable.positionX] = position.x
 			it[nodeTable.positionY] = position.y

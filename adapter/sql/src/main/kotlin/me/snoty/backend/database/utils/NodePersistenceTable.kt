@@ -4,7 +4,7 @@ import me.snoty.backend.database.sql.SanitizedPrimaryKey
 import me.snoty.backend.database.sql.sqlTableName
 import me.snoty.backend.database.sql.utils.rawJsonb
 import me.snoty.backend.wiring.node.NodeTable
-import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.core.node.NodeType
 import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.Table
 
@@ -14,10 +14,10 @@ val nodePersistenceTables: List<NodePersistenceTable<*>>
 
 @OptIn(InternalSqlApi::class)
 class NodePersistenceTable<T : Any>(
-	descriptor: NodeDescriptor,
+	nodeType: NodeType,
 	name: String,
 	nodeTable: NodeTable
-) : Table(descriptor.sqlTableName(name)) {
+) : Table(nodeType.sqlTableName(name)) {
 	init {
 		nodePersistenceTables += this
 	}

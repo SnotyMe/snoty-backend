@@ -3,8 +3,8 @@ package me.snoty.backend.wiring.node
 import me.snoty.backend.database.mongo.MongoTest
 import me.snoty.backend.database.mongo.toFlowId
 import me.snoty.backend.integration.config.MongoNodeService
+import me.snoty.core.node.NodeType
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.Document
 import org.bson.types.ObjectId
@@ -13,7 +13,7 @@ class MongoNodeServiceTest : NodeServiceSpec() {
 	private val db = MongoTest.getMongoDatabase {}
 	override val service = MongoNodeService(db, object : NodeSettingsDeserializationService {
 		override fun deserializeOrInvalid(
-			nodeDescriptor: NodeDescriptor,
+			nodeType: NodeType,
 			nodeSettings: Document
 		): NodeSettings = EmptyNodeSettings()
 	})

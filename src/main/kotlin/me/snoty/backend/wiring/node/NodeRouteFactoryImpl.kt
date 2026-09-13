@@ -12,10 +12,10 @@ import me.snoty.backend.utils.BadRequestException
 import me.snoty.backend.utils.getUserOrNull
 import me.snoty.backend.utils.respondStatus
 import me.snoty.core.node.NodeId
+import me.snoty.core.node.NodeType
 import me.snoty.core.node.NodeWithSettings
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.http.nodeNotFound
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRouteFactory
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Provided
@@ -24,7 +24,7 @@ import org.koin.ktor.ext.inject
 @Factory
 internal class NodeRouteFactoryImpl(
 	@Provided
-	private val nodeDescriptor: NodeDescriptor,
+	private val nodeType: NodeType,
 	private val hookRegistry: HookRegistry,
 ) : NodeRouteFactory {
 	val logger = KotlinLogging.logger {}
@@ -34,13 +34,13 @@ internal class NodeRouteFactoryImpl(
 	 */
 	override operator fun invoke(route: String, method: HttpMethod, verifyUser: Boolean, block: suspend RoutingContext.(NodeWithSettings) -> Unit) =
 		hookRegistry.register(NodeapiRoutesHook { routing ->
-			logger.debug { "Registering route for $nodeDescriptor node: $route" }
+			logger.debug { "Registering route for $nodeType node: $route" }
 
-			fun Route.doRoute() = route("${nodeDescriptor.name}/{nodeId}/$route") {
+			fun Route.doRoute() = route("${nodeType.value}/{nodeId}/$route") {
 				val nodeService: NodeService by inject()
 				method(method) {
 					handle {
-						logger.debug { "Handling route for ${nodeDescriptor.id} nodes: $route" }
+						logger.debug { "Handling route for $nodeType node: $route" }
 
 						val userId = when {
 							verifyUser -> call.getUserOrNull()?.id
@@ -54,14 +54,14 @@ internal class NodeRouteFactoryImpl(
 						val node = nodeService.get(userId, nodeId)
 							?: return@handle call.nodeNotFound(nodeId)
 
-						if (node.descriptor != nodeDescriptor) {
-							return@handle call.respondStatus(BadRequestException("This node is not a $nodeDescriptor node"))
+						if (node.type != nodeType) {
+							return@handle call.respondStatus(BadRequestException("This node is not a $nodeType"))
 						}
 
 						block(this, node)
 					}
 				}.describe {
-					tag("node:${nodeDescriptor.name}")
+					tag("node:${nodeType.value}")
 				}
 			}
 

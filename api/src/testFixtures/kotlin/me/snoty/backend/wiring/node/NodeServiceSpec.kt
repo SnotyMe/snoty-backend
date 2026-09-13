@@ -3,21 +3,18 @@ package me.snoty.backend.wiring.node
 import me.snoty.backend.test.NoOpNodeHandler
 import me.snoty.backend.test.nodeMetadata
 import me.snoty.core.flow.FlowId
+import me.snoty.core.node.NodeType
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 
 abstract class NodeServiceSpec {
 	abstract val service: NodeService
 	abstract val makeFlowId: suspend () -> FlowId
 
-	private val descriptor = NodeDescriptor(
-		namespace = javaClass.packageName,
-		name = "mytype"
-	)
+	private val type = NodeType("mytype")
 
 	protected val nodeRegistry = NodeRegistryImpl().apply {
-		registerHandler(nodeMetadata(descriptor, position = NodePosition.START), NoOpNodeHandler)
+		registerHandler(nodeMetadata(type, position = NodePosition.START), NoOpNodeHandler)
 	}
 	
 	// TODO: test other methods

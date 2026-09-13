@@ -11,9 +11,9 @@ import me.snoty.backend.wiring.flow.FlowFeatureFlags
 import me.snoty.core.flow.Workflow
 import me.snoty.core.node.Node
 import me.snoty.core.node.NodeWithSettings
+import me.snoty.core.node.setAttribute
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.flow.FlowRunner
-import me.snoty.integration.common.wiring.node.setAttribute
 import org.koin.core.annotation.Single
 
 interface FlowTracing : Tracer {
@@ -31,7 +31,7 @@ class FlowTracingImpl(
 	override fun createRootSpan(jobId: String, flow: Workflow): Span {
 		val flowId = flow.id
 
-		val rootSpan = spanBuilder("Flow $flowId")
+		val rootSpan = spanBuilder("Flow ${flowId.value}")
 			.setAttribute(USER_ID, flow.userId.value)
 			.setAttribute(JOB_ID, jobId)
 			.setAttribute(FLOW_ID, flowId.value)
@@ -44,7 +44,7 @@ class FlowTracingImpl(
 	override fun SpanBuilder.setNodeAttributes(node: NodeWithSettings, input: Collection<IntermediateData>?) = apply {
 		setAttribute(NODE_ID, node.id.value)
 		KMDC.put(NODE_ID, node.id.value)
-		setAttribute("node.descriptor", node.descriptor)
+		setAttribute("node", node.type)
 
 		if (featureFlags.traceConfig) {
 			setAttribute("config", json.encodeToString(node.settings))
@@ -55,5 +55,5 @@ class FlowTracingImpl(
 	}
 
 	override fun traceName(node: Node) =
-		"Node ${node.descriptor.id} (${node.id.value})"
+		"Node ${node.type.value} (${node.id.value})"
 }

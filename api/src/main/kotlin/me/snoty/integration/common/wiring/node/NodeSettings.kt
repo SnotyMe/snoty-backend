@@ -2,6 +2,7 @@ package me.snoty.integration.common.wiring.node
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.Serializable
+import me.snoty.core.node.NodeType
 import org.bson.BsonReader
 import org.bson.BsonWriter
 import org.bson.codecs.Codec
@@ -28,26 +29,26 @@ object EmptyNodeSettingsCodec : Codec<EmptyNodeSettings> {
 		= EmptyNodeSettings()
 }
 
-fun tryDeserializeNodeSettings(nodeDescriptor: NodeDescriptor, nodeRegistry: NodeRegistry, deserialize: (clazz: KClass<out NodeSettings>) -> NodeSettings): NodeSettings {
-	val metadata = runCatching { nodeRegistry.getMetadata(nodeDescriptor) }.getOrNull()
+fun tryDeserializeNodeSettings(nodeType: NodeType, nodeRegistry: NodeRegistry, deserialize: (clazz: KClass<out NodeSettings>) -> NodeSettings): NodeSettings {
+	val metadata = runCatching { nodeRegistry.getMetadata(nodeType) }.getOrNull()
 	val logger = KotlinLogging.logger {}
 
 	fun recover() = runCatching {
 		deserialize(InvalidNodeSettings::class)
 	}.getOrElse {
-		logger.error(it) { "Failed to deserialize to ${InvalidNodeSettings::class} for node $nodeDescriptor" }
+		logger.error(it) { "Failed to deserialize to ${InvalidNodeSettings::class} for $nodeType" }
 		InvalidNodeSettings()
 	}
 
 	if (metadata == null) {
-		logger.error { "Failed to get metadata for node $nodeDescriptor" }
+		logger.error { "Failed to get metadata for $nodeType" }
 		return recover()
 	}
 
 	return runCatching {
 		deserialize(metadata.settingsClass)
 	}.getOrElse { e ->
-		logger.error(e) { "Failed to deserialize to ${metadata.settingsClass} for node $nodeDescriptor" }
+		logger.error(e) { "Failed to deserialize to ${metadata.settingsClass} for $nodeType" }
 		recover()
 	}
 }

@@ -1,7 +1,7 @@
 package me.snoty.integration.common.wiring.node.template
 
-import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.core.node.NodeType
 
 interface NodeTemplateRegistry {
-	fun getAllTemplates(): Map<NodeDescriptor, List<NodeTemplate>>
+	fun getAllTemplates(): Map<NodeType, List<NodeTemplate>>
 }

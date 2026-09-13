@@ -3,12 +3,12 @@ package me.snoty.backend.wiring.flow
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import me.snoty.core.flow.WorkflowSettings
-import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.core.node.NodeType
 import me.snoty.integration.common.wiring.node.NodePosition
 import org.bson.Document
 
 object FlowExportImportSchema {
-	const val VERSION = "1.3"
+	const val VERSION = "1.4"
 }
 
 @Serializable
@@ -33,7 +33,7 @@ data class ImportFlow(
  */
 data class ExportNode(
 	val id: String,
-	val descriptor: NodeDescriptor,
+	val type: NodeType,
 	val name: String,
 	val position: NodePosition,
 	val settings: @Contextual Document,
@@ -44,9 +44,16 @@ data class ExportNode(
 data class CensoredField(val default: String?, val censored: Boolean = true)
 
 @Serializable
+data class ImportNodeDescriptor(
+	val namespace: String,
+	val name: String,
+)
+
+@Serializable
 data class ImportNode(
 	val id: String,
-	val descriptor: NodeDescriptor,
+	val descriptor: ImportNodeDescriptor? = null,
+	val type: NodeType = descriptor?.name?.let(::NodeType) ?: error("Node descriptor or type must be provided"), // added in 1.4
 	val position: NodePosition = NodePosition(0, 0, 250, 150), // added in 1.2
 	val settings: @Contextual Document,
 	val name: String = settings.getString("name"), // added in 1.3

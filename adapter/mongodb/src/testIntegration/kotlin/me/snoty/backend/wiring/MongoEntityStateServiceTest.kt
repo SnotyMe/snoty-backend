@@ -16,7 +16,7 @@ class MongoEntityStateServiceTest : EntityStateServiceSpec({ ObjectId().toNodeId
 	private val mongoDB = MongoTest.getMongoDatabase {}
 	override val service = MongoEntityStateService(
 		mongoDB,
-		nodeDescriptor,
+		nodeType,
 		hookRegistry = mockk(relaxed = true),
 		codecRegistry = provideStateCodecRegistry(bsonTypeClassMap(), mongoDB.codecRegistry),
 	)

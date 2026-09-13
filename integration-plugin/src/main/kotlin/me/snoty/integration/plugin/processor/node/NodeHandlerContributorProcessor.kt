@@ -9,8 +9,8 @@ import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.writeTo
 import com.squareup.kotlinpoet.metadata.specs.toTypeSpec
+import me.snoty.core.node.NodeType
 import me.snoty.integration.common.annotation.RegisterNode
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeHandlerContributor
 import me.snoty.integration.common.wiring.node.template.NodeTemplateUtils
 import me.snoty.integration.plugin.utils.*
@@ -62,7 +62,6 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 		val contributorSpec = NodeHandlerContributor::class.toTypeSpec(lenient = true)
 
 		val registerNode = clazz.getAnnotation<RegisterNode>()!!
-		val nodeMetadata = registerNode.descriptor(clazz)
 
 		val writtenKoinEntities = codeGenerator.writeNodeKoinEntities(clazz, extensionName, registerNode)
 
@@ -70,13 +69,8 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 			.addSuperinterface(NodeHandlerContributor::class)
 			.addAnnotation(Single::class)
 			.addProperty(
-				PropertySpec.builder("descriptor", NodeDescriptor::class)
-					.initializer(
-						"%T(%S, %S)",
-						NodeDescriptor::class,
-						nodeMetadata.namespace,
-						nodeMetadata.name,
-					)
+				PropertySpec.builder("type", NodeType::class)
+					.initializer("%T(%S)", NodeType::class, registerNode.name)
 					.build()
 			)
 			.addProperty(
@@ -130,7 +124,7 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 		.add(
 			"%M(%N),\n",
 			NodeTemplateUtils::nodeTemplatesModule.getMemberName<NodeTemplateUtils>(),
-			"descriptor",
+			"type",
 		)
 		.add(")")
 		.build()

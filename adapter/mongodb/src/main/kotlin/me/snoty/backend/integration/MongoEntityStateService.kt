@@ -16,13 +16,13 @@ import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.register
 import me.snoty.backend.utils.bson.getIdAsString
 import me.snoty.core.node.Node
+import me.snoty.core.node.NodeType
 import me.snoty.integration.common.diff.DiffResult
 import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.diff.STATE_CODEC_REGISTRY
 import me.snoty.integration.common.diff.checksum
 import me.snoty.integration.common.diff.state.EntityState
 import me.snoty.integration.common.wiring.flow.NodeDeletedHook
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
 import org.bson.codecs.pojo.annotations.BsonId
@@ -32,11 +32,11 @@ import org.koin.core.annotation.Named
 @Factory
 class MongoEntityStateService(
 	mongoDB: MongoDatabase,
-	integration: NodeDescriptor,
+	nodeType: NodeType,
 	hookRegistry: HookRegistry,
 	@Named(STATE_CODEC_REGISTRY) codecRegistry: CodecRegistry,
 ) : EntityStateService {
-	private val nodeEntityStates = mongoDB.getCollection<MongoNodeEntityStates>("${integration.mongoCollectionPrefix}:entityStates")
+	private val nodeEntityStates = mongoDB.getCollection<MongoNodeEntityStates>("${nodeType.mongoCollectionPrefix}:entityStates")
 		.withCodecRegistry(codecRegistry)
 
 	override suspend fun getLastState(node: Node, entityId: String): EntityState? =

@@ -7,7 +7,7 @@ import io.ktor.http.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import me.snoty.backend.config.Config
-import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.core.node.NodeType
 import me.snoty.integration.common.wiring.node.buildHandlerNodeApiUrl
 import me.snoty.integration.notion.NOTION_BASE_URL
 import me.snoty.integration.notion.NotionConfig
@@ -24,9 +24,9 @@ class NotionOAuthImpl(
 	private val httpClient: HttpClient,
 	private val notionConfig: NotionConfig,
 	config: Config,
-	descriptor: NodeDescriptor,
+	type: NodeType,
 ) : NotionOAuth {
-	override val redirectUri = buildHandlerNodeApiUrl(config, descriptor, "callback")
+	override val redirectUri = buildHandlerNodeApiUrl(config, type, "callback")
 
 	@Serializable
 	data class NotionTokenResponse(@SerialName("access_token") val accessToken: String)

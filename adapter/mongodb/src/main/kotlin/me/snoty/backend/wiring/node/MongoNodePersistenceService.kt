@@ -13,8 +13,8 @@ import me.snoty.backend.database.mongo.upsertOne
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.register
 import me.snoty.core.node.Node
+import me.snoty.core.node.NodeType
 import me.snoty.integration.common.wiring.flow.NodeDeletedHook
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePersistenceFactory
 import me.snoty.integration.common.wiring.node.NodePersistenceService
 import org.bson.codecs.pojo.annotations.BsonId
@@ -29,11 +29,11 @@ private data class NodeEntities<T>(
 
 class MongoNodePersistenceService<T : Any>(
 	mongoDB: MongoDatabase,
-	nodeDescriptor: NodeDescriptor,
+	nodeType: NodeType,
 	name: String,
 	private val entityClass: KClass<T>,
 ) : NodePersistenceService<T> {
-	private val collection = mongoDB.getCollection("${nodeDescriptor.mongoCollectionPrefix}:$name", NodeEntities::class.java)
+	private val collection = mongoDB.getCollection("${nodeType.mongoCollectionPrefix}:$name", NodeEntities::class.java)
 
 	override suspend fun persistEntity(node: Node, entityId: String, entity: T) {
 		collection.upsertOne(
@@ -78,9 +78,9 @@ class MongoNodePersistenceService<T : Any>(
 }
 
 @Factory
-class MongoNodePersistenceFactory(private val mongoDB: MongoDatabase, private val nodeDescriptor: NodeDescriptor, private val hookRegistry: HookRegistry) : NodePersistenceFactory {
+class MongoNodePersistenceFactory(private val mongoDB: MongoDatabase, private val nodeType: NodeType, private val hookRegistry: HookRegistry) : NodePersistenceFactory {
 	override fun <T : Any> create(name: String, entityClass: KClass<T>): NodePersistenceService<T> {
-		val service = MongoNodePersistenceService(mongoDB, nodeDescriptor, name, entityClass)
+		val service = MongoNodePersistenceService(mongoDB, nodeType, name, entityClass)
 		hookRegistry.register(NodeDeletedHook {
 			service.delete(it)
 		})

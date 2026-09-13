@@ -15,13 +15,13 @@ import me.snoty.core.flow.Workflow
 import me.snoty.core.flow.WorkflowSettings
 import me.snoty.core.node.FlowNode
 import me.snoty.core.node.Node
+import me.snoty.core.node.NodeType
 import me.snoty.core.node.StandaloneNode
 import me.snoty.core.user.UserId
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -37,10 +37,10 @@ abstract class FlowServiceSpec(private val makeId: () -> FlowId) {
 	protected val nodeRegistry: NodeRegistry = mockk(relaxed = true)
 
 	init {
-		val descriptorSlot = slot<NodeDescriptor>()
-		every { nodeRegistry.getMetadata(capture(descriptorSlot)) } answers {
-			val descriptor = descriptorSlot.captured
-			nodeMetadata(name = descriptor.name, settingsClass = EmptyNodeSettings::class)
+		val typeSlot = slot<NodeType>()
+		every { nodeRegistry.getMetadata(capture(typeSlot)) } answers {
+			val nodeType = typeSlot.captured
+			nodeMetadata(name = nodeType.value, settingsClass = EmptyNodeSettings::class)
 		}
 	}
 
@@ -96,14 +96,14 @@ abstract class FlowServiceSpec(private val makeId: () -> FlowId) {
 		val newNode = nodeService.create(
 			userId = userId,
 			flow = flow,
-			descriptor = NodeDescriptor(javaClass.packageName, name),
+			type = NodeType(name),
 			name = name,
 			position = NodePosition(0, 0, 300, 200),
 			settings = EmptyNodeSettings()
 		)
 
 		nodeRegistry.registerHandler(NodeMetadata(
-			descriptor = newNode.descriptor,
+			type = NodeType(name),
 			displayName = name,
 			settingsClass = EmptyNodeSettings::class,
 			position = mockk(),

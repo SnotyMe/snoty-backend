@@ -27,10 +27,10 @@ class SqlFlowImportService(
 			it.id to nodeService.create(
 				userId = userId,
 				flow = createdFlow,
-				descriptor = it.descriptor,
+				type = it.type,
 				name = it.name,
 				position = it.position,
-				settings = nodeSettingsDeserializationService.deserializeOrInvalid(it.descriptor, it.settings)
+				settings = nodeSettingsDeserializationService.deserializeOrInvalid(it.type, it.settings)
 			).id
 		}
 		val connections = flow.nodes

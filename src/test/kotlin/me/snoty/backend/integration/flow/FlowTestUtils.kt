@@ -12,7 +12,6 @@ import me.snoty.core.user.UserId
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.NodeInput
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import kotlin.time.Clock
@@ -31,12 +30,8 @@ fun relationalFlow(
 )
 
 object EmitHandler : NodeHandler {
-	val descriptor = NodeDescriptor(
-		javaClass.packageName,
-		"emit"
-	)
 	val metadata = nodeMetadata(
-		descriptor,
+		"emit",
 		NodePosition.START,
 	)
 
@@ -47,7 +42,7 @@ fun NodeRegistry.registerEmitHandler() {
 	registerHandler(EmitHandler.metadata, EmitHandler)
 }
 fun emitNode(vararg next: FlowNode) = node(
-	descriptor = EmitHandler.descriptor,
+	type = EmitHandler.metadata.type.value,
 	next = next.toList(),
 	makeId = ::randomString,
 )

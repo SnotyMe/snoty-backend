@@ -4,6 +4,7 @@ import me.snoty.backend.config.Config
 import me.snoty.backend.config.Environment
 import me.snoty.backend.utils.bson.provideApiCodec
 import me.snoty.backend.utils.bson.provideCodecRegistry
+import me.snoty.core.node.NodeType
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.NodeMetadata
 import me.snoty.integration.common.utils.bsonTypeClassMap
@@ -11,7 +12,6 @@ import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistryImp
 import me.snoty.integration.common.wiring.data.impl.BsonIntermediateDataMapper
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateDataMapper
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.Document
 import org.bson.codecs.DocumentCodec
@@ -56,12 +56,12 @@ val IntermediateDataMapperRegistry = IntermediateDataMapperRegistryImpl(
 )
 
 fun nodeMetadata(
-	descriptor: NodeDescriptor,
+	type: NodeType,
 	position: NodePosition = NodePosition.MIDDLE,
 	settingsClass: KClass<out NodeSettings> = EmptyNodeSettings::class,
 	receiveEmptyInput: Boolean = false,
 ) = NodeMetadata(
-	descriptor = descriptor,
+	type = type,
 	displayName = "Test Node",
 	position = position,
 	settings = emptyList(),
@@ -73,15 +73,11 @@ fun nodeMetadata(
 
 fun nodeMetadata(
 	name: String,
-	namespace: String = "me.snoty.backend.test",
 	position: NodePosition = NodePosition.MIDDLE,
 	settingsClass: KClass<out NodeSettings> = EmptyNodeSettings::class,
 	receiveEmptyInput: Boolean = false,
 ) = nodeMetadata(
-	NodeDescriptor(
-		namespace = namespace,
-		name = name
-	),
+	type = NodeType(name),
 	position,
 	settingsClass,
 	receiveEmptyInput,
