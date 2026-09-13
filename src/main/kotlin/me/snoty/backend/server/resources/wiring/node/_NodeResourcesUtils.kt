@@ -10,12 +10,12 @@ import kotlinx.serialization.serializerOrNull
 import me.snoty.backend.server.plugins.void
 import me.snoty.backend.utils.getUser
 import me.snoty.core.node.NodeId
+import me.snoty.core.node.NodeType
 import me.snoty.core.node.StandaloneNode
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.http.invalidNodeId
 import me.snoty.integration.common.http.nodeNotFound
 import me.snoty.integration.common.model.metadata.NodeMetadata
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.koin.ktor.ext.get
@@ -31,9 +31,9 @@ suspend fun RoutingContext.getPersonalNodeOrNull(): StandaloneNode? {
 }
 
 @OptIn(InternalSerializationApi::class)
-suspend fun RoutingContext.deserializeSettings(descriptor: NodeDescriptor, settingsJson: JsonElement): NodeSettings? {
+suspend fun RoutingContext.deserializeSettings(nodeType: NodeType, settingsJson: JsonElement): NodeSettings? {
 	val nodeRegistry: NodeRegistry = get()
-	val metadata = nodeRegistry.getMetadata(descriptor)
+	val metadata = nodeRegistry.getMetadata(nodeType)
 
 	val serializer = metadata.settingsClass.serializerOrNull()
 		?: return void { noSerializerFound(metadata) }

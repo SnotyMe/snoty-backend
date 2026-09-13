@@ -27,7 +27,7 @@ fun Route.nodeUpdate(nodeService: NodeService) {
 		val node = getPersonalNodeOrNull() ?: return@put
 
 		val settingsJson = call.receive<JsonElement>()
-		val settings = deserializeSettings(node.descriptor, settingsJson) ?: return@put
+		val settings = deserializeSettings(node.type, settingsJson) ?: return@put
 
 		val result = nodeService.updateSettings(node, settings)
 
@@ -53,7 +53,7 @@ fun Route.nodeUpdate(nodeService: NodeService) {
 		}
 
 		val settings = request.settings?.let { settingsJson ->
-			deserializeSettings(node.descriptor, settingsJson) ?: return@patch
+			deserializeSettings(node.type, settingsJson) ?: return@patch
 		}
 
 		val patch = NodePatch(

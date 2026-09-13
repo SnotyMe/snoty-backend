@@ -9,16 +9,16 @@ import kotlinx.serialization.json.JsonElement
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.respondServiceResult
 import me.snoty.core.flow.FlowId
+import me.snoty.core.node.NodeType
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.http.flowNotFound
 import me.snoty.integration.common.wiring.flow.FlowService
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePosition
 
 @Serializable
 private data class NodeCreateRequest(
 	val flowId: FlowId,
-	val descriptor: NodeDescriptor,
+	val type: NodeType,
 	val name: String,
 	val position: NodePosition,
 	val settings: JsonElement,
@@ -27,10 +27,10 @@ private data class NodeCreateRequest(
 fun Route.nodeCreate(flowService: FlowService, nodeService: NodeService) = post("create") {
 	val user = call.getUser()
 
-	val (requestedFlowId, descriptor, name, position, settingsJson) = call.receive<NodeCreateRequest>()
+	val (requestedFlowId, type, name, position, settingsJson) = call.receive<NodeCreateRequest>()
 	val flow = flowService.getStandalone(user.id, requestedFlowId) ?: return@post call.flowNotFound(requestedFlowId)
-	val settingsObj = deserializeSettings(descriptor, settingsJson) ?: return@post
-	val createdNode = nodeService.create(user.id, flow, descriptor, name, position, settingsObj)
+	val settingsObj = deserializeSettings(type, settingsJson) ?: return@post
+	val createdNode = nodeService.create(user.id, flow, type, name, position, settingsObj)
 
 	call.respond(status = HttpStatusCode.Created, message = createdNode)
 }

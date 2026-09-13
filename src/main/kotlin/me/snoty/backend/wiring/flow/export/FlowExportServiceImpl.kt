@@ -8,10 +8,10 @@ import me.snoty.backend.wiring.flow.ExportNode
 import me.snoty.backend.wiring.flow.FlowExportImportSchema
 import me.snoty.core.flow.Workflow
 import me.snoty.core.node.NodeId
+import me.snoty.core.node.NodeType
 import me.snoty.integration.common.model.metadata.NodeFieldDetails
 import me.snoty.integration.common.model.metadata.ObjectSchema
 import me.snoty.integration.common.wiring.flow.FlowService
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.Document
@@ -31,10 +31,10 @@ class FlowExportServiceImpl(
 			templateName = flow.name,
 			settings = flow.settings,
 			nodes = flow.nodes.map {
-				val settings = it.settings.encode(it.descriptor, censor)
+				val settings = it.settings.encode(it.type, censor)
 				ExportNode(
 					id = it.id.hash(),
-					descriptor = it.descriptor,
+					type = it.type,
 					name = it.name,
 					position = it.position,
 					settings = settings,
@@ -44,13 +44,13 @@ class FlowExportServiceImpl(
 		)
 	}
 
-	private fun NodeSettings.encode(descriptor: NodeDescriptor, censor: Boolean): Document = when {
-		censor -> censorSettings(descriptor, this)
+	private fun NodeSettings.encode(nodeType: NodeType, censor: Boolean): Document = when {
+		censor -> censorSettings(nodeType, this)
 		else -> codecRegistry.encode(this)
 	}
 
-	private fun censorSettings(descriptor: NodeDescriptor, settings: NodeSettings): Document {
-		val metadata = nodeRegistry.getMetadata(descriptor)
+	private fun censorSettings(nodeType: NodeType, settings: NodeSettings): Document {
+		val metadata = nodeRegistry.getMetadata(nodeType)
 		val encoded = codecRegistry.encode(settings)
 		encoded.censorRecursively(metadata.settings)
 

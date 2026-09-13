@@ -58,7 +58,7 @@ object Stages {
 }
 
 fun NodeSettingsDeserializationService.deserializeOrInvalid(node: MongoNode) =
-	deserializeOrInvalid(node.descriptor, node.settings)
+	deserializeOrInvalid(node.type, node.settings)
 
 @Suppress("UnusedReceiverParameter") // namespacing - on purpose
 val Filters.EMPTY: Bson

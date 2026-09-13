@@ -86,7 +86,7 @@ class FlowRunnerImpl(
 		flow.nodes
 			.asFlow()
 			.filter {
-				nodeRegistry.getMetadataOrNull(it.descriptor)?.position == NodePosition.START
+				nodeRegistry.getMetadataOrNull(it.type)?.position == NodePosition.START
 			}
 			.flatMapConcat {
 				executionContext.executeStartNode(rootSpan, it, input)
@@ -161,19 +161,19 @@ class FlowRunnerImpl(
 		if (node.id in visited) {
 			val referencingNodes = visited
 				.filter { nodeMap[it]?.next?.contains(node.id) == true }
-			logger.error { "Cycle detected at node ${node.descriptor} (${node.id.value}, referenced by $referencingNodes)" }
+			logger.error { "Cycle detected at ${node.type.value} (${node.id.value}, referenced by $referencingNodes)" }
 			return emptyFlow()
 		}
 
-		val nodeLogName = "${node.descriptor.name} node \"${node.name}\" (${node.id.value})"
+		val nodeLogName = "${node.type.value} node \"${node.name}\" (${node.id.value})"
 
-		val handler = nodeRegistry.lookupHandler(node.descriptor)
+		val handler = nodeRegistry.lookupHandler(node.type)
 			?: let {
 				logger.error { "No handler found for $nodeLogName" }
 				return emptyFlow()
 			}
 		
-		val metadata = nodeRegistry.getMetadata(node.descriptor)
+		val metadata = nodeRegistry.getMetadata(node.type)
 
 		fun Node.executeNextNodes(input: NodeOutput) = node.next
 			.asFlow()

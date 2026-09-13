@@ -28,7 +28,6 @@ import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeInput
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -40,7 +39,6 @@ import org.slf4j.event.Level
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class FlowRunnerImplTest {
-	private val namespace = javaClass.packageName
 
 	@Serializable
 	data object TestNodeSettings : NodeSettings
@@ -54,17 +52,15 @@ class FlowRunnerImplTest {
 		}
 	}
 
-	fun nodeMetadata(name: String, receiveEmptyInput: Boolean) = nodeMetadata(namespace = namespace, name = name, receiveEmptyInput = receiveEmptyInput)
-
 	private val mapHandler = GlobalMapHandler()
 	private val wantsEmptyProvidesNonEmptyHandler = WantsEmptyProvidesNonEmptyHandler()
 	private val wantsNonEmptyProvidesEmptyHandler = WantsNonEmptyProvidesEmptyHandler()
 	private val nodeRegistry = NodeRegistryImpl().apply {
-		registerHandler(nodeMetadata(name = TYPE_MAP, false), mapHandler)
-		registerHandler(nodeMetadata(name = TYPE_QUOTE, false), QuoteHandler)
-		registerHandler(nodeMetadata(name = TYPE_EXCEPTION, false), ExceptionHandler)
-		registerHandler(nodeMetadata(name = TYPE_WANTS_EMPTY_PROVIDES_NONEMPTY, true), wantsEmptyProvidesNonEmptyHandler)
-		registerHandler(nodeMetadata(name = TYPE_WANTS_NONEMPTY_PROVIDES_EMPTY, false), wantsNonEmptyProvidesEmptyHandler)
+		registerHandler(nodeMetadata(name = TYPE_MAP, receiveEmptyInput = false), mapHandler)
+		registerHandler(nodeMetadata(name = TYPE_QUOTE, receiveEmptyInput = false), QuoteHandler)
+		registerHandler(nodeMetadata(name = TYPE_EXCEPTION, receiveEmptyInput = false), ExceptionHandler)
+		registerHandler(nodeMetadata(name = TYPE_WANTS_EMPTY_PROVIDES_NONEMPTY, receiveEmptyInput = true), wantsEmptyProvidesNonEmptyHandler)
+		registerHandler(nodeMetadata(name = TYPE_WANTS_NONEMPTY_PROVIDES_EMPTY, receiveEmptyInput = false), wantsNonEmptyProvidesEmptyHandler)
 		registerEmitHandler()
 	}
 	private val otel = createOpenTelemetry()
@@ -103,7 +99,7 @@ class FlowRunnerImplTest {
 
 	@Test
 	fun `test basic`(): Unit = runBlocking {
-		val node = node(NodeDescriptor(namespace, TYPE_MAP))
+		val node = node(TYPE_MAP)
 		val emit = emitNode(node)
 		val flow = relationalFlow(emit, node)
 		val jobId = "basic"
@@ -123,8 +119,8 @@ class FlowRunnerImplTest {
 
 	@Test
 	fun `test basic withQuote`(): Unit = runBlocking {
-		val map = node(NodeDescriptor(namespace, TYPE_MAP))
-		val processor = node(NodeDescriptor(namespace, TYPE_QUOTE), next = listOf(map))
+		val map = node(TYPE_MAP)
+		val processor = node(TYPE_QUOTE, next = listOf(map))
 		val emit = emitNode(processor)
 		val flow = relationalFlow(emit, processor, map)
 
@@ -141,7 +137,7 @@ class FlowRunnerImplTest {
 	@Test
 	fun `test traces config attribute`() = runBlocking {
 		val config = TestNodeSettings
-		val node = node(NodeDescriptor(namespace, TYPE_MAP), settings = config)
+		val node = node(TYPE_MAP, settings = config)
 		val emit = emitNode(node)
 		val flow = relationalFlow(emit, node)
 
@@ -175,8 +171,8 @@ class FlowRunnerImplTest {
 
 	@Test
 	fun `test traces exception attributes`() = runBlocking {
-		val exNode = node(NodeDescriptor(namespace, TYPE_EXCEPTION))
-		val mapNode = node(NodeDescriptor(namespace, TYPE_QUOTE), next = listOf(exNode))
+		val exNode = node(TYPE_EXCEPTION)
+		val mapNode = node(TYPE_QUOTE, next = listOf(exNode))
 		val emit = emitNode(mapNode)
 		val flow = relationalFlow(emit, mapNode, exNode)
 
@@ -219,15 +215,15 @@ class FlowRunnerImplTest {
 	
 	@Test
 	fun `test receive empty input transitively - #225`() = runBlocking {
-		val nodex = node(NodeDescriptor(namespace, TYPE_WANTS_EMPTY_PROVIDES_NONEMPTY))
-		val nodex1 = node(NodeDescriptor(namespace, TYPE_QUOTE), next = listOf(nodex))
-		val nodex2 = node(NodeDescriptor(namespace, TYPE_WANTS_EMPTY_PROVIDES_NONEMPTY), next = listOf(nodex1))
-		val nodex3 = node(NodeDescriptor(namespace, TYPE_WANTS_NONEMPTY_PROVIDES_EMPTY), next = listOf(nodex2)) // also skipped
-		val nodex4 = node(NodeDescriptor(namespace, TYPE_WANTS_NONEMPTY_PROVIDES_EMPTY), next = listOf(nodex3)) // skipped
+		val nodex = node(TYPE_WANTS_EMPTY_PROVIDES_NONEMPTY)
+		val nodex1 = node(TYPE_QUOTE, next = listOf(nodex))
+		val nodex2 = node(TYPE_WANTS_EMPTY_PROVIDES_NONEMPTY, next = listOf(nodex1))
+		val nodex3 = node(TYPE_WANTS_NONEMPTY_PROVIDES_EMPTY, next = listOf(nodex2)) // also skipped
+		val nodex4 = node(TYPE_WANTS_NONEMPTY_PROVIDES_EMPTY, next = listOf(nodex3)) // skipped
 		val emit = emitNode(nodex4) // won't emit anything
 
 		val flow = relationalFlow(emit, nodex4, nodex3, nodex2, nodex1, nodex)
-		println(flow.nodes.joinToString("\n") { "${it.id}: ${it.descriptor.name}" })
+		println(flow.nodes.joinToString("\n") { "${it.id}: ${it.type.value}" })
 
 		runner.executeStartNode("receive empty input transitively", flow, emptyList())
 

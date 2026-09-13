@@ -1,8 +1,8 @@
 package me.snoty.integration.common.wiring.node.template
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import me.snoty.integration.common.wiring.node.NodeDescriptor
-import me.snoty.integration.common.wiring.node.scope
+import me.snoty.core.node.NodeType
+import me.snoty.core.node.scope
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.nio.file.FileSystems
@@ -13,10 +13,10 @@ object NodeTemplateUtils {
 	private val logger = KotlinLogging.logger {}
 
 	@OptIn(ExperimentalPathApi::class)
-	private fun provideNodeTemplates(descriptor: NodeDescriptor): Sequence<Path>? {
-		val nodeDirectory = "/node/${descriptor.namespace}/${descriptor.name}"
+	private fun provideNodeTemplates(nodeType: NodeType): Sequence<Path>? {
+		val nodeDirectory = "/node/${nodeType.value}"
 		val resource = javaClass.getResource(nodeDirectory) ?: return let {
-			logger.trace { "No node directory found for ${descriptor.id}" }
+			logger.trace { "No node directory found for $nodeType" }
 			null
 		}
 
@@ -33,23 +33,23 @@ object NodeTemplateUtils {
 		}
 
 		return root.walk().filter {
-			logger.trace { "Checking file ${it.name} for ${descriptor.id}" }
+			logger.trace { "Checking file ${it.name} for $nodeType" }
 			it.isRegularFile() && it.extension == "liquid"
 		}
 	}
 
-	fun nodeTemplatesModule(descriptor: NodeDescriptor) = module {
-		provideNodeTemplates(descriptor)
+	fun nodeTemplatesModule(nodeType: NodeType) = module {
+		provideNodeTemplates(nodeType)
 			?.forEach { templateFile ->
-				logger.debug { "Registering template ${templateFile.nameWithoutExtension} for ${descriptor.id}" }
+				logger.debug { "Registering template ${templateFile.nameWithoutExtension} for $nodeType" }
 
 				val cached = NodeTemplate(
-					node = descriptor,
+					node = nodeType,
 					name = templateFile.nameWithoutExtension,
 					template = templateFile.readText(),
 				)
 
-				scope(descriptor.scope) {
+				scope(nodeType.scope) {
 					factory<NodeTemplate>(named(templateFile.name)) {
 						val nodeMetadataFeatureFlags: NodeMetadataFeatureFlags = get()
 						if (nodeMetadataFeatureFlags.cacheNodeTemplates) {
@@ -59,6 +59,6 @@ object NodeTemplateUtils {
 						}
 					}
 				}
-			} ?: logger.trace { "Found no templates for ${descriptor.id}" }
+			} ?: logger.trace { "Found no templates for $nodeType" }
 	}
 }

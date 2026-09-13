@@ -10,8 +10,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 import me.snoty.backend.server.plugins.respondCaching
+import me.snoty.core.node.NodeType
 import me.snoty.integration.common.model.metadata.NodeMetadata
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeRegistry
 import me.snoty.integration.common.wiring.node.template.NodeMetadataFeatureFlags
 import me.snoty.integration.common.wiring.node.template.NodeTemplateRegistry
@@ -31,12 +31,12 @@ private fun Route.metadataEndpoint(featureFlags: NodeMetadataFeatureFlags, json:
 	val nodeRegistry: NodeRegistry = getDependency()
 
 	@Serializable
-	data class NodeDescription(val descriptor: NodeDescriptor, val metadata: NodeMetadata)
+	data class NodeDescription(val type: NodeType, val metadata: NodeMetadata)
 
 	fun computeMetadatas(): JsonElement {
 		logger.debug { "Computing node metadata" }
-		val nodeDescriptions = nodeRegistry.getMetadata().map { (descriptor, metadata) ->
-			NodeDescription(descriptor, metadata)
+		val nodeDescriptions = nodeRegistry.getMetadata().map { (nodeType, metadata) ->
+			NodeDescription(nodeType, metadata)
 		}
 		return json.encodeToJsonElement(nodeDescriptions)
 	}
@@ -63,12 +63,12 @@ private fun Route.templateEndpoint(featureFlags: NodeMetadataFeatureFlags, json:
 	val nodeTemplateRegistry: NodeTemplateRegistry = getDependency()
 
 	@Serializable
-	data class NodeTemplates(val descriptor: NodeDescriptor, val templates: Map<String, String>)
+	data class NodeTemplates(val type: NodeType, val templates: Map<String, String>)
 
 	fun computeTemplates(): JsonElement {
 		logger.debug { "Computing node templates" }
-		val nodeTemplates = nodeTemplateRegistry.getAllTemplates().map { (descriptor, templates) ->
-			NodeTemplates(descriptor, templates.associate {
+		val nodeTemplates = nodeTemplateRegistry.getAllTemplates().map { (nodeType, templates) ->
+			NodeTemplates(nodeType, templates.associate {
 				it.name to it.template
 			})
 		}

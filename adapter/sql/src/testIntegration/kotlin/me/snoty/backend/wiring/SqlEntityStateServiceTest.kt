@@ -25,7 +25,7 @@ import kotlin.uuid.Uuid
 class SqlEntityStateServiceTest : EntityStateServiceSpec({ NodeId(Uuid.random().toString()) }) {
 	private val flowTable = FlowTable(snotyJson {})
 	private val nodeTable = NodeTable(flowTable)
-	private val entityStateTable = EntityStateTable(nodeDescriptor, nodeTable)
+	private val entityStateTable = EntityStateTable(nodeType, nodeTable)
 
 	private val db = PostgresTest.getPostgresDatabase(
 		extraMigrations = listOf(

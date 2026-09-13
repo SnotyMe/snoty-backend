@@ -3,17 +3,17 @@ package me.snoty.backend.test
 import me.snoty.core.flow.FlowId
 import me.snoty.core.node.FlowNode
 import me.snoty.core.node.NodeId
+import me.snoty.core.node.NodeType
 import me.snoty.core.user.UserId
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeSettings
 import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
 fun node(
-	descriptor: NodeDescriptor,
-	name: String = descriptor.name,
+	type: String,
+	name: String = type,
 	settings: NodeSettings = EmptyNodeSettings(),
 	next: List<FlowNode> = emptyList(),
 	userId: UserId = UserId(Uuid.generateV7().toString()),
@@ -22,7 +22,7 @@ fun node(
 	id = NodeId(makeId()),
 	flowId = FlowId(makeId()),
 	userId = userId,
-	descriptor = descriptor,
+	type = NodeType(type),
 	name = name,
 	position = NodePosition(0, 0, 300, 200),
 	logLevel = null,

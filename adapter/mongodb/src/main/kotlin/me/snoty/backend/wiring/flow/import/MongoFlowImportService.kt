@@ -29,7 +29,7 @@ class MongoFlowImportService(
 			MongoNode(
 				flowId = createdFlow.objectId,
 				userId = userId,
-				descriptor = it.descriptor,
+				type = it.type,
 				name = it.name,
 				position = it.position,
 				settings = it.settings,

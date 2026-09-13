@@ -11,7 +11,7 @@ import me.snoty.backend.hooks.register
 import me.snoty.backend.utils.UnauthorizedException
 import me.snoty.backend.utils.getUserOrNull
 import me.snoty.backend.utils.respondStatus
-import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.core.node.NodeType
 import me.snoty.integration.common.wiring.node.NodeHandlerRouteFactory
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Provided
@@ -19,7 +19,7 @@ import org.koin.core.annotation.Provided
 @Factory
 internal class NodeHandlerRouteFactoryImpl(
     @Provided
-    private val nodeDescriptor: NodeDescriptor,
+    private val nodeType: NodeType,
     private val hookRegistry: HookRegistry,
 ) : NodeHandlerRouteFactory {
     val logger = KotlinLogging.logger {}
@@ -29,12 +29,12 @@ internal class NodeHandlerRouteFactoryImpl(
      */
     override operator fun invoke(route: String, method: HttpMethod, authenticated: Boolean, block: suspend RoutingContext.() -> Unit) =
         hookRegistry.register(NodeapiRoutesHook { routing ->
-            logger.debug { "Registering route for ${nodeDescriptor.id} node handler: $route" }
+            logger.debug { "Registering route for $nodeType handler: $route" }
 
-            fun Route.doRoute() = route("${nodeDescriptor.name}/$route") {
+            fun Route.doRoute() = route("${nodeType.value}/$route") {
                 method(method) {
                     handle {
-                        logger.debug { "Handling route for $nodeDescriptor node: $route" }
+                        logger.debug { "Handling route for $nodeType: $route" }
 
                         if (authenticated && call.getUserOrNull() == null) {
                             return@handle call.respondStatus(UnauthorizedException("User is not authenticated"))
@@ -43,7 +43,7 @@ internal class NodeHandlerRouteFactoryImpl(
                         block()
                     }
                 }.describe {
-                    tag("node:${nodeDescriptor.name}")
+                    tag("node:${nodeType.value}")
                 }
             }
 

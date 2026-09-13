@@ -4,7 +4,6 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import me.snoty.core.flow.FlowId
 import me.snoty.core.user.UserId
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.slf4j.event.Level
@@ -14,7 +13,7 @@ interface Node {
 	val id: NodeId
 	val flowId: FlowId
 	val userId: UserId
-	val descriptor: NodeDescriptor
+	val type: NodeType
 	val name: String
 	val logLevel: Level?
 	val position: NodePosition
@@ -38,7 +37,7 @@ data class FlowNode(
 	override val id: NodeId,
 	override val flowId: FlowId,
 	override val userId: UserId,
-	override val descriptor: NodeDescriptor,
+	override val type: NodeType,
 	override val name: String,
 	override val logLevel: Level?,
 	override val position: NodePosition,
@@ -53,7 +52,7 @@ data class StandaloneNode(
 	override val id: NodeId,
 	override val flowId: FlowId,
 	override val userId: UserId,
-	override val descriptor: NodeDescriptor,
+	override val type: NodeType,
 	override val name: String,
 	override val logLevel: Level?,
 	override val position: NodePosition,
@@ -67,7 +66,7 @@ fun StandaloneNode.toRelational(next: List<NodeId>?) = FlowNode(
 	id = id,
 	flowId = flowId,
 	userId = userId,
-	descriptor = descriptor,
+	type = type,
 	name = name,
 	logLevel = logLevel,
 	settings = settings,

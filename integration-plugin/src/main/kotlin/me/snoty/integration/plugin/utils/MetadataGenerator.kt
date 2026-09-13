@@ -4,6 +4,7 @@ import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import me.snoty.backend.wiring.node.metadataJson
+import me.snoty.core.node.NodeType
 import me.snoty.integration.common.annotation.ReceiveEmptyInput
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.metadata.Icon
@@ -16,7 +17,7 @@ fun generateMetadata(resolver: Resolver, clazz: KSClassDeclaration, node: Regist
 	val inputClass = resolver.resolveClassFromAnnotation(clazz, RegisterNode::inputType)
 	val outputClass = resolver.resolveClassFromAnnotation(clazz, RegisterNode::outputType)
 	val metadata = NodeMetadata(
-		descriptor = node.descriptor(clazz),
+		type = NodeType(node.name),
 		displayName = node.displayName,
 		icon = node.icon
 			.takeIf { it.name.isNotEmpty() }

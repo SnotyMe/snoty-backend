@@ -11,8 +11,8 @@ import me.snoty.backend.hooks.register
 import me.snoty.backend.utils.hackyEncodeToString
 import me.snoty.backend.wiring.node.NodeTable
 import me.snoty.core.node.Node
+import me.snoty.core.node.NodeType
 import me.snoty.integration.common.wiring.flow.NodeDeletedHook
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePersistenceFactory
 import me.snoty.integration.common.wiring.node.NodePersistenceService
 import org.jetbrains.exposed.v1.core.and
@@ -26,11 +26,11 @@ class SqlNodePersistenceService<T : Any>(
 	private val db: Database,
 	private val entityClass: KClass<T>,
 	private val json: Json,
-	descriptor: NodeDescriptor,
+	nodeType: NodeType,
 	name: String,
 	nodeTable: NodeTable,
 ) : NodePersistenceService<T>, KoinComponent {
-	private val nodePersistenceTable = NodePersistenceTable<T>(descriptor, name, nodeTable)
+	private val nodePersistenceTable = NodePersistenceTable<T>(nodeType, name, nodeTable)
 
 	override suspend fun persistEntity(node: Node, entityId: String, entity: T) {
 		nodePersistenceTable.upsert {
@@ -71,12 +71,12 @@ class SqlNodePersistenceService<T : Any>(
 class SqlNodePersistenceFactory(
 	private val database: Database,
 	private val hookRegistry: HookRegistry,
-	private val nodeDescriptor: NodeDescriptor,
+	private val nodeType: NodeType,
 	private val nodeTable: NodeTable,
 	private val json: Json,
 ) : NodePersistenceFactory, KoinComponent {
 	override fun <T : Any> create(name: String, entityClass: KClass<T>): NodePersistenceService<T> {
-		val service = SqlNodePersistenceService(database, entityClass, json, nodeDescriptor, name, nodeTable)
+		val service = SqlNodePersistenceService(database, entityClass, json, nodeType, name, nodeTable)
 		hookRegistry.register(NodeDeletedHook {
 			service.delete(it)
 		})

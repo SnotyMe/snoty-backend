@@ -11,9 +11,8 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.ksp.toClassName
-import me.snoty.backend.utils.orNull
+import me.snoty.core.node.NodeType
 import me.snoty.integration.common.annotation.RegisterNode
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 
@@ -33,4 +32,4 @@ inline fun <reified T : Any> Resolver.resolveClassFromAnnotation(declaringClass:
 inline fun <reified T : Annotation> KSAnnotated.hasAnnotation() = isAnnotationPresent(T::class)
 inline fun <reified T : Annotation> KSAnnotated.getAnnotation() = getAnnotationsByType(T::class).firstOrNull()
 
-fun RegisterNode.descriptor(clazz: KSClassDeclaration) = NodeDescriptor(namespace = namespace.orNull() ?: clazz.packageName.asString(), name = name)
+fun RegisterNode.type() = NodeType(value = name)

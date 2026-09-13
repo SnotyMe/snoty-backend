@@ -1,6 +1,6 @@
 package me.snoty.backend.database.mongo
 
-import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.core.node.NodeType
 
-val NodeDescriptor.mongoCollectionPrefix: String
-	get() = "nodes:$namespace:$name"
+val NodeType.mongoCollectionPrefix: String
+	get() = "nodes:$value"

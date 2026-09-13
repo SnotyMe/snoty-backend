@@ -1,11 +1,11 @@
 package me.snoty.integration.common.wiring.node.template
 
 import kotlinx.serialization.Serializable
-import me.snoty.integration.common.wiring.node.NodeDescriptor
+import me.snoty.core.node.NodeType
 
 @Serializable
 data class NodeTemplate(
-	val node: NodeDescriptor,
+	val node: NodeType,
 	val name: String,
 	val template: String,
 )

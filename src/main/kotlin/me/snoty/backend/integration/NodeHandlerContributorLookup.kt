@@ -88,7 +88,7 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 			koin.loadModules(contributor.koinModules + module {
 				scope(scope.scopeQualifier) {
 					scoped { metadata }
-					scoped { metadata.descriptor }
+					scoped { metadata.type }
 				}
 			})
 
@@ -104,12 +104,12 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 
 		val handler: NodeHandler = scope.get(
 			clazz = contributor.nodeHandlerClass,
-			parameters = { parametersOf(metadata, metadata.descriptor) }
+			parameters = { parametersOf(metadata, metadata.type) }
 		)
 
 		nodeRegistry.registerHandler(metadata, handler)
 
-		logger.info { "Successfully enabled ${metadata.descriptor.id}!" }
+		logger.info { "Successfully enabled ${metadata.type.value} Node Handler!" }
 	}
 
 	private fun prettify(e: Throwable): Throwable = when (val cause = e.cause) {
@@ -120,7 +120,7 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 	}
 
 	private fun reportStartupFailure(metadata: NodeMetadata, exception: Throwable?): Boolean {
-		val nodeName = metadata.descriptor.id
+		val nodeName = metadata.type
 		if (exception is ConfigException) {
 			var fatal: Boolean? = false
 			when (val fail = exception.fail) {

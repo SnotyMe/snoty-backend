@@ -9,8 +9,8 @@ annotation class RegisterNode(
 	val displayName: String,
 	val icon: Icon = Icon(),
 	/**
-	 * Namespace unique node name / id, in snake_case.
-	 * Must only exist once within your namespace or side effects will occur.
+	 * Globally unique node type, in snake_case.
+	 * Must only exist once instance-wide or side effects will occur.
 	 */
 	val name: String,
 	/**

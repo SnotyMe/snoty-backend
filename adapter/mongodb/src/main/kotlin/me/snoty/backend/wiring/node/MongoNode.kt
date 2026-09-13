@@ -3,9 +3,9 @@ package me.snoty.backend.wiring.node
 import me.snoty.backend.database.mongo.toFlowId
 import me.snoty.backend.database.mongo.toNodeId
 import me.snoty.core.node.FlowNode
+import me.snoty.core.node.NodeType
 import me.snoty.core.node.StandaloneNode
 import me.snoty.core.user.UserId
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePosition
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.Document
@@ -23,7 +23,7 @@ data class MongoNode(
 	val _id: ObjectId = ObjectId(),
 	val flowId: ObjectId,
 	val userId: UserId,
-	val descriptor: NodeDescriptor,
+	val type: NodeType,
 	val name: String,
 	val logLevel: Level? = null,
 	val position: NodePosition,
@@ -39,7 +39,7 @@ fun MongoNode.toStandalone(
 	id = _id.toNodeId(),
 	flowId = flowId.toFlowId(),
 	userId = userId,
-	descriptor = descriptor,
+	type = type,
 	name = name,
 	logLevel = logLevel,
 	position = position,
@@ -54,7 +54,7 @@ fun MongoNode.toRelational(
 	id = _id.toNodeId(),
 	flowId = flowId.toFlowId(),
 	userId = userId,
-	descriptor = descriptor,
+	type = type,
 	name = name,
 	logLevel = logLevel,
 	position = position,

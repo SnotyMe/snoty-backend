@@ -1173,22 +1173,22 @@ public final class me/snoty/backend/wiring/flow/ExportFlow$Companion {
 
 public final class me/snoty/backend/wiring/flow/ExportNode {
 	public static final field Companion Lme/snoty/backend/wiring/flow/ExportNode$Companion;
-	public fun <init> (Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lme/snoty/integration/common/wiring/node/NodeDescriptor;
+	public final fun component2-EVnYJLk ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
 	public final fun component4 ()Lme/snoty/integration/common/wiring/node/NodePosition;
 	public final fun component5 ()Lorg/bson/Document;
 	public final fun component6 ()Ljava/util/List;
-	public final fun copy (Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/util/List;)Lme/snoty/backend/wiring/flow/ExportNode;
-	public static synthetic fun copy$default (Lme/snoty/backend/wiring/flow/ExportNode;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/util/List;ILjava/lang/Object;)Lme/snoty/backend/wiring/flow/ExportNode;
+	public final fun copy-crUIbRM (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/util/List;)Lme/snoty/backend/wiring/flow/ExportNode;
+	public static synthetic fun copy-crUIbRM$default (Lme/snoty/backend/wiring/flow/ExportNode;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/util/List;ILjava/lang/Object;)Lme/snoty/backend/wiring/flow/ExportNode;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getDescriptor ()Lme/snoty/integration/common/wiring/node/NodeDescriptor;
 	public final fun getId ()Ljava/lang/String;
 	public final fun getName ()Ljava/lang/String;
 	public final fun getNext ()Ljava/util/List;
 	public final fun getPosition ()Lme/snoty/integration/common/wiring/node/NodePosition;
 	public final fun getSettings ()Lorg/bson/Document;
+	public final fun getType-EVnYJLk ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -1235,28 +1235,48 @@ public final class me/snoty/backend/wiring/flow/ImportFlow$Companion {
 
 public final class me/snoty/backend/wiring/flow/ImportNode {
 	public static final field Companion Lme/snoty/backend/wiring/flow/ImportNode$Companion;
-	public fun <init> (Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/lang/String;Ljava/util/List;)V
-	public synthetic fun <init> (Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lme/snoty/backend/wiring/flow/ImportNodeDescriptor;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lme/snoty/backend/wiring/flow/ImportNodeDescriptor;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lme/snoty/integration/common/wiring/node/NodeDescriptor;
-	public final fun component3 ()Lme/snoty/integration/common/wiring/node/NodePosition;
-	public final fun component4 ()Lorg/bson/Document;
-	public final fun component5 ()Ljava/lang/String;
-	public final fun component6 ()Ljava/util/List;
-	public final fun copy (Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/lang/String;Ljava/util/List;)Lme/snoty/backend/wiring/flow/ImportNode;
-	public static synthetic fun copy$default (Lme/snoty/backend/wiring/flow/ImportNode;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lme/snoty/backend/wiring/flow/ImportNode;
+	public final fun component2 ()Lme/snoty/backend/wiring/flow/ImportNodeDescriptor;
+	public final fun component3-EVnYJLk ()Ljava/lang/String;
+	public final fun component4 ()Lme/snoty/integration/common/wiring/node/NodePosition;
+	public final fun component5 ()Lorg/bson/Document;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/util/List;
+	public final fun copy-iCzHdLg (Ljava/lang/String;Lme/snoty/backend/wiring/flow/ImportNodeDescriptor;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/lang/String;Ljava/util/List;)Lme/snoty/backend/wiring/flow/ImportNode;
+	public static synthetic fun copy-iCzHdLg$default (Lme/snoty/backend/wiring/flow/ImportNode;Ljava/lang/String;Lme/snoty/backend/wiring/flow/ImportNodeDescriptor;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lme/snoty/backend/wiring/flow/ImportNode;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getDescriptor ()Lme/snoty/integration/common/wiring/node/NodeDescriptor;
+	public final fun getDescriptor ()Lme/snoty/backend/wiring/flow/ImportNodeDescriptor;
 	public final fun getId ()Ljava/lang/String;
 	public final fun getName ()Ljava/lang/String;
 	public final fun getNext ()Ljava/util/List;
 	public final fun getPosition ()Lme/snoty/integration/common/wiring/node/NodePosition;
 	public final fun getSettings ()Lorg/bson/Document;
+	public final fun getType-EVnYJLk ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
 public final class me/snoty/backend/wiring/flow/ImportNode$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class me/snoty/backend/wiring/flow/ImportNodeDescriptor {
+	public static final field Companion Lme/snoty/backend/wiring/flow/ImportNodeDescriptor$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lme/snoty/backend/wiring/flow/ImportNodeDescriptor;
+	public static synthetic fun copy$default (Lme/snoty/backend/wiring/flow/ImportNodeDescriptor;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lme/snoty/backend/wiring/flow/ImportNodeDescriptor;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getName ()Ljava/lang/String;
+	public final fun getNamespace ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/flow/ImportNodeDescriptor$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -1404,20 +1424,20 @@ public final class me/snoty/backend/wiring/node/NodeRegistryImpl : me/snoty/inte
 	public fun <init> ()V
 	public fun getHandlers ()Ljava/util/Map;
 	public fun getMetadata ()Ljava/util/Map;
-	public fun getMetadata (Lme/snoty/integration/common/wiring/node/NodeDescriptor;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
-	public fun getMetadataOrNull (Lme/snoty/integration/common/wiring/node/NodeDescriptor;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
-	public fun lookupDescriptorsByPosition (Lme/snoty/integration/common/model/NodePosition;)Ljava/util/List;
-	public fun lookupHandler (Lme/snoty/integration/common/wiring/node/NodeDescriptor;)Lme/snoty/integration/common/wiring/node/NodeHandler;
+	public fun getMetadata-d5fXedA (Ljava/lang/String;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
+	public fun getMetadataOrNull-d5fXedA (Ljava/lang/String;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
+	public fun lookupHandler-d5fXedA (Ljava/lang/String;)Lme/snoty/integration/common/wiring/node/NodeHandler;
+	public fun lookupTypesByPosition (Lme/snoty/integration/common/model/NodePosition;)Ljava/util/List;
 	public fun registerHandler (Lme/snoty/integration/common/model/metadata/NodeMetadata;Lme/snoty/integration/common/wiring/node/NodeHandler;)V
 }
 
 public abstract interface class me/snoty/backend/wiring/node/NodeSettingsDeserializationService {
-	public abstract fun deserializeOrInvalid (Lme/snoty/integration/common/wiring/node/NodeDescriptor;Lorg/bson/Document;)Lme/snoty/integration/common/wiring/node/NodeSettings;
+	public abstract fun deserializeOrInvalid-xODx8-E (Ljava/lang/String;Lorg/bson/Document;)Lme/snoty/integration/common/wiring/node/NodeSettings;
 }
 
 public final class me/snoty/backend/wiring/node/NodeSettingsDeserializationServiceImpl : me/snoty/backend/wiring/node/NodeSettingsDeserializationService {
 	public fun <init> (Lme/snoty/integration/common/wiring/node/NodeRegistry;Lorg/bson/codecs/configuration/CodecRegistry;)V
-	public fun deserializeOrInvalid (Lme/snoty/integration/common/wiring/node/NodeDescriptor;Lorg/bson/Document;)Lme/snoty/integration/common/wiring/node/NodeSettings;
+	public fun deserializeOrInvalid-xODx8-E (Ljava/lang/String;Lorg/bson/Document;)Lme/snoty/integration/common/wiring/node/NodeSettings;
 }
 
 public final class me/snoty/core/flow/FlowId {
@@ -1522,24 +1542,23 @@ public final class me/snoty/core/flow/WorkflowWithNodes$Companion {
 
 public final class me/snoty/core/node/FlowNode : me/snoty/core/node/NodeWithSettings {
 	public static final field Companion Lme/snoty/core/node/FlowNode$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lme/snoty/integration/common/wiring/node/NodeSettings;Lkotlin/time/Instant;Lkotlin/time/Instant;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lme/snoty/integration/common/wiring/node/NodeSettings;Lkotlin/time/Instant;Lkotlin/time/Instant;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lme/snoty/integration/common/wiring/node/NodeSettings;Lkotlin/time/Instant;Lkotlin/time/Instant;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lme/snoty/integration/common/wiring/node/NodeSettings;Lkotlin/time/Instant;Lkotlin/time/Instant;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-cGcz6qw ()Ljava/lang/String;
 	public final fun component10 ()Lkotlin/time/Instant;
 	public final fun component11 ()Ljava/util/List;
 	public final fun component2-L9EeXao ()Ljava/lang/String;
 	public final fun component3-nVF4Fqw ()Ljava/lang/String;
-	public final fun component4 ()Lme/snoty/integration/common/wiring/node/NodeDescriptor;
+	public final fun component4-EVnYJLk ()Ljava/lang/String;
 	public final fun component5 ()Ljava/lang/String;
 	public final fun component6 ()Lorg/slf4j/event/Level;
 	public final fun component7 ()Lme/snoty/integration/common/wiring/node/NodePosition;
 	public final fun component8 ()Lme/snoty/integration/common/wiring/node/NodeSettings;
 	public final fun component9 ()Lkotlin/time/Instant;
-	public final fun copy-FMergb0 (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lme/snoty/integration/common/wiring/node/NodeSettings;Lkotlin/time/Instant;Lkotlin/time/Instant;Ljava/util/List;)Lme/snoty/core/node/FlowNode;
-	public static synthetic fun copy-FMergb0$default (Lme/snoty/core/node/FlowNode;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lme/snoty/integration/common/wiring/node/NodeSettings;Lkotlin/time/Instant;Lkotlin/time/Instant;Ljava/util/List;ILjava/lang/Object;)Lme/snoty/core/node/FlowNode;
+	public final fun copy-rqII0oc (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lme/snoty/integration/common/wiring/node/NodeSettings;Lkotlin/time/Instant;Lkotlin/time/Instant;Ljava/util/List;)Lme/snoty/core/node/FlowNode;
+	public static synthetic fun copy-rqII0oc$default (Lme/snoty/core/node/FlowNode;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lme/snoty/integration/common/wiring/node/NodeSettings;Lkotlin/time/Instant;Lkotlin/time/Instant;Ljava/util/List;ILjava/lang/Object;)Lme/snoty/core/node/FlowNode;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getCreatedAt ()Lkotlin/time/Instant;
-	public fun getDescriptor ()Lme/snoty/integration/common/wiring/node/NodeDescriptor;
 	public fun getFlowId-L9EeXao ()Ljava/lang/String;
 	public fun getId-cGcz6qw ()Ljava/lang/String;
 	public fun getLogLevel ()Lorg/slf4j/event/Level;
@@ -1548,6 +1567,7 @@ public final class me/snoty/core/node/FlowNode : me/snoty/core/node/NodeWithSett
 	public final fun getNext ()Ljava/util/List;
 	public fun getPosition ()Lme/snoty/integration/common/wiring/node/NodePosition;
 	public fun getSettings ()Lme/snoty/integration/common/wiring/node/NodeSettings;
+	public fun getType-EVnYJLk ()Ljava/lang/String;
 	public fun getUserId-nVF4Fqw ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -1559,13 +1579,13 @@ public final class me/snoty/core/node/FlowNode$Companion {
 
 public abstract interface class me/snoty/core/node/Node {
 	public abstract fun getCreatedAt ()Lkotlin/time/Instant;
-	public abstract fun getDescriptor ()Lme/snoty/integration/common/wiring/node/NodeDescriptor;
 	public abstract fun getFlowId-L9EeXao ()Ljava/lang/String;
 	public abstract fun getId-cGcz6qw ()Ljava/lang/String;
 	public abstract fun getLogLevel ()Lorg/slf4j/event/Level;
 	public abstract fun getModifiedAt ()Lkotlin/time/Instant;
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun getPosition ()Lme/snoty/integration/common/wiring/node/NodePosition;
+	public abstract fun getType-EVnYJLk ()Ljava/lang/String;
 	public abstract fun getUserId-nVF4Fqw ()Ljava/lang/String;
 }
 
@@ -1592,28 +1612,51 @@ public final class me/snoty/core/node/NodeKt {
 	public static final fun toRelational (Lme/snoty/core/node/StandaloneNode;Ljava/util/List;)Lme/snoty/core/node/FlowNode;
 }
 
+public final class me/snoty/core/node/NodeType {
+	public static final field Companion Lme/snoty/core/node/NodeType$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lme/snoty/core/node/NodeType;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final class me/snoty/core/node/NodeType$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class me/snoty/core/node/NodeTypeKt {
+	public static final fun getScope-d5fXedA (Ljava/lang/String;)Lorg/koin/core/qualifier/StringQualifier;
+	public static final fun setAttribute-OtaIjYE (Lio/opentelemetry/api/trace/SpanBuilder;Ljava/lang/String;Ljava/lang/String;)V
+}
+
 public abstract interface class me/snoty/core/node/NodeWithSettings : me/snoty/core/node/Node {
 	public abstract fun getSettings ()Lme/snoty/integration/common/wiring/node/NodeSettings;
 }
 
 public final class me/snoty/core/node/StandaloneNode : me/snoty/core/node/NodeWithSettings {
 	public static final field Companion Lme/snoty/core/node/StandaloneNode$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lkotlin/time/Instant;Lkotlin/time/Instant;Lme/snoty/integration/common/wiring/node/NodeSettings;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lkotlin/time/Instant;Lkotlin/time/Instant;Lme/snoty/integration/common/wiring/node/NodeSettings;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-cGcz6qw ()Ljava/lang/String;
 	public final fun component10 ()Lme/snoty/integration/common/wiring/node/NodeSettings;
 	public final fun component2-L9EeXao ()Ljava/lang/String;
 	public final fun component3-nVF4Fqw ()Ljava/lang/String;
-	public final fun component4 ()Lme/snoty/integration/common/wiring/node/NodeDescriptor;
+	public final fun component4-EVnYJLk ()Ljava/lang/String;
 	public final fun component5 ()Ljava/lang/String;
 	public final fun component6 ()Lorg/slf4j/event/Level;
 	public final fun component7 ()Lme/snoty/integration/common/wiring/node/NodePosition;
 	public final fun component8 ()Lkotlin/time/Instant;
 	public final fun component9 ()Lkotlin/time/Instant;
-	public final fun copy-xUpwKME (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lkotlin/time/Instant;Lkotlin/time/Instant;Lme/snoty/integration/common/wiring/node/NodeSettings;)Lme/snoty/core/node/StandaloneNode;
-	public static synthetic fun copy-xUpwKME$default (Lme/snoty/core/node/StandaloneNode;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lkotlin/time/Instant;Lkotlin/time/Instant;Lme/snoty/integration/common/wiring/node/NodeSettings;ILjava/lang/Object;)Lme/snoty/core/node/StandaloneNode;
+	public final fun copy-3JjxIsU (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lkotlin/time/Instant;Lkotlin/time/Instant;Lme/snoty/integration/common/wiring/node/NodeSettings;)Lme/snoty/core/node/StandaloneNode;
+	public static synthetic fun copy-3JjxIsU$default (Lme/snoty/core/node/StandaloneNode;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lkotlin/time/Instant;Lkotlin/time/Instant;Lme/snoty/integration/common/wiring/node/NodeSettings;ILjava/lang/Object;)Lme/snoty/core/node/StandaloneNode;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getCreatedAt ()Lkotlin/time/Instant;
-	public fun getDescriptor ()Lme/snoty/integration/common/wiring/node/NodeDescriptor;
 	public fun getFlowId-L9EeXao ()Ljava/lang/String;
 	public fun getId-cGcz6qw ()Ljava/lang/String;
 	public fun getLogLevel ()Lorg/slf4j/event/Level;
@@ -1621,6 +1664,7 @@ public final class me/snoty/core/node/StandaloneNode : me/snoty/core/node/NodeWi
 	public fun getName ()Ljava/lang/String;
 	public fun getPosition ()Lme/snoty/integration/common/wiring/node/NodePosition;
 	public fun getSettings ()Lme/snoty/integration/common/wiring/node/NodeSettings;
+	public fun getType-EVnYJLk ()Ljava/lang/String;
 	public fun getUserId-nVF4Fqw ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -1699,7 +1743,7 @@ public final class me/snoty/integration/common/config/NodePatch {
 
 public abstract interface class me/snoty/integration/common/config/NodeService {
 	public abstract fun connect (Lme/snoty/core/node/Node;Lme/snoty/core/node/Node;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun create-xDscWds (Ljava/lang/String;Lme/snoty/core/flow/Workflow;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Lme/snoty/integration/common/wiring/node/NodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun create-4Cl7p7Y (Ljava/lang/String;Lme/snoty/core/flow/Workflow;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Lme/snoty/integration/common/wiring/node/NodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun delete (Lme/snoty/core/node/Node;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun disconnect (Lme/snoty/core/node/Node;Lme/snoty/core/node/Node;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun get-m1iW5FE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -2168,21 +2212,20 @@ public final class me/snoty/integration/common/model/metadata/NodeFieldDetails$P
 
 public final class me/snoty/integration/common/model/metadata/NodeMetadata {
 	public static final field Companion Lme/snoty/integration/common/model/metadata/NodeMetadata$Companion;
-	public fun <init> (Ljava/lang/String;Lme/snoty/integration/common/model/metadata/Icon;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Lme/snoty/integration/common/model/NodePosition;Ljava/util/List;Lkotlin/reflect/KClass;Ljava/util/List;ZLjava/util/List;)V
-	public synthetic fun <init> (Ljava/lang/String;Lme/snoty/integration/common/model/metadata/Icon;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Lme/snoty/integration/common/model/NodePosition;Ljava/util/List;Lkotlin/reflect/KClass;Ljava/util/List;ZLjava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lme/snoty/integration/common/model/metadata/Icon;Ljava/lang/String;Lme/snoty/integration/common/model/NodePosition;Ljava/util/List;Lkotlin/reflect/KClass;Ljava/util/List;ZLjava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lme/snoty/integration/common/model/metadata/Icon;Ljava/lang/String;Lme/snoty/integration/common/model/NodePosition;Ljava/util/List;Lkotlin/reflect/KClass;Ljava/util/List;ZLjava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Lme/snoty/integration/common/model/metadata/Icon;
-	public final fun component3 ()Lme/snoty/integration/common/wiring/node/NodeDescriptor;
+	public final fun component3-EVnYJLk ()Ljava/lang/String;
 	public final fun component4 ()Lme/snoty/integration/common/model/NodePosition;
 	public final fun component5 ()Ljava/util/List;
 	public final fun component6 ()Lkotlin/reflect/KClass;
 	public final fun component7 ()Ljava/util/List;
 	public final fun component8 ()Z
 	public final fun component9 ()Ljava/util/List;
-	public final fun copy (Ljava/lang/String;Lme/snoty/integration/common/model/metadata/Icon;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Lme/snoty/integration/common/model/NodePosition;Ljava/util/List;Lkotlin/reflect/KClass;Ljava/util/List;ZLjava/util/List;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/model/metadata/NodeMetadata;Ljava/lang/String;Lme/snoty/integration/common/model/metadata/Icon;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Lme/snoty/integration/common/model/NodePosition;Ljava/util/List;Lkotlin/reflect/KClass;Ljava/util/List;ZLjava/util/List;ILjava/lang/Object;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
+	public final fun copy-Ou2TtAk (Ljava/lang/String;Lme/snoty/integration/common/model/metadata/Icon;Ljava/lang/String;Lme/snoty/integration/common/model/NodePosition;Ljava/util/List;Lkotlin/reflect/KClass;Ljava/util/List;ZLjava/util/List;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
+	public static synthetic fun copy-Ou2TtAk$default (Lme/snoty/integration/common/model/metadata/NodeMetadata;Ljava/lang/String;Lme/snoty/integration/common/model/metadata/Icon;Ljava/lang/String;Lme/snoty/integration/common/model/NodePosition;Ljava/util/List;Lkotlin/reflect/KClass;Ljava/util/List;ZLjava/util/List;ILjava/lang/Object;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getDescriptor ()Lme/snoty/integration/common/wiring/node/NodeDescriptor;
 	public final fun getDisplayName ()Ljava/lang/String;
 	public final fun getIcon ()Lme/snoty/integration/common/model/metadata/Icon;
 	public final fun getInput ()Ljava/util/List;
@@ -2191,6 +2234,7 @@ public final class me/snoty/integration/common/model/metadata/NodeMetadata {
 	public final fun getReceiveEmptyInput ()Z
 	public final fun getSettings ()Ljava/util/List;
 	public final fun getSettingsClass ()Lkotlin/reflect/KClass;
+	public final fun getType-EVnYJLk ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -2501,30 +2545,6 @@ public final class me/snoty/integration/common/wiring/node/InvalidNodeSettings$C
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class me/snoty/integration/common/wiring/node/NodeDescriptor {
-	public static final field Companion Lme/snoty/integration/common/wiring/node/NodeDescriptor$Companion;
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lme/snoty/integration/common/wiring/node/NodeDescriptor;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/wiring/node/NodeDescriptor;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lme/snoty/integration/common/wiring/node/NodeDescriptor;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getId ()Ljava/lang/String;
-	public final fun getName ()Ljava/lang/String;
-	public final fun getNamespace ()Ljava/lang/String;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/wiring/node/NodeDescriptor$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class me/snoty/integration/common/wiring/node/NodeDescriptorKt {
-	public static final fun getScope (Lme/snoty/integration/common/wiring/node/NodeDescriptor;)Lorg/koin/core/qualifier/StringQualifier;
-	public static final fun setAttribute (Lio/opentelemetry/api/trace/SpanBuilder;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodeDescriptor;)V
-}
-
 public abstract interface class me/snoty/integration/common/wiring/node/NodeHandler {
 	public abstract fun process (Lme/snoty/integration/common/wiring/NodeHandleContext;Lme/snoty/core/node/NodeWithSettings;Ljava/util/Collection;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
@@ -2551,7 +2571,7 @@ public final class me/snoty/integration/common/wiring/node/NodeHandlerRouteFacto
 }
 
 public final class me/snoty/integration/common/wiring/node/NodeHandlerRouteKt {
-	public static final fun buildHandlerNodeApiUrl (Lme/snoty/backend/config/Config;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Ljava/lang/String;)Ljava/lang/String;
+	public static final fun buildHandlerNodeApiUrl-bAk4oQI (Lme/snoty/backend/config/Config;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 }
 
 public abstract interface class me/snoty/integration/common/wiring/node/NodePersistenceFactory {
@@ -2590,16 +2610,16 @@ public final class me/snoty/integration/common/wiring/node/NodePosition$Companio
 public abstract interface class me/snoty/integration/common/wiring/node/NodeRegistry {
 	public abstract fun getHandlers ()Ljava/util/Map;
 	public abstract fun getMetadata ()Ljava/util/Map;
-	public fun getMetadata (Lme/snoty/integration/common/wiring/node/NodeDescriptor;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
-	public fun getMetadataOrNull (Lme/snoty/integration/common/wiring/node/NodeDescriptor;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
-	public abstract fun lookupDescriptorsByPosition (Lme/snoty/integration/common/model/NodePosition;)Ljava/util/List;
-	public abstract fun lookupHandler (Lme/snoty/integration/common/wiring/node/NodeDescriptor;)Lme/snoty/integration/common/wiring/node/NodeHandler;
+	public fun getMetadata-d5fXedA (Ljava/lang/String;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
+	public fun getMetadataOrNull-d5fXedA (Ljava/lang/String;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
+	public abstract fun lookupHandler-d5fXedA (Ljava/lang/String;)Lme/snoty/integration/common/wiring/node/NodeHandler;
+	public abstract fun lookupTypesByPosition (Lme/snoty/integration/common/model/NodePosition;)Ljava/util/List;
 	public abstract fun registerHandler (Lme/snoty/integration/common/model/metadata/NodeMetadata;Lme/snoty/integration/common/wiring/node/NodeHandler;)V
 }
 
 public final class me/snoty/integration/common/wiring/node/NodeRegistry$DefaultImpls {
-	public static fun getMetadata (Lme/snoty/integration/common/wiring/node/NodeRegistry;Lme/snoty/integration/common/wiring/node/NodeDescriptor;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
-	public static fun getMetadataOrNull (Lme/snoty/integration/common/wiring/node/NodeRegistry;Lme/snoty/integration/common/wiring/node/NodeDescriptor;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
+	public static fun getMetadata-d5fXedA (Lme/snoty/integration/common/wiring/node/NodeRegistry;Ljava/lang/String;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
+	public static fun getMetadataOrNull-d5fXedA (Lme/snoty/integration/common/wiring/node/NodeRegistry;Ljava/lang/String;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
 }
 
 public abstract interface class me/snoty/integration/common/wiring/node/NodeRouteFactory {
@@ -2619,7 +2639,7 @@ public abstract interface class me/snoty/integration/common/wiring/node/NodeSett
 }
 
 public final class me/snoty/integration/common/wiring/node/NodeSettingsKt {
-	public static final fun tryDeserializeNodeSettings (Lme/snoty/integration/common/wiring/node/NodeDescriptor;Lme/snoty/integration/common/wiring/node/NodeRegistry;Lkotlin/jvm/functions/Function1;)Lme/snoty/integration/common/wiring/node/NodeSettings;
+	public static final fun tryDeserializeNodeSettings-ReG42h4 (Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodeRegistry;Lkotlin/jvm/functions/Function1;)Lme/snoty/integration/common/wiring/node/NodeSettings;
 }
 
 public abstract interface class me/snoty/integration/common/wiring/node/template/NodeMetadataFeatureFlags {
@@ -2629,15 +2649,15 @@ public abstract interface class me/snoty/integration/common/wiring/node/template
 
 public final class me/snoty/integration/common/wiring/node/template/NodeTemplate {
 	public static final field Companion Lme/snoty/integration/common/wiring/node/template/NodeTemplate$Companion;
-	public fun <init> (Lme/snoty/integration/common/wiring/node/NodeDescriptor;Ljava/lang/String;Ljava/lang/String;)V
-	public final fun component1 ()Lme/snoty/integration/common/wiring/node/NodeDescriptor;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-EVnYJLk ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Lme/snoty/integration/common/wiring/node/NodeDescriptor;Ljava/lang/String;Ljava/lang/String;)Lme/snoty/integration/common/wiring/node/template/NodeTemplate;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/wiring/node/template/NodeTemplate;Lme/snoty/integration/common/wiring/node/NodeDescriptor;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lme/snoty/integration/common/wiring/node/template/NodeTemplate;
+	public final fun copy-ReG42h4 (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lme/snoty/integration/common/wiring/node/template/NodeTemplate;
+	public static synthetic fun copy-ReG42h4$default (Lme/snoty/integration/common/wiring/node/template/NodeTemplate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lme/snoty/integration/common/wiring/node/template/NodeTemplate;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getName ()Ljava/lang/String;
-	public final fun getNode ()Lme/snoty/integration/common/wiring/node/NodeDescriptor;
+	public final fun getNode-EVnYJLk ()Ljava/lang/String;
 	public final fun getTemplate ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -2653,6 +2673,6 @@ public abstract interface class me/snoty/integration/common/wiring/node/template
 
 public final class me/snoty/integration/common/wiring/node/template/NodeTemplateUtils {
 	public static final field INSTANCE Lme/snoty/integration/common/wiring/node/template/NodeTemplateUtils;
-	public final fun nodeTemplatesModule (Lme/snoty/integration/common/wiring/node/NodeDescriptor;)Lorg/koin/core/module/Module;
+	public final fun nodeTemplatesModule-d5fXedA (Ljava/lang/String;)Lorg/koin/core/module/Module;
 }
 

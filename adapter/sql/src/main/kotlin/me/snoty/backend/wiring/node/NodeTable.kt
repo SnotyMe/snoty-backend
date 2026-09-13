@@ -4,12 +4,16 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import me.snoty.backend.database.sql.utils.nodeId
+import me.snoty.backend.database.sql.utils.nodeType
 import me.snoty.backend.database.sql.utils.rawJsonb
 import me.snoty.backend.database.sql.utils.userId
 import me.snoty.backend.wiring.flow.FlowTable
 import me.snoty.core.node.NodeId
 import me.snoty.core.node.StandaloneNode
-import me.snoty.integration.common.wiring.node.*
+import me.snoty.integration.common.wiring.node.NodePosition
+import me.snoty.integration.common.wiring.node.NodeRegistry
+import me.snoty.integration.common.wiring.node.NodeSettings
+import me.snoty.integration.common.wiring.node.tryDeserializeNodeSettings
 import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.Table
@@ -30,8 +34,12 @@ class NodeTable(flowTable: FlowTable) : IdTable<NodeId>("node") {
 	val flowId = reference("flow_id", flowTable, onDelete = ReferenceOption.CASCADE)
 	val userId = userId("user_id")
 
-	val descriptor_namespace = text("descriptor_namespace")
-	val descriptor_name = text("descriptor_name")
+	@Deprecated("Use type instead - kept mapped to prevent data loss until the new mapping is verified", level = DeprecationLevel.ERROR)
+	private val descriptor_namespace = text("descriptor_namespace").nullable()
+	@Deprecated("Use type instead - kept mapped to prevent data loss until the new mapping is verified", level = DeprecationLevel.ERROR)
+	private val descriptor_name = text("descriptor_name").nullable()
+
+	val type = nodeType("type")
 	val name = text("name")
 
 	val logLevel = enumerationByName("log_level", 10, Level::class).nullable()
@@ -48,13 +56,11 @@ class NodeTable(flowTable: FlowTable) : IdTable<NodeId>("node") {
 
 @OptIn(InternalSerializationApi::class)
 fun ResultRow.toStandalone(nodeTable: NodeTable, json: Json, nodeRegistry: NodeRegistry): StandaloneNode {
-	val descriptor = NodeDescriptor(namespace = this[nodeTable.descriptor_namespace], name = this[nodeTable.descriptor_name])
-
 	return StandaloneNode(
 		id = this[nodeTable.id].value,
 		flowId = this[nodeTable.flowId].value,
 		userId = this[nodeTable.userId],
-		descriptor = descriptor,
+		type = this[nodeTable.type],
 		name = this[nodeTable.name],
 		logLevel = this[nodeTable.logLevel],
 		position = NodePosition(
@@ -65,7 +71,7 @@ fun ResultRow.toStandalone(nodeTable: NodeTable, json: Json, nodeRegistry: NodeR
 		),
 		createdAt = this[nodeTable.createdAt],
 		modifiedAt = this[nodeTable.modifiedAt],
-		settings = tryDeserializeNodeSettings(descriptor, nodeRegistry) {
+		settings = tryDeserializeNodeSettings(this[nodeTable.type], nodeRegistry) {
 			json.decodeFromString(it.serializer(), this[nodeTable.settings])
 		}
 	)

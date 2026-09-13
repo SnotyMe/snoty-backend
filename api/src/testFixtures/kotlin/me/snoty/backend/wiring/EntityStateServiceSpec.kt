@@ -9,6 +9,7 @@ import me.snoty.backend.utils.bson.getIdAsString
 import me.snoty.core.flow.WorkflowSettings
 import me.snoty.core.node.Node
 import me.snoty.core.node.NodeId
+import me.snoty.core.node.NodeType
 import me.snoty.integration.common.config.NodeService
 import me.snoty.integration.common.diff.Change
 import me.snoty.integration.common.diff.DiffResult
@@ -16,7 +17,6 @@ import me.snoty.integration.common.diff.EntityStateService
 import me.snoty.integration.common.diff.checksum
 import me.snoty.integration.common.wiring.flow.FlowService
 import me.snoty.integration.common.wiring.node.EmptyNodeSettings
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodePosition
 import org.bson.Document
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -32,13 +32,13 @@ abstract class EntityStateServiceSpec(val makeId: () -> NodeId) {
 	abstract val nodeService: NodeService
 	abstract val flowService: FlowService
 
-	protected val nodeDescriptor = NodeDescriptor(javaClass.packageName, INTEGRATION_NAME)
-	private val flow by lazy { runBlocking { flowService.create(USER_ID_1, nodeDescriptor.name, WorkflowSettings()) } }
+	protected val nodeType = NodeType(INTEGRATION_NAME)
+	private val flow by lazy { runBlocking { flowService.create(USER_ID_1, name = INTEGRATION_NAME, WorkflowSettings()) } }
 	private fun flowNode(): Node = runBlocking {
 		nodeService.create(
 			userId = USER_ID_1,
 			flow = flow,
-			descriptor = nodeDescriptor,
+			type = nodeType,
 			name = "test",
 			position = NodePosition(0, 0, 300, 200),
 			settings = EmptyNodeSettings(),

@@ -5,8 +5,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import me.snoty.core.node.NodeType
 import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.wiring.node.NodeDescriptor
 import me.snoty.integration.common.wiring.node.NodeSettings
 import kotlin.reflect.KClass
 import me.snoty.integration.common.annotation.Icon as IconAnnotation
@@ -15,7 +15,7 @@ import me.snoty.integration.common.annotation.Icon as IconAnnotation
 data class NodeMetadata(
 	val displayName: String,
 	val icon: Icon? = null,
-	val descriptor: NodeDescriptor,
+	val type: NodeType,
 	val position: NodePosition,
 	val settings: ObjectSchema,
 	@Transient
