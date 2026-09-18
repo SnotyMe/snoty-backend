@@ -14,6 +14,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.routing.openapi.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import me.snoty.backend.authentication.Role
 import me.snoty.backend.utils.*
 
 @Serializable
@@ -165,6 +166,12 @@ fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClien
 				val roles = call.getUserRoles()
 
 				call.respond(roles)
+			}.describe {
+				responses {
+					HttpStatusCode.OK {
+						schema = jsonSchema<List<Role>>()
+					}
+				}
 			}
 		}
 	}.describe {
