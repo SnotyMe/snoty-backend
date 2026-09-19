@@ -1,6 +1,5 @@
-package me.snoty.integration.builtin.mapper
+package me.snoty.node.mapper
 
-import me.snoty.node.mapper.trimAll
 import org.bson.Document
 import org.junit.jupiter.api.Test
 

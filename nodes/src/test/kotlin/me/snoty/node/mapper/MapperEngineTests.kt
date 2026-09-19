@@ -1,8 +1,6 @@
-package me.snoty.integration.builtin.mapper
+package me.snoty.node.mapper
 
 import io.mockk.mockk
-import me.snoty.node.mapper.MapperEngine
-import me.snoty.node.mapper.MapperSettings
 import org.bson.Document
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue

@@ -1,12 +1,10 @@
-package me.snoty.integration.builtin.diff
+package me.snoty.node.diff
 
 import me.snoty.backend.test.randomString
 import me.snoty.integration.common.diff.Change
 import me.snoty.integration.common.diff.DiffResult
 import me.snoty.integration.common.diff.checksum
 import me.snoty.integration.common.diff.state.EntityState
-import me.snoty.node.diff.DiffNodeHandler
-import me.snoty.node.diff.processStates
 import org.bson.Document
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals

@@ -1,6 +1,5 @@
-package me.snoty.integration.builtin.mapper.filter
+package me.snoty.node.mapper.filter
 
-import me.snoty.node.mapper.filter.computeDiff
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
