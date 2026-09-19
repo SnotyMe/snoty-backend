@@ -133,13 +133,6 @@ dependencies { with(libs) {
     file("dist/integrations").listFiles()?.let {
         implementation(files(it))
     }
-
-    // depend on all integrations by default
-    subprojects
-        .filter { it.path.startsWith(":integrations:") }
-        .forEach {
-            moduleImplementation(it)
-        }
 }}
 
 if (isDevelopment) {
