@@ -11,7 +11,7 @@ class LogFeatureFlags(override val environment: Environment, override val client
 		logLevelFlag("", "me.snoty"),
 		logLevelFlag("root", "root"),
 		logLevelFlag("http.client", "io.ktor.client"),
-		logLevelFlag("http.server", "io.netty", "io.ktor.server", "io.ktor.auth.jwt"),
+		logLevelFlag("http.server", "io.ktor.server", "io.ktor.auth.jwt"),
 		logLevelFlag("koin", "[Koin]", ifDev = Level.INFO),
 		logLevelFlag("jobrunr", "org.jobrunr"),
 		logLevelFlag("ical4j", "net.fortuna.ical4j"),
