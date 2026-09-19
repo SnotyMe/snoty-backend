@@ -20,6 +20,7 @@ private const val CONFIG_KEY = "${DatabaseAdapter.CONFIG_GROUP}.${MONGODB_ADAPTE
 @ComponentScan("me.snoty.backend")
 object MongoKoinModule
 
+@Single
 class MongoAdapter : DatabaseAdapter {
 	override val supportedTypes = listOf(MONGODB_ADAPTER_TYPE)
 	override val koinModule: DiModule = MongoKoinModule.module()

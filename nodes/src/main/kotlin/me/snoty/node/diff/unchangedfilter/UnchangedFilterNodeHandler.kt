@@ -1,0 +1,56 @@
+package me.snoty.node.diff.unchangedfilter
+
+import kotlinx.serialization.Serializable
+import me.snoty.core.node.NodeWithSettings
+import me.snoty.core.node.getConfig
+import me.snoty.integration.common.annotation.RegisterNode
+import me.snoty.integration.common.diff.DiffResult
+import me.snoty.integration.common.diff.EntityStateService
+import me.snoty.integration.common.model.NodePosition
+import me.snoty.integration.common.model.metadata.EmptySchema
+import me.snoty.integration.common.wiring.NodeHandleContext
+import me.snoty.integration.common.wiring.data.IntermediateData
+import me.snoty.integration.common.wiring.data.NodeOutput
+import me.snoty.integration.common.wiring.data.iterableStructOutput
+import me.snoty.integration.common.wiring.logger
+import me.snoty.integration.common.wiring.node.NodeRouteFactory
+import me.snoty.integration.common.wiring.node.NodeSettings
+import me.snoty.node.diff.DiffNodeHandler
+import org.bson.codecs.configuration.CodecRegistry
+import org.koin.core.annotation.Single
+
+@Serializable
+data class UnchangedFilterSettings(
+	val excludeFields: List<String>,
+) : NodeSettings
+
+@RegisterNode(
+	name = "unchangedfilter",
+	displayName = "Unchanged Filter",
+	position = NodePosition.MIDDLE,
+	settingsType = UnchangedFilterSettings::class,
+	inputType = EmptySchema::class,
+	outputType = EmptySchema::class,
+)
+@Single
+class UnchangedFilterNodeHandler(
+	entityStateService: EntityStateService,
+	nodeRouteFactory: NodeRouteFactory,
+	codecRegistry: CodecRegistry,
+) : DiffNodeHandler(entityStateService, nodeRouteFactory, codecRegistry) {
+	context(_: NodeHandleContext)
+	override suspend fun process(
+		node: NodeWithSettings,
+		input: Collection<IntermediateData>,
+	): NodeOutput {
+		val settings = node.getConfig<UnchangedFilterSettings>()
+
+		val (newData, newStates) = handleStatesAndDiff(logger, node, input, settings.excludeFields)
+		val items = newData
+			.filterNot { (id, _) ->
+				newStates[id]?.diffResult == DiffResult.Unchanged
+			}.map { it.value }
+
+		return iterableStructOutput(items)
+	}
+}

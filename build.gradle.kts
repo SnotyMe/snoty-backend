@@ -125,6 +125,8 @@ dependencies { with(libs) {
     implementation(libraries.openfeature)
     implementation(libraries.openfeature.flagd)
 
+    implementation(projects.nodes)
+
     // dev
     devImplementation(authentication.keycloak.adminClient)
     devImplementation(monitoring.opentelemetry.sdk)

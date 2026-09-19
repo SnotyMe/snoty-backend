@@ -58,20 +58,22 @@ class ExtensionContributorProcessor(private val logger: KSPLogger, private val c
     private fun writeKoinModule(resolver: Resolver, extensionName: String, koinEntities: KoinEntities) {
         val nodes = resolver.getSymbolsWithAnnotation(RegisterNode::class.qualifiedName!!)
             .filterIsInstance<KSClassDeclaration>()
-        val extensionPackages = nodes
-            // me.simulatan.snoty.myintegration.mynode.MyNodeHandler -> me.simulatan.snoty.myintegration
-            // every handler has its own dedicated package, so we need to walk upwards by one to
-            // get a "generic"-ish package that hopefully contains shared code, such as API clients
-            // opinionated logic that may not hold in all cases, but it'll have to do for now
-            .map { it.packageName.asString().substringBeforeLast(".") }
-            .toList()
-            .distinct()
 
-        val commonExtensionPackages = groupCommonPackages(extensionPackages)
+        // terrible workaround for https://github.com/InsertKoinIO/koin-compiler-plugin/issues/107
+        val usedPackages = resolver.getAllFiles()
+            .filter {
+				it.declarations
+					.filterIsInstance<KSClassDeclaration>()
+                    .any()
+			}
+            .map { it.packageName.asString() }
+            .toSet()
+            .toTypedArray()
+
         val registerNodeAnnotations = nodes.mapNotNull { it.getAnnotation<RegisterNode>() }.toList()
         val koinModule = TypeSpec.objectBuilder(koinEntities.moduleClassName)
             .addAnnotation(Module::class)
-            .addAnnotation(AnnotationSpec.get(ComponentScan(*commonExtensionPackages.toTypedArray())))
+            .addAnnotation(AnnotationSpec.get(ComponentScan(*usedPackages)))
             .addSerializersModule(registerNodeAnnotations, extensionName, koinEntities.scope)
             .build()
 

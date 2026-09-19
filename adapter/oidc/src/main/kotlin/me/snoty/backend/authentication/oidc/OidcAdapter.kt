@@ -16,6 +16,7 @@ object OidcKoinModule
 
 const val OIDC_ADAPTER_TYPE = "oidc"
 
+@Single
 class OidcAdapter : AuthenticationAdapter {
     override val supportedTypes: List<String> = listOf(OIDC_ADAPTER_TYPE)
 	override val koinModule: DiModule = OidcKoinModule.module()

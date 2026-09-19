@@ -5,11 +5,13 @@ import me.snoty.backend.config.addProperties
 import me.snoty.backend.injection.DiModule
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
+import org.koin.core.annotation.Single
 
 @Module
 @ComponentScan
 object InMemoryKoinModule
 
+@Single
 class InMemoryExecutionEventAdapter : ExecutionEventAdapter {
     override val supportedTypes: List<String> = listOf("in-memory")
     override val koinModule: DiModule = InMemoryKoinModule.module()

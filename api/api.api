@@ -789,6 +789,7 @@ public final class me/snoty/backend/utils/bson/BsonUtilsKt {
 	public static final fun getIdAsString (Lorg/bson/Document;)Ljava/lang/String;
 	public static final fun getOrPut (Lorg/bson/Document;Ljava/lang/String;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
 	public static final fun parseArray (Ljava/lang/String;Lorg/bson/codecs/configuration/CodecRegistry;Lorg/bson/codecs/BsonTypeClassMap;)Ljava/util/List;
+	public static final fun parseJson (Ljava/lang/String;Lorg/bson/codecs/configuration/CodecRegistry;Lorg/bson/codecs/BsonTypeClassMap;)Ljava/lang/Object;
 }
 
 public final class me/snoty/backend/utils/bson/CodecRegistryProvider {

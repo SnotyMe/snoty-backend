@@ -12,15 +12,11 @@ fun listRootDirsIn(dir: String) =
 		.listFiles()!!
 		.filter { it.resolve("build.gradle.kts").exists() }
 
-// include all integrations per default
-listRootDirsIn("integrations")
-	.forEach {
-		include(":integrations:${it.name}")
-	}
-
 include("api")
 include("integration-plugin")
 include("integration-utils")
+include("nodes")
+
 listRootDirsIn("adapter")
 	.forEach {
 		include(":adapter:${it.name}")
