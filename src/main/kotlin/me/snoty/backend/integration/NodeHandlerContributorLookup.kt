@@ -9,12 +9,12 @@ import me.snoty.backend.featureflags.FeatureFlagBoolean
 import me.snoty.backend.featureflags.FeatureFlagsContainer
 import me.snoty.backend.injection.getFromAllScopes
 import me.snoty.backend.utils.simpleClassName
-import me.snoty.backend.wiring.node.metadataJson
+import me.snoty.backend.wiring.node.NodeHandler
+import me.snoty.backend.wiring.node.NodeHandlerContributor
+import me.snoty.backend.wiring.node.metadata.NodeMetadata
+import me.snoty.backend.wiring.node.metadata.metadataJson
+import me.snoty.backend.wiring.node.registry.NodeRegistry
 import me.snoty.extension.ExtensionContributor
-import me.snoty.integration.common.model.metadata.NodeMetadata
-import me.snoty.integration.common.wiring.node.NodeHandler
-import me.snoty.integration.common.wiring.node.NodeHandlerContributor
-import me.snoty.integration.common.wiring.node.NodeRegistry
 import org.koin.core.Koin
 import org.koin.core.annotation.Single
 import org.koin.core.error.InstanceCreationException

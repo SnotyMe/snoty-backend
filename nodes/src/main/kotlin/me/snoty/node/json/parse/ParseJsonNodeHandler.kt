@@ -1,21 +1,17 @@
 package me.snoty.node.json.parse
 
 import kotlinx.serialization.Serializable
+import me.snoty.backend.schema.EmptySchema
 import me.snoty.backend.utils.bson.getByPath
 import me.snoty.backend.utils.bson.parseJson
 import me.snoty.backend.utils.bson.setByPath
+import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeOutput
+import me.snoty.backend.wiring.data.mapInputWithSettings
+import me.snoty.backend.wiring.data.structOutput
+import me.snoty.backend.wiring.node.*
+import me.snoty.backend.wiring.node.metadata.NodeStereotype
 import me.snoty.core.node.NodeWithSettings
-import me.snoty.integration.common.annotation.Icon
-import me.snoty.integration.common.annotation.RegisterNode
-import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.model.metadata.EmptySchema
-import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.data.mapInputWithSettings
-import me.snoty.integration.common.wiring.data.structOutput
-import me.snoty.integration.common.wiring.node.NodeHandler
-import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.Document
 import org.bson.codecs.BsonTypeClassMap
 import org.bson.codecs.configuration.CodecRegistry
@@ -30,7 +26,7 @@ data class ParseJsonNodeSettings(
 	displayName = "Parse JSON",
 	icon = Icon(name = "lucide-braces"),
 	name = "parsejson",
-	position = NodePosition.MIDDLE,
+	stereotype = NodeStereotype.MIDDLE,
 	settingsType = ParseJsonNodeSettings::class,
 	inputType = EmptySchema::class,
 	outputType = EmptySchema::class,

@@ -4,17 +4,13 @@ import me.snoty.backend.notifications.NotificationAttributes
 import me.snoty.backend.notifications.NotificationService
 import me.snoty.backend.utils.filterIfNot
 import me.snoty.backend.wiring.credential.resolve
+import me.snoty.backend.wiring.data.NodeInput
+import me.snoty.backend.wiring.data.NodeOutput
+import me.snoty.backend.wiring.data.iterableStructOutput
+import me.snoty.backend.wiring.node.*
+import me.snoty.backend.wiring.node.metadata.NodeStereotype
 import me.snoty.core.node.NodeWithSettings
 import me.snoty.core.node.getConfig
-import me.snoty.integration.common.annotation.Icon
-import me.snoty.integration.common.annotation.RegisterNode
-import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.data.NodeInput
-import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.data.iterableStructOutput
-import me.snoty.integration.common.wiring.logger
-import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.node.moodle.model.MoodleAssignment
 import me.snoty.node.moodle.model.MoodleAssignmentState
 import me.snoty.node.moodle.request.getCalendarUpcoming
@@ -25,7 +21,7 @@ import org.slf4j.event.Level
 	name = "moodle_assignments",
 	displayName = "Moodle",
 	icon = Icon(name = "devicon-moodle"),
-	position = NodePosition.START,
+	stereotype = NodeStereotype.START,
 	settingsType = MoodleSettings::class,
 	outputType = MoodleAssignment::class
 )

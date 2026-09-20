@@ -2,9 +2,9 @@ package me.snoty.backend.wiring.flow
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import me.snoty.backend.wiring.node.NodePosition
 import me.snoty.core.flow.WorkflowSettings
 import me.snoty.core.node.NodeType
-import me.snoty.integration.common.wiring.node.NodePosition
 import org.bson.Document
 
 object FlowExportImportSchema {

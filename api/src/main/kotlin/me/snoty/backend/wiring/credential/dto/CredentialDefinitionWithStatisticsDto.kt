@@ -1,7 +1,7 @@
 package me.snoty.backend.wiring.credential.dto
 
 import kotlinx.serialization.Serializable
-import me.snoty.integration.common.model.metadata.ObjectSchema
+import me.snoty.backend.schema.ObjectSchema
 
 @Serializable
 data class CredentialDefinitionWithStatisticsDto(

@@ -1,7 +1,7 @@
 package me.snoty.node.discord
 
 import kotlinx.serialization.Serializable
-import me.snoty.integration.common.model.metadata.Multiline
+import me.snoty.backend.schema.Multiline
 
 object DiscordWebhook {
 	@Serializable

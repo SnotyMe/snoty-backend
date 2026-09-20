@@ -1,13 +1,13 @@
 package me.snoty.backend.test
 
+import me.snoty.backend.wiring.node.EmptyNodeSettings
+import me.snoty.backend.wiring.node.NodePosition
+import me.snoty.backend.wiring.node.NodeSettings
 import me.snoty.core.flow.FlowId
 import me.snoty.core.node.FlowNode
 import me.snoty.core.node.NodeId
 import me.snoty.core.node.NodeType
 import me.snoty.core.user.UserId
-import me.snoty.integration.common.wiring.node.EmptyNodeSettings
-import me.snoty.integration.common.wiring.node.NodePosition
-import me.snoty.integration.common.wiring.node.NodeSettings
 import kotlin.time.Clock
 import kotlin.uuid.Uuid
 

@@ -3,8 +3,8 @@ package me.snoty.backend.database.utils
 import me.snoty.backend.database.sql.SanitizedPrimaryKey
 import me.snoty.backend.database.sql.sqlTableName
 import me.snoty.backend.wiring.node.NodeTable
+import me.snoty.backend.wiring.node.state.EntityState
 import me.snoty.core.node.NodeType
-import me.snoty.integration.common.diff.state.EntityState
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
 import org.jetbrains.exposed.v1.core.ReferenceOption

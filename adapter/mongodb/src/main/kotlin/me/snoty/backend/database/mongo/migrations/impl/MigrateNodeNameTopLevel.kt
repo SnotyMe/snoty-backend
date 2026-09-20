@@ -3,9 +3,9 @@ package me.snoty.backend.database.mongo.migrations.impl
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
+import me.snoty.backend.database.mongo.NODE_COLLECTION_NAME
 import me.snoty.backend.database.mongo.migrations.MongoMigration
 import me.snoty.backend.wiring.node.MongoNode
-import me.snoty.integration.common.wiring.flow.NODE_COLLECTION_NAME
 import org.koin.core.annotation.Single
 
 @Single

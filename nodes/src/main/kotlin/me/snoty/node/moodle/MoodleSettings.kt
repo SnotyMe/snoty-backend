@@ -1,11 +1,11 @@
 package me.snoty.node.moodle
 
 import kotlinx.serialization.Serializable
+import me.snoty.backend.schema.*
 import me.snoty.backend.wiring.credential.Credential
 import me.snoty.backend.wiring.credential.CredentialRef
 import me.snoty.backend.wiring.credential.RegisterCredential
-import me.snoty.integration.common.model.metadata.*
-import me.snoty.integration.common.wiring.node.NodeSettings
+import me.snoty.backend.wiring.node.NodeSettings
 
 @RegisterCredential("Moodle")
 @Serializable

@@ -1,0 +1,134 @@
+package me.snoty.plugin.processor.node
+
+import com.google.devtools.ksp.getClassDeclarationByName
+import com.google.devtools.ksp.processing.*
+import com.google.devtools.ksp.symbol.KSAnnotated
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ksp.toClassName
+import com.squareup.kotlinpoet.ksp.writeTo
+import com.squareup.kotlinpoet.metadata.specs.toTypeSpec
+import me.snoty.backend.wiring.node.NodeHandlerContributor
+import me.snoty.backend.wiring.node.RegisterNode
+import me.snoty.backend.wiring.node.template.NodeTemplateUtils
+import me.snoty.core.node.NodeType
+import me.snoty.plugin.utils.*
+import me.snoty.plugin.utils.koin.writeKoinScope
+import org.koin.core.annotation.Single
+
+class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGenerator: CodeGenerator) : SymbolProcessor {
+	private val allProcessingResults = mutableListOf<SpiContributor>()
+
+	private fun contributorName(clazz: KSClassDeclaration)
+		= ClassName(clazz.packageName.asString(), "${clazz.simpleName.asString()}Contributor")
+
+	override fun process(resolver: Resolver): List<KSAnnotated> {
+		val extensionName = resolver.getExtensionName()
+
+		val newlyProcessed = resolver.getSymbolsWithAnnotation(RegisterNode::class.qualifiedName!!)
+			.filterIsInstance<KSClassDeclaration>()
+			.filter {
+				resolver.getClassDeclarationByName(contributorName(it).canonicalName) == null
+			}
+			.onEach { handler ->
+				handler.getAnnotation<Single>() ?:
+					logger.error("NodeHandlerContributorProcessor: ${handler.qualifiedName!!.asString()} is missing @Single annotation", handler)
+			}
+			.onEach { handler ->
+				logger.info("NodeHandlerContributorProcessor: processing ${handler.qualifiedName!!.asString()}...")
+
+				val processResult = processClass(resolver, extensionName, handler)
+				allProcessingResults.add(processResult)
+
+				handler.qualifiedName!!.asString()
+			}
+			.toList()
+
+		logger.info("NodeHandlerContributorProcessor: newly processed: $newlyProcessed")
+		if (newlyProcessed.isEmpty()) return emptyList()
+
+		codeGenerator.writeSpiFile(serviceQualifiedName = NodeHandlerContributor::class.qualifiedName!!, services = allProcessingResults)
+
+		return emptyList()
+	}
+
+	private fun processClass(resolver: Resolver, extensionName: String, clazz: KSClassDeclaration): SpiContributor {
+		val contributorClassName = contributorName(clazz)
+
+		val classBuilder = TypeSpec.classBuilder(contributorClassName)
+		val fileSpec = FileSpec.builder(contributorClassName)
+
+		val contributorSpec = NodeHandlerContributor::class.toTypeSpec(lenient = true)
+
+		val registerNode = clazz.getAnnotation<RegisterNode>()!!
+
+		val scope = codeGenerator.writeKoinScope(
+			clazz.packageName.asString(),
+			entityName = clazz.simpleName.asString(),
+			scopeValue = "extension:${extensionName}:node:${registerNode.name}",
+		)
+		classBuilder
+			.addSuperinterface(NodeHandlerContributor::class)
+			.addAnnotation(Single::class)
+			.addProperty(
+				PropertySpec.builder("type", NodeType::class)
+					.initializer("%T(%S)", NodeType::class, registerNode.name)
+					.build()
+			)
+			.addProperty(
+				contributorSpec.overrideProperty(NodeHandlerContributor::nodeHandlerClass)
+					.initializer("%T::class", clazz.toClassName())
+					.build()
+			)
+			.addProperty(
+				contributorSpec.overrideProperty(NodeHandlerContributor::metadata)
+					.initializer("%S", generateMetadata(resolver, clazz, registerNode))
+					.removeModifiers(KModifier.OPEN) // w: 'open' has no effect on a final class
+					.build()
+			)
+			.addProperty(
+				contributorSpec.overrideProperty(NodeHandlerContributor::settingsClass)
+					.initializer("%T::class", resolver.resolveClassFromAnnotation(clazz, RegisterNode::settingsType).toClassName())
+					.removeModifiers(KModifier.OPEN) // w: 'open' has no effect on a final class
+					.build()
+			)
+			.addProperty(
+				contributorSpec.overrideProperty(NodeHandlerContributor::koinScope)
+					.initializer("%L", scope.scopeProperty.name)
+					.build()
+			)
+			.addProperty(
+				contributorSpec.overrideProperty(NodeHandlerContributor::koinModules)
+					.initializer(buildKoinInitializer())
+					.build()
+			)
+
+		// write contributor file
+		fileSpec
+			.addType(classBuilder.build())
+			.build()
+			.writeTo(
+				codeGenerator = codeGenerator,
+				aggregating = false,
+				originatingKSFiles = listOf(clazz.containingFile!!)
+			)
+
+		return SpiContributor(contributorClassName = contributorClassName, containingFile = clazz.containingFile!!)
+	}
+
+	private fun buildKoinInitializer() = CodeBlock.builder()
+		.add("listOf(\n")
+		.add(
+			"%M(%N),\n",
+			NodeTemplateUtils::nodeTemplatesModule.getMemberName<NodeTemplateUtils>(),
+			"type",
+		)
+		.add(")")
+		.build()
+
+	class Provider : SymbolProcessorProvider {
+		override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
+			return NodeHandlerContributorProcessor(environment.logger, environment.codeGenerator)
+		}
+	}
+}

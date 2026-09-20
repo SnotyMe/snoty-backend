@@ -9,7 +9,7 @@ apply(plugin = "org.jetbrains.kotlinx.kover")
 dependencies {
 	implementation(project(":api"))
 
-	ksp(project(":integration-plugin"))
+	ksp(project(":plugin"))
 }
 
 sourceSets.test.configure {

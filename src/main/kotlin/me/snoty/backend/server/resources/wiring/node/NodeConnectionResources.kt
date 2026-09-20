@@ -5,11 +5,11 @@ import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import me.snoty.backend.errors.ServiceResult
 import me.snoty.backend.utils.getUser
+import me.snoty.backend.utils.http.nodeNotFound
 import me.snoty.backend.utils.respondServiceResult
+import me.snoty.backend.wiring.node.NodeService
 import me.snoty.core.node.Node
 import me.snoty.core.node.NodeId
-import me.snoty.integration.common.config.NodeService
-import me.snoty.integration.common.http.nodeNotFound
 
 @Serializable
 data class ConnectionRequest(val from: NodeId, val to: NodeId)

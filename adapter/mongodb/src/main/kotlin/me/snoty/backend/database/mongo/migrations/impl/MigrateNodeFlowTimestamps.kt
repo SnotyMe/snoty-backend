@@ -2,11 +2,11 @@ package me.snoty.backend.database.mongo.migrations.impl
 
 import com.mongodb.client.model.Filters
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
+import me.snoty.backend.database.mongo.FLOW_COLLECTION_NAME
+import me.snoty.backend.database.mongo.NODE_COLLECTION_NAME
 import me.snoty.backend.database.mongo.migrations.MongoMigration
 import me.snoty.backend.wiring.flow.MongoWorkflow
 import me.snoty.backend.wiring.node.MongoNode
-import me.snoty.integration.common.wiring.flow.FLOW_COLLECTION_NAME
-import me.snoty.integration.common.wiring.flow.NODE_COLLECTION_NAME
 import org.bson.Document
 import org.koin.core.annotation.Single
 import kotlin.reflect.KProperty

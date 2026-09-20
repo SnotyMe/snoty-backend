@@ -4,20 +4,19 @@ import io.ktor.http.*
 import io.ktor.server.response.*
 import kotlinx.coroutines.flow.toList
 import kotlinx.serialization.Serializable
+import me.snoty.backend.schema.FieldCensored
 import me.snoty.backend.utils.BadRequestException
 import me.snoty.backend.utils.respondStatus
+import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeOutput
+import me.snoty.backend.wiring.data.get
+import me.snoty.backend.wiring.node.*
+import me.snoty.backend.wiring.node.metadata.NodeStereotype
+import me.snoty.backend.wiring.node.persistence.NodePersistenceFactory
+import me.snoty.backend.wiring.node.persistence.invoke
+import me.snoty.backend.wiring.node.routing.NodeHandlerRouteFactory
+import me.snoty.backend.wiring.node.state.DiffResult
 import me.snoty.core.node.NodeWithSettings
-import me.snoty.integration.common.annotation.Icon
-import me.snoty.integration.common.annotation.RegisterNode
-import me.snoty.integration.common.diff.DiffResult
-import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.model.metadata.FieldCensored
-import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.data.get
-import me.snoty.integration.common.wiring.logger
-import me.snoty.integration.common.wiring.node.*
 import me.snoty.node.todoist.oauth.TodoistOAuth
 import org.bson.Document
 import org.koin.core.annotation.Single
@@ -34,7 +33,7 @@ data class TodoistSettings(
 	name = "todoist",
 	displayName = "Todoist",
 	icon = Icon(name = "logos-todoist-icon"),
-	position = NodePosition.END,
+	stereotype = NodeStereotype.END,
 	settingsType = TodoistSettings::class,
 	inputType = TodoistInput::class,
 )

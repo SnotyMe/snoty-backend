@@ -6,7 +6,7 @@ import me.snoty.backend.featureflags.FeatureFlagBoolean
 import me.snoty.backend.featureflags.FeatureFlagsContainer
 import me.snoty.backend.utils.ifDev
 import me.snoty.backend.utils.otherwise
-import me.snoty.integration.common.wiring.node.template.NodeMetadataFeatureFlags
+import me.snoty.backend.wiring.node.template.NodeMetadataFeatureFlags
 import org.koin.core.annotation.Single
 
 @Single(binds = [NodeMetadataFeatureFlags::class])

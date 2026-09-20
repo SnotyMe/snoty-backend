@@ -1,10 +1,10 @@
 package me.snoty.node.split
 
 import me.snoty.backend.test.node
-import me.snoty.integration.common.runNodeHandlerTest
-import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
-import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
+import me.snoty.backend.wiring.data.impl.BsonIntermediateData
+import me.snoty.backend.wiring.data.impl.SimpleIntermediateData
+import me.snoty.backend.wiring.node.NodeHandleContext
+import me.snoty.backend.wiring.node.runNodeHandlerTest
 import org.bson.Document
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals

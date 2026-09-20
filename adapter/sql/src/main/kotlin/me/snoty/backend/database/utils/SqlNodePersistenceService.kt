@@ -9,12 +9,12 @@ import me.snoty.backend.database.sql.suspendTransaction
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.register
 import me.snoty.backend.utils.hackyEncodeToString
+import me.snoty.backend.wiring.flow.NodeDeletedHook
 import me.snoty.backend.wiring.node.NodeTable
+import me.snoty.backend.wiring.node.persistence.NodePersistenceFactory
+import me.snoty.backend.wiring.node.persistence.NodePersistenceService
 import me.snoty.core.node.Node
 import me.snoty.core.node.NodeType
-import me.snoty.integration.common.wiring.flow.NodeDeletedHook
-import me.snoty.integration.common.wiring.node.NodePersistenceFactory
-import me.snoty.integration.common.wiring.node.NodePersistenceService
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.*

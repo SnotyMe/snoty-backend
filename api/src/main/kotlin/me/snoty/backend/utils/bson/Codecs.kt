@@ -4,8 +4,13 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toKotlinLocalDateTime
-import me.snoty.integration.common.utils.integrationsApiCodecModule
-import me.snoty.integration.common.utils.kotlinxSerializersModule
+import me.snoty.backend.utils.kotlinxSerializersModule
+import me.snoty.backend.wiring.node.EmptyNodeSettings
+import me.snoty.backend.wiring.node.EmptyNodeSettingsCodec
+import me.snoty.backend.wiring.node.state.Change
+import me.snoty.backend.wiring.node.state.ChangeCodec
+import me.snoty.backend.wiring.node.state.DiffResult
+import me.snoty.backend.wiring.node.state.DiffResultCodec
 import org.bson.BsonDateTime
 import org.bson.BsonReader
 import org.bson.BsonWriter
@@ -13,6 +18,7 @@ import org.bson.codecs.BsonTypeClassMap
 import org.bson.codecs.Codec
 import org.bson.codecs.DecoderContext
 import org.bson.codecs.EncoderContext
+import org.bson.codecs.configuration.CodecProvider
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.configuration.CodecRegistry
 import org.bson.codecs.kotlinx.KotlinSerializerCodecProvider
@@ -72,3 +78,17 @@ fun provideApiCodec(bsonTypeMap: BsonTypeClassMap) = CodecRegistryProvider(
 		integrationsApiCodecModule(bsonTypeMap),
 	)
 )
+
+@Suppress("UNCHECKED_CAST")
+fun integrationsApiCodecModule(bsonTypeClassMap: BsonTypeClassMap): CodecRegistry =
+	CodecRegistries.fromProviders(object : CodecProvider {
+		override fun <T : Any> get(clazz: Class<T>, registry: CodecRegistry): Codec<T>? =
+			when (clazz) {
+				Change::class.java -> ChangeCodec(registry, bsonTypeClassMap)
+				EmptyNodeSettings::class.java -> EmptyNodeSettingsCodec
+				else -> null
+			} as? Codec<T> ?: when {
+				DiffResult::class.java.isAssignableFrom(clazz) -> DiffResultCodec(registry, provideDocumentCodec(registry, bsonTypeClassMap))
+				else -> null
+			} as? Codec<T>
+	})

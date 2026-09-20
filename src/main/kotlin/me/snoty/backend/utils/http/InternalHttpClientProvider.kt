@@ -2,7 +2,7 @@ package me.snoty.backend.utils.http
 
 import io.ktor.client.*
 import io.opentelemetry.api.OpenTelemetry
-import me.snoty.integration.common.BaseSnotyJson
+import me.snoty.backend.utils.BaseSnotyJson
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 

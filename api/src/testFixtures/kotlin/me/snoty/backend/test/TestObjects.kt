@@ -2,17 +2,17 @@ package me.snoty.backend.test
 
 import me.snoty.backend.config.Config
 import me.snoty.backend.config.Environment
+import me.snoty.backend.utils.bson.bsonTypeClassMap
 import me.snoty.backend.utils.bson.provideApiCodec
 import me.snoty.backend.utils.bson.provideCodecRegistry
+import me.snoty.backend.wiring.data.IntermediateDataMapperRegistryImpl
+import me.snoty.backend.wiring.data.impl.BsonIntermediateDataMapper
+import me.snoty.backend.wiring.data.impl.SimpleIntermediateDataMapper
+import me.snoty.backend.wiring.node.EmptyNodeSettings
+import me.snoty.backend.wiring.node.NodeSettings
+import me.snoty.backend.wiring.node.metadata.NodeMetadata
+import me.snoty.backend.wiring.node.metadata.NodeStereotype
 import me.snoty.core.node.NodeType
-import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.model.metadata.NodeMetadata
-import me.snoty.integration.common.utils.bsonTypeClassMap
-import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistryImpl
-import me.snoty.integration.common.wiring.data.impl.BsonIntermediateDataMapper
-import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateDataMapper
-import me.snoty.integration.common.wiring.node.EmptyNodeSettings
-import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.Document
 import org.bson.codecs.DocumentCodec
 import org.bson.codecs.configuration.CodecRegistries
@@ -57,13 +57,13 @@ val IntermediateDataMapperRegistry = IntermediateDataMapperRegistryImpl(
 
 fun nodeMetadata(
 	type: NodeType,
-	position: NodePosition = NodePosition.MIDDLE,
+	stereotype: NodeStereotype = NodeStereotype.MIDDLE,
 	settingsClass: KClass<out NodeSettings> = EmptyNodeSettings::class,
 	receiveEmptyInput: Boolean = false,
 ) = NodeMetadata(
 	type = type,
 	displayName = "Test Node",
-	position = position,
+	stereotype = stereotype,
 	settings = emptyList(),
 	settingsClass = settingsClass,
 	receiveEmptyInput = receiveEmptyInput,
@@ -73,12 +73,12 @@ fun nodeMetadata(
 
 fun nodeMetadata(
 	name: String,
-	position: NodePosition = NodePosition.MIDDLE,
+	stereotype: NodeStereotype = NodeStereotype.MIDDLE,
 	settingsClass: KClass<out NodeSettings> = EmptyNodeSettings::class,
 	receiveEmptyInput: Boolean = false,
 ) = nodeMetadata(
 	type = NodeType(name),
-	position,
+	stereotype,
 	settingsClass,
 	receiveEmptyInput,
 )

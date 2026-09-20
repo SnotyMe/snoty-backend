@@ -19,22 +19,22 @@ import me.snoty.backend.observability.setException
 import me.snoty.backend.observability.subspan
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.wiring.credential.CredentialService
+import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.IntermediateDataMapperRegistry
+import me.snoty.backend.wiring.data.NodeInput
+import me.snoty.backend.wiring.data.NodeOutput
+import me.snoty.backend.wiring.execution.FlowExecutionStatus
+import me.snoty.backend.wiring.flow.FlowRunner
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEvent
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
+import me.snoty.backend.wiring.node.NodeHandleContextImpl
+import me.snoty.backend.wiring.node.metadata.NodeStereotype
+import me.snoty.backend.wiring.node.registry.NodeRegistry
 import me.snoty.core.flow.WorkflowWithNodes
 import me.snoty.core.node.FlowNode
 import me.snoty.core.node.Node
 import me.snoty.core.node.NodeId
-import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.wiring.NodeHandleContextImpl
-import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.data.IntermediateDataMapperRegistry
-import me.snoty.integration.common.wiring.data.NodeInput
-import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
-import me.snoty.integration.common.wiring.flow.FlowRunner
-import me.snoty.integration.common.wiring.node.NodeRegistry
 import org.koin.core.Koin
 import org.koin.core.annotation.Single
 import org.slf4j.Logger
@@ -86,7 +86,7 @@ class FlowRunnerImpl(
 		flow.nodes
 			.asFlow()
 			.filter {
-				nodeRegistry.getMetadataOrNull(it.type)?.position == NodePosition.START
+				nodeRegistry.getMetadataOrNull(it.type)?.stereotype == NodeStereotype.START
 			}
 			.flatMapConcat {
 				executionContext.executeStartNode(rootSpan, it, input)
@@ -190,7 +190,7 @@ class FlowRunnerImpl(
 				executeImpl(subspan, nextNode, input, visited + node.id, depth + 1)
 			}
 
-		if (metadata.position != NodePosition.START && input.isEmpty() && !metadata.receiveEmptyInput) {
+		if (metadata.stereotype != NodeStereotype.START && input.isEmpty() && !metadata.receiveEmptyInput) {
 			logger.debug { "Skipping $nodeLogName because it does not receive empty input." }
 			return node.executeNextNodes(emptyList()).onCompletion { span.end() }
 		}
@@ -209,7 +209,7 @@ class FlowRunnerImpl(
 			// pls fix Kotlin
 			val data = context(context) { handler.process(node, input) }
 			logger.debug { "Processed $nodeLogName" }
-			if (metadata.position.logOutput && node.next.isEmpty()) {
+			if (metadata.stereotype.logOutput && node.next.isEmpty()) {
 				logger.debug { "Node \"${node.name}\" (${node.id.value}) has no output nodes, would have emitted $data" }
 			}
 

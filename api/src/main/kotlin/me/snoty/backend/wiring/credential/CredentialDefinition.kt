@@ -4,7 +4,7 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.serializer
-import me.snoty.integration.common.model.metadata.ObjectSchema
+import me.snoty.backend.schema.ObjectSchema
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 import java.util.*

@@ -2,7 +2,14 @@ package me.snoty.backend.utils
 
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 import kotlinx.serialization.serializer
+import me.snoty.backend.wiring.node.EmptyNodeSettings
+import me.snoty.backend.wiring.node.InvalidNodeSettings
+import me.snoty.backend.wiring.node.NodeSettings
+import org.koin.core.annotation.Single
 import kotlin.reflect.KClass
 
 /**
@@ -12,3 +19,13 @@ import kotlin.reflect.KClass
 @Suppress("UNCHECKED_CAST")
 @OptIn(InternalSerializationApi::class)
 fun <T : Any> Json.hackyEncodeToString(it: T) = encodeToString((it::class as KClass<T>).serializer(), it)
+
+val kotlinxSerializersModule = SerializersModule {
+	polymorphic(NodeSettings::class) {
+		subclass(EmptyNodeSettings::class)
+		subclass(InvalidNodeSettings::class)
+	}
+}
+
+@Single
+fun provideSerializersModule(): SerializersModule = kotlinxSerializersModule

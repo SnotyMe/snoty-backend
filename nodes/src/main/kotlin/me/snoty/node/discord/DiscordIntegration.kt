@@ -4,23 +4,18 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
+import me.snoty.backend.schema.FieldCensored
+import me.snoty.backend.schema.FieldDescription
+import me.snoty.backend.schema.FieldName
 import me.snoty.backend.wiring.credential.Credential
 import me.snoty.backend.wiring.credential.CredentialRef
 import me.snoty.backend.wiring.credential.RegisterCredential
 import me.snoty.backend.wiring.credential.resolve
+import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.eachWithSettings
+import me.snoty.backend.wiring.node.*
+import me.snoty.backend.wiring.node.metadata.NodeStereotype
 import me.snoty.core.node.NodeWithSettings
-import me.snoty.integration.common.annotation.Icon
-import me.snoty.integration.common.annotation.RegisterNode
-import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.model.metadata.FieldCensored
-import me.snoty.integration.common.model.metadata.FieldDescription
-import me.snoty.integration.common.model.metadata.FieldName
-import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.data.eachWithSettings
-import me.snoty.integration.common.wiring.logger
-import me.snoty.integration.common.wiring.node.NodeHandler
-import me.snoty.integration.common.wiring.node.NodeSettings
 import org.koin.core.annotation.Single
 
 @Serializable
@@ -43,7 +38,7 @@ data class DiscordSettings(
 	name = "discord",
 	displayName = "Discord",
 	icon = Icon(name = "logos-discord-icon"),
-	position = NodePosition.END,
+	stereotype = NodeStereotype.END,
 	settingsType = DiscordSettings::class,
 	inputType = DiscordWebhook.Message::class
 )

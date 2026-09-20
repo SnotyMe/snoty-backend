@@ -361,6 +361,26 @@ public final class me/snoty/backend/logging/LogbackExtensionsKt {
 	public static final fun toSLF4JLevel (Lch/qos/logback/classic/Level;)Lorg/slf4j/event/Level;
 }
 
+public final class me/snoty/backend/metadata/Icon {
+	public static final field Companion Lme/snoty/backend/metadata/Icon$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lme/snoty/backend/metadata/Icon;
+	public static synthetic fun copy$default (Lme/snoty/backend/metadata/Icon;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lme/snoty/backend/metadata/Icon;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getColor ()Ljava/lang/String;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/metadata/Icon$Companion {
+	public final fun of (Lme/snoty/backend/wiring/node/Icon;)Lme/snoty/backend/metadata/Icon;
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class me/snoty/backend/notifications/Notification {
 	public static final field Companion Lme/snoty/backend/notifications/Notification$Companion;
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Lkotlin/time/Instant;Lkotlin/time/Instant;ILjava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -535,7 +555,7 @@ public abstract interface class me/snoty/backend/scheduling/FlowScheduler {
 	public abstract fun reschedule (Lme/snoty/core/flow/Workflow;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun schedule (Lme/snoty/core/flow/Workflow;Lme/snoty/backend/scheduling/FlowJobRequest;)V
 	public static synthetic fun schedule$default (Lme/snoty/backend/scheduling/FlowScheduler;Lme/snoty/core/flow/Workflow;Lme/snoty/backend/scheduling/FlowJobRequest;ILjava/lang/Object;)V
-	public abstract fun scheduleMissing (Lme/snoty/integration/common/wiring/flow/FlowService;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun scheduleMissing (Lme/snoty/backend/wiring/flow/FlowService;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun trigger (Lme/snoty/core/flow/Workflow;Lme/snoty/backend/scheduling/FlowJobRequest;)V
 }
 
@@ -644,6 +664,235 @@ public abstract interface class me/snoty/backend/scheduling/jobrunr/SnotyJobRunr
 	public abstract fun recurringJobExists (Ljava/lang/String;[Lorg/jobrunr/jobs/states/StateName;)Z
 }
 
+public abstract interface annotation class me/snoty/backend/schema/DisplayName : java/lang/annotation/Annotation {
+	public abstract fun value ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/schema/EmptySchema {
+	public static final field INSTANCE Lme/snoty/backend/schema/EmptySchema;
+}
+
+public abstract interface annotation class me/snoty/backend/schema/FieldCensored : java/lang/annotation/Annotation {
+}
+
+public abstract interface annotation class me/snoty/backend/schema/FieldDefaultValue : java/lang/annotation/Annotation {
+	public abstract fun value ()Ljava/lang/String;
+}
+
+public abstract interface annotation class me/snoty/backend/schema/FieldDescription : java/lang/annotation/Annotation {
+	public abstract fun value ()Ljava/lang/String;
+}
+
+public abstract interface annotation class me/snoty/backend/schema/FieldHidden : java/lang/annotation/Annotation {
+}
+
+public abstract interface annotation class me/snoty/backend/schema/FieldName : java/lang/annotation/Annotation {
+	public abstract fun value ()Ljava/lang/String;
+}
+
+public abstract interface annotation class me/snoty/backend/schema/Language : java/lang/annotation/Annotation {
+	public abstract fun value ()Ljava/lang/String;
+}
+
+public abstract interface annotation class me/snoty/backend/schema/Multiline : java/lang/annotation/Annotation {
+	public static final field Companion Lme/snoty/backend/schema/Multiline$Companion;
+	public static final field DEFAULT_LINES I
+	public static final field DEFAULT_MULTILINE_LINES I
+	public abstract fun values ()I
+}
+
+public final class me/snoty/backend/schema/Multiline$Companion {
+	public static final field DEFAULT_LINES I
+	public static final field DEFAULT_MULTILINE_LINES I
+}
+
+public final class me/snoty/backend/schema/NoSchema {
+	public static final field INSTANCE Lme/snoty/backend/schema/NoSchema;
+}
+
+public final class me/snoty/backend/schema/SchemaField {
+	public static final field Companion Lme/snoty/backend/schema/SchemaField$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLme/snoty/backend/schema/SchemaFieldDetails;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Z
+	public final fun component7 ()Z
+	public final fun component8 ()Lme/snoty/backend/schema/SchemaFieldDetails;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLme/snoty/backend/schema/SchemaFieldDetails;)Lme/snoty/backend/schema/SchemaField;
+	public static synthetic fun copy$default (Lme/snoty/backend/schema/SchemaField;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLme/snoty/backend/schema/SchemaFieldDetails;ILjava/lang/Object;)Lme/snoty/backend/schema/SchemaField;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCensored ()Z
+	public final fun getDefaultValue ()Ljava/lang/String;
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getDetails ()Lme/snoty/backend/schema/SchemaFieldDetails;
+	public final fun getDisplayName ()Ljava/lang/String;
+	public final fun getHidden ()Z
+	public final fun getName ()Ljava/lang/String;
+	public final fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/schema/SchemaField$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract class me/snoty/backend/schema/SchemaFieldDetails {
+	public static final field Companion Lme/snoty/backend/schema/SchemaFieldDetails$Companion;
+	public synthetic fun <init> (ILkotlinx/serialization/internal/SerializationConstructorMarker;)V
+	public static final synthetic fun write$Self (Lme/snoty/backend/schema/SchemaFieldDetails;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+}
+
+public final class me/snoty/backend/schema/SchemaFieldDetails$CollectionDetails : me/snoty/backend/schema/SchemaFieldDetails {
+	public static final field Companion Lme/snoty/backend/schema/SchemaFieldDetails$CollectionDetails$Companion;
+	public fun <init> (Lme/snoty/backend/schema/SchemaFieldDetails;)V
+	public final fun component1 ()Lme/snoty/backend/schema/SchemaFieldDetails;
+	public final fun copy (Lme/snoty/backend/schema/SchemaFieldDetails;)Lme/snoty/backend/schema/SchemaFieldDetails$CollectionDetails;
+	public static synthetic fun copy$default (Lme/snoty/backend/schema/SchemaFieldDetails$CollectionDetails;Lme/snoty/backend/schema/SchemaFieldDetails;ILjava/lang/Object;)Lme/snoty/backend/schema/SchemaFieldDetails$CollectionDetails;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getElementDetails ()Lme/snoty/backend/schema/SchemaFieldDetails;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/schema/SchemaFieldDetails$CollectionDetails$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class me/snoty/backend/schema/SchemaFieldDetails$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class me/snoty/backend/schema/SchemaFieldDetails$CredentialDetails : me/snoty/backend/schema/SchemaFieldDetails {
+	public static final field Companion Lme/snoty/backend/schema/SchemaFieldDetails$CredentialDetails$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/util/List;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/util/List;)Lme/snoty/backend/schema/SchemaFieldDetails$CredentialDetails;
+	public static synthetic fun copy$default (Lme/snoty/backend/schema/SchemaFieldDetails$CredentialDetails;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lme/snoty/backend/schema/SchemaFieldDetails$CredentialDetails;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCredentialType ()Ljava/lang/String;
+	public final fun getSchema ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/schema/SchemaFieldDetails$CredentialDetails$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class me/snoty/backend/schema/SchemaFieldDetails$EnumDetails : me/snoty/backend/schema/SchemaFieldDetails {
+	public static final field Companion Lme/snoty/backend/schema/SchemaFieldDetails$EnumDetails$Companion;
+	public fun <init> (Ljava/util/List;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;)Lme/snoty/backend/schema/SchemaFieldDetails$EnumDetails;
+	public static synthetic fun copy$default (Lme/snoty/backend/schema/SchemaFieldDetails$EnumDetails;Ljava/util/List;ILjava/lang/Object;)Lme/snoty/backend/schema/SchemaFieldDetails$EnumDetails;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getValues ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/schema/SchemaFieldDetails$EnumDetails$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class me/snoty/backend/schema/SchemaFieldDetails$EnumDetails$EnumConstant {
+	public static final field Companion Lme/snoty/backend/schema/SchemaFieldDetails$EnumDetails$EnumConstant$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lme/snoty/backend/schema/SchemaFieldDetails$EnumDetails$EnumConstant;
+	public static synthetic fun copy$default (Lme/snoty/backend/schema/SchemaFieldDetails$EnumDetails$EnumConstant;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lme/snoty/backend/schema/SchemaFieldDetails$EnumDetails$EnumConstant;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDisplayName ()Ljava/lang/String;
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/schema/SchemaFieldDetails$EnumDetails$EnumConstant$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class me/snoty/backend/schema/SchemaFieldDetails$GenericDetails : me/snoty/backend/schema/SchemaFieldDetails {
+	public static final field Companion Lme/snoty/backend/schema/SchemaFieldDetails$GenericDetails$Companion;
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lme/snoty/backend/schema/SchemaFieldDetails$GenericDetails;
+	public static synthetic fun copy$default (Lme/snoty/backend/schema/SchemaFieldDetails$GenericDetails;Ljava/lang/String;ILjava/lang/Object;)Lme/snoty/backend/schema/SchemaFieldDetails$GenericDetails;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getGenericType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/schema/SchemaFieldDetails$GenericDetails$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class me/snoty/backend/schema/SchemaFieldDetails$MapDetails : me/snoty/backend/schema/SchemaFieldDetails {
+	public static final field Companion Lme/snoty/backend/schema/SchemaFieldDetails$MapDetails$Companion;
+	public fun <init> (Lme/snoty/backend/schema/SchemaFieldDetails;Lme/snoty/backend/schema/SchemaFieldDetails;)V
+	public final fun component1 ()Lme/snoty/backend/schema/SchemaFieldDetails;
+	public final fun component2 ()Lme/snoty/backend/schema/SchemaFieldDetails;
+	public final fun copy (Lme/snoty/backend/schema/SchemaFieldDetails;Lme/snoty/backend/schema/SchemaFieldDetails;)Lme/snoty/backend/schema/SchemaFieldDetails$MapDetails;
+	public static synthetic fun copy$default (Lme/snoty/backend/schema/SchemaFieldDetails$MapDetails;Lme/snoty/backend/schema/SchemaFieldDetails;Lme/snoty/backend/schema/SchemaFieldDetails;ILjava/lang/Object;)Lme/snoty/backend/schema/SchemaFieldDetails$MapDetails;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getKeyDetails ()Lme/snoty/backend/schema/SchemaFieldDetails;
+	public final fun getValueDetails ()Lme/snoty/backend/schema/SchemaFieldDetails;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/schema/SchemaFieldDetails$MapDetails$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class me/snoty/backend/schema/SchemaFieldDetails$ObjectDetails : me/snoty/backend/schema/SchemaFieldDetails {
+	public static final field Companion Lme/snoty/backend/schema/SchemaFieldDetails$ObjectDetails$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/util/List;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/util/List;)Lme/snoty/backend/schema/SchemaFieldDetails$ObjectDetails;
+	public static synthetic fun copy$default (Lme/snoty/backend/schema/SchemaFieldDetails$ObjectDetails;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lme/snoty/backend/schema/SchemaFieldDetails$ObjectDetails;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getClassName ()Ljava/lang/String;
+	public final fun getSchema ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/schema/SchemaFieldDetails$ObjectDetails$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class me/snoty/backend/schema/SchemaFieldDetails$PlaintextDetails : me/snoty/backend/schema/SchemaFieldDetails {
+	public static final field Companion Lme/snoty/backend/schema/SchemaFieldDetails$PlaintextDetails$Companion;
+	public fun <init> (I)V
+	public fun <init> (ILjava/lang/String;)V
+	public fun <init> (ILjava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (ILjava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()I
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (ILjava/lang/String;Ljava/lang/String;)Lme/snoty/backend/schema/SchemaFieldDetails$PlaintextDetails;
+	public static synthetic fun copy$default (Lme/snoty/backend/schema/SchemaFieldDetails$PlaintextDetails;ILjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lme/snoty/backend/schema/SchemaFieldDetails$PlaintextDetails;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDefaultValue ()Ljava/lang/String;
+	public final fun getLanguage ()Ljava/lang/String;
+	public final fun getLines ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/schema/SchemaFieldDetails$PlaintextDetails$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public class me/snoty/backend/utils/BadRequestException : me/snoty/backend/utils/HttpStatusException {
 	public fun <init> (Ljava/lang/String;)V
 }
@@ -655,6 +904,7 @@ public class me/snoty/backend/utils/ClassUtils {
 public final class me/snoty/backend/utils/CollectionUtilsKt {
 	public static final fun filterIf (Ljava/util/Collection;ZLkotlin/jvm/functions/Function1;)Ljava/util/Collection;
 	public static final fun filterIfNot (Ljava/util/Collection;ZLkotlin/jvm/functions/Function1;)Ljava/util/Collection;
+	public static final fun filterNot (Ljava/util/Collection;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/util/List;
 	public static final fun skip (Ljava/util/Collection;I)Ljava/util/Collection;
 }
 
@@ -761,7 +1011,14 @@ public final class me/snoty/backend/utils/SecurityUtilsKt {
 }
 
 public final class me/snoty/backend/utils/SerializationUtilsKt {
+	public static final fun getKotlinxSerializersModule ()Lkotlinx/serialization/modules/SerializersModule;
 	public static final fun hackyEncodeToString (Lkotlinx/serialization/json/Json;Ljava/lang/Object;)Ljava/lang/String;
+	public static final fun provideSerializersModule ()Lkotlinx/serialization/modules/SerializersModule;
+}
+
+public final class me/snoty/backend/utils/SnotyJsonKt {
+	public static final fun getBaseSnotyJson ()Lkotlinx/serialization/json/Json;
+	public static final fun snotyJson (Lkotlin/jvm/functions/Function1;)Lkotlinx/serialization/json/Json;
 }
 
 public final class me/snoty/backend/utils/StringUtilsKt {
@@ -809,6 +1066,7 @@ public final class me/snoty/backend/utils/bson/CodecRegistryProvider {
 public final class me/snoty/backend/utils/bson/CodecsKt {
 	public static final fun decode (Lorg/bson/BsonDateTime;)Lkotlinx/datetime/LocalDateTime;
 	public static final fun fromEpochTimeMillis (J)Lkotlinx/datetime/LocalDateTime;
+	public static final fun integrationsApiCodecModule (Lorg/bson/codecs/BsonTypeClassMap;)Lorg/bson/codecs/configuration/CodecRegistry;
 	public static final fun provideApiCodec (Lorg/bson/codecs/BsonTypeClassMap;)Lme/snoty/backend/utils/bson/CodecRegistryProvider;
 }
 
@@ -858,6 +1116,7 @@ public final class me/snoty/backend/utils/bson/LocalDateTimeCodec : org/bson/cod
 }
 
 public final class me/snoty/backend/utils/bson/StandardBsonCodecsKt {
+	public static final fun bsonTypeClassMap ()Lorg/bson/codecs/BsonTypeClassMap;
 	public static final fun provideCodecRegistry (Ljava/util/List;)Lorg/bson/codecs/configuration/CodecRegistry;
 	public static final fun provideCodecRegistry ([Lme/snoty/backend/utils/bson/CodecRegistryProvider;)Lorg/bson/codecs/configuration/CodecRegistry;
 	public static final fun provideDocumentCodec (Lorg/bson/codecs/configuration/CodecRegistry;Lorg/bson/codecs/BsonTypeClassMap;)Lorg/bson/codecs/DocumentCodec;
@@ -883,6 +1142,11 @@ public final class me/snoty/backend/utils/errors/CaughtExceptionKt {
 	public static final fun nullIfCaught (Ljava/lang/Throwable;)Ljava/lang/Throwable;
 }
 
+public final class me/snoty/backend/utils/http/FlowErrorsKt {
+	public static final fun flowNotFound-ORh-CRg (Lio/ktor/server/application/ApplicationCall;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun invalidFlowId (Lio/ktor/server/application/ApplicationCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
 public final class me/snoty/backend/utils/http/HttpClientProviderKt {
 	public static final fun configureBase (Lio/ktor/client/HttpClientConfig;Lio/opentelemetry/api/OpenTelemetry;)V
 	public static final fun httpClient (Lio/opentelemetry/api/OpenTelemetry;Lme/snoty/backend/utils/http/ProxyConfigWrapper;)Lio/ktor/client/HttpClient;
@@ -896,6 +1160,11 @@ public final class me/snoty/backend/utils/http/HttpProxyUtilsKt {
 public final class me/snoty/backend/utils/http/KtorUtilsKt {
 	public static final fun clone (Lio/ktor/client/HttpClient;Lkotlin/jvm/functions/Function1;)Lio/ktor/client/HttpClient;
 	public static synthetic fun clone$default (Lio/ktor/client/HttpClient;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lio/ktor/client/HttpClient;
+}
+
+public final class me/snoty/backend/utils/http/NodeErrorsKt {
+	public static final fun invalidNodeId (Lio/ktor/server/application/ApplicationCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun nodeNotFound-GLa--o0 (Lio/ktor/server/application/ApplicationCall;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class me/snoty/backend/utils/http/ProxyConfig {
@@ -930,6 +1199,73 @@ public final class me/snoty/backend/utils/http/ProxyType : java/lang/Enum {
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lme/snoty/backend/utils/http/ProxyType;
 	public static fun values ()[Lme/snoty/backend/utils/http/ProxyType;
+}
+
+public final class me/snoty/backend/utils/jsonrpc/JsonRpcKt {
+	public static final fun getJsonRpc (Lio/ktor/http/ContentType$Application;)Lio/ktor/http/ContentType;
+	public static final fun getRPC_REQUEST_ATTRIBUTE ()Lio/ktor/util/AttributeKey;
+	public static final fun rpcConfig (Lio/ktor/client/HttpClient;Lkotlin/jvm/functions/Function1;)Lio/ktor/client/HttpClient;
+	public static final fun setRPCAttributes (Lio/opentelemetry/api/common/AttributesBuilder;Lme/snoty/backend/utils/jsonrpc/JsonRpcRequest;)V
+	public static final fun setRpcBody (Lio/ktor/client/request/HttpRequestBuilder;Lme/snoty/backend/utils/jsonrpc/JsonRpcRequest;)V
+}
+
+public abstract interface class me/snoty/backend/utils/jsonrpc/JsonRpcRequest {
+	public abstract fun getMethod ()Ljava/lang/String;
+	public abstract fun getVersion ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/utils/jsonrpc/JsonRpcResponse {
+	public static final field Companion Lme/snoty/backend/utils/jsonrpc/JsonRpcResponse$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/Object;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)Lme/snoty/backend/utils/jsonrpc/JsonRpcResponse;
+	public static synthetic fun copy$default (Lme/snoty/backend/utils/jsonrpc/JsonRpcResponse;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;ILjava/lang/Object;)Lme/snoty/backend/utils/jsonrpc/JsonRpcResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getId ()Ljava/lang/String;
+	public final fun getJsonRpc ()Ljava/lang/String;
+	public final fun getResult ()Ljava/lang/Object;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/utils/jsonrpc/JsonRpcResponse$Companion {
+	public final fun serializer (Lkotlinx/serialization/KSerializer;)Lkotlinx/serialization/KSerializer;
+}
+
+public final class me/snoty/backend/utils/proxy/ProxyCredential : me/snoty/backend/wiring/credential/Credential {
+	public static final field Companion Lme/snoty/backend/utils/proxy/ProxyCredential$Companion;
+	public fun <init> (Lme/snoty/backend/utils/proxy/ProxyType;Ljava/lang/String;I)V
+	public final fun component1 ()Lme/snoty/backend/utils/proxy/ProxyType;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()I
+	public final fun copy (Lme/snoty/backend/utils/proxy/ProxyType;Ljava/lang/String;I)Lme/snoty/backend/utils/proxy/ProxyCredential;
+	public static synthetic fun copy$default (Lme/snoty/backend/utils/proxy/ProxyCredential;Lme/snoty/backend/utils/proxy/ProxyType;Ljava/lang/String;IILjava/lang/Object;)Lme/snoty/backend/utils/proxy/ProxyCredential;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getHost ()Ljava/lang/String;
+	public final fun getPort ()I
+	public final fun getType ()Lme/snoty/backend/utils/proxy/ProxyType;
+	public fun hashCode ()I
+	public final fun toProxyConfig ()Lme/snoty/backend/utils/http/ProxyConfig;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/utils/proxy/ProxyCredential$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class me/snoty/backend/utils/proxy/ProxyType : java/lang/Enum {
+	public static final field HTTP Lme/snoty/backend/utils/proxy/ProxyType;
+	public static final field SOCKS Lme/snoty/backend/utils/proxy/ProxyType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lme/snoty/backend/utils/proxy/ProxyType;
+	public static fun values ()[Lme/snoty/backend/utils/proxy/ProxyType;
+}
+
+public final class me/snoty/backend/utils/proxy/ProxyUtilsKt {
+	public static final fun withOptionalProxy (Lio/ktor/client/HttpClient;Lme/snoty/backend/utils/proxy/ProxyCredential;)Lio/ktor/client/HttpClient;
+	public static final fun withProxy (Lio/ktor/client/HttpClient;Lme/snoty/backend/utils/proxy/ProxyCredential;)Lio/ktor/client/HttpClient;
 }
 
 public abstract class me/snoty/backend/wiring/credential/Credential {
@@ -1131,6 +1467,200 @@ public final class me/snoty/backend/wiring/credential/dto/PotentiallyAccessibleC
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public abstract interface class me/snoty/backend/wiring/data/IntermediateData {
+	public abstract fun getValue ()Ljava/lang/Object;
+}
+
+public abstract interface class me/snoty/backend/wiring/data/IntermediateDataMapper {
+	public abstract fun deserialize (Lme/snoty/backend/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+	public fun deserializeUnsafe (Lme/snoty/backend/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+	public abstract fun getIntermediateDataClass ()Lkotlin/reflect/KClass;
+	public abstract fun getPriority ()I
+	public abstract fun serialize (Ljava/lang/Object;)Lme/snoty/backend/wiring/data/IntermediateData;
+	public abstract fun supports (Lkotlin/reflect/KClass;)Z
+}
+
+public final class me/snoty/backend/wiring/data/IntermediateDataMapper$DefaultImpls {
+	public static fun deserializeUnsafe (Lme/snoty/backend/wiring/data/IntermediateDataMapper;Lme/snoty/backend/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+}
+
+public abstract interface class me/snoty/backend/wiring/data/IntermediateDataMapperRegistry {
+	public abstract fun get (Lkotlin/reflect/KClass;)Lme/snoty/backend/wiring/data/IntermediateDataMapper;
+	public abstract fun getFirstCompatibleMapper (Lkotlin/reflect/KClass;)Lme/snoty/backend/wiring/data/IntermediateDataMapper;
+}
+
+public final class me/snoty/backend/wiring/data/IntermediateDataMapperRegistryImpl : me/snoty/backend/wiring/data/IntermediateDataMapperRegistry {
+	public fun <init> (Ljava/util/List;)V
+	public fun get (Lkotlin/reflect/KClass;)Lme/snoty/backend/wiring/data/IntermediateDataMapper;
+	public fun getFirstCompatibleMapper (Lkotlin/reflect/KClass;)Lme/snoty/backend/wiring/data/IntermediateDataMapper;
+}
+
+public final class me/snoty/backend/wiring/data/NodeOutputKt {
+	public static final fun iterableStructOutput (Lme/snoty/backend/wiring/node/NodeHandleContext;Ljava/lang/Iterable;)Ljava/util/Collection;
+	public static final fun polymorphicOutput (Lme/snoty/backend/wiring/node/NodeHandleContext;[Ljava/lang/Object;)Ljava/util/List;
+	public static final fun serializeBson (Lme/snoty/backend/wiring/node/NodeHandleContext;Ljava/lang/Object;)Lme/snoty/backend/wiring/data/impl/BsonIntermediateData;
+	public static final fun serializePolymorphic (Lme/snoty/backend/wiring/node/NodeHandleContext;Ljava/lang/Object;)Lme/snoty/backend/wiring/data/IntermediateData;
+	public static final fun simpleOutput (Lme/snoty/backend/wiring/node/NodeHandleContext;[Ljava/lang/Object;)Ljava/util/Collection;
+	public static final fun structOutput (Lme/snoty/backend/wiring/node/NodeHandleContext;[Ljava/lang/Object;)Ljava/util/List;
+}
+
+public final class me/snoty/backend/wiring/data/impl/BsonIntermediateData : me/snoty/backend/wiring/data/IntermediateData {
+	public fun <init> (Lorg/bson/Document;Lorg/bson/codecs/DocumentCodec;)V
+	public final fun component1 ()Lorg/bson/Document;
+	public final fun component2 ()Lorg/bson/codecs/DocumentCodec;
+	public final fun copy (Lorg/bson/Document;Lorg/bson/codecs/DocumentCodec;)Lme/snoty/backend/wiring/data/impl/BsonIntermediateData;
+	public static synthetic fun copy$default (Lme/snoty/backend/wiring/data/impl/BsonIntermediateData;Lorg/bson/Document;Lorg/bson/codecs/DocumentCodec;ILjava/lang/Object;)Lme/snoty/backend/wiring/data/impl/BsonIntermediateData;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDocumentCodec ()Lorg/bson/codecs/DocumentCodec;
+	public synthetic fun getValue ()Ljava/lang/Object;
+	public fun getValue ()Lorg/bson/Document;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/data/impl/BsonIntermediateDataMapper : me/snoty/backend/wiring/data/IntermediateDataMapper {
+	public fun <init> (Lorg/bson/codecs/configuration/CodecRegistry;Lorg/bson/codecs/DocumentCodec;)V
+	public synthetic fun deserialize (Lme/snoty/backend/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+	public fun deserialize (Lme/snoty/backend/wiring/data/impl/BsonIntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+	public fun deserializeUnsafe (Lme/snoty/backend/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+	public fun getIntermediateDataClass ()Lkotlin/reflect/KClass;
+	public fun getPriority ()I
+	public synthetic fun serialize (Ljava/lang/Object;)Lme/snoty/backend/wiring/data/IntermediateData;
+	public fun serialize (Ljava/lang/Object;)Lme/snoty/backend/wiring/data/impl/BsonIntermediateData;
+	public fun supports (Lkotlin/reflect/KClass;)Z
+}
+
+public final class me/snoty/backend/wiring/data/impl/SimpleIntermediateData : me/snoty/backend/wiring/data/IntermediateData {
+	public fun <init> (Ljava/lang/Object;Lkotlin/reflect/KClass;)V
+	public synthetic fun <init> (Ljava/lang/Object;Lkotlin/reflect/KClass;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Object;
+	public final fun component2 ()Lkotlin/reflect/KClass;
+	public final fun copy (Ljava/lang/Object;Lkotlin/reflect/KClass;)Lme/snoty/backend/wiring/data/impl/SimpleIntermediateData;
+	public static synthetic fun copy$default (Lme/snoty/backend/wiring/data/impl/SimpleIntermediateData;Ljava/lang/Object;Lkotlin/reflect/KClass;ILjava/lang/Object;)Lme/snoty/backend/wiring/data/impl/SimpleIntermediateData;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getValue ()Ljava/lang/Object;
+	public final fun getValueType ()Lkotlin/reflect/KClass;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/data/impl/SimpleIntermediateDataMapper : me/snoty/backend/wiring/data/IntermediateDataMapper {
+	public fun <init> ()V
+	public synthetic fun deserialize (Lme/snoty/backend/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+	public fun deserialize (Lme/snoty/backend/wiring/data/impl/SimpleIntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+	public fun deserializeUnsafe (Lme/snoty/backend/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+	public fun getIntermediateDataClass ()Lkotlin/reflect/KClass;
+	public fun getPriority ()I
+	public synthetic fun serialize (Ljava/lang/Object;)Lme/snoty/backend/wiring/data/IntermediateData;
+	public fun serialize (Ljava/lang/Object;)Lme/snoty/backend/wiring/data/impl/SimpleIntermediateData;
+	public fun supports (Lkotlin/reflect/KClass;)Z
+}
+
+public final class me/snoty/backend/wiring/execution/EnumeratedFlowExecution {
+	public static final field Companion Lme/snoty/backend/wiring/execution/EnumeratedFlowExecution$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/scheduling/FlowTriggerReason;Lkotlin/time/Instant;Lme/snoty/backend/wiring/execution/FlowExecutionStatus;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2-L9EeXao ()Ljava/lang/String;
+	public final fun component3 ()Lme/snoty/backend/scheduling/FlowTriggerReason;
+	public final fun component4 ()Lkotlin/time/Instant;
+	public final fun component5 ()Lme/snoty/backend/wiring/execution/FlowExecutionStatus;
+	public final fun copy-KvP62i8 (Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/scheduling/FlowTriggerReason;Lkotlin/time/Instant;Lme/snoty/backend/wiring/execution/FlowExecutionStatus;)Lme/snoty/backend/wiring/execution/EnumeratedFlowExecution;
+	public static synthetic fun copy-KvP62i8$default (Lme/snoty/backend/wiring/execution/EnumeratedFlowExecution;Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/scheduling/FlowTriggerReason;Lkotlin/time/Instant;Lme/snoty/backend/wiring/execution/FlowExecutionStatus;ILjava/lang/Object;)Lme/snoty/backend/wiring/execution/EnumeratedFlowExecution;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFlowId-L9EeXao ()Ljava/lang/String;
+	public final fun getJobId ()Ljava/lang/String;
+	public final fun getStatus ()Lme/snoty/backend/wiring/execution/FlowExecutionStatus;
+	public final fun getTimestamp ()Lkotlin/time/Instant;
+	public final fun getTriggeredBy ()Lme/snoty/backend/scheduling/FlowTriggerReason;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/execution/EnumeratedFlowExecution$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class me/snoty/backend/wiring/execution/FlowExecution {
+	public static final field Companion Lme/snoty/backend/wiring/execution/FlowExecution$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/scheduling/FlowTriggerReason;Lkotlin/time/Instant;Lme/snoty/backend/wiring/execution/FlowExecutionStatus;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2-L9EeXao ()Ljava/lang/String;
+	public final fun component3 ()Lme/snoty/backend/scheduling/FlowTriggerReason;
+	public final fun component4 ()Lkotlin/time/Instant;
+	public final fun component5 ()Lme/snoty/backend/wiring/execution/FlowExecutionStatus;
+	public final fun component6 ()Ljava/util/List;
+	public final fun copy-_oGTP5U (Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/scheduling/FlowTriggerReason;Lkotlin/time/Instant;Lme/snoty/backend/wiring/execution/FlowExecutionStatus;Ljava/util/List;)Lme/snoty/backend/wiring/execution/FlowExecution;
+	public static synthetic fun copy-_oGTP5U$default (Lme/snoty/backend/wiring/execution/FlowExecution;Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/scheduling/FlowTriggerReason;Lkotlin/time/Instant;Lme/snoty/backend/wiring/execution/FlowExecutionStatus;Ljava/util/List;ILjava/lang/Object;)Lme/snoty/backend/wiring/execution/FlowExecution;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFlowId-L9EeXao ()Ljava/lang/String;
+	public final fun getJobId ()Ljava/lang/String;
+	public final fun getLogs ()Ljava/util/List;
+	public final fun getStatus ()Lme/snoty/backend/wiring/execution/FlowExecutionStatus;
+	public final fun getTimestamp ()Lkotlin/time/Instant;
+	public final fun getTriggeredBy ()Lme/snoty/backend/scheduling/FlowTriggerReason;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/execution/FlowExecution$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class me/snoty/backend/wiring/execution/FlowExecutionStatus : java/lang/Enum {
+	public static final field FAILED Lme/snoty/backend/wiring/execution/FlowExecutionStatus;
+	public static final field RUNNING Lme/snoty/backend/wiring/execution/FlowExecutionStatus;
+	public static final field SUCCESS Lme/snoty/backend/wiring/execution/FlowExecutionStatus;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lme/snoty/backend/wiring/execution/FlowExecutionStatus;
+	public static fun values ()[Lme/snoty/backend/wiring/execution/FlowExecutionStatus;
+}
+
+public final class me/snoty/backend/wiring/execution/NodeLogEntry {
+	public static final field Companion Lme/snoty/backend/wiring/execution/NodeLogEntry$Companion;
+	public synthetic fun <init> (Lkotlin/time/Instant;Lorg/slf4j/event/Level;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lkotlin/time/Instant;
+	public final fun component2 ()Lorg/slf4j/event/Level;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4-BNEWlyw ()Ljava/lang/String;
+	public final fun copy-wVhzK14 (Lkotlin/time/Instant;Lorg/slf4j/event/Level;Ljava/lang/String;Ljava/lang/String;)Lme/snoty/backend/wiring/execution/NodeLogEntry;
+	public static synthetic fun copy-wVhzK14$default (Lme/snoty/backend/wiring/execution/NodeLogEntry;Lkotlin/time/Instant;Lorg/slf4j/event/Level;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lme/snoty/backend/wiring/execution/NodeLogEntry;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLevel ()Lorg/slf4j/event/Level;
+	public final fun getMessage ()Ljava/lang/String;
+	public final fun getNode-BNEWlyw ()Ljava/lang/String;
+	public final fun getTimestamp ()Lkotlin/time/Instant;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/execution/NodeLogEntry$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class me/snoty/backend/wiring/execution/NodeLogEntryDto {
+	public static final field Companion Lme/snoty/backend/wiring/execution/NodeLogEntryDto$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/time/Instant;Lorg/slf4j/event/Level;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lkotlin/time/Instant;
+	public final fun component3 ()Lorg/slf4j/event/Level;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5-BNEWlyw ()Ljava/lang/String;
+	public final fun copy-qkGyKfo (Ljava/lang/String;Lkotlin/time/Instant;Lorg/slf4j/event/Level;Ljava/lang/String;Ljava/lang/String;)Lme/snoty/backend/wiring/execution/NodeLogEntryDto;
+	public static synthetic fun copy-qkGyKfo$default (Lme/snoty/backend/wiring/execution/NodeLogEntryDto;Ljava/lang/String;Lkotlin/time/Instant;Lorg/slf4j/event/Level;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lme/snoty/backend/wiring/execution/NodeLogEntryDto;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getId ()Ljava/lang/String;
+	public final fun getLevel ()Lorg/slf4j/event/Level;
+	public final fun getMessage ()Ljava/lang/String;
+	public final fun getNode-BNEWlyw ()Ljava/lang/String;
+	public final fun getTimestamp ()Lkotlin/time/Instant;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/execution/NodeLogEntryDto$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class me/snoty/backend/wiring/flow/CensoredField {
 	public static final field Companion Lme/snoty/backend/wiring/flow/CensoredField$Companion;
 	public fun <init> (Ljava/lang/String;Z)V
@@ -1174,20 +1704,20 @@ public final class me/snoty/backend/wiring/flow/ExportFlow$Companion {
 
 public final class me/snoty/backend/wiring/flow/ExportNode {
 	public static final field Companion Lme/snoty/backend/wiring/flow/ExportNode$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/wiring/node/NodePosition;Lorg/bson/Document;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2-EVnYJLk ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun component4 ()Lme/snoty/integration/common/wiring/node/NodePosition;
+	public final fun component4 ()Lme/snoty/backend/wiring/node/NodePosition;
 	public final fun component5 ()Lorg/bson/Document;
 	public final fun component6 ()Ljava/util/List;
-	public final fun copy-crUIbRM (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/util/List;)Lme/snoty/backend/wiring/flow/ExportNode;
-	public static synthetic fun copy-crUIbRM$default (Lme/snoty/backend/wiring/flow/ExportNode;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/util/List;ILjava/lang/Object;)Lme/snoty/backend/wiring/flow/ExportNode;
+	public final fun copy-crUIbRM (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/wiring/node/NodePosition;Lorg/bson/Document;Ljava/util/List;)Lme/snoty/backend/wiring/flow/ExportNode;
+	public static synthetic fun copy-crUIbRM$default (Lme/snoty/backend/wiring/flow/ExportNode;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/wiring/node/NodePosition;Lorg/bson/Document;Ljava/util/List;ILjava/lang/Object;)Lme/snoty/backend/wiring/flow/ExportNode;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getId ()Ljava/lang/String;
 	public final fun getName ()Ljava/lang/String;
 	public final fun getNext ()Ljava/util/List;
-	public final fun getPosition ()Lme/snoty/integration/common/wiring/node/NodePosition;
+	public final fun getPosition ()Lme/snoty/backend/wiring/node/NodePosition;
 	public final fun getSettings ()Lorg/bson/Document;
 	public final fun getType-EVnYJLk ()Ljava/lang/String;
 	public fun hashCode ()I
@@ -1213,6 +1743,25 @@ public final class me/snoty/backend/wiring/flow/FlowFeatureFlags : me/snoty/back
 	public fun getValue (Lme/snoty/backend/featureflags/FeatureFlag;Lme/snoty/backend/featureflags/FeatureFlagsContainer;Ljava/lang/Object;)Ljava/lang/Object;
 }
 
+public abstract interface class me/snoty/backend/wiring/flow/FlowManagementService {
+	public abstract fun deleteFlowCascading (Lme/snoty/core/flow/Workflow;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class me/snoty/backend/wiring/flow/FlowRunner {
+	public abstract fun execute (Ljava/lang/String;Lme/snoty/backend/scheduling/FlowTriggerReason;Lorg/slf4j/Logger;Lorg/slf4j/event/Level;Lme/snoty/core/flow/WorkflowWithNodes;Ljava/util/Collection;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class me/snoty/backend/wiring/flow/FlowService {
+	public abstract fun create-Kj1tVJ8 (Ljava/lang/String;Ljava/lang/String;Lme/snoty/core/flow/WorkflowSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun delete (Lme/snoty/core/flow/Workflow;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getAll ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getStandalone-r-kuNrI (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getWithNodes-e-VO5GA (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun query-nxKDBKo (Ljava/lang/String;)Lkotlinx/coroutines/flow/Flow;
+	public abstract fun rename (Lme/snoty/core/flow/Workflow;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun updateSettings (Lme/snoty/core/flow/Workflow;Lme/snoty/core/flow/WorkflowSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
 public final class me/snoty/backend/wiring/flow/ImportFlow {
 	public static final field Companion Lme/snoty/backend/wiring/flow/ImportFlow$Companion;
 	public fun <init> (Ljava/lang/String;Lme/snoty/core/flow/WorkflowSettings;Ljava/util/List;)V
@@ -1236,23 +1785,23 @@ public final class me/snoty/backend/wiring/flow/ImportFlow$Companion {
 
 public final class me/snoty/backend/wiring/flow/ImportNode {
 	public static final field Companion Lme/snoty/backend/wiring/flow/ImportNode$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Lme/snoty/backend/wiring/flow/ImportNodeDescriptor;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Lme/snoty/backend/wiring/flow/ImportNodeDescriptor;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lme/snoty/backend/wiring/flow/ImportNodeDescriptor;Ljava/lang/String;Lme/snoty/backend/wiring/node/NodePosition;Lorg/bson/Document;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lme/snoty/backend/wiring/flow/ImportNodeDescriptor;Ljava/lang/String;Lme/snoty/backend/wiring/node/NodePosition;Lorg/bson/Document;Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Lme/snoty/backend/wiring/flow/ImportNodeDescriptor;
 	public final fun component3-EVnYJLk ()Ljava/lang/String;
-	public final fun component4 ()Lme/snoty/integration/common/wiring/node/NodePosition;
+	public final fun component4 ()Lme/snoty/backend/wiring/node/NodePosition;
 	public final fun component5 ()Lorg/bson/Document;
 	public final fun component6 ()Ljava/lang/String;
 	public final fun component7 ()Ljava/util/List;
-	public final fun copy-iCzHdLg (Ljava/lang/String;Lme/snoty/backend/wiring/flow/ImportNodeDescriptor;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/lang/String;Ljava/util/List;)Lme/snoty/backend/wiring/flow/ImportNode;
-	public static synthetic fun copy-iCzHdLg$default (Lme/snoty/backend/wiring/flow/ImportNode;Ljava/lang/String;Lme/snoty/backend/wiring/flow/ImportNodeDescriptor;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Lorg/bson/Document;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lme/snoty/backend/wiring/flow/ImportNode;
+	public final fun copy-iCzHdLg (Ljava/lang/String;Lme/snoty/backend/wiring/flow/ImportNodeDescriptor;Ljava/lang/String;Lme/snoty/backend/wiring/node/NodePosition;Lorg/bson/Document;Ljava/lang/String;Ljava/util/List;)Lme/snoty/backend/wiring/flow/ImportNode;
+	public static synthetic fun copy-iCzHdLg$default (Lme/snoty/backend/wiring/flow/ImportNode;Ljava/lang/String;Lme/snoty/backend/wiring/flow/ImportNodeDescriptor;Ljava/lang/String;Lme/snoty/backend/wiring/node/NodePosition;Lorg/bson/Document;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lme/snoty/backend/wiring/flow/ImportNode;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDescriptor ()Lme/snoty/backend/wiring/flow/ImportNodeDescriptor;
 	public final fun getId ()Ljava/lang/String;
 	public final fun getName ()Ljava/lang/String;
 	public final fun getNext ()Ljava/util/List;
-	public final fun getPosition ()Lme/snoty/integration/common/wiring/node/NodePosition;
+	public final fun getPosition ()Lme/snoty/backend/wiring/node/NodePosition;
 	public final fun getSettings ()Lorg/bson/Document;
 	public final fun getType-EVnYJLk ()Ljava/lang/String;
 	public fun hashCode ()I
@@ -1281,6 +1830,9 @@ public final class me/snoty/backend/wiring/flow/ImportNodeDescriptor$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public abstract interface class me/snoty/backend/wiring/flow/NodeDeletedHook : kotlin/coroutines/jvm/internal/SuspendFunction, kotlin/jvm/functions/Function2 {
+}
+
 public abstract interface class me/snoty/backend/wiring/flow/execution/ExecutionEventAdapter : me/snoty/backend/adapter/Adapter {
 	public static final field CONFIG_GROUP Ljava/lang/String;
 	public static final field Companion Lme/snoty/backend/wiring/flow/execution/ExecutionEventAdapter$Companion;
@@ -1302,7 +1854,7 @@ public abstract class me/snoty/backend/wiring/flow/execution/FlowExecutionEvent 
 	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getEventType ()Ljava/lang/String;
 	public abstract fun getFlowId-L9EeXao ()Ljava/lang/String;
-	public abstract fun getStatus ()Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;
+	public abstract fun getStatus ()Lme/snoty/backend/wiring/execution/FlowExecutionStatus;
 	public final fun getTimestamp ()Lkotlin/time/Instant;
 	public abstract fun getUserId-nVF4Fqw ()Ljava/lang/String;
 	public static final synthetic fun write$Self (Lme/snoty/backend/wiring/flow/execution/FlowExecutionEvent;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
@@ -1314,17 +1866,17 @@ public final class me/snoty/backend/wiring/flow/execution/FlowExecutionEvent$Com
 
 public final class me/snoty/backend/wiring/flow/execution/FlowExecutionEvent$FlowEndedEvent : me/snoty/backend/wiring/flow/execution/FlowExecutionEvent {
 	public static final field Companion Lme/snoty/backend/wiring/flow/execution/FlowExecutionEvent$FlowEndedEvent$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/wiring/execution/FlowExecutionStatus;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-nVF4Fqw ()Ljava/lang/String;
 	public final fun component2-L9EeXao ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun component4 ()Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;
-	public final fun copy-MQXB_vA (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;)Lme/snoty/backend/wiring/flow/execution/FlowExecutionEvent$FlowEndedEvent;
-	public static synthetic fun copy-MQXB_vA$default (Lme/snoty/backend/wiring/flow/execution/FlowExecutionEvent$FlowEndedEvent;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;ILjava/lang/Object;)Lme/snoty/backend/wiring/flow/execution/FlowExecutionEvent$FlowEndedEvent;
+	public final fun component4 ()Lme/snoty/backend/wiring/execution/FlowExecutionStatus;
+	public final fun copy-MQXB_vA (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/wiring/execution/FlowExecutionStatus;)Lme/snoty/backend/wiring/flow/execution/FlowExecutionEvent$FlowEndedEvent;
+	public static synthetic fun copy-MQXB_vA$default (Lme/snoty/backend/wiring/flow/execution/FlowExecutionEvent$FlowEndedEvent;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/wiring/execution/FlowExecutionStatus;ILjava/lang/Object;)Lme/snoty/backend/wiring/flow/execution/FlowExecutionEvent$FlowEndedEvent;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getFlowId-L9EeXao ()Ljava/lang/String;
 	public final fun getJobId ()Ljava/lang/String;
-	public fun getStatus ()Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;
+	public fun getStatus ()Lme/snoty/backend/wiring/execution/FlowExecutionStatus;
 	public fun getUserId-nVF4Fqw ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -1336,18 +1888,18 @@ public final class me/snoty/backend/wiring/flow/execution/FlowExecutionEvent$Flo
 
 public final class me/snoty/backend/wiring/flow/execution/FlowExecutionEvent$FlowLogEvent : me/snoty/backend/wiring/flow/execution/FlowExecutionEvent {
 	public static final field Companion Lme/snoty/backend/wiring/flow/execution/FlowExecutionEvent$FlowLogEvent$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/flow/NodeLogEntryDto;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/wiring/execution/NodeLogEntryDto;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-nVF4Fqw ()Ljava/lang/String;
 	public final fun component2-L9EeXao ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun component4 ()Lme/snoty/integration/common/wiring/flow/NodeLogEntryDto;
-	public final fun copy-MQXB_vA (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/flow/NodeLogEntryDto;)Lme/snoty/backend/wiring/flow/execution/FlowExecutionEvent$FlowLogEvent;
-	public static synthetic fun copy-MQXB_vA$default (Lme/snoty/backend/wiring/flow/execution/FlowExecutionEvent$FlowLogEvent;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/flow/NodeLogEntryDto;ILjava/lang/Object;)Lme/snoty/backend/wiring/flow/execution/FlowExecutionEvent$FlowLogEvent;
+	public final fun component4 ()Lme/snoty/backend/wiring/execution/NodeLogEntryDto;
+	public final fun copy-MQXB_vA (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/wiring/execution/NodeLogEntryDto;)Lme/snoty/backend/wiring/flow/execution/FlowExecutionEvent$FlowLogEvent;
+	public static synthetic fun copy-MQXB_vA$default (Lme/snoty/backend/wiring/flow/execution/FlowExecutionEvent$FlowLogEvent;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/wiring/execution/NodeLogEntryDto;ILjava/lang/Object;)Lme/snoty/backend/wiring/flow/execution/FlowExecutionEvent$FlowLogEvent;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getEntry ()Lme/snoty/integration/common/wiring/flow/NodeLogEntryDto;
+	public final fun getEntry ()Lme/snoty/backend/wiring/execution/NodeLogEntryDto;
 	public fun getFlowId-L9EeXao ()Ljava/lang/String;
 	public final fun getJobId ()Ljava/lang/String;
-	public fun getStatus ()Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;
+	public fun getStatus ()Lme/snoty/backend/wiring/execution/FlowExecutionStatus;
 	public fun getUserId-nVF4Fqw ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -1369,7 +1921,7 @@ public final class me/snoty/backend/wiring/flow/execution/FlowExecutionEvent$Flo
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getFlowId-L9EeXao ()Ljava/lang/String;
 	public final fun getJobId ()Ljava/lang/String;
-	public fun getStatus ()Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;
+	public fun getStatus ()Lme/snoty/backend/wiring/execution/FlowExecutionStatus;
 	public final fun getTriggeredBy ()Lme/snoty/backend/scheduling/FlowTriggerReason;
 	public fun getUserId-nVF4Fqw ()Ljava/lang/String;
 	public fun hashCode ()I
@@ -1392,8 +1944,8 @@ public abstract interface class me/snoty/backend/wiring/flow/execution/FlowExecu
 	public abstract fun query (Lme/snoty/core/flow/Workflow;Ljava/lang/String;I)Lkotlinx/coroutines/flow/Flow;
 	public static synthetic fun query$default (Lme/snoty/backend/wiring/flow/execution/FlowExecutionService;Lme/snoty/core/flow/Workflow;Ljava/lang/String;IILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
 	public abstract fun query-nxKDBKo (Ljava/lang/String;)Lkotlinx/coroutines/flow/Flow;
-	public abstract fun record (Ljava/lang/String;Lme/snoty/integration/common/wiring/flow/NodeLogEntry;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun setExecutionStatus (Ljava/lang/String;Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun record (Ljava/lang/String;Lme/snoty/backend/wiring/execution/NodeLogEntry;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun setExecutionStatus (Ljava/lang/String;Lme/snoty/backend/wiring/execution/FlowExecutionStatus;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class me/snoty/backend/wiring/flow/execution/FlowExecutionService$DefaultImpls {
@@ -1417,28 +1969,475 @@ public abstract interface class me/snoty/backend/wiring/flow/import/FlowImportSe
 	public abstract fun import-e2u1ZQw (Ljava/lang/String;Lme/snoty/backend/wiring/flow/ImportFlow;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class me/snoty/backend/wiring/node/NodeMetadataUtilsKt {
-	public static final fun getMetadataJson ()Lkotlinx/serialization/json/Json;
+public final class me/snoty/backend/wiring/node/EmptyNodeSettings : me/snoty/backend/wiring/node/NodeSettings {
+	public static final field Companion Lme/snoty/backend/wiring/node/EmptyNodeSettings$Companion;
+	public fun <init> ()V
+	public fun <init> (Z)V
+	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (Z)Lme/snoty/backend/wiring/node/EmptyNodeSettings;
+	public static synthetic fun copy$default (Lme/snoty/backend/wiring/node/EmptyNodeSettings;ZILjava/lang/Object;)Lme/snoty/backend/wiring/node/EmptyNodeSettings;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
-public final class me/snoty/backend/wiring/node/NodeRegistryImpl : me/snoty/integration/common/wiring/node/NodeRegistry {
+public final class me/snoty/backend/wiring/node/EmptyNodeSettings$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class me/snoty/backend/wiring/node/EmptyNodeSettingsCodec : org/bson/codecs/Codec {
+	public static final field INSTANCE Lme/snoty/backend/wiring/node/EmptyNodeSettingsCodec;
+	public synthetic fun decode (Lorg/bson/BsonReader;Lorg/bson/codecs/DecoderContext;)Ljava/lang/Object;
+	public fun decode (Lorg/bson/BsonReader;Lorg/bson/codecs/DecoderContext;)Lme/snoty/backend/wiring/node/EmptyNodeSettings;
+	public synthetic fun encode (Lorg/bson/BsonWriter;Ljava/lang/Object;Lorg/bson/codecs/EncoderContext;)V
+	public fun encode (Lorg/bson/BsonWriter;Lme/snoty/backend/wiring/node/EmptyNodeSettings;Lorg/bson/codecs/EncoderContext;)V
+	public fun getEncoderClass ()Ljava/lang/Class;
+}
+
+public abstract interface annotation class me/snoty/backend/wiring/node/Icon : java/lang/annotation/Annotation {
+	public abstract fun color ()Ljava/lang/String;
+	public abstract fun name ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/node/InvalidNodeSettings : me/snoty/backend/wiring/node/NodeSettings {
+	public static final field Companion Lme/snoty/backend/wiring/node/InvalidNodeSettings$Companion;
 	public fun <init> ()V
-	public fun getHandlers ()Ljava/util/Map;
-	public fun getMetadata ()Ljava/util/Map;
-	public fun getMetadata-d5fXedA (Ljava/lang/String;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
-	public fun getMetadataOrNull-d5fXedA (Ljava/lang/String;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
-	public fun lookupHandler-d5fXedA (Ljava/lang/String;)Lme/snoty/integration/common/wiring/node/NodeHandler;
-	public fun lookupTypesByPosition (Lme/snoty/integration/common/model/NodePosition;)Ljava/util/List;
-	public fun registerHandler (Lme/snoty/integration/common/model/metadata/NodeMetadata;Lme/snoty/integration/common/wiring/node/NodeHandler;)V
+	public fun <init> (Z)V
+	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (Z)Lme/snoty/backend/wiring/node/InvalidNodeSettings;
+	public static synthetic fun copy$default (Lme/snoty/backend/wiring/node/InvalidNodeSettings;ZILjava/lang/Object;)Lme/snoty/backend/wiring/node/InvalidNodeSettings;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/node/InvalidNodeSettings$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract interface class me/snoty/backend/wiring/node/NodeHandleContext {
+	public abstract fun getCredentialService ()Lme/snoty/backend/wiring/credential/CredentialService;
+	public abstract fun getIntermediateDataMapperRegistry ()Lme/snoty/backend/wiring/data/IntermediateDataMapperRegistry;
+	public abstract fun getKoin ()Lorg/koin/core/Koin;
+	public abstract fun getLogger ()Lorg/slf4j/Logger;
+}
+
+public final class me/snoty/backend/wiring/node/NodeHandleContextImpl : me/snoty/backend/wiring/node/NodeHandleContext {
+	public fun <init> (Lorg/koin/core/Koin;Lme/snoty/backend/wiring/data/IntermediateDataMapperRegistry;Lme/snoty/backend/wiring/credential/CredentialService;Lorg/slf4j/Logger;)V
+	public final fun component1 ()Lorg/koin/core/Koin;
+	public final fun component2 ()Lme/snoty/backend/wiring/data/IntermediateDataMapperRegistry;
+	public final fun component3 ()Lme/snoty/backend/wiring/credential/CredentialService;
+	public final fun component4 ()Lorg/slf4j/Logger;
+	public final fun copy (Lorg/koin/core/Koin;Lme/snoty/backend/wiring/data/IntermediateDataMapperRegistry;Lme/snoty/backend/wiring/credential/CredentialService;Lorg/slf4j/Logger;)Lme/snoty/backend/wiring/node/NodeHandleContextImpl;
+	public static synthetic fun copy$default (Lme/snoty/backend/wiring/node/NodeHandleContextImpl;Lorg/koin/core/Koin;Lme/snoty/backend/wiring/data/IntermediateDataMapperRegistry;Lme/snoty/backend/wiring/credential/CredentialService;Lorg/slf4j/Logger;ILjava/lang/Object;)Lme/snoty/backend/wiring/node/NodeHandleContextImpl;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getCredentialService ()Lme/snoty/backend/wiring/credential/CredentialService;
+	public fun getIntermediateDataMapperRegistry ()Lme/snoty/backend/wiring/data/IntermediateDataMapperRegistry;
+	public fun getKoin ()Lorg/koin/core/Koin;
+	public fun getLogger ()Lorg/slf4j/Logger;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/node/NodeHandleContextKt {
+	public static final fun getLogger (Lme/snoty/backend/wiring/node/NodeHandleContext;)Lorg/slf4j/Logger;
+}
+
+public abstract interface class me/snoty/backend/wiring/node/NodeHandler {
+	public abstract fun process (Lme/snoty/backend/wiring/node/NodeHandleContext;Lme/snoty/core/node/NodeWithSettings;Ljava/util/Collection;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class me/snoty/backend/wiring/node/NodeHandlerContributor {
+	public abstract fun getKoinModules ()Ljava/util/List;
+	public abstract fun getKoinScope ()Lorg/koin/core/qualifier/Qualifier;
+	public abstract fun getMetadata ()Ljava/lang/String;
+	public abstract fun getNodeHandlerClass ()Lkotlin/reflect/KClass;
+	public fun getSettingsClass ()Lkotlin/reflect/KClass;
+}
+
+public final class me/snoty/backend/wiring/node/NodeHandlerContributor$DefaultImpls {
+	public static fun getSettingsClass (Lme/snoty/backend/wiring/node/NodeHandlerContributor;)Lkotlin/reflect/KClass;
+}
+
+public final class me/snoty/backend/wiring/node/NodePatch {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Lme/snoty/backend/wiring/node/NodePosition;Ljava/util/Optional;Lme/snoty/backend/wiring/node/NodeSettings;)V
+	public synthetic fun <init> (Ljava/lang/String;Lme/snoty/backend/wiring/node/NodePosition;Ljava/util/Optional;Lme/snoty/backend/wiring/node/NodeSettings;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lme/snoty/backend/wiring/node/NodePosition;
+	public final fun component3 ()Ljava/util/Optional;
+	public final fun component4 ()Lme/snoty/backend/wiring/node/NodeSettings;
+	public final fun copy (Ljava/lang/String;Lme/snoty/backend/wiring/node/NodePosition;Ljava/util/Optional;Lme/snoty/backend/wiring/node/NodeSettings;)Lme/snoty/backend/wiring/node/NodePatch;
+	public static synthetic fun copy$default (Lme/snoty/backend/wiring/node/NodePatch;Ljava/lang/String;Lme/snoty/backend/wiring/node/NodePosition;Ljava/util/Optional;Lme/snoty/backend/wiring/node/NodeSettings;ILjava/lang/Object;)Lme/snoty/backend/wiring/node/NodePatch;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLogLevel ()Ljava/util/Optional;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getPosition ()Lme/snoty/backend/wiring/node/NodePosition;
+	public final fun getSettings ()Lme/snoty/backend/wiring/node/NodeSettings;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/node/NodePosition {
+	public static final field Companion Lme/snoty/backend/wiring/node/NodePosition$Companion;
+	public fun <init> (IIII)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun component4 ()I
+	public final fun copy (IIII)Lme/snoty/backend/wiring/node/NodePosition;
+	public static synthetic fun copy$default (Lme/snoty/backend/wiring/node/NodePosition;IIIIILjava/lang/Object;)Lme/snoty/backend/wiring/node/NodePosition;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getHeight ()I
+	public final fun getWidth ()I
+	public final fun getX ()I
+	public final fun getY ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/node/NodePosition$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract interface class me/snoty/backend/wiring/node/NodeService {
+	public abstract fun connect (Lme/snoty/core/node/Node;Lme/snoty/core/node/Node;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun create-4Cl7p7Y (Ljava/lang/String;Lme/snoty/core/flow/Workflow;Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/wiring/node/NodePosition;Lme/snoty/backend/wiring/node/NodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun delete (Lme/snoty/core/node/Node;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun disconnect (Lme/snoty/core/node/Node;Lme/snoty/core/node/Node;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun get-m1iW5FE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getByFlow-uS22NpI (Ljava/lang/String;)Lkotlinx/coroutines/flow/Flow;
+	public abstract fun patch (Lme/snoty/core/node/Node;Lme/snoty/backend/wiring/node/NodePatch;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun updateSettings (Lme/snoty/core/node/Node;Lme/snoty/backend/wiring/node/NodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class me/snoty/backend/wiring/node/NodeServiceResults {
+	public static final field INSTANCE Lme/snoty/backend/wiring/node/NodeServiceResults;
+}
+
+public final class me/snoty/backend/wiring/node/NodeServiceResults$NodeConnected : me/snoty/backend/errors/ServiceResult {
+	public fun <init> (Lme/snoty/core/node/Node;Lme/snoty/core/node/Node;)V
+}
+
+public final class me/snoty/backend/wiring/node/NodeServiceResults$NodeDeleted : me/snoty/backend/errors/ServiceResult {
+	public fun <init> (Lme/snoty/core/node/Node;)V
+}
+
+public final class me/snoty/backend/wiring/node/NodeServiceResults$NodeDisconnected : me/snoty/backend/errors/ServiceResult {
+	public fun <init> (Lme/snoty/core/node/Node;Lme/snoty/core/node/Node;)V
+}
+
+public final class me/snoty/backend/wiring/node/NodeServiceResults$NodeNotFoundError : me/snoty/backend/errors/ServiceResult {
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class me/snoty/backend/wiring/node/NodeServiceResults$NodeUpdated : me/snoty/backend/errors/ServiceResult {
+	public fun <init> (Lme/snoty/core/node/Node;)V
+}
+
+public abstract interface class me/snoty/backend/wiring/node/NodeSettings {
 }
 
 public abstract interface class me/snoty/backend/wiring/node/NodeSettingsDeserializationService {
-	public abstract fun deserializeOrInvalid-xODx8-E (Ljava/lang/String;Lorg/bson/Document;)Lme/snoty/integration/common/wiring/node/NodeSettings;
+	public abstract fun deserializeOrInvalid-xODx8-E (Ljava/lang/String;Lorg/bson/Document;)Lme/snoty/backend/wiring/node/NodeSettings;
 }
 
 public final class me/snoty/backend/wiring/node/NodeSettingsDeserializationServiceImpl : me/snoty/backend/wiring/node/NodeSettingsDeserializationService {
-	public fun <init> (Lme/snoty/integration/common/wiring/node/NodeRegistry;Lorg/bson/codecs/configuration/CodecRegistry;)V
-	public fun deserializeOrInvalid-xODx8-E (Ljava/lang/String;Lorg/bson/Document;)Lme/snoty/integration/common/wiring/node/NodeSettings;
+	public fun <init> (Lme/snoty/backend/wiring/node/registry/NodeRegistry;Lorg/bson/codecs/configuration/CodecRegistry;)V
+	public fun deserializeOrInvalid-xODx8-E (Ljava/lang/String;Lorg/bson/Document;)Lme/snoty/backend/wiring/node/NodeSettings;
+}
+
+public final class me/snoty/backend/wiring/node/NodeSettingsKt {
+	public static final fun tryDeserializeNodeSettings-ReG42h4 (Ljava/lang/String;Lme/snoty/backend/wiring/node/registry/NodeRegistry;Lkotlin/jvm/functions/Function1;)Lme/snoty/backend/wiring/node/NodeSettings;
+}
+
+public abstract interface annotation class me/snoty/backend/wiring/node/ReceiveEmptyInput : java/lang/annotation/Annotation {
+}
+
+public abstract interface annotation class me/snoty/backend/wiring/node/RegisterNode : java/lang/annotation/Annotation {
+	public abstract fun displayName ()Ljava/lang/String;
+	public abstract fun icon ()Lme/snoty/backend/wiring/node/Icon;
+	public abstract fun inputType ()Ljava/lang/Class;
+	public abstract fun name ()Ljava/lang/String;
+	public abstract fun outputType ()Ljava/lang/Class;
+	public abstract fun settingsType ()Ljava/lang/Class;
+	public abstract fun stereotype ()Lme/snoty/backend/wiring/node/metadata/NodeStereotype;
+}
+
+public final class me/snoty/backend/wiring/node/metadata/NodeMetadata {
+	public static final field Companion Lme/snoty/backend/wiring/node/metadata/NodeMetadata$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lme/snoty/backend/metadata/Icon;Ljava/lang/String;Lme/snoty/backend/wiring/node/metadata/NodeStereotype;Ljava/util/List;Lkotlin/reflect/KClass;Ljava/util/List;ZLjava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lme/snoty/backend/metadata/Icon;Ljava/lang/String;Lme/snoty/backend/wiring/node/metadata/NodeStereotype;Ljava/util/List;Lkotlin/reflect/KClass;Ljava/util/List;ZLjava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lme/snoty/backend/metadata/Icon;
+	public final fun component3-EVnYJLk ()Ljava/lang/String;
+	public final fun component4 ()Lme/snoty/backend/wiring/node/metadata/NodeStereotype;
+	public final fun component5 ()Ljava/util/List;
+	public final fun component6 ()Lkotlin/reflect/KClass;
+	public final fun component7 ()Ljava/util/List;
+	public final fun component8 ()Z
+	public final fun component9 ()Ljava/util/List;
+	public final fun copy-Ou2TtAk (Ljava/lang/String;Lme/snoty/backend/metadata/Icon;Ljava/lang/String;Lme/snoty/backend/wiring/node/metadata/NodeStereotype;Ljava/util/List;Lkotlin/reflect/KClass;Ljava/util/List;ZLjava/util/List;)Lme/snoty/backend/wiring/node/metadata/NodeMetadata;
+	public static synthetic fun copy-Ou2TtAk$default (Lme/snoty/backend/wiring/node/metadata/NodeMetadata;Ljava/lang/String;Lme/snoty/backend/metadata/Icon;Ljava/lang/String;Lme/snoty/backend/wiring/node/metadata/NodeStereotype;Ljava/util/List;Lkotlin/reflect/KClass;Ljava/util/List;ZLjava/util/List;ILjava/lang/Object;)Lme/snoty/backend/wiring/node/metadata/NodeMetadata;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDisplayName ()Ljava/lang/String;
+	public final fun getIcon ()Lme/snoty/backend/metadata/Icon;
+	public final fun getInput ()Ljava/util/List;
+	public final fun getOutput ()Ljava/util/List;
+	public final fun getReceiveEmptyInput ()Z
+	public final fun getSettings ()Ljava/util/List;
+	public final fun getSettingsClass ()Lkotlin/reflect/KClass;
+	public final fun getStereotype ()Lme/snoty/backend/wiring/node/metadata/NodeStereotype;
+	public final fun getType-EVnYJLk ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/node/metadata/NodeMetadata$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class me/snoty/backend/wiring/node/metadata/NodeMetadataUtilsKt {
+	public static final fun getMetadataJson ()Lkotlinx/serialization/json/Json;
+}
+
+public final class me/snoty/backend/wiring/node/metadata/NodeStereotype : java/lang/Enum {
+	public static final field END Lme/snoty/backend/wiring/node/metadata/NodeStereotype;
+	public static final field MIDDLE Lme/snoty/backend/wiring/node/metadata/NodeStereotype;
+	public static final field START Lme/snoty/backend/wiring/node/metadata/NodeStereotype;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getLogOutput ()Z
+	public static fun valueOf (Ljava/lang/String;)Lme/snoty/backend/wiring/node/metadata/NodeStereotype;
+	public static fun values ()[Lme/snoty/backend/wiring/node/metadata/NodeStereotype;
+}
+
+public abstract interface class me/snoty/backend/wiring/node/persistence/NodePersistenceFactory {
+	public abstract fun create (Ljava/lang/String;Lkotlin/reflect/KClass;)Lme/snoty/backend/wiring/node/persistence/NodePersistenceService;
+}
+
+public abstract interface class me/snoty/backend/wiring/node/persistence/NodePersistenceService : me/snoty/backend/wiring/node/persistence/NodeScopedPersistenceService {
+	public abstract fun deleteEntity (Lme/snoty/core/node/Node;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getEntities (Lme/snoty/core/node/Node;)Lkotlinx/coroutines/flow/Flow;
+	public abstract fun persistEntity (Lme/snoty/core/node/Node;Ljava/lang/String;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun setEntities (Lme/snoty/core/node/Node;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class me/snoty/backend/wiring/node/persistence/NodeScopedPersistenceService {
+	public abstract fun delete (Lme/snoty/core/node/Node;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class me/snoty/backend/wiring/node/registry/NodeRegistry {
+	public abstract fun getHandlers ()Ljava/util/Map;
+	public abstract fun getMetadata ()Ljava/util/Map;
+	public fun getMetadata-d5fXedA (Ljava/lang/String;)Lme/snoty/backend/wiring/node/metadata/NodeMetadata;
+	public fun getMetadataOrNull-d5fXedA (Ljava/lang/String;)Lme/snoty/backend/wiring/node/metadata/NodeMetadata;
+	public abstract fun lookupHandler-d5fXedA (Ljava/lang/String;)Lme/snoty/backend/wiring/node/NodeHandler;
+	public abstract fun lookupTypesByStereotype (Lme/snoty/backend/wiring/node/metadata/NodeStereotype;)Ljava/util/List;
+	public abstract fun registerHandler (Lme/snoty/backend/wiring/node/metadata/NodeMetadata;Lme/snoty/backend/wiring/node/NodeHandler;)V
+}
+
+public final class me/snoty/backend/wiring/node/registry/NodeRegistry$DefaultImpls {
+	public static fun getMetadata-d5fXedA (Lme/snoty/backend/wiring/node/registry/NodeRegistry;Ljava/lang/String;)Lme/snoty/backend/wiring/node/metadata/NodeMetadata;
+	public static fun getMetadataOrNull-d5fXedA (Lme/snoty/backend/wiring/node/registry/NodeRegistry;Ljava/lang/String;)Lme/snoty/backend/wiring/node/metadata/NodeMetadata;
+}
+
+public final class me/snoty/backend/wiring/node/registry/NodeRegistryImpl : me/snoty/backend/wiring/node/registry/NodeRegistry {
+	public fun <init> ()V
+	public fun getHandlers ()Ljava/util/Map;
+	public fun getMetadata ()Ljava/util/Map;
+	public fun getMetadata-d5fXedA (Ljava/lang/String;)Lme/snoty/backend/wiring/node/metadata/NodeMetadata;
+	public fun getMetadataOrNull-d5fXedA (Ljava/lang/String;)Lme/snoty/backend/wiring/node/metadata/NodeMetadata;
+	public fun lookupHandler-d5fXedA (Ljava/lang/String;)Lme/snoty/backend/wiring/node/NodeHandler;
+	public fun lookupTypesByStereotype (Lme/snoty/backend/wiring/node/metadata/NodeStereotype;)Ljava/util/List;
+	public fun registerHandler (Lme/snoty/backend/wiring/node/metadata/NodeMetadata;Lme/snoty/backend/wiring/node/NodeHandler;)V
+}
+
+public abstract interface class me/snoty/backend/wiring/node/routing/NodeHandlerRouteFactory {
+	public abstract fun invoke (Ljava/lang/String;Lio/ktor/http/HttpMethod;ZLkotlin/jvm/functions/Function2;)V
+	public static synthetic fun invoke$default (Lme/snoty/backend/wiring/node/routing/NodeHandlerRouteFactory;Ljava/lang/String;Lio/ktor/http/HttpMethod;ZLkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
+}
+
+public final class me/snoty/backend/wiring/node/routing/NodeHandlerRouteFactory$DefaultImpls {
+	public static synthetic fun invoke$default (Lme/snoty/backend/wiring/node/routing/NodeHandlerRouteFactory;Ljava/lang/String;Lio/ktor/http/HttpMethod;ZLkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
+}
+
+public final class me/snoty/backend/wiring/node/routing/NodeHandlerRouteKt {
+	public static final fun buildHandlerNodeApiUrl-bAk4oQI (Lme/snoty/backend/config/Config;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+}
+
+public abstract interface class me/snoty/backend/wiring/node/routing/NodeRouteFactory {
+	public abstract fun invoke (Ljava/lang/String;Lio/ktor/http/HttpMethod;ZLkotlin/jvm/functions/Function3;)V
+	public static synthetic fun invoke$default (Lme/snoty/backend/wiring/node/routing/NodeRouteFactory;Ljava/lang/String;Lio/ktor/http/HttpMethod;ZLkotlin/jvm/functions/Function3;ILjava/lang/Object;)V
+}
+
+public final class me/snoty/backend/wiring/node/routing/NodeRouteFactory$DefaultImpls {
+	public static synthetic fun invoke$default (Lme/snoty/backend/wiring/node/routing/NodeRouteFactory;Ljava/lang/String;Lio/ktor/http/HttpMethod;ZLkotlin/jvm/functions/Function3;ILjava/lang/Object;)V
+}
+
+public final class me/snoty/backend/wiring/node/state/Change {
+	public fun <init> (Ljava/lang/Object;Ljava/lang/Object;)V
+	public final fun component1 ()Ljava/lang/Object;
+	public final fun component2 ()Ljava/lang/Object;
+	public final fun copy (Ljava/lang/Object;Ljava/lang/Object;)Lme/snoty/backend/wiring/node/state/Change;
+	public static synthetic fun copy$default (Lme/snoty/backend/wiring/node/state/Change;Ljava/lang/Object;Ljava/lang/Object;ILjava/lang/Object;)Lme/snoty/backend/wiring/node/state/Change;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getNew ()Ljava/lang/Object;
+	public final fun getOld ()Ljava/lang/Object;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/node/state/ChangeCodec : org/bson/codecs/Codec {
+	public fun <init> (Lorg/bson/codecs/configuration/CodecRegistry;Lorg/bson/codecs/BsonTypeClassMap;)V
+	public synthetic fun decode (Lorg/bson/BsonReader;Lorg/bson/codecs/DecoderContext;)Ljava/lang/Object;
+	public fun decode (Lorg/bson/BsonReader;Lorg/bson/codecs/DecoderContext;)Lme/snoty/backend/wiring/node/state/Change;
+	public synthetic fun encode (Lorg/bson/BsonWriter;Ljava/lang/Object;Lorg/bson/codecs/EncoderContext;)V
+	public fun encode (Lorg/bson/BsonWriter;Lme/snoty/backend/wiring/node/state/Change;Lorg/bson/codecs/EncoderContext;)V
+	public fun getEncoderClass ()Ljava/lang/Class;
+}
+
+public final class me/snoty/backend/wiring/node/state/ChangeKt {
+	public static final fun getNew (Lorg/bson/Document;)Ljava/lang/String;
+	public static final fun getOld (Lorg/bson/Document;)Ljava/lang/String;
+}
+
+public abstract class me/snoty/backend/wiring/node/state/DiffResult {
+}
+
+public final class me/snoty/backend/wiring/node/state/DiffResult$Created : me/snoty/backend/wiring/node/state/DiffResult {
+	public fun <init> (JLorg/bson/Document;)V
+	public final fun component1 ()J
+	public final fun component2 ()Lorg/bson/Document;
+	public final fun copy (JLorg/bson/Document;)Lme/snoty/backend/wiring/node/state/DiffResult$Created;
+	public static synthetic fun copy$default (Lme/snoty/backend/wiring/node/state/DiffResult$Created;JLorg/bson/Document;ILjava/lang/Object;)Lme/snoty/backend/wiring/node/state/DiffResult$Created;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChecksum ()J
+	public final fun getFields ()Lorg/bson/Document;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/node/state/DiffResult$Deleted : me/snoty/backend/wiring/node/state/DiffResult {
+	public fun <init> (JLorg/bson/Document;)V
+	public final fun component1 ()J
+	public final fun component2 ()Lorg/bson/Document;
+	public final fun copy (JLorg/bson/Document;)Lme/snoty/backend/wiring/node/state/DiffResult$Deleted;
+	public static synthetic fun copy$default (Lme/snoty/backend/wiring/node/state/DiffResult$Deleted;JLorg/bson/Document;ILjava/lang/Object;)Lme/snoty/backend/wiring/node/state/DiffResult$Deleted;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChecksum ()J
+	public final fun getPrevious ()Lorg/bson/Document;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/node/state/DiffResult$Unchanged : me/snoty/backend/wiring/node/state/DiffResult {
+	public static final field INSTANCE Lme/snoty/backend/wiring/node/state/DiffResult$Unchanged;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/node/state/DiffResult$Updated : me/snoty/backend/wiring/node/state/DiffResult {
+	public fun <init> (JLjava/util/Map;)V
+	public final fun component1 ()J
+	public final fun component2 ()Ljava/util/Map;
+	public final fun copy (JLjava/util/Map;)Lme/snoty/backend/wiring/node/state/DiffResult$Updated;
+	public static synthetic fun copy$default (Lme/snoty/backend/wiring/node/state/DiffResult$Updated;JLjava/util/Map;ILjava/lang/Object;)Lme/snoty/backend/wiring/node/state/DiffResult$Updated;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChange ()Ljava/util/Map;
+	public final fun getChecksum ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/node/state/DiffResultCodec : org/bson/codecs/Codec {
+	public fun <init> (Lorg/bson/codecs/configuration/CodecRegistry;Lorg/bson/codecs/DocumentCodec;)V
+	public synthetic fun decode (Lorg/bson/BsonReader;Lorg/bson/codecs/DecoderContext;)Ljava/lang/Object;
+	public fun decode (Lorg/bson/BsonReader;Lorg/bson/codecs/DecoderContext;)Lme/snoty/backend/wiring/node/state/DiffResult;
+	public synthetic fun encode (Lorg/bson/BsonWriter;Ljava/lang/Object;Lorg/bson/codecs/EncoderContext;)V
+	public fun encode (Lorg/bson/BsonWriter;Lme/snoty/backend/wiring/node/state/DiffResult;Lorg/bson/codecs/EncoderContext;)V
+	public fun getEncoderClass ()Ljava/lang/Class;
+}
+
+public final class me/snoty/backend/wiring/node/state/EntityDiffKt {
+	public static final fun checksum (Lorg/bson/Document;)J
+	public static final fun diff (Lorg/bson/Document;Lme/snoty/backend/wiring/node/state/EntityState;)Lme/snoty/backend/wiring/node/state/DiffResult;
+	public static final fun diff (Lorg/bson/Document;Lorg/bson/Document;)Lme/snoty/backend/wiring/node/state/DiffResult;
+}
+
+public final class me/snoty/backend/wiring/node/state/EntityState {
+	public fun <init> (Ljava/lang/String;Lorg/bson/Document;)V
+	public fun <init> (Ljava/lang/String;Lorg/bson/Document;J)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lorg/bson/Document;
+	public final fun component3 ()J
+	public final fun copy (Ljava/lang/String;Lorg/bson/Document;J)Lme/snoty/backend/wiring/node/state/EntityState;
+	public static synthetic fun copy$default (Lme/snoty/backend/wiring/node/state/EntityState;Ljava/lang/String;Lorg/bson/Document;JILjava/lang/Object;)Lme/snoty/backend/wiring/node/state/EntityState;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChecksum ()J
+	public final fun getId ()Ljava/lang/String;
+	public final fun getState ()Lorg/bson/Document;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class me/snoty/backend/wiring/node/state/EntityStateService : me/snoty/backend/wiring/node/persistence/NodeScopedPersistenceService {
+	public abstract fun getLastState (Lme/snoty/core/node/Node;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getLastStates (Lme/snoty/core/node/Node;)Lkotlinx/coroutines/flow/Flow;
+	public abstract fun updateState (Lme/snoty/core/node/Node;Lorg/bson/Document;Lme/snoty/backend/wiring/node/state/DiffResult;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun updateStates (Lme/snoty/core/node/Node;Ljava/util/Collection;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class me/snoty/backend/wiring/node/state/EntityStateService$EntityStateUpdate {
+	public fun <init> (Lme/snoty/backend/wiring/node/state/EntityState;Lme/snoty/backend/wiring/node/state/DiffResult;)V
+	public final fun component1 ()Lme/snoty/backend/wiring/node/state/EntityState;
+	public final fun component2 ()Lme/snoty/backend/wiring/node/state/DiffResult;
+	public final fun copy (Lme/snoty/backend/wiring/node/state/EntityState;Lme/snoty/backend/wiring/node/state/DiffResult;)Lme/snoty/backend/wiring/node/state/EntityStateService$EntityStateUpdate;
+	public static synthetic fun copy$default (Lme/snoty/backend/wiring/node/state/EntityStateService$EntityStateUpdate;Lme/snoty/backend/wiring/node/state/EntityState;Lme/snoty/backend/wiring/node/state/DiffResult;ILjava/lang/Object;)Lme/snoty/backend/wiring/node/state/EntityStateService$EntityStateUpdate;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDiffResult ()Lme/snoty/backend/wiring/node/state/DiffResult;
+	public final fun getState ()Lme/snoty/backend/wiring/node/state/EntityState;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/node/state/StateBsonKt {
+	public static final field STATE_CODEC_REGISTRY Ljava/lang/String;
+	public static final fun provideStateCodecRegistry (Lorg/bson/codecs/BsonTypeClassMap;Lorg/bson/codecs/configuration/CodecRegistry;)Lorg/bson/codecs/configuration/CodecRegistry;
+}
+
+public abstract interface class me/snoty/backend/wiring/node/template/NodeMetadataFeatureFlags {
+	public abstract fun getCacheNodeMetadata ()Z
+	public abstract fun getCacheNodeTemplates ()Z
+}
+
+public final class me/snoty/backend/wiring/node/template/NodeTemplate {
+	public static final field Companion Lme/snoty/backend/wiring/node/template/NodeTemplate$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-EVnYJLk ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy-ReG42h4 (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lme/snoty/backend/wiring/node/template/NodeTemplate;
+	public static synthetic fun copy-ReG42h4$default (Lme/snoty/backend/wiring/node/template/NodeTemplate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lme/snoty/backend/wiring/node/template/NodeTemplate;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getName ()Ljava/lang/String;
+	public final fun getNode-EVnYJLk ()Ljava/lang/String;
+	public final fun getTemplate ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/node/template/NodeTemplate$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract interface class me/snoty/backend/wiring/node/template/NodeTemplateRegistry {
+	public abstract fun getAllTemplates ()Ljava/util/Map;
+}
+
+public final class me/snoty/backend/wiring/node/template/NodeTemplateUtils {
+	public static final field INSTANCE Lme/snoty/backend/wiring/node/template/NodeTemplateUtils;
+	public final fun nodeTemplatesModule-d5fXedA (Ljava/lang/String;)Lorg/koin/core/module/Module;
 }
 
 public final class me/snoty/core/flow/FlowId {
@@ -1543,8 +2542,8 @@ public final class me/snoty/core/flow/WorkflowWithNodes$Companion {
 
 public final class me/snoty/core/node/FlowNode : me/snoty/core/node/NodeWithSettings {
 	public static final field Companion Lme/snoty/core/node/FlowNode$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lme/snoty/integration/common/wiring/node/NodeSettings;Lkotlin/time/Instant;Lkotlin/time/Instant;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lme/snoty/integration/common/wiring/node/NodeSettings;Lkotlin/time/Instant;Lkotlin/time/Instant;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/backend/wiring/node/NodePosition;Lme/snoty/backend/wiring/node/NodeSettings;Lkotlin/time/Instant;Lkotlin/time/Instant;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/backend/wiring/node/NodePosition;Lme/snoty/backend/wiring/node/NodeSettings;Lkotlin/time/Instant;Lkotlin/time/Instant;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-cGcz6qw ()Ljava/lang/String;
 	public final fun component10 ()Lkotlin/time/Instant;
 	public final fun component11 ()Ljava/util/List;
@@ -1553,11 +2552,11 @@ public final class me/snoty/core/node/FlowNode : me/snoty/core/node/NodeWithSett
 	public final fun component4-EVnYJLk ()Ljava/lang/String;
 	public final fun component5 ()Ljava/lang/String;
 	public final fun component6 ()Lorg/slf4j/event/Level;
-	public final fun component7 ()Lme/snoty/integration/common/wiring/node/NodePosition;
-	public final fun component8 ()Lme/snoty/integration/common/wiring/node/NodeSettings;
+	public final fun component7 ()Lme/snoty/backend/wiring/node/NodePosition;
+	public final fun component8 ()Lme/snoty/backend/wiring/node/NodeSettings;
 	public final fun component9 ()Lkotlin/time/Instant;
-	public final fun copy-rqII0oc (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lme/snoty/integration/common/wiring/node/NodeSettings;Lkotlin/time/Instant;Lkotlin/time/Instant;Ljava/util/List;)Lme/snoty/core/node/FlowNode;
-	public static synthetic fun copy-rqII0oc$default (Lme/snoty/core/node/FlowNode;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lme/snoty/integration/common/wiring/node/NodeSettings;Lkotlin/time/Instant;Lkotlin/time/Instant;Ljava/util/List;ILjava/lang/Object;)Lme/snoty/core/node/FlowNode;
+	public final fun copy-rqII0oc (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/backend/wiring/node/NodePosition;Lme/snoty/backend/wiring/node/NodeSettings;Lkotlin/time/Instant;Lkotlin/time/Instant;Ljava/util/List;)Lme/snoty/core/node/FlowNode;
+	public static synthetic fun copy-rqII0oc$default (Lme/snoty/core/node/FlowNode;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/backend/wiring/node/NodePosition;Lme/snoty/backend/wiring/node/NodeSettings;Lkotlin/time/Instant;Lkotlin/time/Instant;Ljava/util/List;ILjava/lang/Object;)Lme/snoty/core/node/FlowNode;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getCreatedAt ()Lkotlin/time/Instant;
 	public fun getFlowId-L9EeXao ()Ljava/lang/String;
@@ -1566,8 +2565,8 @@ public final class me/snoty/core/node/FlowNode : me/snoty/core/node/NodeWithSett
 	public fun getModifiedAt ()Lkotlin/time/Instant;
 	public fun getName ()Ljava/lang/String;
 	public final fun getNext ()Ljava/util/List;
-	public fun getPosition ()Lme/snoty/integration/common/wiring/node/NodePosition;
-	public fun getSettings ()Lme/snoty/integration/common/wiring/node/NodeSettings;
+	public fun getPosition ()Lme/snoty/backend/wiring/node/NodePosition;
+	public fun getSettings ()Lme/snoty/backend/wiring/node/NodeSettings;
 	public fun getType-EVnYJLk ()Ljava/lang/String;
 	public fun getUserId-nVF4Fqw ()Ljava/lang/String;
 	public fun hashCode ()I
@@ -1585,7 +2584,7 @@ public abstract interface class me/snoty/core/node/Node {
 	public abstract fun getLogLevel ()Lorg/slf4j/event/Level;
 	public abstract fun getModifiedAt ()Lkotlin/time/Instant;
 	public abstract fun getName ()Ljava/lang/String;
-	public abstract fun getPosition ()Lme/snoty/integration/common/wiring/node/NodePosition;
+	public abstract fun getPosition ()Lme/snoty/backend/wiring/node/NodePosition;
 	public abstract fun getType-EVnYJLk ()Ljava/lang/String;
 	public abstract fun getUserId-nVF4Fqw ()Ljava/lang/String;
 }
@@ -1638,24 +2637,24 @@ public final class me/snoty/core/node/NodeTypeKt {
 }
 
 public abstract interface class me/snoty/core/node/NodeWithSettings : me/snoty/core/node/Node {
-	public abstract fun getSettings ()Lme/snoty/integration/common/wiring/node/NodeSettings;
+	public abstract fun getSettings ()Lme/snoty/backend/wiring/node/NodeSettings;
 }
 
 public final class me/snoty/core/node/StandaloneNode : me/snoty/core/node/NodeWithSettings {
 	public static final field Companion Lme/snoty/core/node/StandaloneNode$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lkotlin/time/Instant;Lkotlin/time/Instant;Lme/snoty/integration/common/wiring/node/NodeSettings;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/backend/wiring/node/NodePosition;Lkotlin/time/Instant;Lkotlin/time/Instant;Lme/snoty/backend/wiring/node/NodeSettings;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-cGcz6qw ()Ljava/lang/String;
-	public final fun component10 ()Lme/snoty/integration/common/wiring/node/NodeSettings;
+	public final fun component10 ()Lme/snoty/backend/wiring/node/NodeSettings;
 	public final fun component2-L9EeXao ()Ljava/lang/String;
 	public final fun component3-nVF4Fqw ()Ljava/lang/String;
 	public final fun component4-EVnYJLk ()Ljava/lang/String;
 	public final fun component5 ()Ljava/lang/String;
 	public final fun component6 ()Lorg/slf4j/event/Level;
-	public final fun component7 ()Lme/snoty/integration/common/wiring/node/NodePosition;
+	public final fun component7 ()Lme/snoty/backend/wiring/node/NodePosition;
 	public final fun component8 ()Lkotlin/time/Instant;
 	public final fun component9 ()Lkotlin/time/Instant;
-	public final fun copy-3JjxIsU (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lkotlin/time/Instant;Lkotlin/time/Instant;Lme/snoty/integration/common/wiring/node/NodeSettings;)Lme/snoty/core/node/StandaloneNode;
-	public static synthetic fun copy-3JjxIsU$default (Lme/snoty/core/node/StandaloneNode;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/integration/common/wiring/node/NodePosition;Lkotlin/time/Instant;Lkotlin/time/Instant;Lme/snoty/integration/common/wiring/node/NodeSettings;ILjava/lang/Object;)Lme/snoty/core/node/StandaloneNode;
+	public final fun copy-3JjxIsU (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/backend/wiring/node/NodePosition;Lkotlin/time/Instant;Lkotlin/time/Instant;Lme/snoty/backend/wiring/node/NodeSettings;)Lme/snoty/core/node/StandaloneNode;
+	public static synthetic fun copy-3JjxIsU$default (Lme/snoty/core/node/StandaloneNode;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/slf4j/event/Level;Lme/snoty/backend/wiring/node/NodePosition;Lkotlin/time/Instant;Lkotlin/time/Instant;Lme/snoty/backend/wiring/node/NodeSettings;ILjava/lang/Object;)Lme/snoty/core/node/StandaloneNode;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getCreatedAt ()Lkotlin/time/Instant;
 	public fun getFlowId-L9EeXao ()Ljava/lang/String;
@@ -1663,8 +2662,8 @@ public final class me/snoty/core/node/StandaloneNode : me/snoty/core/node/NodeWi
 	public fun getLogLevel ()Lorg/slf4j/event/Level;
 	public fun getModifiedAt ()Lkotlin/time/Instant;
 	public fun getName ()Ljava/lang/String;
-	public fun getPosition ()Lme/snoty/integration/common/wiring/node/NodePosition;
-	public fun getSettings ()Lme/snoty/integration/common/wiring/node/NodeSettings;
+	public fun getPosition ()Lme/snoty/backend/wiring/node/NodePosition;
+	public fun getSettings ()Lme/snoty/backend/wiring/node/NodeSettings;
 	public fun getType-EVnYJLk ()Ljava/lang/String;
 	public fun getUserId-nVF4Fqw ()Ljava/lang/String;
 	public fun hashCode ()I
@@ -1697,983 +2696,5 @@ public final class me/snoty/core/user/UserId$Companion {
 public abstract interface class me/snoty/extension/ExtensionContributor {
 	public abstract fun getKoinModule ()Lorg/koin/core/module/Module;
 	public abstract fun getKoinScope ()Lorg/koin/core/qualifier/Qualifier;
-}
-
-public final class me/snoty/integration/common/SnotyJsonKt {
-	public static final fun getBaseSnotyJson ()Lkotlinx/serialization/json/Json;
-	public static final fun snotyJson (Lkotlin/jvm/functions/Function1;)Lkotlinx/serialization/json/Json;
-}
-
-public abstract interface annotation class me/snoty/integration/common/annotation/Icon : java/lang/annotation/Annotation {
-	public abstract fun color ()Ljava/lang/String;
-	public abstract fun name ()Ljava/lang/String;
-}
-
-public abstract interface annotation class me/snoty/integration/common/annotation/ReceiveEmptyInput : java/lang/annotation/Annotation {
-}
-
-public abstract interface annotation class me/snoty/integration/common/annotation/RegisterNode : java/lang/annotation/Annotation {
-	public abstract fun displayName ()Ljava/lang/String;
-	public abstract fun icon ()Lme/snoty/integration/common/annotation/Icon;
-	public abstract fun inputType ()Ljava/lang/Class;
-	public abstract fun name ()Ljava/lang/String;
-	public abstract fun namespace ()Ljava/lang/String;
-	public abstract fun outputType ()Ljava/lang/Class;
-	public abstract fun position ()Lme/snoty/integration/common/model/NodePosition;
-	public abstract fun settingsType ()Ljava/lang/Class;
-}
-
-public final class me/snoty/integration/common/config/NodePatch {
-	public fun <init> ()V
-	public fun <init> (Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Ljava/util/Optional;Lme/snoty/integration/common/wiring/node/NodeSettings;)V
-	public synthetic fun <init> (Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Ljava/util/Optional;Lme/snoty/integration/common/wiring/node/NodeSettings;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lme/snoty/integration/common/wiring/node/NodePosition;
-	public final fun component3 ()Ljava/util/Optional;
-	public final fun component4 ()Lme/snoty/integration/common/wiring/node/NodeSettings;
-	public final fun copy (Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Ljava/util/Optional;Lme/snoty/integration/common/wiring/node/NodeSettings;)Lme/snoty/integration/common/config/NodePatch;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/config/NodePatch;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Ljava/util/Optional;Lme/snoty/integration/common/wiring/node/NodeSettings;ILjava/lang/Object;)Lme/snoty/integration/common/config/NodePatch;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getLogLevel ()Ljava/util/Optional;
-	public final fun getName ()Ljava/lang/String;
-	public final fun getPosition ()Lme/snoty/integration/common/wiring/node/NodePosition;
-	public final fun getSettings ()Lme/snoty/integration/common/wiring/node/NodeSettings;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public abstract interface class me/snoty/integration/common/config/NodeService {
-	public abstract fun connect (Lme/snoty/core/node/Node;Lme/snoty/core/node/Node;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun create-4Cl7p7Y (Ljava/lang/String;Lme/snoty/core/flow/Workflow;Ljava/lang/String;Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodePosition;Lme/snoty/integration/common/wiring/node/NodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun delete (Lme/snoty/core/node/Node;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun disconnect (Lme/snoty/core/node/Node;Lme/snoty/core/node/Node;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun get-m1iW5FE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun getByFlow-uS22NpI (Ljava/lang/String;)Lkotlinx/coroutines/flow/Flow;
-	public abstract fun patch (Lme/snoty/core/node/Node;Lme/snoty/integration/common/config/NodePatch;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun updateSettings (Lme/snoty/core/node/Node;Lme/snoty/integration/common/wiring/node/NodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class me/snoty/integration/common/config/NodeServiceResults {
-	public static final field INSTANCE Lme/snoty/integration/common/config/NodeServiceResults;
-}
-
-public final class me/snoty/integration/common/config/NodeServiceResults$NodeConnected : me/snoty/backend/errors/ServiceResult {
-	public fun <init> (Lme/snoty/core/node/Node;Lme/snoty/core/node/Node;)V
-}
-
-public final class me/snoty/integration/common/config/NodeServiceResults$NodeDeleted : me/snoty/backend/errors/ServiceResult {
-	public fun <init> (Lme/snoty/core/node/Node;)V
-}
-
-public final class me/snoty/integration/common/config/NodeServiceResults$NodeDisconnected : me/snoty/backend/errors/ServiceResult {
-	public fun <init> (Lme/snoty/core/node/Node;Lme/snoty/core/node/Node;)V
-}
-
-public final class me/snoty/integration/common/config/NodeServiceResults$NodeNotFoundError : me/snoty/backend/errors/ServiceResult {
-	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-}
-
-public final class me/snoty/integration/common/config/NodeServiceResults$NodeUpdated : me/snoty/backend/errors/ServiceResult {
-	public fun <init> (Lme/snoty/core/node/Node;)V
-}
-
-public final class me/snoty/integration/common/diff/Change {
-	public fun <init> (Ljava/lang/Object;Ljava/lang/Object;)V
-	public final fun component1 ()Ljava/lang/Object;
-	public final fun component2 ()Ljava/lang/Object;
-	public final fun copy (Ljava/lang/Object;Ljava/lang/Object;)Lme/snoty/integration/common/diff/Change;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/diff/Change;Ljava/lang/Object;Ljava/lang/Object;ILjava/lang/Object;)Lme/snoty/integration/common/diff/Change;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getNew ()Ljava/lang/Object;
-	public final fun getOld ()Ljava/lang/Object;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/diff/ChangeCodec : org/bson/codecs/Codec {
-	public fun <init> (Lorg/bson/codecs/configuration/CodecRegistry;Lorg/bson/codecs/BsonTypeClassMap;)V
-	public synthetic fun decode (Lorg/bson/BsonReader;Lorg/bson/codecs/DecoderContext;)Ljava/lang/Object;
-	public fun decode (Lorg/bson/BsonReader;Lorg/bson/codecs/DecoderContext;)Lme/snoty/integration/common/diff/Change;
-	public synthetic fun encode (Lorg/bson/BsonWriter;Ljava/lang/Object;Lorg/bson/codecs/EncoderContext;)V
-	public fun encode (Lorg/bson/BsonWriter;Lme/snoty/integration/common/diff/Change;Lorg/bson/codecs/EncoderContext;)V
-	public fun getEncoderClass ()Ljava/lang/Class;
-}
-
-public final class me/snoty/integration/common/diff/ChangeKt {
-	public static final fun getNew (Lorg/bson/Document;)Ljava/lang/String;
-	public static final fun getOld (Lorg/bson/Document;)Ljava/lang/String;
-}
-
-public abstract class me/snoty/integration/common/diff/DiffResult {
-}
-
-public final class me/snoty/integration/common/diff/DiffResult$Created : me/snoty/integration/common/diff/DiffResult {
-	public fun <init> (JLorg/bson/Document;)V
-	public final fun component1 ()J
-	public final fun component2 ()Lorg/bson/Document;
-	public final fun copy (JLorg/bson/Document;)Lme/snoty/integration/common/diff/DiffResult$Created;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/diff/DiffResult$Created;JLorg/bson/Document;ILjava/lang/Object;)Lme/snoty/integration/common/diff/DiffResult$Created;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getChecksum ()J
-	public final fun getFields ()Lorg/bson/Document;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/diff/DiffResult$Deleted : me/snoty/integration/common/diff/DiffResult {
-	public fun <init> (JLorg/bson/Document;)V
-	public final fun component1 ()J
-	public final fun component2 ()Lorg/bson/Document;
-	public final fun copy (JLorg/bson/Document;)Lme/snoty/integration/common/diff/DiffResult$Deleted;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/diff/DiffResult$Deleted;JLorg/bson/Document;ILjava/lang/Object;)Lme/snoty/integration/common/diff/DiffResult$Deleted;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getChecksum ()J
-	public final fun getPrevious ()Lorg/bson/Document;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/diff/DiffResult$Unchanged : me/snoty/integration/common/diff/DiffResult {
-	public static final field INSTANCE Lme/snoty/integration/common/diff/DiffResult$Unchanged;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/diff/DiffResult$Updated : me/snoty/integration/common/diff/DiffResult {
-	public fun <init> (JLjava/util/Map;)V
-	public final fun component1 ()J
-	public final fun component2 ()Ljava/util/Map;
-	public final fun copy (JLjava/util/Map;)Lme/snoty/integration/common/diff/DiffResult$Updated;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/diff/DiffResult$Updated;JLjava/util/Map;ILjava/lang/Object;)Lme/snoty/integration/common/diff/DiffResult$Updated;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getChange ()Ljava/util/Map;
-	public final fun getChecksum ()J
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/diff/DiffResultCodec : org/bson/codecs/Codec {
-	public fun <init> (Lorg/bson/codecs/configuration/CodecRegistry;Lorg/bson/codecs/DocumentCodec;)V
-	public synthetic fun decode (Lorg/bson/BsonReader;Lorg/bson/codecs/DecoderContext;)Ljava/lang/Object;
-	public fun decode (Lorg/bson/BsonReader;Lorg/bson/codecs/DecoderContext;)Lme/snoty/integration/common/diff/DiffResult;
-	public synthetic fun encode (Lorg/bson/BsonWriter;Ljava/lang/Object;Lorg/bson/codecs/EncoderContext;)V
-	public fun encode (Lorg/bson/BsonWriter;Lme/snoty/integration/common/diff/DiffResult;Lorg/bson/codecs/EncoderContext;)V
-	public fun getEncoderClass ()Ljava/lang/Class;
-}
-
-public final class me/snoty/integration/common/diff/EntityDiffKt {
-	public static final fun checksum (Lorg/bson/Document;)J
-	public static final fun diff (Lorg/bson/Document;Lme/snoty/integration/common/diff/state/EntityState;)Lme/snoty/integration/common/diff/DiffResult;
-	public static final fun diff (Lorg/bson/Document;Lorg/bson/Document;)Lme/snoty/integration/common/diff/DiffResult;
-}
-
-public abstract interface class me/snoty/integration/common/diff/EntityStateService : me/snoty/integration/common/wiring/node/NodeScopedPersistenceService {
-	public abstract fun getLastState (Lme/snoty/core/node/Node;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun getLastStates (Lme/snoty/core/node/Node;)Lkotlinx/coroutines/flow/Flow;
-	public abstract fun updateState (Lme/snoty/core/node/Node;Lorg/bson/Document;Lme/snoty/integration/common/diff/DiffResult;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun updateStates (Lme/snoty/core/node/Node;Ljava/util/Collection;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class me/snoty/integration/common/diff/EntityStateService$EntityStateUpdate {
-	public fun <init> (Lme/snoty/integration/common/diff/state/EntityState;Lme/snoty/integration/common/diff/DiffResult;)V
-	public final fun component1 ()Lme/snoty/integration/common/diff/state/EntityState;
-	public final fun component2 ()Lme/snoty/integration/common/diff/DiffResult;
-	public final fun copy (Lme/snoty/integration/common/diff/state/EntityState;Lme/snoty/integration/common/diff/DiffResult;)Lme/snoty/integration/common/diff/EntityStateService$EntityStateUpdate;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/diff/EntityStateService$EntityStateUpdate;Lme/snoty/integration/common/diff/state/EntityState;Lme/snoty/integration/common/diff/DiffResult;ILjava/lang/Object;)Lme/snoty/integration/common/diff/EntityStateService$EntityStateUpdate;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getDiffResult ()Lme/snoty/integration/common/diff/DiffResult;
-	public final fun getState ()Lme/snoty/integration/common/diff/state/EntityState;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/diff/StateBsonKt {
-	public static final field STATE_CODEC_REGISTRY Ljava/lang/String;
-	public static final fun provideStateCodecRegistry (Lorg/bson/codecs/BsonTypeClassMap;Lorg/bson/codecs/configuration/CodecRegistry;)Lorg/bson/codecs/configuration/CodecRegistry;
-}
-
-public final class me/snoty/integration/common/diff/state/EntityState {
-	public fun <init> (Ljava/lang/String;Lorg/bson/Document;)V
-	public fun <init> (Ljava/lang/String;Lorg/bson/Document;J)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lorg/bson/Document;
-	public final fun component3 ()J
-	public final fun copy (Ljava/lang/String;Lorg/bson/Document;J)Lme/snoty/integration/common/diff/state/EntityState;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/diff/state/EntityState;Ljava/lang/String;Lorg/bson/Document;JILjava/lang/Object;)Lme/snoty/integration/common/diff/state/EntityState;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getChecksum ()J
-	public final fun getId ()Ljava/lang/String;
-	public final fun getState ()Lorg/bson/Document;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/http/FlowErrorsKt {
-	public static final fun flowNotFound-ORh-CRg (Lio/ktor/server/application/ApplicationCall;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static final fun invalidFlowId (Lio/ktor/server/application/ApplicationCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class me/snoty/integration/common/http/NodeErrorsKt {
-	public static final fun invalidNodeId (Lio/ktor/server/application/ApplicationCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static final fun nodeNotFound-GLa--o0 (Lio/ktor/server/application/ApplicationCall;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class me/snoty/integration/common/jsonrpc/JsonRpcKt {
-	public static final fun getJsonRpc (Lio/ktor/http/ContentType$Application;)Lio/ktor/http/ContentType;
-	public static final fun getRPC_REQUEST_ATTRIBUTE ()Lio/ktor/util/AttributeKey;
-	public static final fun rpcConfig (Lio/ktor/client/HttpClient;Lkotlin/jvm/functions/Function1;)Lio/ktor/client/HttpClient;
-	public static final fun setRPCAttributes (Lio/opentelemetry/api/common/AttributesBuilder;Lme/snoty/integration/common/jsonrpc/JsonRpcRequest;)V
-	public static final fun setRpcBody (Lio/ktor/client/request/HttpRequestBuilder;Lme/snoty/integration/common/jsonrpc/JsonRpcRequest;)V
-}
-
-public abstract interface class me/snoty/integration/common/jsonrpc/JsonRpcRequest {
-	public abstract fun getMethod ()Ljava/lang/String;
-	public abstract fun getVersion ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/jsonrpc/JsonRpcResponse {
-	public static final field Companion Lme/snoty/integration/common/jsonrpc/JsonRpcResponse$Companion;
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/lang/String;
-	public final fun component3 ()Ljava/lang/Object;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)Lme/snoty/integration/common/jsonrpc/JsonRpcResponse;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/jsonrpc/JsonRpcResponse;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;ILjava/lang/Object;)Lme/snoty/integration/common/jsonrpc/JsonRpcResponse;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getId ()Ljava/lang/String;
-	public final fun getJsonRpc ()Ljava/lang/String;
-	public final fun getResult ()Ljava/lang/Object;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/jsonrpc/JsonRpcResponse$Companion {
-	public final fun serializer (Lkotlinx/serialization/KSerializer;)Lkotlinx/serialization/KSerializer;
-}
-
-public final class me/snoty/integration/common/model/NodePosition : java/lang/Enum {
-	public static final field END Lme/snoty/integration/common/model/NodePosition;
-	public static final field MIDDLE Lme/snoty/integration/common/model/NodePosition;
-	public static final field START Lme/snoty/integration/common/model/NodePosition;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public final fun getLogOutput ()Z
-	public static fun valueOf (Ljava/lang/String;)Lme/snoty/integration/common/model/NodePosition;
-	public static fun values ()[Lme/snoty/integration/common/model/NodePosition;
-}
-
-public abstract interface annotation class me/snoty/integration/common/model/metadata/DisplayName : java/lang/annotation/Annotation {
-	public abstract fun value ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/model/metadata/EmptySchema {
-	public static final field INSTANCE Lme/snoty/integration/common/model/metadata/EmptySchema;
-}
-
-public abstract interface annotation class me/snoty/integration/common/model/metadata/FieldCensored : java/lang/annotation/Annotation {
-}
-
-public abstract interface annotation class me/snoty/integration/common/model/metadata/FieldDefaultValue : java/lang/annotation/Annotation {
-	public abstract fun value ()Ljava/lang/String;
-}
-
-public abstract interface annotation class me/snoty/integration/common/model/metadata/FieldDescription : java/lang/annotation/Annotation {
-	public abstract fun value ()Ljava/lang/String;
-}
-
-public abstract interface annotation class me/snoty/integration/common/model/metadata/FieldHidden : java/lang/annotation/Annotation {
-}
-
-public abstract interface annotation class me/snoty/integration/common/model/metadata/FieldName : java/lang/annotation/Annotation {
-	public abstract fun value ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/model/metadata/Icon {
-	public static final field Companion Lme/snoty/integration/common/model/metadata/Icon$Companion;
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lme/snoty/integration/common/model/metadata/Icon;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/model/metadata/Icon;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lme/snoty/integration/common/model/metadata/Icon;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getColor ()Ljava/lang/String;
-	public final fun getName ()Ljava/lang/String;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/model/metadata/Icon$Companion {
-	public final fun of (Lme/snoty/integration/common/annotation/Icon;)Lme/snoty/integration/common/model/metadata/Icon;
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public abstract interface annotation class me/snoty/integration/common/model/metadata/Language : java/lang/annotation/Annotation {
-	public abstract fun value ()Ljava/lang/String;
-}
-
-public abstract interface annotation class me/snoty/integration/common/model/metadata/Multiline : java/lang/annotation/Annotation {
-	public static final field Companion Lme/snoty/integration/common/model/metadata/Multiline$Companion;
-	public static final field DEFAULT_LINES I
-	public static final field DEFAULT_MULTILINE_LINES I
-	public abstract fun values ()I
-}
-
-public final class me/snoty/integration/common/model/metadata/Multiline$Companion {
-	public static final field DEFAULT_LINES I
-	public static final field DEFAULT_MULTILINE_LINES I
-}
-
-public final class me/snoty/integration/common/model/metadata/NoSchema {
-	public static final field INSTANCE Lme/snoty/integration/common/model/metadata/NoSchema;
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeField {
-	public static final field Companion Lme/snoty/integration/common/model/metadata/NodeField$Companion;
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLme/snoty/integration/common/model/metadata/NodeFieldDetails;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/lang/String;
-	public final fun component3 ()Ljava/lang/String;
-	public final fun component4 ()Ljava/lang/String;
-	public final fun component5 ()Ljava/lang/String;
-	public final fun component6 ()Z
-	public final fun component7 ()Z
-	public final fun component8 ()Lme/snoty/integration/common/model/metadata/NodeFieldDetails;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLme/snoty/integration/common/model/metadata/NodeFieldDetails;)Lme/snoty/integration/common/model/metadata/NodeField;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/model/metadata/NodeField;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLme/snoty/integration/common/model/metadata/NodeFieldDetails;ILjava/lang/Object;)Lme/snoty/integration/common/model/metadata/NodeField;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getCensored ()Z
-	public final fun getDefaultValue ()Ljava/lang/String;
-	public final fun getDescription ()Ljava/lang/String;
-	public final fun getDetails ()Lme/snoty/integration/common/model/metadata/NodeFieldDetails;
-	public final fun getDisplayName ()Ljava/lang/String;
-	public final fun getHidden ()Z
-	public final fun getName ()Ljava/lang/String;
-	public final fun getType ()Ljava/lang/String;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeField$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public abstract class me/snoty/integration/common/model/metadata/NodeFieldDetails {
-	public static final field Companion Lme/snoty/integration/common/model/metadata/NodeFieldDetails$Companion;
-	public synthetic fun <init> (ILkotlinx/serialization/internal/SerializationConstructorMarker;)V
-	public static final synthetic fun write$Self (Lme/snoty/integration/common/model/metadata/NodeFieldDetails;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeFieldDetails$CollectionDetails : me/snoty/integration/common/model/metadata/NodeFieldDetails {
-	public static final field Companion Lme/snoty/integration/common/model/metadata/NodeFieldDetails$CollectionDetails$Companion;
-	public fun <init> (Lme/snoty/integration/common/model/metadata/NodeFieldDetails;)V
-	public final fun component1 ()Lme/snoty/integration/common/model/metadata/NodeFieldDetails;
-	public final fun copy (Lme/snoty/integration/common/model/metadata/NodeFieldDetails;)Lme/snoty/integration/common/model/metadata/NodeFieldDetails$CollectionDetails;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/model/metadata/NodeFieldDetails$CollectionDetails;Lme/snoty/integration/common/model/metadata/NodeFieldDetails;ILjava/lang/Object;)Lme/snoty/integration/common/model/metadata/NodeFieldDetails$CollectionDetails;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getElementDetails ()Lme/snoty/integration/common/model/metadata/NodeFieldDetails;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeFieldDetails$CollectionDetails$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeFieldDetails$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeFieldDetails$CredentialDetails : me/snoty/integration/common/model/metadata/NodeFieldDetails {
-	public static final field Companion Lme/snoty/integration/common/model/metadata/NodeFieldDetails$CredentialDetails$Companion;
-	public fun <init> (Ljava/lang/String;Ljava/util/List;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/util/List;
-	public final fun copy (Ljava/lang/String;Ljava/util/List;)Lme/snoty/integration/common/model/metadata/NodeFieldDetails$CredentialDetails;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/model/metadata/NodeFieldDetails$CredentialDetails;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lme/snoty/integration/common/model/metadata/NodeFieldDetails$CredentialDetails;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getCredentialType ()Ljava/lang/String;
-	public final fun getSchema ()Ljava/util/List;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeFieldDetails$CredentialDetails$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeFieldDetails$EnumDetails : me/snoty/integration/common/model/metadata/NodeFieldDetails {
-	public static final field Companion Lme/snoty/integration/common/model/metadata/NodeFieldDetails$EnumDetails$Companion;
-	public fun <init> (Ljava/util/List;)V
-	public final fun component1 ()Ljava/util/List;
-	public final fun copy (Ljava/util/List;)Lme/snoty/integration/common/model/metadata/NodeFieldDetails$EnumDetails;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/model/metadata/NodeFieldDetails$EnumDetails;Ljava/util/List;ILjava/lang/Object;)Lme/snoty/integration/common/model/metadata/NodeFieldDetails$EnumDetails;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getValues ()Ljava/util/List;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeFieldDetails$EnumDetails$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeFieldDetails$EnumDetails$EnumConstant {
-	public static final field Companion Lme/snoty/integration/common/model/metadata/NodeFieldDetails$EnumDetails$EnumConstant$Companion;
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lme/snoty/integration/common/model/metadata/NodeFieldDetails$EnumDetails$EnumConstant;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/model/metadata/NodeFieldDetails$EnumDetails$EnumConstant;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lme/snoty/integration/common/model/metadata/NodeFieldDetails$EnumDetails$EnumConstant;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getDisplayName ()Ljava/lang/String;
-	public final fun getValue ()Ljava/lang/String;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeFieldDetails$EnumDetails$EnumConstant$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeFieldDetails$GenericDetails : me/snoty/integration/common/model/metadata/NodeFieldDetails {
-	public static final field Companion Lme/snoty/integration/common/model/metadata/NodeFieldDetails$GenericDetails$Companion;
-	public fun <init> (Ljava/lang/String;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;)Lme/snoty/integration/common/model/metadata/NodeFieldDetails$GenericDetails;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/model/metadata/NodeFieldDetails$GenericDetails;Ljava/lang/String;ILjava/lang/Object;)Lme/snoty/integration/common/model/metadata/NodeFieldDetails$GenericDetails;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getGenericType ()Ljava/lang/String;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeFieldDetails$GenericDetails$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeFieldDetails$MapDetails : me/snoty/integration/common/model/metadata/NodeFieldDetails {
-	public static final field Companion Lme/snoty/integration/common/model/metadata/NodeFieldDetails$MapDetails$Companion;
-	public fun <init> (Lme/snoty/integration/common/model/metadata/NodeFieldDetails;Lme/snoty/integration/common/model/metadata/NodeFieldDetails;)V
-	public final fun component1 ()Lme/snoty/integration/common/model/metadata/NodeFieldDetails;
-	public final fun component2 ()Lme/snoty/integration/common/model/metadata/NodeFieldDetails;
-	public final fun copy (Lme/snoty/integration/common/model/metadata/NodeFieldDetails;Lme/snoty/integration/common/model/metadata/NodeFieldDetails;)Lme/snoty/integration/common/model/metadata/NodeFieldDetails$MapDetails;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/model/metadata/NodeFieldDetails$MapDetails;Lme/snoty/integration/common/model/metadata/NodeFieldDetails;Lme/snoty/integration/common/model/metadata/NodeFieldDetails;ILjava/lang/Object;)Lme/snoty/integration/common/model/metadata/NodeFieldDetails$MapDetails;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getKeyDetails ()Lme/snoty/integration/common/model/metadata/NodeFieldDetails;
-	public final fun getValueDetails ()Lme/snoty/integration/common/model/metadata/NodeFieldDetails;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeFieldDetails$MapDetails$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeFieldDetails$ObjectDetails : me/snoty/integration/common/model/metadata/NodeFieldDetails {
-	public static final field Companion Lme/snoty/integration/common/model/metadata/NodeFieldDetails$ObjectDetails$Companion;
-	public fun <init> (Ljava/lang/String;Ljava/util/List;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/util/List;
-	public final fun copy (Ljava/lang/String;Ljava/util/List;)Lme/snoty/integration/common/model/metadata/NodeFieldDetails$ObjectDetails;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/model/metadata/NodeFieldDetails$ObjectDetails;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lme/snoty/integration/common/model/metadata/NodeFieldDetails$ObjectDetails;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getClassName ()Ljava/lang/String;
-	public final fun getSchema ()Ljava/util/List;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeFieldDetails$ObjectDetails$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeFieldDetails$PlaintextDetails : me/snoty/integration/common/model/metadata/NodeFieldDetails {
-	public static final field Companion Lme/snoty/integration/common/model/metadata/NodeFieldDetails$PlaintextDetails$Companion;
-	public fun <init> (I)V
-	public fun <init> (ILjava/lang/String;)V
-	public fun <init> (ILjava/lang/String;Ljava/lang/String;)V
-	public synthetic fun <init> (ILjava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()I
-	public final fun component2 ()Ljava/lang/String;
-	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (ILjava/lang/String;Ljava/lang/String;)Lme/snoty/integration/common/model/metadata/NodeFieldDetails$PlaintextDetails;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/model/metadata/NodeFieldDetails$PlaintextDetails;ILjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lme/snoty/integration/common/model/metadata/NodeFieldDetails$PlaintextDetails;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getDefaultValue ()Ljava/lang/String;
-	public final fun getLanguage ()Ljava/lang/String;
-	public final fun getLines ()I
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeFieldDetails$PlaintextDetails$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeMetadata {
-	public static final field Companion Lme/snoty/integration/common/model/metadata/NodeMetadata$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Lme/snoty/integration/common/model/metadata/Icon;Ljava/lang/String;Lme/snoty/integration/common/model/NodePosition;Ljava/util/List;Lkotlin/reflect/KClass;Ljava/util/List;ZLjava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Lme/snoty/integration/common/model/metadata/Icon;Ljava/lang/String;Lme/snoty/integration/common/model/NodePosition;Ljava/util/List;Lkotlin/reflect/KClass;Ljava/util/List;ZLjava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lme/snoty/integration/common/model/metadata/Icon;
-	public final fun component3-EVnYJLk ()Ljava/lang/String;
-	public final fun component4 ()Lme/snoty/integration/common/model/NodePosition;
-	public final fun component5 ()Ljava/util/List;
-	public final fun component6 ()Lkotlin/reflect/KClass;
-	public final fun component7 ()Ljava/util/List;
-	public final fun component8 ()Z
-	public final fun component9 ()Ljava/util/List;
-	public final fun copy-Ou2TtAk (Ljava/lang/String;Lme/snoty/integration/common/model/metadata/Icon;Ljava/lang/String;Lme/snoty/integration/common/model/NodePosition;Ljava/util/List;Lkotlin/reflect/KClass;Ljava/util/List;ZLjava/util/List;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
-	public static synthetic fun copy-Ou2TtAk$default (Lme/snoty/integration/common/model/metadata/NodeMetadata;Ljava/lang/String;Lme/snoty/integration/common/model/metadata/Icon;Ljava/lang/String;Lme/snoty/integration/common/model/NodePosition;Ljava/util/List;Lkotlin/reflect/KClass;Ljava/util/List;ZLjava/util/List;ILjava/lang/Object;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getDisplayName ()Ljava/lang/String;
-	public final fun getIcon ()Lme/snoty/integration/common/model/metadata/Icon;
-	public final fun getInput ()Ljava/util/List;
-	public final fun getOutput ()Ljava/util/List;
-	public final fun getPosition ()Lme/snoty/integration/common/model/NodePosition;
-	public final fun getReceiveEmptyInput ()Z
-	public final fun getSettings ()Ljava/util/List;
-	public final fun getSettingsClass ()Lkotlin/reflect/KClass;
-	public final fun getType-EVnYJLk ()Ljava/lang/String;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/model/metadata/NodeMetadata$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class me/snoty/integration/common/utils/BsonUtilsKt {
-	public static final fun bsonTypeClassMap ()Lorg/bson/codecs/BsonTypeClassMap;
-	public static final fun getKotlinxSerializersModule ()Lkotlinx/serialization/modules/SerializersModule;
-	public static final fun integrationsApiCodecModule (Lorg/bson/codecs/BsonTypeClassMap;)Lorg/bson/codecs/configuration/CodecRegistry;
-}
-
-public final class me/snoty/integration/common/utils/UtilsKt {
-	public static final fun filterNot (Ljava/util/Collection;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/util/List;
-	public static final fun guarded (ZLkotlin/jvm/functions/Function0;)Z
-}
-
-public abstract interface class me/snoty/integration/common/wiring/NodeHandleContext {
-	public abstract fun getCredentialService ()Lme/snoty/backend/wiring/credential/CredentialService;
-	public abstract fun getIntermediateDataMapperRegistry ()Lme/snoty/integration/common/wiring/data/IntermediateDataMapperRegistry;
-	public abstract fun getKoin ()Lorg/koin/core/Koin;
-	public abstract fun getLogger ()Lorg/slf4j/Logger;
-}
-
-public final class me/snoty/integration/common/wiring/NodeHandleContextImpl : me/snoty/integration/common/wiring/NodeHandleContext {
-	public fun <init> (Lorg/koin/core/Koin;Lme/snoty/integration/common/wiring/data/IntermediateDataMapperRegistry;Lme/snoty/backend/wiring/credential/CredentialService;Lorg/slf4j/Logger;)V
-	public final fun component1 ()Lorg/koin/core/Koin;
-	public final fun component2 ()Lme/snoty/integration/common/wiring/data/IntermediateDataMapperRegistry;
-	public final fun component3 ()Lme/snoty/backend/wiring/credential/CredentialService;
-	public final fun component4 ()Lorg/slf4j/Logger;
-	public final fun copy (Lorg/koin/core/Koin;Lme/snoty/integration/common/wiring/data/IntermediateDataMapperRegistry;Lme/snoty/backend/wiring/credential/CredentialService;Lorg/slf4j/Logger;)Lme/snoty/integration/common/wiring/NodeHandleContextImpl;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/wiring/NodeHandleContextImpl;Lorg/koin/core/Koin;Lme/snoty/integration/common/wiring/data/IntermediateDataMapperRegistry;Lme/snoty/backend/wiring/credential/CredentialService;Lorg/slf4j/Logger;ILjava/lang/Object;)Lme/snoty/integration/common/wiring/NodeHandleContextImpl;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun getCredentialService ()Lme/snoty/backend/wiring/credential/CredentialService;
-	public fun getIntermediateDataMapperRegistry ()Lme/snoty/integration/common/wiring/data/IntermediateDataMapperRegistry;
-	public fun getKoin ()Lorg/koin/core/Koin;
-	public fun getLogger ()Lorg/slf4j/Logger;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/wiring/NodeHandleContextKt {
-	public static final fun getLogger (Lme/snoty/integration/common/wiring/NodeHandleContext;)Lorg/slf4j/Logger;
-}
-
-public abstract interface class me/snoty/integration/common/wiring/data/IntermediateData {
-	public abstract fun getValue ()Ljava/lang/Object;
-}
-
-public abstract interface class me/snoty/integration/common/wiring/data/IntermediateDataMapper {
-	public abstract fun deserialize (Lme/snoty/integration/common/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
-	public fun deserializeUnsafe (Lme/snoty/integration/common/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
-	public abstract fun getIntermediateDataClass ()Lkotlin/reflect/KClass;
-	public abstract fun getPriority ()I
-	public abstract fun serialize (Ljava/lang/Object;)Lme/snoty/integration/common/wiring/data/IntermediateData;
-	public abstract fun supports (Lkotlin/reflect/KClass;)Z
-}
-
-public final class me/snoty/integration/common/wiring/data/IntermediateDataMapper$DefaultImpls {
-	public static fun deserializeUnsafe (Lme/snoty/integration/common/wiring/data/IntermediateDataMapper;Lme/snoty/integration/common/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
-}
-
-public abstract interface class me/snoty/integration/common/wiring/data/IntermediateDataMapperRegistry {
-	public abstract fun get (Lkotlin/reflect/KClass;)Lme/snoty/integration/common/wiring/data/IntermediateDataMapper;
-	public abstract fun getFirstCompatibleMapper (Lkotlin/reflect/KClass;)Lme/snoty/integration/common/wiring/data/IntermediateDataMapper;
-}
-
-public final class me/snoty/integration/common/wiring/data/IntermediateDataMapperRegistryImpl : me/snoty/integration/common/wiring/data/IntermediateDataMapperRegistry {
-	public fun <init> (Ljava/util/List;)V
-	public fun get (Lkotlin/reflect/KClass;)Lme/snoty/integration/common/wiring/data/IntermediateDataMapper;
-	public fun getFirstCompatibleMapper (Lkotlin/reflect/KClass;)Lme/snoty/integration/common/wiring/data/IntermediateDataMapper;
-}
-
-public final class me/snoty/integration/common/wiring/data/NodeOutputKt {
-	public static final fun iterableStructOutput (Lme/snoty/integration/common/wiring/NodeHandleContext;Ljava/lang/Iterable;)Ljava/util/Collection;
-	public static final fun polymorphicOutput (Lme/snoty/integration/common/wiring/NodeHandleContext;[Ljava/lang/Object;)Ljava/util/List;
-	public static final fun serializeBson (Lme/snoty/integration/common/wiring/NodeHandleContext;Ljava/lang/Object;)Lme/snoty/integration/common/wiring/data/impl/BsonIntermediateData;
-	public static final fun serializePolymorphic (Lme/snoty/integration/common/wiring/NodeHandleContext;Ljava/lang/Object;)Lme/snoty/integration/common/wiring/data/IntermediateData;
-	public static final fun simpleOutput (Lme/snoty/integration/common/wiring/NodeHandleContext;[Ljava/lang/Object;)Ljava/util/Collection;
-	public static final fun structOutput (Lme/snoty/integration/common/wiring/NodeHandleContext;[Ljava/lang/Object;)Ljava/util/List;
-}
-
-public final class me/snoty/integration/common/wiring/data/impl/BsonIntermediateData : me/snoty/integration/common/wiring/data/IntermediateData {
-	public fun <init> (Lorg/bson/Document;Lorg/bson/codecs/DocumentCodec;)V
-	public final fun component1 ()Lorg/bson/Document;
-	public final fun component2 ()Lorg/bson/codecs/DocumentCodec;
-	public final fun copy (Lorg/bson/Document;Lorg/bson/codecs/DocumentCodec;)Lme/snoty/integration/common/wiring/data/impl/BsonIntermediateData;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/wiring/data/impl/BsonIntermediateData;Lorg/bson/Document;Lorg/bson/codecs/DocumentCodec;ILjava/lang/Object;)Lme/snoty/integration/common/wiring/data/impl/BsonIntermediateData;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getDocumentCodec ()Lorg/bson/codecs/DocumentCodec;
-	public synthetic fun getValue ()Ljava/lang/Object;
-	public fun getValue ()Lorg/bson/Document;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/wiring/data/impl/BsonIntermediateDataMapper : me/snoty/integration/common/wiring/data/IntermediateDataMapper {
-	public fun <init> (Lorg/bson/codecs/configuration/CodecRegistry;Lorg/bson/codecs/DocumentCodec;)V
-	public synthetic fun deserialize (Lme/snoty/integration/common/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
-	public fun deserialize (Lme/snoty/integration/common/wiring/data/impl/BsonIntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
-	public fun deserializeUnsafe (Lme/snoty/integration/common/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
-	public fun getIntermediateDataClass ()Lkotlin/reflect/KClass;
-	public fun getPriority ()I
-	public synthetic fun serialize (Ljava/lang/Object;)Lme/snoty/integration/common/wiring/data/IntermediateData;
-	public fun serialize (Ljava/lang/Object;)Lme/snoty/integration/common/wiring/data/impl/BsonIntermediateData;
-	public fun supports (Lkotlin/reflect/KClass;)Z
-}
-
-public final class me/snoty/integration/common/wiring/data/impl/SimpleIntermediateData : me/snoty/integration/common/wiring/data/IntermediateData {
-	public fun <init> (Ljava/lang/Object;Lkotlin/reflect/KClass;)V
-	public synthetic fun <init> (Ljava/lang/Object;Lkotlin/reflect/KClass;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/lang/Object;
-	public final fun component2 ()Lkotlin/reflect/KClass;
-	public final fun copy (Ljava/lang/Object;Lkotlin/reflect/KClass;)Lme/snoty/integration/common/wiring/data/impl/SimpleIntermediateData;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/wiring/data/impl/SimpleIntermediateData;Ljava/lang/Object;Lkotlin/reflect/KClass;ILjava/lang/Object;)Lme/snoty/integration/common/wiring/data/impl/SimpleIntermediateData;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun getValue ()Ljava/lang/Object;
-	public final fun getValueType ()Lkotlin/reflect/KClass;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/wiring/data/impl/SimpleIntermediateDataMapper : me/snoty/integration/common/wiring/data/IntermediateDataMapper {
-	public fun <init> ()V
-	public synthetic fun deserialize (Lme/snoty/integration/common/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
-	public fun deserialize (Lme/snoty/integration/common/wiring/data/impl/SimpleIntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
-	public fun deserializeUnsafe (Lme/snoty/integration/common/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
-	public fun getIntermediateDataClass ()Lkotlin/reflect/KClass;
-	public fun getPriority ()I
-	public synthetic fun serialize (Ljava/lang/Object;)Lme/snoty/integration/common/wiring/data/IntermediateData;
-	public fun serialize (Ljava/lang/Object;)Lme/snoty/integration/common/wiring/data/impl/SimpleIntermediateData;
-	public fun supports (Lkotlin/reflect/KClass;)Z
-}
-
-public final class me/snoty/integration/common/wiring/flow/EnumeratedFlowExecution {
-	public static final field Companion Lme/snoty/integration/common/wiring/flow/EnumeratedFlowExecution$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/scheduling/FlowTriggerReason;Lkotlin/time/Instant;Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2-L9EeXao ()Ljava/lang/String;
-	public final fun component3 ()Lme/snoty/backend/scheduling/FlowTriggerReason;
-	public final fun component4 ()Lkotlin/time/Instant;
-	public final fun component5 ()Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;
-	public final fun copy-KvP62i8 (Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/scheduling/FlowTriggerReason;Lkotlin/time/Instant;Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;)Lme/snoty/integration/common/wiring/flow/EnumeratedFlowExecution;
-	public static synthetic fun copy-KvP62i8$default (Lme/snoty/integration/common/wiring/flow/EnumeratedFlowExecution;Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/scheduling/FlowTriggerReason;Lkotlin/time/Instant;Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;ILjava/lang/Object;)Lme/snoty/integration/common/wiring/flow/EnumeratedFlowExecution;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getFlowId-L9EeXao ()Ljava/lang/String;
-	public final fun getJobId ()Ljava/lang/String;
-	public final fun getStatus ()Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;
-	public final fun getTimestamp ()Lkotlin/time/Instant;
-	public final fun getTriggeredBy ()Lme/snoty/backend/scheduling/FlowTriggerReason;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/wiring/flow/EnumeratedFlowExecution$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class me/snoty/integration/common/wiring/flow/FlowExecution {
-	public static final field Companion Lme/snoty/integration/common/wiring/flow/FlowExecution$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/scheduling/FlowTriggerReason;Lkotlin/time/Instant;Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2-L9EeXao ()Ljava/lang/String;
-	public final fun component3 ()Lme/snoty/backend/scheduling/FlowTriggerReason;
-	public final fun component4 ()Lkotlin/time/Instant;
-	public final fun component5 ()Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;
-	public final fun component6 ()Ljava/util/List;
-	public final fun copy-_oGTP5U (Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/scheduling/FlowTriggerReason;Lkotlin/time/Instant;Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;Ljava/util/List;)Lme/snoty/integration/common/wiring/flow/FlowExecution;
-	public static synthetic fun copy-_oGTP5U$default (Lme/snoty/integration/common/wiring/flow/FlowExecution;Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/scheduling/FlowTriggerReason;Lkotlin/time/Instant;Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;Ljava/util/List;ILjava/lang/Object;)Lme/snoty/integration/common/wiring/flow/FlowExecution;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getFlowId-L9EeXao ()Ljava/lang/String;
-	public final fun getJobId ()Ljava/lang/String;
-	public final fun getLogs ()Ljava/util/List;
-	public final fun getStatus ()Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;
-	public final fun getTimestamp ()Lkotlin/time/Instant;
-	public final fun getTriggeredBy ()Lme/snoty/backend/scheduling/FlowTriggerReason;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/wiring/flow/FlowExecution$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class me/snoty/integration/common/wiring/flow/FlowExecutionStatus : java/lang/Enum {
-	public static final field FAILED Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;
-	public static final field RUNNING Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;
-	public static final field SUCCESS Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;
-	public static fun values ()[Lme/snoty/integration/common/wiring/flow/FlowExecutionStatus;
-}
-
-public final class me/snoty/integration/common/wiring/flow/FlowKt {
-	public static final field FLOW_COLLECTION_NAME Ljava/lang/String;
-	public static final field FLOW_EXECUTION_COLLECTION_NAME Ljava/lang/String;
-	public static final field NODE_COLLECTION_NAME Ljava/lang/String;
-}
-
-public abstract interface class me/snoty/integration/common/wiring/flow/FlowManagementService {
-	public abstract fun deleteFlowCascading (Lme/snoty/core/flow/Workflow;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public abstract interface class me/snoty/integration/common/wiring/flow/FlowRunner {
-	public abstract fun execute (Ljava/lang/String;Lme/snoty/backend/scheduling/FlowTriggerReason;Lorg/slf4j/Logger;Lorg/slf4j/event/Level;Lme/snoty/core/flow/WorkflowWithNodes;Ljava/util/Collection;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public abstract interface class me/snoty/integration/common/wiring/flow/FlowService {
-	public abstract fun create-Kj1tVJ8 (Ljava/lang/String;Ljava/lang/String;Lme/snoty/core/flow/WorkflowSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun delete (Lme/snoty/core/flow/Workflow;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun getAll ()Lkotlinx/coroutines/flow/Flow;
-	public abstract fun getStandalone-r-kuNrI (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun getWithNodes-e-VO5GA (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun query-nxKDBKo (Ljava/lang/String;)Lkotlinx/coroutines/flow/Flow;
-	public abstract fun rename (Lme/snoty/core/flow/Workflow;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun updateSettings (Lme/snoty/core/flow/Workflow;Lme/snoty/core/flow/WorkflowSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public abstract interface class me/snoty/integration/common/wiring/flow/NodeDeletedHook : kotlin/coroutines/jvm/internal/SuspendFunction, kotlin/jvm/functions/Function2 {
-}
-
-public final class me/snoty/integration/common/wiring/flow/NodeLogEntry {
-	public static final field Companion Lme/snoty/integration/common/wiring/flow/NodeLogEntry$Companion;
-	public synthetic fun <init> (Lkotlin/time/Instant;Lorg/slf4j/event/Level;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Lkotlin/time/Instant;
-	public final fun component2 ()Lorg/slf4j/event/Level;
-	public final fun component3 ()Ljava/lang/String;
-	public final fun component4-BNEWlyw ()Ljava/lang/String;
-	public final fun copy-wVhzK14 (Lkotlin/time/Instant;Lorg/slf4j/event/Level;Ljava/lang/String;Ljava/lang/String;)Lme/snoty/integration/common/wiring/flow/NodeLogEntry;
-	public static synthetic fun copy-wVhzK14$default (Lme/snoty/integration/common/wiring/flow/NodeLogEntry;Lkotlin/time/Instant;Lorg/slf4j/event/Level;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lme/snoty/integration/common/wiring/flow/NodeLogEntry;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getLevel ()Lorg/slf4j/event/Level;
-	public final fun getMessage ()Ljava/lang/String;
-	public final fun getNode-BNEWlyw ()Ljava/lang/String;
-	public final fun getTimestamp ()Lkotlin/time/Instant;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/wiring/flow/NodeLogEntry$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class me/snoty/integration/common/wiring/flow/NodeLogEntryDto {
-	public static final field Companion Lme/snoty/integration/common/wiring/flow/NodeLogEntryDto$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Lkotlin/time/Instant;Lorg/slf4j/event/Level;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lkotlin/time/Instant;
-	public final fun component3 ()Lorg/slf4j/event/Level;
-	public final fun component4 ()Ljava/lang/String;
-	public final fun component5-BNEWlyw ()Ljava/lang/String;
-	public final fun copy-qkGyKfo (Ljava/lang/String;Lkotlin/time/Instant;Lorg/slf4j/event/Level;Ljava/lang/String;Ljava/lang/String;)Lme/snoty/integration/common/wiring/flow/NodeLogEntryDto;
-	public static synthetic fun copy-qkGyKfo$default (Lme/snoty/integration/common/wiring/flow/NodeLogEntryDto;Ljava/lang/String;Lkotlin/time/Instant;Lorg/slf4j/event/Level;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lme/snoty/integration/common/wiring/flow/NodeLogEntryDto;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getId ()Ljava/lang/String;
-	public final fun getLevel ()Lorg/slf4j/event/Level;
-	public final fun getMessage ()Ljava/lang/String;
-	public final fun getNode-BNEWlyw ()Ljava/lang/String;
-	public final fun getTimestamp ()Lkotlin/time/Instant;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/wiring/flow/NodeLogEntryDto$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class me/snoty/integration/common/wiring/node/EmptyNodeSettings : me/snoty/integration/common/wiring/node/NodeSettings {
-	public static final field Companion Lme/snoty/integration/common/wiring/node/EmptyNodeSettings$Companion;
-	public fun <init> ()V
-	public fun <init> (Z)V
-	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun copy (Z)Lme/snoty/integration/common/wiring/node/EmptyNodeSettings;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/wiring/node/EmptyNodeSettings;ZILjava/lang/Object;)Lme/snoty/integration/common/wiring/node/EmptyNodeSettings;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/wiring/node/EmptyNodeSettings$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class me/snoty/integration/common/wiring/node/EmptyNodeSettingsCodec : org/bson/codecs/Codec {
-	public static final field INSTANCE Lme/snoty/integration/common/wiring/node/EmptyNodeSettingsCodec;
-	public synthetic fun decode (Lorg/bson/BsonReader;Lorg/bson/codecs/DecoderContext;)Ljava/lang/Object;
-	public fun decode (Lorg/bson/BsonReader;Lorg/bson/codecs/DecoderContext;)Lme/snoty/integration/common/wiring/node/EmptyNodeSettings;
-	public synthetic fun encode (Lorg/bson/BsonWriter;Ljava/lang/Object;Lorg/bson/codecs/EncoderContext;)V
-	public fun encode (Lorg/bson/BsonWriter;Lme/snoty/integration/common/wiring/node/EmptyNodeSettings;Lorg/bson/codecs/EncoderContext;)V
-	public fun getEncoderClass ()Ljava/lang/Class;
-}
-
-public final class me/snoty/integration/common/wiring/node/InvalidNodeSettings : me/snoty/integration/common/wiring/node/NodeSettings {
-	public static final field Companion Lme/snoty/integration/common/wiring/node/InvalidNodeSettings$Companion;
-	public fun <init> ()V
-	public fun <init> (Z)V
-	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun copy (Z)Lme/snoty/integration/common/wiring/node/InvalidNodeSettings;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/wiring/node/InvalidNodeSettings;ZILjava/lang/Object;)Lme/snoty/integration/common/wiring/node/InvalidNodeSettings;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/wiring/node/InvalidNodeSettings$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public abstract interface class me/snoty/integration/common/wiring/node/NodeHandler {
-	public abstract fun process (Lme/snoty/integration/common/wiring/NodeHandleContext;Lme/snoty/core/node/NodeWithSettings;Ljava/util/Collection;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public abstract interface class me/snoty/integration/common/wiring/node/NodeHandlerContributor {
-	public abstract fun getKoinModules ()Ljava/util/List;
-	public abstract fun getKoinScope ()Lorg/koin/core/qualifier/Qualifier;
-	public abstract fun getMetadata ()Ljava/lang/String;
-	public abstract fun getNodeHandlerClass ()Lkotlin/reflect/KClass;
-	public fun getSettingsClass ()Lkotlin/reflect/KClass;
-}
-
-public final class me/snoty/integration/common/wiring/node/NodeHandlerContributor$DefaultImpls {
-	public static fun getSettingsClass (Lme/snoty/integration/common/wiring/node/NodeHandlerContributor;)Lkotlin/reflect/KClass;
-}
-
-public abstract interface class me/snoty/integration/common/wiring/node/NodeHandlerRouteFactory {
-	public abstract fun invoke (Ljava/lang/String;Lio/ktor/http/HttpMethod;ZLkotlin/jvm/functions/Function2;)V
-	public static synthetic fun invoke$default (Lme/snoty/integration/common/wiring/node/NodeHandlerRouteFactory;Ljava/lang/String;Lio/ktor/http/HttpMethod;ZLkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
-}
-
-public final class me/snoty/integration/common/wiring/node/NodeHandlerRouteFactory$DefaultImpls {
-	public static synthetic fun invoke$default (Lme/snoty/integration/common/wiring/node/NodeHandlerRouteFactory;Ljava/lang/String;Lio/ktor/http/HttpMethod;ZLkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
-}
-
-public final class me/snoty/integration/common/wiring/node/NodeHandlerRouteKt {
-	public static final fun buildHandlerNodeApiUrl-bAk4oQI (Lme/snoty/backend/config/Config;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-}
-
-public abstract interface class me/snoty/integration/common/wiring/node/NodePersistenceFactory {
-	public abstract fun create (Ljava/lang/String;Lkotlin/reflect/KClass;)Lme/snoty/integration/common/wiring/node/NodePersistenceService;
-}
-
-public abstract interface class me/snoty/integration/common/wiring/node/NodePersistenceService : me/snoty/integration/common/wiring/node/NodeScopedPersistenceService {
-	public abstract fun deleteEntity (Lme/snoty/core/node/Node;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun getEntities (Lme/snoty/core/node/Node;)Lkotlinx/coroutines/flow/Flow;
-	public abstract fun persistEntity (Lme/snoty/core/node/Node;Ljava/lang/String;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun setEntities (Lme/snoty/core/node/Node;Ljava/util/List;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class me/snoty/integration/common/wiring/node/NodePosition {
-	public static final field Companion Lme/snoty/integration/common/wiring/node/NodePosition$Companion;
-	public fun <init> (IIII)V
-	public final fun component1 ()I
-	public final fun component2 ()I
-	public final fun component3 ()I
-	public final fun component4 ()I
-	public final fun copy (IIII)Lme/snoty/integration/common/wiring/node/NodePosition;
-	public static synthetic fun copy$default (Lme/snoty/integration/common/wiring/node/NodePosition;IIIIILjava/lang/Object;)Lme/snoty/integration/common/wiring/node/NodePosition;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getHeight ()I
-	public final fun getWidth ()I
-	public final fun getX ()I
-	public final fun getY ()I
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/wiring/node/NodePosition$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public abstract interface class me/snoty/integration/common/wiring/node/NodeRegistry {
-	public abstract fun getHandlers ()Ljava/util/Map;
-	public abstract fun getMetadata ()Ljava/util/Map;
-	public fun getMetadata-d5fXedA (Ljava/lang/String;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
-	public fun getMetadataOrNull-d5fXedA (Ljava/lang/String;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
-	public abstract fun lookupHandler-d5fXedA (Ljava/lang/String;)Lme/snoty/integration/common/wiring/node/NodeHandler;
-	public abstract fun lookupTypesByPosition (Lme/snoty/integration/common/model/NodePosition;)Ljava/util/List;
-	public abstract fun registerHandler (Lme/snoty/integration/common/model/metadata/NodeMetadata;Lme/snoty/integration/common/wiring/node/NodeHandler;)V
-}
-
-public final class me/snoty/integration/common/wiring/node/NodeRegistry$DefaultImpls {
-	public static fun getMetadata-d5fXedA (Lme/snoty/integration/common/wiring/node/NodeRegistry;Ljava/lang/String;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
-	public static fun getMetadataOrNull-d5fXedA (Lme/snoty/integration/common/wiring/node/NodeRegistry;Ljava/lang/String;)Lme/snoty/integration/common/model/metadata/NodeMetadata;
-}
-
-public abstract interface class me/snoty/integration/common/wiring/node/NodeRouteFactory {
-	public abstract fun invoke (Ljava/lang/String;Lio/ktor/http/HttpMethod;ZLkotlin/jvm/functions/Function3;)V
-	public static synthetic fun invoke$default (Lme/snoty/integration/common/wiring/node/NodeRouteFactory;Ljava/lang/String;Lio/ktor/http/HttpMethod;ZLkotlin/jvm/functions/Function3;ILjava/lang/Object;)V
-}
-
-public final class me/snoty/integration/common/wiring/node/NodeRouteFactory$DefaultImpls {
-	public static synthetic fun invoke$default (Lme/snoty/integration/common/wiring/node/NodeRouteFactory;Ljava/lang/String;Lio/ktor/http/HttpMethod;ZLkotlin/jvm/functions/Function3;ILjava/lang/Object;)V
-}
-
-public abstract interface class me/snoty/integration/common/wiring/node/NodeScopedPersistenceService {
-	public abstract fun delete (Lme/snoty/core/node/Node;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public abstract interface class me/snoty/integration/common/wiring/node/NodeSettings {
-}
-
-public final class me/snoty/integration/common/wiring/node/NodeSettingsKt {
-	public static final fun tryDeserializeNodeSettings-ReG42h4 (Ljava/lang/String;Lme/snoty/integration/common/wiring/node/NodeRegistry;Lkotlin/jvm/functions/Function1;)Lme/snoty/integration/common/wiring/node/NodeSettings;
-}
-
-public abstract interface class me/snoty/integration/common/wiring/node/template/NodeMetadataFeatureFlags {
-	public abstract fun getCacheNodeMetadata ()Z
-	public abstract fun getCacheNodeTemplates ()Z
-}
-
-public final class me/snoty/integration/common/wiring/node/template/NodeTemplate {
-	public static final field Companion Lme/snoty/integration/common/wiring/node/template/NodeTemplate$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1-EVnYJLk ()Ljava/lang/String;
-	public final fun component2 ()Ljava/lang/String;
-	public final fun component3 ()Ljava/lang/String;
-	public final fun copy-ReG42h4 (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lme/snoty/integration/common/wiring/node/template/NodeTemplate;
-	public static synthetic fun copy-ReG42h4$default (Lme/snoty/integration/common/wiring/node/template/NodeTemplate;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lme/snoty/integration/common/wiring/node/template/NodeTemplate;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getName ()Ljava/lang/String;
-	public final fun getNode-EVnYJLk ()Ljava/lang/String;
-	public final fun getTemplate ()Ljava/lang/String;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/integration/common/wiring/node/template/NodeTemplate$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public abstract interface class me/snoty/integration/common/wiring/node/template/NodeTemplateRegistry {
-	public abstract fun getAllTemplates ()Ljava/util/Map;
-}
-
-public final class me/snoty/integration/common/wiring/node/template/NodeTemplateUtils {
-	public static final field INSTANCE Lme/snoty/integration/common/wiring/node/template/NodeTemplateUtils;
-	public final fun nodeTemplatesModule-d5fXedA (Ljava/lang/String;)Lorg/koin/core/module/Module;
 }
 

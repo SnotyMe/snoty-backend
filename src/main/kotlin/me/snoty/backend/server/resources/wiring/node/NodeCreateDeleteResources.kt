@@ -7,13 +7,13 @@ import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import me.snoty.backend.utils.getUser
+import me.snoty.backend.utils.http.flowNotFound
 import me.snoty.backend.utils.respondServiceResult
+import me.snoty.backend.wiring.flow.FlowService
+import me.snoty.backend.wiring.node.NodePosition
+import me.snoty.backend.wiring.node.NodeService
 import me.snoty.core.flow.FlowId
 import me.snoty.core.node.NodeType
-import me.snoty.integration.common.config.NodeService
-import me.snoty.integration.common.http.flowNotFound
-import me.snoty.integration.common.wiring.flow.FlowService
-import me.snoty.integration.common.wiring.node.NodePosition
 
 @Serializable
 private data class NodeCreateRequest(

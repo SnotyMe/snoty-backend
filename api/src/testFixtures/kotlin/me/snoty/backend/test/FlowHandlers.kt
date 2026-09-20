@@ -1,10 +1,10 @@
 package me.snoty.backend.test
 
+import me.snoty.backend.wiring.data.*
+import me.snoty.backend.wiring.node.NodeHandleContext
+import me.snoty.backend.wiring.node.NodeHandler
 import me.snoty.core.node.NodeId
 import me.snoty.core.node.NodeWithSettings
-import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.data.*
-import me.snoty.integration.common.wiring.node.NodeHandler
 
 const val TYPE_MAP = "map"
 const val TYPE_QUOTE = "quote"

@@ -6,8 +6,8 @@ import liqp.TemplateContext
 import liqp.filters.Filter
 import me.snoty.backend.utils.orNull
 import me.snoty.backend.utils.skip
-import me.snoty.integration.common.diff.getNew
-import me.snoty.integration.common.diff.getOld
+import me.snoty.backend.wiring.node.state.getNew
+import me.snoty.backend.wiring.node.state.getOld
 import me.snoty.node.mapper.FilterFactory
 import org.bson.Document
 import org.koin.core.annotation.Single

@@ -2,11 +2,11 @@ package me.snoty.node.mail.smtp
 
 import kotlinx.serialization.Serializable
 import me.snoty.backend.config.toProperties
-import me.snoty.integration.common.model.metadata.FieldCensored
-import me.snoty.integration.common.model.metadata.FieldDefaultValue
-import me.snoty.integration.common.model.metadata.FieldHidden
-import me.snoty.integration.common.model.metadata.FieldName
-import me.snoty.integration.common.wiring.node.NodeSettings
+import me.snoty.backend.schema.FieldCensored
+import me.snoty.backend.schema.FieldDefaultValue
+import me.snoty.backend.schema.FieldHidden
+import me.snoty.backend.schema.FieldName
+import me.snoty.backend.wiring.node.NodeSettings
 
 @Serializable
 data class SmtpSettings(

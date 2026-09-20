@@ -1,23 +1,18 @@
 package me.snoty.node.diff.injector
 
 import kotlinx.serialization.Serializable
+import me.snoty.backend.schema.EmptySchema
+import me.snoty.backend.schema.FieldDefaultValue
+import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeOutput
+import me.snoty.backend.wiring.data.iterableStructOutput
+import me.snoty.backend.wiring.node.*
+import me.snoty.backend.wiring.node.metadata.NodeStereotype
+import me.snoty.backend.wiring.node.routing.NodeRouteFactory
+import me.snoty.backend.wiring.node.state.DiffResult
+import me.snoty.backend.wiring.node.state.EntityStateService
 import me.snoty.core.node.NodeWithSettings
 import me.snoty.core.node.getConfig
-import me.snoty.integration.common.annotation.Icon
-import me.snoty.integration.common.annotation.ReceiveEmptyInput
-import me.snoty.integration.common.annotation.RegisterNode
-import me.snoty.integration.common.diff.DiffResult
-import me.snoty.integration.common.diff.EntityStateService
-import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.model.metadata.EmptySchema
-import me.snoty.integration.common.model.metadata.FieldDefaultValue
-import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.data.iterableStructOutput
-import me.snoty.integration.common.wiring.logger
-import me.snoty.integration.common.wiring.node.NodeRouteFactory
-import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.node.diff.DiffNodeHandler
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
@@ -45,7 +40,7 @@ data class HasDiff(
 	name = "diffinjector",
 	displayName = "Diff Injector",
 	icon = Icon(name = "lucide-file-diff"),
-	position = NodePosition.MIDDLE,
+	stereotype = NodeStereotype.MIDDLE,
 	settingsType = DiffInjectorSettings::class,
 	inputType = EmptySchema::class,
 	outputType = EmptySchema::class,

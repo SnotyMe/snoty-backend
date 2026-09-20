@@ -15,14 +15,10 @@ import me.snoty.backend.database.mongo.upsertOne
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.register
 import me.snoty.backend.utils.bson.getIdAsString
+import me.snoty.backend.wiring.flow.NodeDeletedHook
+import me.snoty.backend.wiring.node.state.*
 import me.snoty.core.node.Node
 import me.snoty.core.node.NodeType
-import me.snoty.integration.common.diff.DiffResult
-import me.snoty.integration.common.diff.EntityStateService
-import me.snoty.integration.common.diff.STATE_CODEC_REGISTRY
-import me.snoty.integration.common.diff.checksum
-import me.snoty.integration.common.diff.state.EntityState
-import me.snoty.integration.common.wiring.flow.NodeDeletedHook
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
 import org.bson.codecs.pojo.annotations.BsonId

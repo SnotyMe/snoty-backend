@@ -1,13 +1,13 @@
 package me.snoty.backend.wiring.flow.import
 
 import me.snoty.backend.database.sql.suspendTransaction
+import me.snoty.backend.wiring.flow.FlowService
 import me.snoty.backend.wiring.flow.ImportFlow
 import me.snoty.backend.wiring.node.NodeConnectionTable
 import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
 import me.snoty.backend.wiring.node.SqlNodeService
 import me.snoty.core.flow.FlowId
 import me.snoty.core.user.UserId
-import me.snoty.integration.common.wiring.flow.FlowService
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.batchInsert
 import org.koin.core.annotation.Single

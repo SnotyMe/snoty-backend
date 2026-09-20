@@ -6,8 +6,6 @@ import me.snoty.core.node.FlowNode
 import me.snoty.core.node.NodeType
 import me.snoty.core.node.StandaloneNode
 import me.snoty.core.user.UserId
-import me.snoty.integration.common.wiring.node.NodePosition
-import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.Document
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId

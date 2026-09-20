@@ -1,0 +1,15 @@
+package me.snoty.backend.wiring.node
+
+import org.koin.core.module.Module
+import org.koin.core.qualifier.Qualifier
+import kotlin.reflect.KClass
+
+interface NodeHandlerContributor {
+	val metadata: String
+	val settingsClass: KClass<out NodeSettings>?
+		get() = null
+
+	val nodeHandlerClass: KClass<out NodeHandler>
+	val koinModules: List<Module>
+	val koinScope: Qualifier
+}

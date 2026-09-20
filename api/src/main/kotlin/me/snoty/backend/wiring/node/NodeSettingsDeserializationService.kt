@@ -1,10 +1,8 @@
 package me.snoty.backend.wiring.node
 
 import me.snoty.backend.utils.bson.decode
+import me.snoty.backend.wiring.node.registry.NodeRegistry
 import me.snoty.core.node.NodeType
-import me.snoty.integration.common.wiring.node.NodeRegistry
-import me.snoty.integration.common.wiring.node.NodeSettings
-import me.snoty.integration.common.wiring.node.tryDeserializeNodeSettings
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Single

@@ -1,7 +1,7 @@
 package me.snoty.node.untis
 
-import me.snoty.integration.common.model.metadata.FieldCensored
-import me.snoty.integration.common.wiring.node.NodeSettings
+import me.snoty.backend.schema.FieldCensored
+import me.snoty.backend.wiring.node.NodeSettings
 
 interface WebUntisSettings : NodeSettings {
 	val baseUrl: String
