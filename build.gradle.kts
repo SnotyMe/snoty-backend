@@ -125,19 +125,14 @@ dependencies { with(libs) {
     implementation(libraries.openfeature)
     implementation(libraries.openfeature.flagd)
 
+    implementation(projects.nodes)
+
     // dev
     devImplementation(authentication.keycloak.adminClient)
     devImplementation(monitoring.opentelemetry.sdk)
     file("dist/integrations").listFiles()?.let {
         implementation(files(it))
     }
-
-    // depend on all integrations by default
-    subprojects
-        .filter { it.path.startsWith(":integrations:") }
-        .forEach {
-            moduleImplementation(it)
-        }
 }}
 
 if (isDevelopment) {

@@ -14,6 +14,7 @@ import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.wiring.node.NodeHandlerContributor
 import me.snoty.integration.common.wiring.node.template.NodeTemplateUtils
 import me.snoty.integration.plugin.utils.*
+import me.snoty.integration.plugin.utils.koin.writeKoinScope
 import org.koin.core.annotation.Single
 
 class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGenerator: CodeGenerator) : SymbolProcessor {
@@ -63,8 +64,11 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 
 		val registerNode = clazz.getAnnotation<RegisterNode>()!!
 
-		val writtenKoinEntities = codeGenerator.writeNodeKoinEntities(clazz, extensionName, registerNode)
-
+		val scope = codeGenerator.writeKoinScope(
+			clazz.packageName.asString(),
+			entityName = clazz.simpleName.asString(),
+			scopeValue = "extension:${extensionName}:node:${registerNode.name}",
+		)
 		classBuilder
 			.addSuperinterface(NodeHandlerContributor::class)
 			.addAnnotation(Single::class)
@@ -92,12 +96,12 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 			)
 			.addProperty(
 				contributorSpec.overrideProperty(NodeHandlerContributor::koinScope)
-					.initializer("%L", writtenKoinEntities.scope.scopeProperty.name)
+					.initializer("%L", scope.scopeProperty.name)
 					.build()
 			)
 			.addProperty(
 				contributorSpec.overrideProperty(NodeHandlerContributor::koinModules)
-					.initializer(buildKoinInitializer(writtenKoinEntities.moduleClassName))
+					.initializer(buildKoinInitializer())
 					.build()
 			)
 
@@ -114,13 +118,8 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 		return SpiContributor(contributorClassName = contributorClassName, containingFile = clazz.containingFile!!)
 	}
 
-	private fun buildKoinInitializer(koinModuleClassName: ClassName) = CodeBlock.builder()
+	private fun buildKoinInitializer() = CodeBlock.builder()
 		.add("listOf(\n")
-		.add(
-			"%T.%M(),\n",
-			koinModuleClassName,
-			MemberName(koinModuleClassName.packageName, "module"),
-		)
 		.add(
 			"%M(%N),\n",
 			NodeTemplateUtils::nodeTemplatesModule.getMemberName<NodeTemplateUtils>(),

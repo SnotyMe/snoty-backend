@@ -19,6 +19,7 @@ private const val CONFIG_KEY = "${AuthenticationAdapter.CONFIG_GROUP}.${KEYCLOAK
 @ComponentScan
 object KeycloakKoinModule
 
+@Single
 class KeycloakAdapter : AuthenticationAdapter {
     override val supportedTypes: List<String> = listOf(KEYCLOAK_ADAPTER_TYPE)
     override val koinModule = KeycloakKoinModule.module()

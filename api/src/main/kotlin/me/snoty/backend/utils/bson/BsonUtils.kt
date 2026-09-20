@@ -3,6 +3,7 @@ package me.snoty.backend.utils.bson
 import org.bson.*
 import org.bson.codecs.*
 import org.bson.codecs.configuration.CodecRegistry
+import org.bson.json.JsonParseException
 import org.bson.json.JsonReader
 import org.bson.types.ObjectId
 import kotlin.reflect.KClass
@@ -42,6 +43,14 @@ fun Document.getIdAsString(): String? = when (val id = get("id")) {
 
 fun Document.getOrPut(key: String, defaultValue: () -> Any): Any {
 	return this[key] ?: defaultValue().also { this[key] = it }
+}
+
+fun parseJson(json: String, codecRegistry: CodecRegistry, bsonTypeClassMap: BsonTypeClassMap): Any = json.trim().let {
+	when ("${it.first()}${it.last()}") {
+		"{}" -> Document.parse(it, codecRegistry.get(Document::class.java))
+		"[]" -> parseArray(it, codecRegistry, bsonTypeClassMap)
+		else -> throw JsonParseException("Invalid JSON: $it")
+	}
 }
 
 fun parseArray(json: String, codecRegistry: CodecRegistry, bsonTypeClassMap: BsonTypeClassMap): List<Any> {

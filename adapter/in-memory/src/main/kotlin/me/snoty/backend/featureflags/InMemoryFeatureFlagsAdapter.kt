@@ -13,6 +13,7 @@ import org.koin.core.annotation.Single
 @ComponentScan
 object InMemoryKoinModule
 
+@Single
 class InMemoryOpenFeatureAdapter : FeatureFlagsAdapter {
 	override val supportedTypes: List<String> = listOf("in-memory")
 	override val koinModule: DiModule = InMemoryKoinModule.module()

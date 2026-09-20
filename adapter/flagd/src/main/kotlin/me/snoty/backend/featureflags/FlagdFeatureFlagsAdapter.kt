@@ -18,6 +18,7 @@ private const val CONFIG_KEY = "${FeatureFlagsAdapter.CONFIG_GROUP}.${FLAGD_ADAP
 @ComponentScan
 object FlagdKoinModule
 
+@Single
 class FlagdFeatureFlagsAdapter : FeatureFlagsAdapter {
 	override val supportedTypes: List<String> = listOf(FLAGD_ADAPTER_TYPE)
 	override val koinModule: DiModule = FlagdKoinModule.module()

@@ -22,6 +22,7 @@ private const val CONFIG_KEY = "${DatabaseAdapter.CONFIG_GROUP}.${SQL_ADAPTER_TY
 @ComponentScan("me.snoty.backend")
 object SqlKoinModule
 
+@Single
 class SqlAdapter : DatabaseAdapter {
 	override val supportedTypes: List<String> = listOf(SQL_ADAPTER_TYPE, "postgres")
 	override val koinModule: DiModule = SqlKoinModule.module()
