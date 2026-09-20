@@ -17,10 +17,11 @@ interface SqlTableRegistry {
 @Single
 @OptIn(InternalSqlApi::class)
 class SqlTableRegistryImpl(private val koin: Koin) : SqlTableRegistry {
-    override fun getTables(): List<Table> =
-        koin.getFromAllScopes<Table>() +
-        getEntityStateTables() +
-        getNodePersistenceTables()
+    override fun getTables(): List<Table> = buildList {
+        addAll(koin.getFromAllScopes<Table>())
+        addAll(getEntityStateTables())
+        addAll(getNodePersistenceTables())
+    }
 
     override fun getEntityStateTables(): List<EntityStateTable> = entityStateTables
 

@@ -207,7 +207,7 @@ class FlowRunnerImpl(
 		return flow {
 			logger.debug { "Processing $nodeLogName with $input" }
 			// pls fix Kotlin
-			val data = with(context) { with(handler) { process(node, input) } }
+			val data = context(context) { handler.process(node, input) }
 			logger.debug { "Processed $nodeLogName" }
 			if (metadata.position.logOutput && node.next.isEmpty()) {
 				logger.debug { "Node \"${node.name}\" (${node.id.value}) has no output nodes, would have emitted $data" }

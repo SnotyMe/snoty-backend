@@ -47,7 +47,6 @@ class NodeTable(flowTable: FlowTable) : IdTable<NodeId>("node") {
 	val positionY = integer("position_y")
 	val width = integer("width")
 	val height = integer("height")
-	@OptIn(InternalSerializationApi::class)
 	val settings = rawJsonb<NodeSettings>("settings")
 
 	val createdAt = timestamp("created_at").defaultExpression(CurrentTimestamp)

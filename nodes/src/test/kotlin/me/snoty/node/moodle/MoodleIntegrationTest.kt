@@ -25,7 +25,6 @@ import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class MoodleIntegrationTest {
@@ -36,7 +35,6 @@ class MoodleIntegrationTest {
 
 	fun randomLong() = ThreadLocalRandom.current().nextLong()
 
-	@OptIn(ExperimentalUuidApi::class)
 	fun randomString() = Uuid.random().toString()
 
 	fun assignment(id: Long, due: Instant, overdue: Boolean, action: MoodleAction? = null): MoodleEvent {

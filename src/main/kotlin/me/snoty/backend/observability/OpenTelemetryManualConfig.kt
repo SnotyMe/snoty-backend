@@ -43,8 +43,13 @@ internal fun getManualOpenTelemetry(koin: Koin, config: OtelConfig, metadata: Re
 				TextMapPropagator.composite(propagators)
 			)
 		)
-		.setTracerProvider(config.traces?.build(koin, metadata))
-		.setLoggerProvider(config.logs?.build(metadata))
+		.also {
+			config.traces?.build(koin, metadata)
+				?.let(it::setTracerProvider)
+
+			config.logs?.build(metadata)
+				?.let(it::setLoggerProvider)
+		}
 		.build()
 }
 

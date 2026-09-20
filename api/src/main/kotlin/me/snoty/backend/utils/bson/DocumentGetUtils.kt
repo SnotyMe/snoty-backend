@@ -10,22 +10,21 @@ fun Document.getByPath(key: String): Any? {
 
     for (i in parts.indices) {
         val part = parts[i].replace(ESCAPE_REGEX, "$1")
-        val isLast = i == parts.lastIndex
         current = when {
-            parts[i].matches(ARRAY_INDEX_REGEX) -> current.handleListGet(part, isLast)
-            else -> current.handleRegularKeyGet(part, isLast)
+            parts[i].matches(ARRAY_INDEX_REGEX) -> current.handleListGet(part)
+            else -> current.handleRegularKeyGet(part)
         }
         if (current == null) return null
     }
     return current
 }
 
-private fun Any?.handleRegularKeyGet(part: String, isLast: Boolean): Any? {
+private fun Any?.handleRegularKeyGet(part: String): Any? {
     if (this !is Document) return null
-    return if (isLast) this[part] else this[part]
+    return this[part]
 }
 
-private fun Any?.handleListGet(part: String, isLast: Boolean): Any? {
+private fun Any?.handleListGet(part: String): Any? {
     val key = part.substringBeforeLast("[")
     val index = part.substringAfterLast("[").substringBefore("]").toInt()
 
@@ -36,5 +35,5 @@ private fun Any?.handleListGet(part: String, isLast: Boolean): Any? {
     } ?: return null
 
     if (index >= list.size) return null
-    return if (isLast) list[index] else list[index]
+    return list[index]
 }

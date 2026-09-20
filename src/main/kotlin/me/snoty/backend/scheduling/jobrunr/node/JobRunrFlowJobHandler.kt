@@ -16,6 +16,7 @@ import me.snoty.backend.wiring.flow.execution.FlowExecutionService
 import me.snoty.integration.common.wiring.flow.FlowRunner
 import me.snoty.integration.common.wiring.flow.FlowService
 import org.jobrunr.jobs.context.JobRunrDashboardLogger
+import org.jobrunr.server.runner.ThreadLocalJobContext
 import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
 import ch.qos.logback.classic.Logger as LogbackLogger
@@ -38,7 +39,7 @@ class JobRunrFlowJobHandler(
 	}
 
 	override fun run(jobRequest: JobRunrFlowJobRequest) {
-		val jobContext = jobContext()
+		val jobContext = ThreadLocalJobContext.getJobContext()
 		val logger = JobRunrDashboardLogger(this.rootLogger)
 
 		KMDC.put(JOB_ID, jobContext.jobId.toString())

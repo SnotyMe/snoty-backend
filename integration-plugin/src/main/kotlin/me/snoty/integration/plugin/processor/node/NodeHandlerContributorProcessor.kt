@@ -1,6 +1,5 @@
 package me.snoty.integration.plugin.processor.node
 
-import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated
@@ -23,7 +22,6 @@ class NodeHandlerContributorProcessor(val logger: KSPLogger, private val codeGen
 	private fun contributorName(clazz: KSClassDeclaration)
 		= ClassName(clazz.packageName.asString(), "${clazz.simpleName.asString()}Contributor")
 
-	@OptIn(KspExperimental::class)
 	override fun process(resolver: Resolver): List<KSAnnotated> {
 		val extensionName = resolver.getExtensionName()
 

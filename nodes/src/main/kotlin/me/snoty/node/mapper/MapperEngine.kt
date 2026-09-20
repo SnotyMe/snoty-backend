@@ -8,12 +8,12 @@ import org.koin.core.component.KoinComponent
 import org.slf4j.Logger
 
 enum class MapperEngine(private val templater: Templater) {
-	REPLACE({ logger, settings, data ->
+	REPLACE({ _, settings, data ->
 		val mappedData = Document()
 		settings.fields.forEach { (key, ogValue) ->
 			var result = ogValue
-			for (field in data) {
-				result = result.replace("%${field.key}%", field.value.toString())
+			for ((key, value) in data) {
+				result = result.replace("%${key}%", value.toString())
 			}
 
 			mappedData.setByPath(key, result.trim())

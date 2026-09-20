@@ -47,9 +47,9 @@ class MailNodeHandler(private val mailService: GlobalMailService) : NodeHandler 
 }
 
 @Single
-fun getGlobalMailImpl(configLoader: ConfigLoader): GlobalMailService {
-	val config = configLoader.load<GlobalMailConfigWrapper>(prefix = null).globalMail
-	return when (config) {
+fun getGlobalMailImpl(configLoader: ConfigLoader): GlobalMailService =
+	when (
+		val config = configLoader.load<GlobalMailConfigWrapper>(prefix = null).globalMail
+	) {
 		is Smtp -> SmtpGlobalMailService(config)
 	}
-}

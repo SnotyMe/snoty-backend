@@ -2,7 +2,6 @@ package me.snoty.backend.utils
 
 import io.ktor.http.*
 import kotlinx.serialization.EncodeDefault
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -10,7 +9,6 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-@OptIn(ExperimentalSerializationApi::class)
 @Serializable
 open class HttpStatusException(
 	val code: @Serializable(with = HttpStatusCodeSerializer::class) HttpStatusCode,

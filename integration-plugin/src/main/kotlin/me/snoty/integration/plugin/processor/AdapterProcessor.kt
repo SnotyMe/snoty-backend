@@ -13,7 +13,10 @@ import me.snoty.backend.adapter.Adapter
 import me.snoty.integration.plugin.utils.SpiContributor
 import me.snoty.integration.plugin.utils.writeSpiFile
 
-class AdapterProcessor(private val logger: KSPLogger, private val codeGenerator: CodeGenerator) : SymbolProcessor, KSTopDownVisitor<KSFile, Unit>() {
+class AdapterProcessor(
+	private val logger: KSPLogger,
+	private val codeGenerator: CodeGenerator,
+) : SymbolProcessor, KSTopDownVisitor<KSFile, Unit>(enableNewFeatures = true) {
 	override fun process(resolver: Resolver): List<KSAnnotated> {
 		resolver.getNewFiles()
 			.forEach { it.accept(this, it) }
@@ -31,7 +34,7 @@ class AdapterProcessor(private val logger: KSPLogger, private val codeGenerator:
 					?.any { superType -> superType.resolve().declaration.qualifiedName?.asString() == Adapter::class.qualifiedName } == true
 			} ?: return
 
-		logger.warn("Found adapter: ${classDeclaration.simpleName.asString()} is impl for ${adapter.toClassName().simpleName}", data)
+		logger.info("Found adapter: ${classDeclaration.simpleName.asString()} is impl for ${adapter.toClassName().simpleName}", data)
 
 		codeGenerator.writeSpiFile(
 			adapter.toClassName().canonicalName,

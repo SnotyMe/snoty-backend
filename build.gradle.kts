@@ -1,4 +1,4 @@
-@file:Suppress("UnstableApiUsage")
+@file:Suppress("UnstableApiUsage", "AvoidApplyPluginMethod")
 
 
 apply(from = "version.gradle.kts")
@@ -45,18 +45,13 @@ testing.suites.withType<JvmTestSuite>().configureEach {
     }}
 }
 
-val devImplementation: Configuration by configurations.getting {
+val devImplementation: Configuration = configurations.getByName("devImplementation") {
     extendsFrom(configurations.implementation.get())
 }
 
 dependencies { with(libs) {
-    fun moduleImplementation(dependency: Any) {
-        implementation(dependency)
-        testImplementation(dependency)
-    }
-
-    moduleImplementation(projects.api)
-	moduleImplementation(projects.adapter.adapterApi)
+    implementation(projects.api)
+	implementation(projects.adapter.adapterApi)
 
     implementation(projects.adapter.inMemory)
 
@@ -91,7 +86,6 @@ dependencies { with(libs) {
     implementation(ktor.server.cors)
     implementation(ktor.server.call.logging)
     implementation(ktor.server.call.id)
-    implementation(ktor.server.forwardedHeader)
     implementation(ktor.server.forwardedHeader)
     implementation(ktor.server.defaultHeaders)
     implementation(ktor.server.hostCommon)
