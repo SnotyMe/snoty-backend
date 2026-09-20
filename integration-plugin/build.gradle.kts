@@ -4,6 +4,14 @@ plugins {
 	id("snoty.publish-repo-conventions")
 }
 
+kotlin {
+	compilerOptions {
+		optIn.addAll(
+			"com.squareup.kotlinpoet.DelicateKotlinPoetApi",
+		)
+	}
+}
+
 dependencies { with(libs) {
 	implementation(integrationPlugin.ksp.api)
 	implementation(projects.api)

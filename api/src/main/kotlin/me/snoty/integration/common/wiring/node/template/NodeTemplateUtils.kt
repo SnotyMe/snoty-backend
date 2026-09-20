@@ -12,7 +12,6 @@ import kotlin.io.path.*
 object NodeTemplateUtils {
 	private val logger = KotlinLogging.logger {}
 
-	@OptIn(ExperimentalPathApi::class)
 	private fun provideNodeTemplates(nodeType: NodeType): Sequence<Path>? {
 		val nodeDirectory = "/node/${nodeType.value}"
 		val resource = javaClass.getResource(nodeDirectory) ?: return let {

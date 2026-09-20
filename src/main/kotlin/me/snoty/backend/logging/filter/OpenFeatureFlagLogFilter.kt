@@ -9,6 +9,7 @@ import org.koin.core.annotation.Single
 
 @Single
 class OpenFeatureFlagLogFilter : Filter<ILoggingEvent>() {
+	@Suppress("DEPRECATION")
 	override fun decide(event: ILoggingEvent): FilterReply = when {
 		event.level.isGreaterOrEqual(Level.ERROR)
 			&& event.loggerName == OpenFeatureClient::class.qualifiedName

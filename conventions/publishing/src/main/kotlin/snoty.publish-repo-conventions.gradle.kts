@@ -5,7 +5,7 @@ plugins {
 
 publishing {
 	repositories {
-		listOf("Releases", "Snapshots").map {
+		listOf("Releases", "Snapshots").forEach {
 			maven {
 				name = "snoty$it"
 				url = uri("https://maven.snoty.me/${it.lowercase()}")

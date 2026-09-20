@@ -2,7 +2,6 @@ package me.snoty.node.untis.model.timetable
 
 import kotlinx.serialization.Serializable
 
-@Serializable
 /**
  * KV Mapping for related entities
  *
@@ -11,6 +10,7 @@ import kotlinx.serialization.Serializable
  * - type: CLASS, id: 5
  * - type: TEACHER, id: 10
  */
+@Serializable
 data class UntisPeriodElement(
 	val type: String,
 	val id: Int,

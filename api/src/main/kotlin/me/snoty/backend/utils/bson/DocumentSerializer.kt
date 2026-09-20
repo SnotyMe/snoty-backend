@@ -1,6 +1,5 @@
 package me.snoty.backend.utils.bson
 
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -24,7 +23,6 @@ class DocumentSerializer(private val codecRegistry: CodecRegistry) : KSerializer
 
 	override val descriptor: SerialDescriptor = MapAnyMap.serializer().descriptor
 
-	@OptIn(ExperimentalSerializationApi::class)
 	override fun serialize(encoder: Encoder, value: Document) {
 		if (encoder !is JsonEncoder) {
 			encoder.encodeString(value.toJson())

@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 plugins {
 	kotlin("jvm")
 	`jvm-test-suite`
@@ -7,14 +9,18 @@ lateinit var testIntegration: NamedDomainObjectProvider<JvmTestSuite>
 
 testing {
 	suites {
-		val test by getting(JvmTestSuite::class)
+		val test = named<JvmTestSuite>("test") {
+			useJUnitJupiter()
+		}
+
 		testIntegration = register<JvmTestSuite>("testIntegration") {
 			dependencies {
 				implementation(project())
 				implementation(sourceSets.test.get().output)
 			}
-			sources.compileClasspath += sourceSets.test.get().compileClasspath
-			sources.runtimeClasspath += sourceSets.test.get().runtimeClasspath
+			sources.compileClasspath += test.get().sources.compileClasspath
+			sources.runtimeClasspath += test.get().sources.runtimeClasspath
+
 			targets {
 				all {
 					testTask.configure {
@@ -26,7 +32,6 @@ testing {
 
 		withType<JvmTestSuite> {
 			useJUnitJupiter()
-
 			dependencies {
 				implementation(testFixtures(project(":api")))
 			}

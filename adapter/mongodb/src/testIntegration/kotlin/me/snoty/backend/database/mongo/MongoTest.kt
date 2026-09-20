@@ -7,8 +7,8 @@ import me.snoty.backend.test.getClassNameFromBlock
 import me.snoty.backend.utils.bson.provideApiCodec
 import me.snoty.backend.utils.bson.provideCodecRegistry
 import me.snoty.integration.common.utils.bsonTypeClassMap
-import org.testcontainers.containers.MongoDBContainer
 import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.mongodb.MongoDBContainer
 
 object MongoTest {
 	@Container

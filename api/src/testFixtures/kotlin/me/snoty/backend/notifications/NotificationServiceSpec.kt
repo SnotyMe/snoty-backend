@@ -81,9 +81,9 @@ abstract class NotificationServiceSpec {
 		assertNotNull(notificationService.findByUser(userId).single().resolvedAt)
 
 		val notification = notificationService.findByUser(userId).single()
-		assertEquals(notification.userId, userId)
-		assertEquals(notification.attributes, attributes)
-		assertEquals(notification.count, 2)
+		assertEquals(userId, notification.userId)
+		assertEquals(attributes, notification.attributes)
+		assertEquals(2, notification.count)
 		assertNotNull(notification.lastSeenAt)
 		assertNotNull(notification.resolvedAt)
 		assertTrue(notification.lastSeenAt <= notification.resolvedAt)

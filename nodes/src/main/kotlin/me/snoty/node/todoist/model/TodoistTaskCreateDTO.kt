@@ -3,10 +3,10 @@ package me.snoty.node.todoist.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Serializable
 /**
  * [Todoist REST Docs](https://developer.todoist.com/rest/v2/#create-a-new-task)
  */
+@Serializable
 data class TodoistTaskCreateDTO(
 	val content: String,
 	val description: String?,

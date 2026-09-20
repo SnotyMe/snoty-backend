@@ -39,6 +39,8 @@ class Application : KoinComponent {
 		get<Scheduler>().start()
 
 		// schedule missing jobs
+		@OptIn(DelicateCoroutinesApi::class)
+		@Suppress("CoroutineContextWithJob")
 		launch(
 			newSingleThreadContext("FlowScheduler") +
 				SupervisorJob() +

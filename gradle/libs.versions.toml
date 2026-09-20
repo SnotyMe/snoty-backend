@@ -110,7 +110,7 @@ libraries-bson-kotlinx = { group = "org.mongodb", name = "bson-kotlinx", version
 libraries-ical4j = { group = "org.mnode.ical4j", name = "ical4j", version = "4.1.0" }
 libraries-jobrunr = { group = "org.jobrunr", name = "jobrunr", version.ref = "jobrunr" }
 libraries-jobrunr-kotlin = { group = "org.jobrunr", name = "jobrunr-kotlin-support", version.ref = "jobrunr" }
-libraries-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.7.0-0.6.x-compat" }
+libraries-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.8.0" }
 libraries-kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 libraries-openfeature = { group = "dev.openfeature", name = "sdk", version = "1.20.1" }
 libraries-openfeature-flagd = { group = "dev.openfeature.contrib.providers", name = "flagd", version = "0.11.20" }

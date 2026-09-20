@@ -26,11 +26,11 @@ data class ImportFlow(
 	val nodes: List<ImportNode>,
 )
 
-@Serializable
 /**
  * Exported node with its settings and next nodes.
  * The ids are obfuscated by hashing them. This doubles as a prevention tactic of accidental mix-ups.
  */
+@Serializable
 data class ExportNode(
 	val id: String,
 	val type: NodeType,

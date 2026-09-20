@@ -9,5 +9,6 @@ import kotlin.reflect.KClass
  * A hacky way to encode an object to a JSON string using the serializer of its class.
  * This allows users to serialize objects whose classes are not known at compile time.
  */
+@Suppress("UNCHECKED_CAST")
 @OptIn(InternalSerializationApi::class)
 fun <T : Any> Json.hackyEncodeToString(it: T) = encodeToString((it::class as KClass<T>).serializer(), it)

@@ -35,12 +35,12 @@ class MongoMigrator(
 		val alreadyRan = collection.find().toList()
 		logger.trace { "Migrations that ran before: $alreadyRan" }
 
-		val toRun = migrations.filterNot {
+		val toRun = migrations.filterNot { migration ->
 			val didFinish = alreadyRan
-				.filter { it.events.any { it is MongoMigrationEvent.Completed } }
-				.any { ran -> ran.name == it.name }
+				.filter { ran -> ran.events.any { it is MongoMigrationEvent.Completed } }
+				.any { ran -> ran.name == migration.name }
 
-			logger.debug { "Migration ${it.name} did finish before: $didFinish" }
+			logger.debug { "Migration ${migration.name} did finish before: $didFinish" }
 			didFinish
 		}.sortedWith(
 			compareBy(

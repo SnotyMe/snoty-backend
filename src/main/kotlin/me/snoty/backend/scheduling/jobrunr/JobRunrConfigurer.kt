@@ -27,7 +27,7 @@ class JobRunrConfigurer(
 			override fun <T : Any> activateJob(type: Class<T>): T? = koin.getOrNull(type.kotlin)
 		})
 		.useBackgroundJobServer()
-		.useMicroMeter(JobRunrMicroMeterIntegration(meterRegistry))
+		.useMetrics(JobRunrMicroMeterIntegration(meterRegistry))
 		.useDashboard(
 			JobRunrDashboardWebServerConfiguration.usingStandardDashboardConfiguration()
 				.andPort(8082)

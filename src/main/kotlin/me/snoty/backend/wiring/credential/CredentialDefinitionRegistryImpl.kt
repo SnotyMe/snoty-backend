@@ -11,7 +11,7 @@ class CredentialDefinitionRegistryImpl : CredentialDefinitionRegistry {
 	init {
 		val contributors = ServiceLoader.load(CredentialDefinitionContributor::class.java)
 
-		contributors.map {
+		contributors.forEach {
 			val definition = CredentialDefinition(
 				type = it.type,
 				displayName = it.displayName,
