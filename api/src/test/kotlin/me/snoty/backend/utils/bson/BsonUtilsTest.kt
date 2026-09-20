@@ -1,7 +1,6 @@
 package me.snoty.backend.utils.bson
 
 import me.snoty.backend.test.TestCodecRegistry
-import me.snoty.integration.common.utils.bsonTypeClassMap
 import org.bson.Document
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals

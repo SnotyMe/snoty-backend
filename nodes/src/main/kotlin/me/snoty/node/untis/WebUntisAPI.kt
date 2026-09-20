@@ -12,7 +12,7 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.reflect.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import me.snoty.integration.common.jsonrpc.*
+import me.snoty.backend.utils.jsonrpc.*
 import me.snoty.node.untis.param.UntisParam
 import org.koin.core.annotation.Single
 

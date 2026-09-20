@@ -4,9 +4,9 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import io.mockk.mockk
 import me.snoty.backend.database.mongo.migrations.provideMigrationsCodec
 import me.snoty.backend.test.getClassNameFromBlock
+import me.snoty.backend.utils.bson.bsonTypeClassMap
 import me.snoty.backend.utils.bson.provideApiCodec
 import me.snoty.backend.utils.bson.provideCodecRegistry
-import me.snoty.integration.common.utils.bsonTypeClassMap
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.mongodb.MongoDBContainer
 

@@ -2,19 +2,15 @@ package me.snoty.node.filter
 
 import kotlinx.serialization.Serializable
 import liqp.TemplateParser
+import me.snoty.backend.schema.FieldDescription
+import me.snoty.backend.schema.Language
+import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeOutput
+import me.snoty.backend.wiring.data.get
+import me.snoty.backend.wiring.node.*
+import me.snoty.backend.wiring.node.metadata.NodeStereotype
 import me.snoty.core.node.NodeWithSettings
 import me.snoty.core.node.getConfig
-import me.snoty.integration.common.annotation.Icon
-import me.snoty.integration.common.annotation.RegisterNode
-import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.model.metadata.FieldDescription
-import me.snoty.integration.common.model.metadata.Language
-import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.data.get
-import me.snoty.integration.common.wiring.node.NodeHandler
-import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.Document
 import org.koin.core.annotation.Single
 
@@ -30,7 +26,7 @@ data class FilterSettings(
 	displayName = "Filter",
 	icon = Icon(name = "lucide-funnel"),
 	settingsType = FilterSettings::class,
-	position = NodePosition.MIDDLE,
+	stereotype = NodeStereotype.MIDDLE,
 	inputType = Any::class,
 	outputType = Any::class,
 )

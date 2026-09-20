@@ -1,20 +1,20 @@
 package me.snoty.node.diff.unchangedfilter
 
 import kotlinx.serialization.Serializable
+import me.snoty.backend.schema.EmptySchema
+import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeOutput
+import me.snoty.backend.wiring.data.iterableStructOutput
+import me.snoty.backend.wiring.node.NodeHandleContext
+import me.snoty.backend.wiring.node.NodeSettings
+import me.snoty.backend.wiring.node.RegisterNode
+import me.snoty.backend.wiring.node.logger
+import me.snoty.backend.wiring.node.metadata.NodeStereotype
+import me.snoty.backend.wiring.node.routing.NodeRouteFactory
+import me.snoty.backend.wiring.node.state.DiffResult
+import me.snoty.backend.wiring.node.state.EntityStateService
 import me.snoty.core.node.NodeWithSettings
 import me.snoty.core.node.getConfig
-import me.snoty.integration.common.annotation.RegisterNode
-import me.snoty.integration.common.diff.DiffResult
-import me.snoty.integration.common.diff.EntityStateService
-import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.model.metadata.EmptySchema
-import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.data.iterableStructOutput
-import me.snoty.integration.common.wiring.logger
-import me.snoty.integration.common.wiring.node.NodeRouteFactory
-import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.node.diff.DiffNodeHandler
 import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Single
@@ -27,7 +27,7 @@ data class UnchangedFilterSettings(
 @RegisterNode(
 	name = "unchangedfilter",
 	displayName = "Unchanged Filter",
-	position = NodePosition.MIDDLE,
+	stereotype = NodeStereotype.MIDDLE,
 	settingsType = UnchangedFilterSettings::class,
 	inputType = EmptySchema::class,
 	outputType = EmptySchema::class,

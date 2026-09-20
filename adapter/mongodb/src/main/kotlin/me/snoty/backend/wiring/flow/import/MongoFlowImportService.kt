@@ -4,13 +4,13 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.UpdateOneModel
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
+import me.snoty.backend.database.mongo.NODE_COLLECTION_NAME
 import me.snoty.backend.database.mongo.objectId
+import me.snoty.backend.wiring.flow.FlowService
 import me.snoty.backend.wiring.flow.ImportFlow
 import me.snoty.backend.wiring.node.MongoNode
 import me.snoty.core.flow.FlowId
 import me.snoty.core.user.UserId
-import me.snoty.integration.common.wiring.flow.FlowService
-import me.snoty.integration.common.wiring.flow.NODE_COLLECTION_NAME
 import org.koin.core.annotation.Single
 import kotlin.time.Clock
 

@@ -2,10 +2,10 @@ package me.snoty.backend.wiring.node
 
 import me.snoty.backend.test.NoOpNodeHandler
 import me.snoty.backend.test.nodeMetadata
+import me.snoty.backend.wiring.node.metadata.NodeStereotype
+import me.snoty.backend.wiring.node.registry.NodeRegistryImpl
 import me.snoty.core.flow.FlowId
 import me.snoty.core.node.NodeType
-import me.snoty.integration.common.config.NodeService
-import me.snoty.integration.common.model.NodePosition
 
 abstract class NodeServiceSpec {
 	abstract val service: NodeService
@@ -14,7 +14,7 @@ abstract class NodeServiceSpec {
 	private val type = NodeType("mytype")
 
 	protected val nodeRegistry = NodeRegistryImpl().apply {
-		registerHandler(nodeMetadata(type, position = NodePosition.START), NoOpNodeHandler)
+		registerHandler(nodeMetadata(type, stereotype = NodeStereotype.START), NoOpNodeHandler)
 	}
 	
 	// TODO: test other methods

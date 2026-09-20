@@ -12,10 +12,10 @@ import kotlinx.serialization.json.Json
 import me.snoty.backend.utils.getUser
 import me.snoty.backend.utils.hackyEncodeToString
 import me.snoty.backend.utils.orNull
+import me.snoty.backend.wiring.execution.FlowExecution
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEvent
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
-import me.snoty.integration.common.wiring.flow.FlowExecution
 import org.koin.ktor.ext.get
 import kotlin.time.Duration.Companion.seconds
 

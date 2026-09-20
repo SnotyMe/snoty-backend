@@ -11,10 +11,10 @@ import me.snoty.backend.observability.FLOW_ID
 import me.snoty.backend.observability.JOB_ID
 import me.snoty.backend.observability.USER_ID
 import me.snoty.backend.scheduling.JobRequestHandler
+import me.snoty.backend.wiring.flow.FlowRunner
+import me.snoty.backend.wiring.flow.FlowService
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEventService
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
-import me.snoty.integration.common.wiring.flow.FlowRunner
-import me.snoty.integration.common.wiring.flow.FlowService
 import org.jobrunr.jobs.context.JobRunrDashboardLogger
 import org.jobrunr.server.runner.ThreadLocalJobContext
 import org.koin.core.annotation.Single

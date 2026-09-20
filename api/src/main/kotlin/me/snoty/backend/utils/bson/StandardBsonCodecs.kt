@@ -1,11 +1,13 @@
 package me.snoty.backend.utils.bson
 
 import com.mongodb.MongoClientSettings
+import org.bson.BsonType
 import org.bson.codecs.BsonTypeClassMap
 import org.bson.codecs.DocumentCodec
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Single
+import kotlin.time.Instant
 
 fun standardCodecRegistry(): CodecRegistry = MongoClientSettings.getDefaultCodecRegistry()
 
@@ -24,3 +26,8 @@ fun provideCodecRegistry(vararg codecRegistryProvider: CodecRegistryProvider) =
 @Single
 fun provideDocumentCodec(codecRegistry: CodecRegistry, bsonTypeClassMap: BsonTypeClassMap) =
 	DocumentCodec(codecRegistry, bsonTypeClassMap)
+
+@Single
+fun bsonTypeClassMap() = BsonTypeClassMap(mapOf(
+	BsonType.DATE_TIME to Instant::class.java,
+))

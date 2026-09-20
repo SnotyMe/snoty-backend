@@ -2,16 +2,16 @@ package me.snoty.node.mail.global
 
 import me.snoty.backend.config.ConfigLoader
 import me.snoty.backend.config.load
+import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeOutput
+import me.snoty.backend.wiring.data.get
+import me.snoty.backend.wiring.node.Icon
+import me.snoty.backend.wiring.node.NodeHandleContext
+import me.snoty.backend.wiring.node.NodeHandler
+import me.snoty.backend.wiring.node.RegisterNode
+import me.snoty.backend.wiring.node.metadata.NodeStereotype
 import me.snoty.core.node.NodeWithSettings
 import me.snoty.core.node.getConfig
-import me.snoty.integration.common.annotation.Icon
-import me.snoty.integration.common.annotation.RegisterNode
-import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.data.get
-import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.node.mail.MailInput
 import me.snoty.node.mail.global.impl.GlobalMailConfigWrapper
 import me.snoty.node.mail.global.impl.GlobalMailService
@@ -24,7 +24,7 @@ import org.koin.core.annotation.Single
 	name = "mail",
 	displayName = "E-Mail",
 	icon = Icon(name = "lucide-mail"),
-	position = NodePosition.END,
+	stereotype = NodeStereotype.END,
 	inputType = MailInput::class,
 	settingsType = MailSettings::class,
 )

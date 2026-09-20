@@ -5,19 +5,19 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.util.*
 import me.snoty.backend.utils.bson.parseJson
+import me.snoty.backend.utils.proxy.withOptionalProxy
 import me.snoty.backend.wiring.credential.resolveOrNull
+import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeOutput
+import me.snoty.backend.wiring.data.getOrNull
+import me.snoty.backend.wiring.data.iterableStructOutput
+import me.snoty.backend.wiring.node.Icon
+import me.snoty.backend.wiring.node.NodeHandleContext
+import me.snoty.backend.wiring.node.NodeHandler
+import me.snoty.backend.wiring.node.RegisterNode
+import me.snoty.backend.wiring.node.metadata.NodeStereotype
 import me.snoty.core.node.NodeWithSettings
 import me.snoty.core.node.getConfig
-import me.snoty.integration.common.annotation.Icon
-import me.snoty.integration.common.annotation.RegisterNode
-import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.data.getOrNull
-import me.snoty.integration.common.wiring.data.iterableStructOutput
-import me.snoty.integration.common.wiring.node.NodeHandler
-import me.snoty.integration.utils.proxy.withOptionalProxy
 import org.bson.codecs.BsonTypeClassMap
 import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Single
@@ -26,7 +26,7 @@ import org.koin.core.annotation.Single
 	name = "http",
 	displayName = "HTTP",
 	icon = Icon(name = "material-symbols-http-rounded"),
-	position = NodePosition.START,
+	stereotype = NodeStereotype.START,
 	settingsType = HttpNodeSettings::class,
 	inputType = HttpNodeInput::class,
 	outputType = HttpNodeOutput::class,

@@ -6,11 +6,11 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import com.mongodb.kotlin.client.model.Filters
 import kotlinx.coroutines.flow.filter
 import me.snoty.backend.database.mongo.EMPTY
+import me.snoty.backend.database.mongo.NODE_COLLECTION_NAME
 import me.snoty.backend.database.mongo.migrations.MongoMigration
 import me.snoty.backend.database.mongo.mongoCollectionPrefix
 import me.snoty.backend.wiring.node.MongoNode
 import me.snoty.core.node.NodeType
-import me.snoty.integration.common.wiring.flow.NODE_COLLECTION_NAME
 import org.bson.Document
 import org.koin.core.annotation.Single
 

@@ -1,13 +1,12 @@
 package me.snoty.backend.wiring.flow
 
 import me.snoty.backend.database.sql.PostgresTest
+import me.snoty.backend.utils.snotyJson
 import me.snoty.backend.wiring.node.NodeConnectionTable
+import me.snoty.backend.wiring.node.NodeService
 import me.snoty.backend.wiring.node.NodeTable
 import me.snoty.backend.wiring.node.SqlNodeService
 import me.snoty.core.flow.FlowId
-import me.snoty.integration.common.config.NodeService
-import me.snoty.integration.common.snotyJson
-import me.snoty.integration.common.wiring.flow.FlowService
 import kotlin.uuid.Uuid
 
 class SqlFlowServiceTest : FlowServiceSpec({ FlowId(Uuid.random().toString()) }) {

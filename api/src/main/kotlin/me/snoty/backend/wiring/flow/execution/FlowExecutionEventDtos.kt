@@ -3,10 +3,10 @@ package me.snoty.backend.wiring.flow.execution
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import me.snoty.backend.scheduling.FlowTriggerReason
+import me.snoty.backend.wiring.execution.FlowExecutionStatus
+import me.snoty.backend.wiring.execution.NodeLogEntryDto
 import me.snoty.core.flow.FlowId
 import me.snoty.core.user.UserId
-import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
-import me.snoty.integration.common.wiring.flow.NodeLogEntryDto
 import kotlin.time.Clock
 
 @Serializable

@@ -7,8 +7,8 @@ import io.ktor.http.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import me.snoty.backend.config.Config
+import me.snoty.backend.wiring.node.routing.buildHandlerNodeApiUrl
 import me.snoty.core.node.NodeType
-import me.snoty.integration.common.wiring.node.buildHandlerNodeApiUrl
 import me.snoty.node.notion.NOTION_BASE_URL
 import me.snoty.node.notion.NotionConfig
 import org.koin.core.annotation.Factory

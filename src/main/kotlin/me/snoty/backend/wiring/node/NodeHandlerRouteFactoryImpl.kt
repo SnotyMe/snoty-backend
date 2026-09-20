@@ -11,8 +11,8 @@ import me.snoty.backend.hooks.register
 import me.snoty.backend.utils.UnauthorizedException
 import me.snoty.backend.utils.getUserOrNull
 import me.snoty.backend.utils.respondStatus
+import me.snoty.backend.wiring.node.routing.NodeHandlerRouteFactory
 import me.snoty.core.node.NodeType
-import me.snoty.integration.common.wiring.node.NodeHandlerRouteFactory
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Provided
 

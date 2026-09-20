@@ -1,15 +1,15 @@
 package me.snoty.node.mail.smtp
 
 import jakarta.mail.Session
+import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeOutput
+import me.snoty.backend.wiring.data.each
+import me.snoty.backend.wiring.node.Icon
+import me.snoty.backend.wiring.node.NodeHandleContext
+import me.snoty.backend.wiring.node.NodeHandler
+import me.snoty.backend.wiring.node.RegisterNode
+import me.snoty.backend.wiring.node.metadata.NodeStereotype
 import me.snoty.core.node.NodeWithSettings
-import me.snoty.integration.common.annotation.Icon
-import me.snoty.integration.common.annotation.RegisterNode
-import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.data.each
-import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.node.mail.MailInput
 import org.koin.core.annotation.Single
 
@@ -19,7 +19,7 @@ import org.koin.core.annotation.Single
 	icon = Icon(name = "lucide-mail"),
 	settingsType = SmtpSettings::class,
 	inputType = MailInput::class,
-	position = NodePosition.END,
+	stereotype = NodeStereotype.END,
 )
 @Single
 class SmtpNodeHandler : NodeHandler {

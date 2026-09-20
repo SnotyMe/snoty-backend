@@ -4,7 +4,7 @@ import me.snoty.backend.database.sql.PostgresTest
 import me.snoty.backend.notifications.NotificationServiceSpec
 import me.snoty.backend.notifications.NotificationTable
 import me.snoty.backend.notifications.SqlNotificationService
-import me.snoty.integration.common.snotyJson
+import me.snoty.backend.utils.snotyJson
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.update

@@ -2,11 +2,11 @@ package me.snoty.backend.test
 
 import kotlinx.coroutines.flow.Flow
 import me.snoty.backend.scheduling.FlowTriggerReason
+import me.snoty.backend.wiring.execution.*
 import me.snoty.backend.wiring.flow.execution.FlowExecutionService
 import me.snoty.core.flow.FlowId
 import me.snoty.core.flow.Workflow
 import me.snoty.core.user.UserId
-import me.snoty.integration.common.wiring.flow.*
 
 class TestFlowExecutionService : FlowExecutionService {
 	data class FlowEntry(val flowId: FlowId, val logs: MutableList<NodeLogEntryDto>)

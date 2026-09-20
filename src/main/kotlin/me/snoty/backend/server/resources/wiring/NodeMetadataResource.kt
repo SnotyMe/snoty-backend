@@ -10,11 +10,11 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 import me.snoty.backend.server.plugins.respondCaching
+import me.snoty.backend.wiring.node.metadata.NodeMetadata
+import me.snoty.backend.wiring.node.registry.NodeRegistry
+import me.snoty.backend.wiring.node.template.NodeMetadataFeatureFlags
+import me.snoty.backend.wiring.node.template.NodeTemplateRegistry
 import me.snoty.core.node.NodeType
-import me.snoty.integration.common.model.metadata.NodeMetadata
-import me.snoty.integration.common.wiring.node.NodeRegistry
-import me.snoty.integration.common.wiring.node.template.NodeMetadataFeatureFlags
-import me.snoty.integration.common.wiring.node.template.NodeTemplateRegistry
 import org.koin.ktor.ext.get as getDependency
 
 fun Route.nodeMetadataResource() = route("node/metadata") {

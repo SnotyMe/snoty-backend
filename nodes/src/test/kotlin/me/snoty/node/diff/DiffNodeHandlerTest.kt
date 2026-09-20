@@ -1,10 +1,10 @@
 package me.snoty.node.diff
 
 import me.snoty.backend.test.randomString
-import me.snoty.integration.common.diff.Change
-import me.snoty.integration.common.diff.DiffResult
-import me.snoty.integration.common.diff.checksum
-import me.snoty.integration.common.diff.state.EntityState
+import me.snoty.backend.wiring.node.state.Change
+import me.snoty.backend.wiring.node.state.DiffResult
+import me.snoty.backend.wiring.node.state.EntityState
+import me.snoty.backend.wiring.node.state.checksum
 import org.bson.Document
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals

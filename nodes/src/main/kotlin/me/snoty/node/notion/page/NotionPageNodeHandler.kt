@@ -6,20 +6,16 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.serialization.Serializable
 import me.snoty.backend.utils.BadRequestException
 import me.snoty.backend.utils.respondStatus
+import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeOutput
+import me.snoty.backend.wiring.data.get
+import me.snoty.backend.wiring.node.*
+import me.snoty.backend.wiring.node.metadata.NodeStereotype
+import me.snoty.backend.wiring.node.persistence.NodePersistenceFactory
+import me.snoty.backend.wiring.node.persistence.invoke
+import me.snoty.backend.wiring.node.routing.NodeHandlerRouteFactory
+import me.snoty.backend.wiring.node.state.DiffResult
 import me.snoty.core.node.NodeWithSettings
-import me.snoty.integration.common.annotation.Icon
-import me.snoty.integration.common.annotation.RegisterNode
-import me.snoty.integration.common.diff.DiffResult
-import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.data.get
-import me.snoty.integration.common.wiring.logger
-import me.snoty.integration.common.wiring.node.NodeHandler
-import me.snoty.integration.common.wiring.node.NodeHandlerRouteFactory
-import me.snoty.integration.common.wiring.node.NodePersistenceFactory
-import me.snoty.integration.common.wiring.node.invoke
 import me.snoty.node.notion.NOTION_BASE_URL
 import me.snoty.node.notion.NotionAPIFactory
 import me.snoty.node.notion.NotionConfig
@@ -31,7 +27,7 @@ import org.koin.core.annotation.Single
 	name = "notion_page",
 	displayName = "Notion Page",
 	icon = Icon(name = "logos-notion-icon"),
-	position = NodePosition.END,
+	stereotype = NodeStereotype.END,
 	settingsType = NotionPageSettings::class,
 	inputType = NotionPage::class,
 )

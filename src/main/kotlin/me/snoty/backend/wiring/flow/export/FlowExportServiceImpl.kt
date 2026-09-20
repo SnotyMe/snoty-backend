@@ -1,19 +1,15 @@
 package me.snoty.backend.wiring.flow.export
 
+import me.snoty.backend.schema.ObjectSchema
+import me.snoty.backend.schema.SchemaFieldDetails
 import me.snoty.backend.utils.bson.encode
 import me.snoty.backend.utils.bson.setByPath
-import me.snoty.backend.wiring.flow.CensoredField
-import me.snoty.backend.wiring.flow.ExportFlow
-import me.snoty.backend.wiring.flow.ExportNode
-import me.snoty.backend.wiring.flow.FlowExportImportSchema
+import me.snoty.backend.wiring.flow.*
+import me.snoty.backend.wiring.node.NodeSettings
+import me.snoty.backend.wiring.node.registry.NodeRegistry
 import me.snoty.core.flow.Workflow
 import me.snoty.core.node.NodeId
 import me.snoty.core.node.NodeType
-import me.snoty.integration.common.model.metadata.NodeFieldDetails
-import me.snoty.integration.common.model.metadata.ObjectSchema
-import me.snoty.integration.common.wiring.flow.FlowService
-import me.snoty.integration.common.wiring.node.NodeRegistry
-import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Single
@@ -60,7 +56,7 @@ class FlowExportServiceImpl(
 	private fun Document.censorRecursively(fields: ObjectSchema, parts: Array<String> = emptyArray()) {
 		fields.forEach { field ->
 			val replacement = when {
-				field.details is NodeFieldDetails.CredentialDetails -> null
+				field.details is SchemaFieldDetails.CredentialDetails -> null
 				field.censored -> CensoredField(field.name)
 				else -> return@forEach
 			}
@@ -71,7 +67,7 @@ class FlowExportServiceImpl(
 		fields
 			.forEach { field ->
 				val details = field.details
-				if (details is NodeFieldDetails.ObjectDetails)
+				if (details is SchemaFieldDetails.ObjectDetails)
 					this.censorRecursively(details.schema, parts + field.name)
 			}
 	}

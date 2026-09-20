@@ -9,9 +9,9 @@ import me.snoty.backend.utils.bson.getIdAsString
 import me.snoty.backend.wiring.credential.CredentialRef
 import me.snoty.backend.wiring.credential.CredentialService
 import me.snoty.backend.wiring.credential.ResolvedCredential
+import me.snoty.backend.wiring.data.impl.BsonIntermediateData
+import me.snoty.backend.wiring.node.NodeHandleContextImpl
 import me.snoty.core.node.NodeWithSettings
-import me.snoty.integration.common.wiring.NodeHandleContextImpl
-import me.snoty.integration.common.wiring.data.impl.BsonIntermediateData
 import me.snoty.node.moodle.model.raw.MoodleAction
 import me.snoty.node.moodle.model.raw.MoodleCourse
 import me.snoty.node.moodle.model.raw.MoodleEvent

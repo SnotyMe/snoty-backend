@@ -7,13 +7,13 @@ import io.opentelemetry.api.trace.Tracer
 import kotlinx.serialization.json.Json
 import me.snoty.backend.logging.KMDC
 import me.snoty.backend.observability.*
+import me.snoty.backend.wiring.data.IntermediateData
 import me.snoty.backend.wiring.flow.FlowFeatureFlags
+import me.snoty.backend.wiring.flow.FlowRunner
 import me.snoty.core.flow.Workflow
 import me.snoty.core.node.Node
 import me.snoty.core.node.NodeWithSettings
 import me.snoty.core.node.setAttribute
-import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.flow.FlowRunner
 import org.koin.core.annotation.Single
 
 interface FlowTracing : Tracer {

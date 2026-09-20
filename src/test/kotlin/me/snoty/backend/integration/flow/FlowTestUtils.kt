@@ -3,17 +3,17 @@ package me.snoty.backend.integration.flow
 import me.snoty.backend.dev.randomString
 import me.snoty.backend.test.node
 import me.snoty.backend.test.nodeMetadata
+import me.snoty.backend.wiring.data.NodeInput
+import me.snoty.backend.wiring.node.NodeHandleContext
+import me.snoty.backend.wiring.node.NodeHandler
+import me.snoty.backend.wiring.node.metadata.NodeStereotype
+import me.snoty.backend.wiring.node.registry.NodeRegistry
 import me.snoty.core.flow.FlowId
 import me.snoty.core.flow.WorkflowSettings
 import me.snoty.core.flow.WorkflowWithNodes
 import me.snoty.core.node.FlowNode
 import me.snoty.core.node.NodeWithSettings
 import me.snoty.core.user.UserId
-import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.data.NodeInput
-import me.snoty.integration.common.wiring.node.NodeHandler
-import me.snoty.integration.common.wiring.node.NodeRegistry
 import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
@@ -32,7 +32,7 @@ fun relationalFlow(
 object EmitHandler : NodeHandler {
 	val metadata = nodeMetadata(
 		"emit",
-		NodePosition.START,
+		NodeStereotype.START,
 	)
 
 	context(_: NodeHandleContext)

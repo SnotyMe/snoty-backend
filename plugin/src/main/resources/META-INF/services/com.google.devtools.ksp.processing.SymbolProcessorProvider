@@ -1,0 +1,4 @@
+me.snoty.plugin.processor.ExtensionContributorProcessor$Provider
+me.snoty.plugin.processor.node.NodeHandlerContributorProcessor$Provider
+me.snoty.plugin.processor.AdapterProcessor$Provider
+me.snoty.plugin.processor.CredentialDefinitionContributorProcessor$Provider

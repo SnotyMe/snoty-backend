@@ -6,8 +6,8 @@ import me.snoty.backend.server.resources.wiring.node.nodeConnectionRoutes
 import me.snoty.backend.server.resources.wiring.node.nodeCreate
 import me.snoty.backend.server.resources.wiring.node.nodeDelete
 import me.snoty.backend.server.resources.wiring.node.nodeUpdate
-import me.snoty.integration.common.config.NodeService
-import me.snoty.integration.common.wiring.flow.FlowService
+import me.snoty.backend.wiring.flow.FlowService
+import me.snoty.backend.wiring.node.NodeService
 import org.koin.ktor.ext.get
 
 fun Route.nodeResource() = route("node") {

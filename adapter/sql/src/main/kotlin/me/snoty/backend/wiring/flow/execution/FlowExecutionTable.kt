@@ -3,9 +3,9 @@ package me.snoty.backend.wiring.flow.execution
 import me.snoty.backend.database.sql.utils.UuidTable
 import me.snoty.backend.database.sql.utils.nodeId
 import me.snoty.backend.scheduling.FlowTriggerReason
+import me.snoty.backend.wiring.execution.FlowExecutionStatus
+import me.snoty.backend.wiring.execution.NodeLogEntryDto
 import me.snoty.backend.wiring.flow.FlowTable
-import me.snoty.integration.common.wiring.flow.FlowExecutionStatus
-import me.snoty.integration.common.wiring.flow.NodeLogEntryDto
 import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.Table

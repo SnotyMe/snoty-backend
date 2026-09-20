@@ -10,6 +10,11 @@ import me.snoty.backend.test.TestIds.USER_ID_1
 import me.snoty.backend.test.TestIds.USER_ID_CONTROL
 import me.snoty.backend.test.assertAny
 import me.snoty.backend.test.nodeMetadata
+import me.snoty.backend.wiring.node.EmptyNodeSettings
+import me.snoty.backend.wiring.node.NodePosition
+import me.snoty.backend.wiring.node.NodeService
+import me.snoty.backend.wiring.node.metadata.NodeMetadata
+import me.snoty.backend.wiring.node.registry.NodeRegistry
 import me.snoty.core.flow.FlowId
 import me.snoty.core.flow.Workflow
 import me.snoty.core.flow.WorkflowSettings
@@ -18,12 +23,6 @@ import me.snoty.core.node.Node
 import me.snoty.core.node.NodeType
 import me.snoty.core.node.StandaloneNode
 import me.snoty.core.user.UserId
-import me.snoty.integration.common.config.NodeService
-import me.snoty.integration.common.model.metadata.NodeMetadata
-import me.snoty.integration.common.wiring.flow.FlowService
-import me.snoty.integration.common.wiring.node.EmptyNodeSettings
-import me.snoty.integration.common.wiring.node.NodePosition
-import me.snoty.integration.common.wiring.node.NodeRegistry
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.test.assertNotNull
@@ -106,7 +105,7 @@ abstract class FlowServiceSpec(private val makeId: () -> FlowId) {
 			type = NodeType(name),
 			displayName = name,
 			settingsClass = EmptyNodeSettings::class,
-			position = mockk(),
+			stereotype = mockk(),
 			settings = mockk(),
 			input = mockk(),
 			output = mockk(),

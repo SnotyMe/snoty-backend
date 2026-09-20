@@ -3,10 +3,10 @@ package me.snoty.backend.database.mongo.migrations.impl
 import com.mongodb.client.model.Filters
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import com.mongodb.kotlin.client.model.Updates
+import me.snoty.backend.database.mongo.NODE_COLLECTION_NAME
 import me.snoty.backend.database.mongo.migrations.MongoMigration
 import me.snoty.backend.wiring.node.MongoNode
-import me.snoty.integration.common.wiring.flow.NODE_COLLECTION_NAME
-import me.snoty.integration.common.wiring.node.NodePosition
+import me.snoty.backend.wiring.node.NodePosition
 import org.koin.core.annotation.Single
 
 @Single

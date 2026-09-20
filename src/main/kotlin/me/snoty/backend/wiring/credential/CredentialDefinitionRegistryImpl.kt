@@ -1,6 +1,6 @@
 package me.snoty.backend.wiring.credential
 
-import me.snoty.backend.wiring.node.metadataJson
+import me.snoty.backend.wiring.node.metadata.metadataJson
 import org.koin.core.annotation.Single
 import java.util.*
 

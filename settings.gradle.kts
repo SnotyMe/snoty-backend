@@ -13,8 +13,7 @@ fun listRootDirsIn(dir: String) =
 		.filter { it.resolve("build.gradle.kts").exists() }
 
 include("api")
-include("integration-plugin")
-include("integration-utils")
+include("plugin")
 include("nodes")
 
 listRootDirsIn("adapter")

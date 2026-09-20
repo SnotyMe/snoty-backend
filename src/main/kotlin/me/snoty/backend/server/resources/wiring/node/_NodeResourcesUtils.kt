@@ -9,15 +9,15 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.serializerOrNull
 import me.snoty.backend.server.plugins.void
 import me.snoty.backend.utils.getUser
+import me.snoty.backend.utils.http.invalidNodeId
+import me.snoty.backend.utils.http.nodeNotFound
+import me.snoty.backend.wiring.node.NodeService
+import me.snoty.backend.wiring.node.NodeSettings
+import me.snoty.backend.wiring.node.metadata.NodeMetadata
+import me.snoty.backend.wiring.node.registry.NodeRegistry
 import me.snoty.core.node.NodeId
 import me.snoty.core.node.NodeType
 import me.snoty.core.node.StandaloneNode
-import me.snoty.integration.common.config.NodeService
-import me.snoty.integration.common.http.invalidNodeId
-import me.snoty.integration.common.http.nodeNotFound
-import me.snoty.integration.common.model.metadata.NodeMetadata
-import me.snoty.integration.common.wiring.node.NodeRegistry
-import me.snoty.integration.common.wiring.node.NodeSettings
 import org.koin.ktor.ext.get
 
 suspend fun RoutingContext.getPersonalNodeOrNull(): StandaloneNode? {

@@ -7,10 +7,10 @@ import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 import me.snoty.backend.utils.*
+import me.snoty.backend.wiring.node.NodePatch
+import me.snoty.backend.wiring.node.NodePosition
+import me.snoty.backend.wiring.node.NodeService
 import me.snoty.core.node.Node
-import me.snoty.integration.common.config.NodePatch
-import me.snoty.integration.common.config.NodeService
-import me.snoty.integration.common.wiring.node.NodePosition
 import org.slf4j.event.Level
 import java.util.*
 

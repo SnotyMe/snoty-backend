@@ -6,7 +6,7 @@ import io.ktor.server.testing.*
 import me.snoty.backend.config.Config
 import me.snoty.backend.server.plugins.configureRouting
 import me.snoty.backend.server.plugins.configureSerialization
-import me.snoty.integration.common.BaseSnotyJson
+import me.snoty.backend.utils.BaseSnotyJson
 
 fun ktorApplicationTest(
 	config: Config = TestConfig,

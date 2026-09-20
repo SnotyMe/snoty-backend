@@ -1,19 +1,15 @@
 package me.snoty.node.json.emit
 
 import kotlinx.serialization.Serializable
+import me.snoty.backend.schema.EmptySchema
+import me.snoty.backend.schema.Language
+import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeOutput
+import me.snoty.backend.wiring.data.iterableStructOutput
+import me.snoty.backend.wiring.node.*
+import me.snoty.backend.wiring.node.metadata.NodeStereotype
 import me.snoty.core.node.NodeWithSettings
 import me.snoty.core.node.getConfig
-import me.snoty.integration.common.annotation.Icon
-import me.snoty.integration.common.annotation.RegisterNode
-import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.model.metadata.EmptySchema
-import me.snoty.integration.common.model.metadata.Language
-import me.snoty.integration.common.wiring.NodeHandleContext
-import me.snoty.integration.common.wiring.data.IntermediateData
-import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.data.iterableStructOutput
-import me.snoty.integration.common.wiring.node.NodeHandler
-import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.Document
 import org.koin.core.annotation.Single
 
@@ -24,11 +20,10 @@ data class EmitJsonSettings(
 
 @RegisterNode(
 	name = "emitjson",
-	namespace = "me.snoty.integration.builtin.emitjson",
 	displayName = "Emit JSON",
 	icon = Icon(name = "lucide-braces"),
 	settingsType = EmitJsonSettings::class,
-	position = NodePosition.START,
+	stereotype = NodeStereotype.START,
 	outputType = EmptySchema::class,
 )
 @Single

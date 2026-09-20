@@ -2,10 +2,10 @@ package me.snoty.core.node
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import me.snoty.backend.wiring.node.NodePosition
+import me.snoty.backend.wiring.node.NodeSettings
 import me.snoty.core.flow.FlowId
 import me.snoty.core.user.UserId
-import me.snoty.integration.common.wiring.node.NodePosition
-import me.snoty.integration.common.wiring.node.NodeSettings
 import org.slf4j.event.Level
 import kotlin.time.Instant
 

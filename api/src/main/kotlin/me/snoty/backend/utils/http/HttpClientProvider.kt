@@ -9,7 +9,7 @@ import io.ktor.serialization.kotlinx.json.*
 import io.opentelemetry.api.OpenTelemetry
 import io.opentelemetry.instrumentation.api.instrumenter.SpanNameExtractor
 import io.opentelemetry.instrumentation.ktor.v3_0.KtorClientTelemetry
-import me.snoty.integration.common.BaseSnotyJson
+import me.snoty.backend.utils.BaseSnotyJson
 import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
 

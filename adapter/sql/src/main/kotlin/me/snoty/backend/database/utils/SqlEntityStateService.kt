@@ -4,11 +4,11 @@ import kotlinx.coroutines.flow.Flow
 import me.snoty.backend.database.sql.flowTransaction
 import me.snoty.backend.database.sql.suspendTransaction
 import me.snoty.backend.utils.bson.getIdAsString
+import me.snoty.backend.wiring.node.state.DiffResult
+import me.snoty.backend.wiring.node.state.EntityState
+import me.snoty.backend.wiring.node.state.EntityStateService
+import me.snoty.backend.wiring.node.state.checksum
 import me.snoty.core.node.Node
-import me.snoty.integration.common.diff.DiffResult
-import me.snoty.integration.common.diff.EntityStateService
-import me.snoty.integration.common.diff.checksum
-import me.snoty.integration.common.diff.state.EntityState
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistry
 import org.jetbrains.exposed.v1.core.Transaction

@@ -1,7 +1,7 @@
 package me.snoty.backend.wiring.credential
 
+import me.snoty.backend.wiring.node.NodeHandleContext
 import me.snoty.core.user.UserId
-import me.snoty.integration.common.wiring.NodeHandleContext
 
 class CredentialMissingException(credentialType: String) :
     Exception("Missing credential of type '$credentialType'")

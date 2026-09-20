@@ -12,11 +12,11 @@ import me.snoty.backend.database.mongo.mongoCollectionPrefix
 import me.snoty.backend.database.mongo.upsertOne
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.register
+import me.snoty.backend.wiring.flow.NodeDeletedHook
+import me.snoty.backend.wiring.node.persistence.NodePersistenceFactory
+import me.snoty.backend.wiring.node.persistence.NodePersistenceService
 import me.snoty.core.node.Node
 import me.snoty.core.node.NodeType
-import me.snoty.integration.common.wiring.flow.NodeDeletedHook
-import me.snoty.integration.common.wiring.node.NodePersistenceFactory
-import me.snoty.integration.common.wiring.node.NodePersistenceService
 import org.bson.codecs.pojo.annotations.BsonId
 import org.koin.core.annotation.Factory
 import kotlin.reflect.KClass
@@ -78,7 +78,8 @@ class MongoNodePersistenceService<T : Any>(
 }
 
 @Factory
-class MongoNodePersistenceFactory(private val mongoDB: MongoDatabase, private val nodeType: NodeType, private val hookRegistry: HookRegistry) : NodePersistenceFactory {
+class MongoNodePersistenceFactory(private val mongoDB: MongoDatabase, private val nodeType: NodeType, private val hookRegistry: HookRegistry) :
+	NodePersistenceFactory {
 	override fun <T : Any> create(name: String, entityClass: KClass<T>): NodePersistenceService<T> {
 		val service = MongoNodePersistenceService(mongoDB, nodeType, name, entityClass)
 		hookRegistry.register(NodeDeletedHook {

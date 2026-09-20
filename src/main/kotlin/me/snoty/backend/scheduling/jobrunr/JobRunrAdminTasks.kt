@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.filter
 import me.snoty.backend.scheduling.AdminTasks
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.scheduling.Task
-import me.snoty.integration.common.wiring.flow.FlowService
+import me.snoty.backend.wiring.flow.FlowService
 import org.jobrunr.jobs.states.StateName
 import org.jobrunr.storage.StorageProvider
 import org.koin.core.annotation.Single
