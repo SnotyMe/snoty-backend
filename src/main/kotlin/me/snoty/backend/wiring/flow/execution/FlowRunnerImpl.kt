@@ -15,7 +15,6 @@ import me.snoty.backend.observability.setException
 import me.snoty.backend.observability.subspan
 import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.wiring.credential.CredentialService
-import me.snoty.backend.wiring.data.IntermediateData
 import me.snoty.backend.wiring.data.IntermediateDataMapperRegistry
 import me.snoty.backend.wiring.data.NodeInput
 import me.snoty.backend.wiring.data.NodeOutput
@@ -121,7 +120,7 @@ class FlowRunnerImpl(
 	private fun FlowExecutionContext.executeStartNode(
 		rootSpan: Span,
 		node: FlowNode,
-		input: Collection<IntermediateData>
+		input: NodeInput
 	) = with(flowTracing) {
 		val subspan = rootSpan.subspan(flowTracing, traceName(node)) {
 			setNodeAttributes(node, input)
@@ -147,7 +146,7 @@ class FlowRunnerImpl(
 	private fun FlowExecutionContext.executeImpl(
 		span: Span,
 		node: FlowNode,
-		input: Collection<IntermediateData>,
+		input: NodeInput,
 		visited: List<NodeId>,
 		depth: Int,
 	): Flow<Unit> {

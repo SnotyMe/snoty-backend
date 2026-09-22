@@ -3,7 +3,7 @@ package me.snoty.node.diff.injector
 import kotlinx.serialization.Serializable
 import me.snoty.backend.schema.EmptySchema
 import me.snoty.backend.schema.FieldDefaultValue
-import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeInput
 import me.snoty.backend.wiring.data.NodeOutput
 import me.snoty.backend.wiring.data.iterableStructOutput
 import me.snoty.backend.wiring.node.*
@@ -53,10 +53,7 @@ class DiffInjectorNodeHandler(
 	codecRegistry: CodecRegistry,
 ) : DiffNodeHandler(entityStateService, nodeRouteFactory, codecRegistry) {
 	context(_: NodeHandleContext)
-	override suspend fun process(
-		node: NodeWithSettings,
-		input: Collection<IntermediateData>,
-	): NodeOutput {
+	override suspend fun process(node: NodeWithSettings, input: NodeInput): NodeOutput {
 		val settings = node.getConfig<DiffInjectorSettings>()
 
 		val (newData, allStates) = handleStatesAndDiff(logger, node, input, settings.excludeFields)

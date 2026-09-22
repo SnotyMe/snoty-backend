@@ -2,7 +2,7 @@ package me.snoty.node.untis.node.timetable
 
 import kotlinx.serialization.Serializable
 import me.snoty.backend.schema.FieldCensored
-import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeInput
 import me.snoty.backend.wiring.data.NodeOutput
 import me.snoty.backend.wiring.data.iterableStructOutput
 import me.snoty.backend.wiring.node.*
@@ -30,7 +30,7 @@ class WebUntisTimetableNodeHandler(
 	private val untisAPI: WebUntisAPI
 ) : NodeHandler {
 	context(_: NodeHandleContext)
-	override suspend fun process(node: NodeWithSettings, input: Collection<IntermediateData>): NodeOutput {
+	override suspend fun process(node: NodeWithSettings, input: NodeInput): NodeOutput {
 		val settings: WebUntisTimetableSettings = node.getConfig()
 
 		val (timetable, masterData) = untisAPI.getTimetable(settings)

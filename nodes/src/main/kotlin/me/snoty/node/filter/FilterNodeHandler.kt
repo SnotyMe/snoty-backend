@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import liqp.TemplateParser
 import me.snoty.backend.schema.FieldDescription
 import me.snoty.backend.schema.Language
-import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeInput
 import me.snoty.backend.wiring.data.NodeOutput
 import me.snoty.backend.wiring.data.get
 import me.snoty.backend.wiring.node.*
@@ -33,10 +33,7 @@ data class FilterSettings(
 @Single
 class FilterNodeHandler : NodeHandler {
 	context(_: NodeHandleContext)
-	override suspend fun process(
-		node: NodeWithSettings,
-		input: Collection<IntermediateData>
-	): NodeOutput {
+	override suspend fun process(node: NodeWithSettings, input: NodeInput): NodeOutput {
 		val settings: FilterSettings = node.getConfig()
 		val template = TemplateParser.DEFAULT.parse(settings.expression)
 		

@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.serialization.Serializable
 import me.snoty.backend.utils.BadRequestException
 import me.snoty.backend.utils.respondStatus
-import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeInput
 import me.snoty.backend.wiring.data.NodeOutput
 import me.snoty.backend.wiring.data.get
 import me.snoty.backend.wiring.node.*
@@ -68,7 +68,7 @@ class NotionPageNodeHandler(
 	}
 
 	context(_: NodeHandleContext)
-	override suspend fun process(node: NodeWithSettings, input: Collection<IntermediateData>): NodeOutput {
+	override suspend fun process(node: NodeWithSettings, input: NodeInput): NodeOutput {
 		val settings = node.settings as NotionPageSettings
 		val api = apiFactory(settings.token)
 

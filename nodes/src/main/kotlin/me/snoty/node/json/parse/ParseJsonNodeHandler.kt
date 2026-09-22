@@ -5,7 +5,7 @@ import me.snoty.backend.schema.EmptySchema
 import me.snoty.backend.utils.bson.getByPath
 import me.snoty.backend.utils.bson.parseJson
 import me.snoty.backend.utils.bson.setByPath
-import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeInput
 import me.snoty.backend.wiring.data.NodeOutput
 import me.snoty.backend.wiring.data.mapInputWithSettings
 import me.snoty.backend.wiring.data.structOutput
@@ -39,7 +39,7 @@ class ParseJsonNodeHandler(
 	context(_: NodeHandleContext)
 	override suspend fun process(
 		node: NodeWithSettings,
-		input: Collection<IntermediateData>
+		input: NodeInput,
 	): NodeOutput = mapInputWithSettings<Document, ParseJsonNodeSettings>(input, node) { document, settings ->
 		settings.fields.forEach { key ->
 			when (val fieldData = document.getByPath(key)) {

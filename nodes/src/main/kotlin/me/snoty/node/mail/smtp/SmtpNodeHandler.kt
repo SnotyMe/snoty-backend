@@ -1,7 +1,7 @@
 package me.snoty.node.mail.smtp
 
 import jakarta.mail.Session
-import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeInput
 import me.snoty.backend.wiring.data.NodeOutput
 import me.snoty.backend.wiring.data.each
 import me.snoty.backend.wiring.node.Icon
@@ -24,7 +24,7 @@ import org.koin.core.annotation.Single
 @Single
 class SmtpNodeHandler : NodeHandler {
 	context(_: NodeHandleContext)
-	override suspend fun process(node: NodeWithSettings, input: Collection<IntermediateData>): NodeOutput {
+	override suspend fun process(node: NodeWithSettings, input: NodeInput): NodeOutput {
 		val settings = node.settings as SmtpSettings
 		val properties = settings.toConfiguration()
 		val session = Session.getInstance(properties)

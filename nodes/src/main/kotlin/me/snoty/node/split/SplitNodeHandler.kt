@@ -48,7 +48,7 @@ class SplitNodeHandler : NodeHandler {
 	context(_: NodeHandleContext)
 	override suspend fun process(
 		node: NodeWithSettings,
-		input: Collection<IntermediateData>
+		input: NodeInput
 	): NodeOutput = mapInputWithSettings<Document, SplitSettings>(input, node) { data, settings ->
 		val key = settings.key
 		val splitData = data.getByPath(key) ?: throw IllegalArgumentException("Key '$key' not found in input data")

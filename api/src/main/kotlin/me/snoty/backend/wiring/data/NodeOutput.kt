@@ -15,7 +15,7 @@ typealias NodeOutput = Collection<IntermediateData>
 context(ctx: NodeHandleContext)
 fun <T : Any> iterableStructOutput(
 	items: Iterable<T>
-): Collection<IntermediateData> = items
+): NodeOutput = items
 	// serialize arbitrary object into BsonIntermediateData
 	.map { serializeBson(it) }
 
