@@ -3,7 +3,7 @@ package me.snoty.backend.wiring.flow
 import io.mockk.mockk
 import me.snoty.backend.database.mongo.MongoTest
 import me.snoty.backend.database.mongo.toFlowId
-import me.snoty.backend.integration.config.MongoNodeService
+import me.snoty.backend.wiring.node.MongoNodeService
 import org.bson.types.ObjectId
 
 class MongoFlowServiceTest : FlowServiceSpec({ ObjectId().toFlowId() }) {

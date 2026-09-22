@@ -124,7 +124,7 @@ dependencies { with(libs) {
     // dev
     devImplementation(authentication.keycloak.adminClient)
     devImplementation(monitoring.opentelemetry.sdk)
-    file("dist/integrations").listFiles()?.let {
+    file("dist/extensions").listFiles()?.let {
         implementation(files(it))
     }
 }}

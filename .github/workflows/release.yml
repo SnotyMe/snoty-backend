@@ -69,7 +69,7 @@ jobs:
           else
             repository="Snapshots"
           fi
-          ./gradlew {:conventions-integration:,}publishAllPublicationsToSnoty"${repository}"Repository
+          ./gradlew {:conventions-extension:,}publishAllPublicationsToSnoty"${repository}"Repository
 
       - name: Push docker image
         run: docker push --all-tags ghcr.io/snotyme/snoty-backend

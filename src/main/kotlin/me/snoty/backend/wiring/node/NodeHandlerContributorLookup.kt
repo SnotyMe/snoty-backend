@@ -1,4 +1,4 @@
-package me.snoty.backend.integration
+package me.snoty.backend.wiring.node
 
 import com.sksamuel.hoplite.ConfigFailure
 import dev.openfeature.sdk.Client
@@ -9,8 +9,6 @@ import me.snoty.backend.featureflags.FeatureFlagBoolean
 import me.snoty.backend.featureflags.FeatureFlagsContainer
 import me.snoty.backend.injection.getFromAllScopes
 import me.snoty.backend.utils.simpleClassName
-import me.snoty.backend.wiring.node.NodeHandler
-import me.snoty.backend.wiring.node.NodeHandlerContributor
 import me.snoty.backend.wiring.node.metadata.NodeMetadata
 import me.snoty.backend.wiring.node.metadata.metadataJson
 import me.snoty.backend.wiring.node.registry.NodeRegistry

@@ -1,8 +1,7 @@
-package me.snoty.backend.integration.flow.node
+package me.snoty.backend.wiring.node.registry
 
 import me.snoty.backend.test.NoOpNodeHandler
 import me.snoty.backend.test.nodeMetadata
-import me.snoty.backend.wiring.node.registry.NodeRegistryImpl
 import me.snoty.core.node.NodeType
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

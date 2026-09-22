@@ -1,4 +1,4 @@
-package me.snoty.backend.integration.flow.execution
+package me.snoty.backend.wiring.flow.execution
 
 import io.opentelemetry.api.OpenTelemetry
 import io.opentelemetry.api.trace.Span

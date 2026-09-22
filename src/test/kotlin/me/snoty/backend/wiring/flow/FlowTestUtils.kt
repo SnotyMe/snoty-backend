@@ -1,4 +1,4 @@
-package me.snoty.backend.integration.flow
+package me.snoty.backend.wiring.flow
 
 import me.snoty.backend.dev.randomString
 import me.snoty.backend.test.node

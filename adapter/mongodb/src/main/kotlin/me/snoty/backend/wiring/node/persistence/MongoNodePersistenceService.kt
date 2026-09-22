@@ -1,4 +1,4 @@
-package me.snoty.backend.wiring.node
+package me.snoty.backend.wiring.node.persistence
 
 import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.Filters
@@ -13,8 +13,6 @@ import me.snoty.backend.database.mongo.upsertOne
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.register
 import me.snoty.backend.wiring.flow.NodeDeletedHook
-import me.snoty.backend.wiring.node.persistence.NodePersistenceFactory
-import me.snoty.backend.wiring.node.persistence.NodePersistenceService
 import me.snoty.core.node.Node
 import me.snoty.core.node.NodeType
 import org.bson.codecs.pojo.annotations.BsonId

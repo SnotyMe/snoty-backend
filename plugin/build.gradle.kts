@@ -13,8 +13,8 @@ kotlin {
 }
 
 dependencies { with(libs) {
-	implementation(integrationPlugin.ksp.api)
 	implementation(projects.api)
+	implementation(ksp.api)
 	implementation("org.jetbrains.kotlin:kotlin-reflect:${libs.versions.kotlin.get()}")
 	val kotlinpoet = "2.2.0"
 	implementation("com.squareup:kotlinpoet-jvm:$kotlinpoet")

@@ -6,10 +6,10 @@ import me.snoty.ApiKoinModule
 import me.snoty.backend.extension.ExtensionContributorLookup
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.impl.PreBusinessStartupHook
-import me.snoty.backend.integration.NodeHandlerContributorLookup
 import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.scheduling.Scheduler
 import me.snoty.backend.server.KtorServer
+import me.snoty.backend.wiring.node.NodeHandlerContributorLookup
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.KoinApplication
 import org.koin.core.annotation.Module

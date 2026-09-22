@@ -1,3 +1,3 @@
 plugins {
-	id("snoty.integration-conventions")
+	id("snoty.extension-conventions")
 }

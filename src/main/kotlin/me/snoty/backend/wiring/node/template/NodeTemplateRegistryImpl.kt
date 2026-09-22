@@ -1,8 +1,6 @@
-package me.snoty.backend.integration.flow.node
+package me.snoty.backend.wiring.node.template
 
 import me.snoty.backend.injection.getFromAllScopes
-import me.snoty.backend.wiring.node.template.NodeTemplate
-import me.snoty.backend.wiring.node.template.NodeTemplateRegistry
 import me.snoty.core.node.NodeType
 import org.koin.core.Koin
 import org.koin.core.annotation.Single

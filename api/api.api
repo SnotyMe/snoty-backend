@@ -1066,7 +1066,7 @@ public final class me/snoty/backend/utils/bson/CodecRegistryProvider {
 public final class me/snoty/backend/utils/bson/CodecsKt {
 	public static final fun decode (Lorg/bson/BsonDateTime;)Lkotlinx/datetime/LocalDateTime;
 	public static final fun fromEpochTimeMillis (J)Lkotlinx/datetime/LocalDateTime;
-	public static final fun integrationsApiCodecModule (Lorg/bson/codecs/BsonTypeClassMap;)Lorg/bson/codecs/configuration/CodecRegistry;
+	public static final fun nodeApiCodecModule (Lorg/bson/codecs/BsonTypeClassMap;)Lorg/bson/codecs/configuration/CodecRegistry;
 	public static final fun provideApiCodec (Lorg/bson/codecs/BsonTypeClassMap;)Lme/snoty/backend/utils/bson/CodecRegistryProvider;
 }
 
