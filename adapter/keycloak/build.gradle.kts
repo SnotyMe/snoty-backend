@@ -1,7 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
 plugins {
-	id("snoty.integration-conventions")
+	id("snoty.extension-conventions")
 	id("snoty.testintegration-conventions")
 }
 

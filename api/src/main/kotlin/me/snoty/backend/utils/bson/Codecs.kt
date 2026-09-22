@@ -75,12 +75,12 @@ fun provideApiCodec(bsonTypeMap: BsonTypeClassMap) = CodecRegistryProvider(
 	CodecRegistries.fromRegistries(
 		CodecRegistries.fromCodecs(UuidCodec, UUIDCodec(UUIDRepresentation.STANDARD), LocalDateTimeCodec(), InstantCodec()),
 		CodecRegistries.fromProviders(KotlinSerializerCodecProvider(kotlinxSerializersModule)),
-		integrationsApiCodecModule(bsonTypeMap),
+		nodeApiCodecModule(bsonTypeMap),
 	)
 )
 
 @Suppress("UNCHECKED_CAST")
-fun integrationsApiCodecModule(bsonTypeClassMap: BsonTypeClassMap): CodecRegistry =
+fun nodeApiCodecModule(bsonTypeClassMap: BsonTypeClassMap): CodecRegistry =
 	CodecRegistries.fromProviders(object : CodecProvider {
 		override fun <T : Any> get(clazz: Class<T>, registry: CodecRegistry): Codec<T>? =
 			when (clazz) {

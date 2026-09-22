@@ -1,6 +1,6 @@
-name: Integration Feature Request
-description: Request a new Feature in an existing Integration
-title: "<Integration Name>: "
+name: Node Feature Request
+description: Request a new Feature for an existing Node
+title: "<Node>: "
 labels: ["enhancement", "integration"]
 assignees:
   - SIMULATAN
@@ -8,9 +8,9 @@ body:
   - type: input
     id: contact
     attributes:
-      label: Integration Name
-      description: What Integration does this apply to?
-      placeholder: ex. Moodle, Mapper
+      label: Node Name
+      description: What Node does this apply to?
+      placeholder: ex. Moodle Assignments, Mapper
     validations:
       required: true
   - type: textarea

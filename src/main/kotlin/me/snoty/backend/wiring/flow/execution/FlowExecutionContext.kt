@@ -1,4 +1,4 @@
-package me.snoty.backend.integration.flow.execution
+package me.snoty.backend.wiring.flow.execution
 
 import io.github.oshai.kotlinlogging.slf4j.internal.Slf4jLogger
 import me.snoty.core.node.FlowNode

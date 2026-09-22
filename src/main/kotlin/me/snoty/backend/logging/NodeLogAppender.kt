@@ -1,4 +1,4 @@
-package me.snoty.backend.integration.flow.logging
+package me.snoty.backend.logging
 
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.AppenderBase
@@ -7,7 +7,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
-import me.snoty.backend.logging.toSLF4JLevel
 import me.snoty.backend.observability.*
 import me.snoty.backend.wiring.execution.NodeLogEntry
 import me.snoty.backend.wiring.flow.execution.FlowExecutionEvent

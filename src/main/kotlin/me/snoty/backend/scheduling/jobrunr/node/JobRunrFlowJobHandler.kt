@@ -4,8 +4,8 @@ import ch.qos.logback.classic.Level
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.slf4j.MDCContext
 import kotlinx.coroutines.withContext
-import me.snoty.backend.integration.flow.logging.NodeLogAppender
 import me.snoty.backend.logging.KMDC
+import me.snoty.backend.logging.NodeLogAppender
 import me.snoty.backend.observability.APPENDER_LOG_LEVEL
 import me.snoty.backend.observability.FLOW_ID
 import me.snoty.backend.observability.JOB_ID

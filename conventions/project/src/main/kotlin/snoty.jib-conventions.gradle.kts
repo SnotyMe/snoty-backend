@@ -24,7 +24,7 @@ jib {
 	container {
 		// https://github.com/swagger-api/swagger-codegen-generators/issues/1015
 		jvmFlags = listOf("-Dio.ktor.development=false", "-Dlogback.configurationFile=logback.xml")
-		extraClasspath = extraClasspath + "/integrations/*"
+		extraClasspath = extraClasspath + "/extensions/*"
 		creationTime = "USE_CURRENT_TIMESTAMP"
 		appRoot = "/app"
 		workingDirectory = "/app"

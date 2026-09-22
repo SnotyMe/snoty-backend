@@ -70,7 +70,7 @@ authentication-keycloak-adminClient = { group = "org.keycloak", name = "keycloak
 
 redis-lettuce = { group = "io.lettuce", name = "lettuce-core", version = "7.4.0.RELEASE" }
 
-integrationPlugin-ksp-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
+ksp-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
 
 ktor-openapi-schema = { group = "io.ktor", name = "ktor-openapi-schema", version.ref = "ktor" }
 ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }

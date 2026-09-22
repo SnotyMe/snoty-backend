@@ -1,4 +1,4 @@
-package me.snoty.backend.integration.config
+package me.snoty.backend.wiring.node
 
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import com.mongodb.kotlin.client.model.Filters
@@ -12,7 +12,6 @@ import me.snoty.backend.database.mongo.deserializeOrInvalid
 import me.snoty.backend.database.mongo.objectId
 import me.snoty.backend.errors.ServiceResult
 import me.snoty.backend.utils.bson.encode
-import me.snoty.backend.wiring.node.*
 import me.snoty.core.flow.FlowId
 import me.snoty.core.flow.Workflow
 import me.snoty.core.node.*

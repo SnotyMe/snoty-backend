@@ -3,7 +3,6 @@ package me.snoty.backend.wiring
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import me.snoty.backend.test.TestIds.INTEGRATION_NAME
 import me.snoty.backend.test.TestIds.USER_ID_1
 import me.snoty.backend.utils.bson.getIdAsString
 import me.snoty.backend.wiring.flow.FlowService
@@ -32,8 +31,8 @@ abstract class EntityStateServiceSpec(val makeId: () -> NodeId) {
 	abstract val nodeService: NodeService
 	abstract val flowService: FlowService
 
-	protected val nodeType = NodeType(INTEGRATION_NAME)
-	private val flow by lazy { runBlocking { flowService.create(USER_ID_1, name = INTEGRATION_NAME, WorkflowSettings()) } }
+	protected val nodeType = NodeType(javaClass.simpleName)
+	private val flow by lazy { runBlocking { flowService.create(USER_ID_1, name = javaClass.simpleName, WorkflowSettings()) } }
 	private fun flowNode(): Node = runBlocking {
 		nodeService.create(
 			userId = USER_ID_1,

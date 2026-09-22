@@ -26,7 +26,7 @@ import org.slf4j.event.Level
 	outputType = MoodleAssignment::class
 )
 @Single
-class MoodleIntegration(
+class MoodleAssignmentsNodeHandler(
 	private val notificationService: NotificationService,
 	private val moodleAPI: MoodleAPI,
 ) : NodeHandler {

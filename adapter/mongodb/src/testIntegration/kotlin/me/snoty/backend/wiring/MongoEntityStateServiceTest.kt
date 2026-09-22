@@ -3,12 +3,12 @@ package me.snoty.backend.wiring
 import io.mockk.mockk
 import me.snoty.backend.database.mongo.MongoTest
 import me.snoty.backend.database.mongo.toNodeId
-import me.snoty.backend.integration.MongoEntityStateService
-import me.snoty.backend.integration.config.MongoNodeService
 import me.snoty.backend.utils.bson.bsonTypeClassMap
 import me.snoty.backend.wiring.flow.FlowService
 import me.snoty.backend.wiring.flow.MongoFlowService
+import me.snoty.backend.wiring.node.MongoNodeService
 import me.snoty.backend.wiring.node.NodeService
+import me.snoty.backend.wiring.node.state.MongoEntityStateService
 import me.snoty.backend.wiring.node.state.provideStateCodecRegistry
 import org.bson.types.ObjectId
 

@@ -2,7 +2,6 @@ package me.snoty.backend.wiring.node
 
 import me.snoty.backend.database.mongo.MongoTest
 import me.snoty.backend.database.mongo.toFlowId
-import me.snoty.backend.integration.config.MongoNodeService
 import me.snoty.core.node.NodeType
 import org.bson.Document
 import org.bson.types.ObjectId

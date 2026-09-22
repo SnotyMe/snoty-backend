@@ -27,8 +27,8 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
-class MoodleIntegrationTest {
-	fun integration(moodleAPI: MoodleAPI) = MoodleIntegration(
+class MoodleAssignmentsNodeHandlerTest {
+	fun createNodeHandler(moodleAPI: MoodleAPI) = MoodleAssignmentsNodeHandler(
 		notificationService = mockk(relaxed = true),
 		moodleAPI = moodleAPI,
 	)
@@ -106,7 +106,7 @@ class MoodleIntegrationTest {
 					)
 				)
 
-				val integration = integration(moodleAPI)
+				val nodeHandler = createNodeHandler(moodleAPI)
 				val ctx = NodeHandleContextImpl(
 					intermediateDataMapperRegistry = IntermediateDataMapperRegistry,
 					logger = mockk(relaxed = true),
@@ -117,7 +117,7 @@ class MoodleIntegrationTest {
 					val node: NodeWithSettings = mockk(relaxed = true)
 					every { node.settings } returns settings
 
-					integration.process(node, listOf(mockk()))
+					nodeHandler.process(node, listOf(mockk()))
 				}
 				assertEquals(shouldPass.sorted(), output.map { (it as BsonIntermediateData).value.getIdAsString()!!.toInt() }.sorted())
 			}

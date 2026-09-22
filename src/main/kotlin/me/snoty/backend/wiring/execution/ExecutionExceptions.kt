@@ -1,4 +1,4 @@
-package me.snoty.backend.integration.flow
+package me.snoty.backend.wiring.execution
 
 import me.snoty.core.node.Node
 

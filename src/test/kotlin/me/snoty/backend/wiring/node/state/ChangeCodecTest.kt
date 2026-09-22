@@ -1,4 +1,4 @@
-package me.snoty.backend.integration.common.diff
+package me.snoty.backend.wiring.node.state
 
 import io.mockk.mockk
 import kotlinx.datetime.LocalDateTime
@@ -8,7 +8,6 @@ import me.snoty.backend.utils.bson.bsonTypeClassMap
 import me.snoty.backend.utils.bson.decode
 import me.snoty.backend.utils.bson.provideApiCodec
 import me.snoty.backend.utils.bson.provideCodecRegistry
-import me.snoty.backend.wiring.node.state.Change
 import org.bson.BsonDocument
 import org.bson.BsonDocumentReader
 import org.bson.BsonDocumentWriter
