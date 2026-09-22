@@ -11,7 +11,7 @@ import me.snoty.backend.wiring.credential.Credential
 import me.snoty.backend.wiring.credential.CredentialRef
 import me.snoty.backend.wiring.credential.RegisterCredential
 import me.snoty.backend.wiring.credential.resolve
-import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeInput
 import me.snoty.backend.wiring.data.eachWithSettings
 import me.snoty.backend.wiring.node.*
 import me.snoty.backend.wiring.node.metadata.NodeStereotype
@@ -49,7 +49,7 @@ class DiscordNodeHandler(
 	context(_: NodeHandleContext)
 	override suspend fun process(
 		node: NodeWithSettings,
-		input: Collection<IntermediateData>,
+		input: NodeInput,
 	) = eachWithSettings<DiscordWebhook.Message, DiscordSettings>(input, node) { data, config ->
 		if (data.content.isNullOrEmpty() && data.embeds.isEmpty()) {
 			if (config.emptyIsError) {

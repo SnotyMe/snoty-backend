@@ -7,7 +7,7 @@ import io.ktor.util.*
 import me.snoty.backend.utils.bson.parseJson
 import me.snoty.backend.utils.proxy.withOptionalProxy
 import me.snoty.backend.wiring.credential.resolveOrNull
-import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeInput
 import me.snoty.backend.wiring.data.NodeOutput
 import me.snoty.backend.wiring.data.getOrNull
 import me.snoty.backend.wiring.data.iterableStructOutput
@@ -38,10 +38,7 @@ class HttpNodeHandler(
 	private val bsonTypeClassMap: BsonTypeClassMap,
 ) : NodeHandler {
 	context(_: NodeHandleContext)
-	override suspend fun process(
-		node: NodeWithSettings,
-		input: Collection<IntermediateData>,
-	): NodeOutput {
+	override suspend fun process(node: NodeWithSettings, input: NodeInput): NodeOutput {
 		val settings = node.getConfig<HttpNodeSettings>()
 		val proxy = settings.proxy.resolveOrNull(node.userId)
 		val requests = input.mapNotNull { it.getOrNull<HttpNodeInput>() } + settings.requests

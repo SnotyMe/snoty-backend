@@ -3,7 +3,7 @@ package me.snoty.node.json.emit
 import kotlinx.serialization.Serializable
 import me.snoty.backend.schema.EmptySchema
 import me.snoty.backend.schema.Language
-import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeInput
 import me.snoty.backend.wiring.data.NodeOutput
 import me.snoty.backend.wiring.data.iterableStructOutput
 import me.snoty.backend.wiring.node.*
@@ -29,12 +29,10 @@ data class EmitJsonSettings(
 @Single
 class EmitJsonNodeHandler : NodeHandler {
 	context(_: NodeHandleContext)
-	override suspend fun process(
-		node: NodeWithSettings,
-		input: Collection<IntermediateData>
-	): NodeOutput = iterableStructOutput(
-		node.getConfig<EmitJsonSettings>()
-		.data
-		.map(Document::parse)
-	)
+	override suspend fun process(node: NodeWithSettings, input: NodeInput): NodeOutput =
+		iterableStructOutput(
+			node.getConfig<EmitJsonSettings>()
+			.data
+			.map(Document::parse)
+		)
 }

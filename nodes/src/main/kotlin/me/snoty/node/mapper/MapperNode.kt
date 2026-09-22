@@ -3,7 +3,7 @@ package me.snoty.node.mapper
 import kotlinx.serialization.Serializable
 import me.snoty.backend.schema.*
 import me.snoty.backend.utils.bson.encode
-import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeInput
 import me.snoty.backend.wiring.data.mapInputWithSettings
 import me.snoty.backend.wiring.data.structOutput
 import me.snoty.backend.wiring.node.*
@@ -46,7 +46,7 @@ class MapperNodeHandler(
 	context(_: NodeHandleContext)
 	override suspend fun process(
 		node: NodeWithSettings,
-		input: Collection<IntermediateData>,
+		input: NodeInput,
 	) = mapInputWithSettings<Document, MapperSettings>(input, node) { data, settings ->
 		val mappedData = Document(data.mapValues { (_, value) ->
 			val packageName = value?.javaClass?.packageName ?: return@mapValues null

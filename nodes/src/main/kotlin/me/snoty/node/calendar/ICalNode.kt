@@ -8,7 +8,7 @@ import me.snoty.backend.schema.FieldDescription
 import me.snoty.backend.utils.ForbiddenException
 import me.snoty.backend.utils.filterNot
 import me.snoty.backend.utils.respondStatus
-import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeInput
 import me.snoty.backend.wiring.data.NodeOutput
 import me.snoty.backend.wiring.data.get
 import me.snoty.backend.wiring.node.*
@@ -67,7 +67,7 @@ class ICalNodeHandler(
 	}
 
 	context(_: NodeHandleContext)
-	override suspend fun process(node: NodeWithSettings, input: Collection<IntermediateData>): NodeOutput {
+	override suspend fun process(node: NodeWithSettings, input: NodeInput): NodeOutput {
 		val events = input
 			.map { it.get<CalendarEvent>() }
 			.filterNot(

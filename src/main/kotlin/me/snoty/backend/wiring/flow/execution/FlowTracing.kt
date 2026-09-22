@@ -7,7 +7,7 @@ import io.opentelemetry.api.trace.Tracer
 import kotlinx.serialization.json.Json
 import me.snoty.backend.logging.KMDC
 import me.snoty.backend.observability.*
-import me.snoty.backend.wiring.data.IntermediateData
+import me.snoty.backend.wiring.data.NodeInput
 import me.snoty.backend.wiring.flow.FlowFeatureFlags
 import me.snoty.backend.wiring.flow.FlowRunner
 import me.snoty.core.flow.Workflow
@@ -18,7 +18,7 @@ import org.koin.core.annotation.Single
 
 interface FlowTracing : Tracer {
 	fun createRootSpan(jobId: String, flow: Workflow): Span
-	fun SpanBuilder.setNodeAttributes(node: NodeWithSettings, input: Collection<IntermediateData>?): SpanBuilder
+	fun SpanBuilder.setNodeAttributes(node: NodeWithSettings, input: NodeInput?): SpanBuilder
 	fun traceName(node: Node): String
 }
 
@@ -41,7 +41,7 @@ class FlowTracingImpl(
 		return rootSpan
 	}
 
-	override fun SpanBuilder.setNodeAttributes(node: NodeWithSettings, input: Collection<IntermediateData>?) = apply {
+	override fun SpanBuilder.setNodeAttributes(node: NodeWithSettings, input: NodeInput?) = apply {
 		setAttribute(NODE_ID, node.id.value)
 		KMDC.put(NODE_ID, node.id.value)
 		setAttribute("node", node.type)

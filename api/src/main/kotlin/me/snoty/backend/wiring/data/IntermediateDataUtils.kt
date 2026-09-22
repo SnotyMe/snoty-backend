@@ -6,7 +6,7 @@ import me.snoty.core.node.NodeWithSettings
 import me.snoty.core.node.getConfig
 
 context(ctx: NodeHandleContext)
-inline fun <reified T : Any> each(input: Collection<IntermediateData>, block: (T) -> Unit): NodeOutput = input
+inline fun <reified T : Any> each(input: NodeInput, block: (T) -> Unit): NodeOutput = input
 	.forEach {
 		block(it.get())
 	}
@@ -14,7 +14,7 @@ inline fun <reified T : Any> each(input: Collection<IntermediateData>, block: (T
 
 context(ctx: NodeHandleContext)
 inline fun <reified T : Any, reified Settings : NodeSettings> eachWithSettings(
-	input: Collection<IntermediateData>,
+	input: NodeInput,
 	node: NodeWithSettings,
 	block: (T, Settings) -> Unit
 ): NodeOutput {
@@ -29,14 +29,14 @@ inline fun <reified T : Any, reified Settings : NodeSettings> eachWithSettings(
 }
 
 context(ctx: NodeHandleContext)
-inline fun <reified T : Any> mapInput(input: Collection<IntermediateData>, block: (T) -> NodeOutput): NodeOutput =
+inline fun <reified T : Any> mapInput(input: NodeInput, block: (T) -> NodeOutput): NodeOutput =
 	input.flatMap {
 		block(it.get<T>())
 	}
 
 context(ctx: NodeHandleContext)
 inline fun <reified T : Any, reified Settings : NodeSettings> mapInputWithSettings(
-	input: Collection<IntermediateData>,
+	input: NodeInput,
 	node: NodeWithSettings,
 	block: (T, Settings) -> NodeOutput
 ): NodeOutput {
@@ -48,7 +48,7 @@ inline fun <reified T : Any, reified Settings : NodeSettings> mapInputWithSettin
 	}
 }
 
-inline fun <reified Settings : NodeSettings> Collection<IntermediateData>.mapWithSettings(node: NodeWithSettings, block: (Settings) -> NodeOutput): NodeOutput {
+inline fun <reified Settings : NodeSettings> NodeInput.mapWithSettings(node: NodeWithSettings, block: (Settings) -> NodeOutput): NodeOutput {
 	val settings = node.getConfig<Settings>()
 
 	return this.flatMap { block(settings) }
