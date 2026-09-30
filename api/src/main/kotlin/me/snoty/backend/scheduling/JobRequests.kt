@@ -21,6 +21,10 @@ data class SnotyJob(
 	val request: JobRequest,
 )
 
+interface Schedulable {
+	val schedule: JobSchedule
+}
+
 @Serializable
 sealed interface JobSchedule {
 	@Serializable

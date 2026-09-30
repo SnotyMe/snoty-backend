@@ -632,10 +632,16 @@ public final class me/snoty/backend/scheduling/JobSchedule$Recurring$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public abstract interface class me/snoty/backend/scheduling/NodeScheduler {
+	public abstract fun schedule (Lme/snoty/core/node/NodeWithSettings;Lme/snoty/backend/scheduling/JobSchedule;)V
+	public abstract fun trigger (Lme/snoty/core/node/NodeWithSettings;Lorg/slf4j/event/Level;Ljava/util/Collection;)V
+	public abstract fun unschedule (Lme/snoty/core/node/NodeWithSettings;)V
+}
+
 public abstract interface class me/snoty/backend/scheduling/Scheduler {
 	public abstract fun deleteRecurringJob (Ljava/lang/String;)V
-	public abstract fun recurringJobExists (Ljava/lang/String;)Z
-	public abstract fun scheduleRecurringJob (Ljava/lang/String;Lme/snoty/backend/scheduling/SnotyJob;)V
+	public abstract fun pendingJobForRecurringJobExists (Ljava/lang/String;)Z
+	public abstract fun scheduleRecurringJob (Lme/snoty/backend/scheduling/SnotyJob;)V
 	public abstract fun start ()V
 	public abstract fun triggerRecurringJobOrSchedule (Lme/snoty/backend/scheduling/SnotyJob;)V
 }
@@ -1530,6 +1536,26 @@ public final class me/snoty/backend/wiring/data/impl/BsonIntermediateDataMapper 
 	public fun supports (Lkotlin/reflect/KClass;)Z
 }
 
+public final class me/snoty/backend/wiring/data/impl/EmptyIntermediateData : me/snoty/backend/wiring/data/IntermediateData {
+	public static final field INSTANCE Lme/snoty/backend/wiring/data/impl/EmptyIntermediateData;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getValue ()Ljava/lang/Object;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/wiring/data/impl/EmptyIntermediateDataMapper : me/snoty/backend/wiring/data/IntermediateDataMapper {
+	public fun <init> ()V
+	public synthetic fun deserialize (Lme/snoty/backend/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+	public fun deserialize (Lme/snoty/backend/wiring/data/impl/EmptyIntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+	public fun deserializeUnsafe (Lme/snoty/backend/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+	public fun getIntermediateDataClass ()Lkotlin/reflect/KClass;
+	public fun getPriority ()I
+	public synthetic fun serialize (Ljava/lang/Object;)Lme/snoty/backend/wiring/data/IntermediateData;
+	public fun serialize (Ljava/lang/Object;)Lme/snoty/backend/wiring/data/impl/EmptyIntermediateData;
+	public fun supports (Lkotlin/reflect/KClass;)Z
+}
+
 public final class me/snoty/backend/wiring/data/impl/SimpleIntermediateData : me/snoty/backend/wiring/data/IntermediateData {
 	public fun <init> (Ljava/lang/Object;Lkotlin/reflect/KClass;)V
 	public synthetic fun <init> (Ljava/lang/Object;Lkotlin/reflect/KClass;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -1748,7 +1774,7 @@ public abstract interface class me/snoty/backend/wiring/flow/FlowManagementServi
 }
 
 public abstract interface class me/snoty/backend/wiring/flow/FlowRunner {
-	public abstract fun execute (Ljava/lang/String;Lme/snoty/backend/scheduling/FlowTriggerReason;Lorg/slf4j/Logger;Lorg/slf4j/event/Level;Lme/snoty/core/flow/WorkflowWithNodes;Ljava/util/Collection;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun execute (Ljava/lang/String;Lme/snoty/backend/scheduling/FlowTriggerReason;Lorg/slf4j/Logger;Lorg/slf4j/event/Level;Lme/snoty/core/flow/WorkflowWithNodes;Lme/snoty/core/node/FlowNode;Ljava/util/Collection;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public abstract interface class me/snoty/backend/wiring/flow/FlowService {
@@ -1830,7 +1856,13 @@ public final class me/snoty/backend/wiring/flow/ImportNodeDescriptor$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public abstract interface class me/snoty/backend/wiring/flow/NodeCreatedHook : kotlin/coroutines/jvm/internal/SuspendFunction, kotlin/jvm/functions/Function2 {
+}
+
 public abstract interface class me/snoty/backend/wiring/flow/NodeDeletedHook : kotlin/coroutines/jvm/internal/SuspendFunction, kotlin/jvm/functions/Function2 {
+}
+
+public abstract interface class me/snoty/backend/wiring/flow/NodeUpdatedHook : kotlin/coroutines/jvm/internal/SuspendFunction, kotlin/jvm/functions/Function2 {
 }
 
 public abstract interface class me/snoty/backend/wiring/flow/execution/ExecutionEventAdapter : me/snoty/backend/adapter/Adapter {

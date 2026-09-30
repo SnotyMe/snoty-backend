@@ -1,9 +1,9 @@
 package me.snoty.backend.scheduling.jobrunr
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import me.snoty.backend.scheduling.JobSchedule
 import me.snoty.backend.scheduling.Scheduler
 import me.snoty.backend.scheduling.SnotyJob
+import org.jobrunr.configuration.JobRunr
 import org.jobrunr.jobs.Job
 import org.jobrunr.jobs.states.StateName
 import org.jobrunr.scheduling.JobBuilder
@@ -16,19 +16,21 @@ import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.isAccessible
-import kotlin.time.toJavaDuration
 
 @Single
 class JobRunrScheduler(private val jobRunrConfigurer: JobRunrConfigurer, private val storageProvider: SnotyJobRunrStorageProvider) : Scheduler {
 	private val logger = KotlinLogging.logger {}
 
-	private lateinit var jobRequestScheduler: JobRequestScheduler
+	lateinit var jobRequestScheduler: JobRequestScheduler
+		private set
+	private lateinit var backgroundJobServer: org.jobrunr.server.BackgroundJobServer
 	private lateinit var build: KFunction<Job>
 	private lateinit var saveJob: KFunction<*>
 
 	@Suppress("UNCHECKED_CAST")
 	override fun start() {
 		jobRequestScheduler = jobRunrConfigurer.initialize().jobRequestScheduler
+		backgroundJobServer = JobRunr.getBackgroundJobServer()
 
 		build = JobBuilder::class
 			.declaredMemberFunctions
@@ -45,20 +47,14 @@ class JobRunrScheduler(private val jobRunrConfigurer: JobRunrConfigurer, private
 			}
 	}
 
-	override fun scheduleRecurringJob(id: String, job: SnotyJob) {
+	override fun scheduleRecurringJob(job: SnotyJob) {
 		jobRequestScheduler.createRecurrently(
 			aRecurringJob()
-				.withId(id)
+				.withId(job.recurringJobId)
 				.withName(job.name)
 				.withAmountOfRetries(job.retries)
 				.withJobRequest(job.request)
-				.apply {
-					when (val schedule = job.schedule) {
-						is JobSchedule.Recurring -> withInterval(schedule.interval.toJavaDuration())
-						is JobSchedule.Cron -> withCron(schedule.expression)
-						else -> error("Unsupported schedule type: $schedule")
-					}
-				}
+				.withSchedule(job.schedule)
 		)
 	}
 
@@ -71,13 +67,8 @@ class JobRunrScheduler(private val jobRunrConfigurer: JobRunrConfigurer, private
 			.withAmountOfRetries(job.retries)
 			.withJobRequest(job.request)
 
-		if (recurringJobId == null) {
-			jobRequestScheduler.create(jobBuilder)
-			return
-		}
-
-		if (recurringJobExists(recurringJobId)) {
-			logger.info { "Job ${job.recurringJobId} already exists, not scheduling" }
+		if (recurringJobId != null && pendingJobForRecurringJobExists(recurringJobId)) {
+			logger.info { "Pending Job for ${job.recurringJobId} already exists, not scheduling" }
 			return
 		}
 
@@ -87,13 +78,13 @@ class JobRunrScheduler(private val jobRunrConfigurer: JobRunrConfigurer, private
 				setRecurringJobId(recurringJobId)
 			}
 
-		saveJob.call(jobRequestScheduler, job)
+		backgroundJobServer.processJob(job)
 	}
 
 	override fun deleteRecurringJob(id: String) {
 		jobRequestScheduler.deleteRecurringJob(id)
 	}
 
-	override fun recurringJobExists(id: String) =
+	override fun pendingJobForRecurringJobExists(id: String) =
 		storageProvider.recurringJobExists(id, StateName.ENQUEUED, StateName.PROCESSING)
 }
