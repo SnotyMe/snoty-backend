@@ -10,6 +10,7 @@ import org.jobrunr.scheduling.JobBuilder
 import org.jobrunr.scheduling.JobBuilder.aJob
 import org.jobrunr.scheduling.JobRequestScheduler
 import org.jobrunr.scheduling.RecurringJobBuilder.aRecurringJob
+import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.declaredMemberFunctions
@@ -18,6 +19,7 @@ import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.isAccessible
 
 @Single
+@Named("adapter")
 class JobRunrScheduler(private val jobRunrConfigurer: JobRunrConfigurer, private val storageProvider: SnotyJobRunrStorageProvider) : Scheduler {
 	private val logger = KotlinLogging.logger {}
 

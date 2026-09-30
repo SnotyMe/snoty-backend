@@ -7,6 +7,8 @@ interface IntermediateDataMapperRegistry {
 	operator fun <T : IntermediateData> get(clazz: KClass<out T>): IntermediateDataMapper<T>
 
 	fun getFirstCompatibleMapper(clazz: KClass<*>): IntermediateDataMapper<out IntermediateData>
+
+	fun getAll(): List<IntermediateDataMapper<*>>
 }
 
 @Single
@@ -29,4 +31,6 @@ class IntermediateDataMapperRegistryImpl(dataMappers: List<IntermediateDataMappe
 	}
 
 	private fun noMapper(clazz: KClass<out Any>) = IllegalStateException("No mapper found for $clazz")
+
+	override fun getAll() = allMappers
 }

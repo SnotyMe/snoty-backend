@@ -1,5 +1,9 @@
 package me.snoty.backend.wiring.data.impl
 
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import me.snoty.backend.wiring.data.IntermediateData
 import me.snoty.backend.wiring.data.IntermediateDataMapper
 import org.koin.core.annotation.Single
@@ -11,7 +15,7 @@ data object EmptyIntermediateData : IntermediateData {
 }
 
 @Single
-class EmptyIntermediateDataMapper : IntermediateDataMapper<EmptyIntermediateData> {
+class EmptyIntermediateDataMapper : IntermediateDataMapper<EmptyIntermediateData>, KSerializer<EmptyIntermediateData> {
 	override val priority = 0
 
 	override fun supports(clazz: KClass<*>) = false
@@ -24,4 +28,8 @@ class EmptyIntermediateDataMapper : IntermediateDataMapper<EmptyIntermediateData
 	): R = throw IllegalStateException("Cannot deserialize EmptyIntermediateData")
 
 	override fun <R : Any> serialize(data: R) = EmptyIntermediateData
+
+	override val descriptor = buildClassSerialDescriptor("EmptyIntermediateData") {}
+	override fun serialize(encoder: Encoder, value: EmptyIntermediateData) = Unit
+	override fun deserialize(decoder: Decoder) = EmptyIntermediateData
 }

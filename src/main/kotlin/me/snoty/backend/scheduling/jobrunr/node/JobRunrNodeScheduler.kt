@@ -1,10 +1,6 @@
 package me.snoty.backend.scheduling.jobrunr.node
 
-import me.snoty.backend.scheduling.FlowTriggerReason
-import me.snoty.backend.scheduling.JobSchedule
-import me.snoty.backend.scheduling.NodeScheduler
-import me.snoty.backend.scheduling.SnotyJob
-import me.snoty.backend.scheduling.jobrunr.JobRunrScheduler
+import me.snoty.backend.scheduling.*
 import me.snoty.backend.wiring.data.NodeInput
 import me.snoty.backend.wiring.data.impl.EmptyIntermediateData
 import me.snoty.core.node.NodeWithSettings
@@ -13,7 +9,7 @@ import org.slf4j.event.Level
 
 @Single
 class JobRunrNodeScheduler(
-	private val jobRunrScheduler: JobRunrScheduler,
+	private val jobRunrScheduler: Scheduler,
 ) : NodeScheduler {
 	override fun schedule(node: NodeWithSettings, schedule: JobSchedule) {
 		val jobRequest = JobRunrNodeJobRequest(
@@ -57,7 +53,7 @@ class JobRunrNodeScheduler(
 		jobRunrScheduler.deleteRecurringJob(jobId(node))
 	}
 
-	private fun jobId(node: NodeWithSettings) = "${node.flowId.value}-${node.id.value}"
+	private fun jobId(node: NodeWithSettings) = "${node.flowId.value}_${node.id.value}"
 	private fun jobName(node: NodeWithSettings) =
 		"Node type=${node.type.value} id=${node.id.value} user=${node.userId.value} name=${node.name}"
 }

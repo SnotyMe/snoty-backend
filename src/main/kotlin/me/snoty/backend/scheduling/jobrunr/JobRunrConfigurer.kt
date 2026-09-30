@@ -3,6 +3,8 @@ package me.snoty.backend.scheduling.jobrunr
 import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.modules.SerializersModule
+import me.snoty.backend.wiring.data.INTERMEDIATE_DATA_SERIALIZERS_MODULE
 import org.jobrunr.configuration.JobRunr
 import org.jobrunr.configuration.JobRunrMicroMeterIntegration
 import org.jobrunr.dashboard.JobRunrDashboardWebServerConfiguration
@@ -10,6 +12,7 @@ import org.jobrunr.kotlin.utils.mapper.KotlinxSerializationJsonMapper
 import org.jobrunr.server.JobActivator
 import org.jobrunr.storage.StorageProvider
 import org.koin.core.Koin
+import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 
 @Single
@@ -17,11 +20,13 @@ class JobRunrConfigurer(
 	private val reconnecter: JobRunrReconnecter,
 	private val meterRegistry: MeterRegistry,
 	private val storageProvider: StorageProvider,
+	// the Node Job Request contains intermediate data as the input
+	@Named(INTERMEDIATE_DATA_SERIALIZERS_MODULE) private val intermediateDataSerializersModule: SerializersModule,
 	private val koin: Koin,
 ) {
 	@OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
 	fun initialize() = JobRunr.configure()
-		.useJsonMapper(KotlinxSerializationJsonMapper())
+		.useJsonMapper(KotlinxSerializationJsonMapper(intermediateDataSerializersModule))
 		.useStorageProvider(storageProvider)
 		.useJobActivator(object : JobActivator {
 			override fun <T : Any> activateJob(type: Class<T>): T? = koin.getOrNull(type.kotlin)

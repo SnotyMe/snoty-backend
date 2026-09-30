@@ -1,8 +1,11 @@
 package me.snoty.node.schedule
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import me.snoty.backend.scheduling.JobSchedule
 import me.snoty.backend.scheduling.Schedulable
+import me.snoty.backend.schema.FieldDefaultValue
+import me.snoty.backend.schema.Language
 import me.snoty.backend.wiring.data.NodeInput
 import me.snoty.backend.wiring.data.NodeOutput
 import me.snoty.backend.wiring.data.impl.EmptyIntermediateData
@@ -13,8 +16,11 @@ import org.koin.core.annotation.Single
 
 @Serializable
 data class CronTriggerNodeSettings(
+	@FieldDefaultValue("0 9 * * *")
+	@Language("cron")
 	val expression: String,
 ) : NodeSettings, Schedulable {
+	@Transient
 	override val schedule = JobSchedule.Cron(expression)
 }
 

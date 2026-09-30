@@ -32,12 +32,12 @@ class ScheduleNodeDeletedHook(private val nodeScheduler: NodeScheduler) : NodeDe
 	}
 }
 
-@Single(createdAtStart = true)
+@Single
 class ScheduleNodesSyncHooksRegistrar(
-	hookRegistry: HookRegistry,
-	nodeScheduler: NodeScheduler,
+	private val hookRegistry: HookRegistry,
+	private val nodeScheduler: NodeScheduler,
 ) {
-	init {
+	fun registerScheduleNodeHooks() {
 		val scheduleNodeCreatedUpdatedHook = ScheduleNodeCreatedUpdatedHook(nodeScheduler)
 		hookRegistry.registerHook(NodeCreatedHook::class, scheduleNodeCreatedUpdatedHook)
 		hookRegistry.registerHook(NodeUpdatedHook::class, scheduleNodeCreatedUpdatedHook)
