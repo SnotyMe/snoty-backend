@@ -15,10 +15,7 @@ private val NodeSettings.schedule get() = when (this) {
 	else -> null
 }
 
-@Single
-class ScheduleNodeCreatedUpdatedHook(
-	private val nodeScheduler: NodeScheduler,
-) : NodeUpdatedHook, NodeCreatedHook {
+class ScheduleNodeCreatedUpdatedHook(private val nodeScheduler: NodeScheduler) : NodeUpdatedHook, NodeCreatedHook {
 	override suspend fun invoke(node: NodeWithSettings) {
 		val schedule = node.settings.schedule ?: return
 
@@ -26,10 +23,7 @@ class ScheduleNodeCreatedUpdatedHook(
 	}
 }
 
-@Single
-class ScheduleNodeDeletedHook(
-	private val nodeScheduler: NodeScheduler,
-) : NodeDeletedHook {
+class ScheduleNodeDeletedHook(private val nodeScheduler: NodeScheduler) : NodeDeletedHook {
 	override suspend fun invoke(node: NodeWithSettings) {
 		// check if the node has a schedule, if not, we don't need to unschedule it anyway
 		node.settings.schedule ?: return
@@ -41,12 +35,12 @@ class ScheduleNodeDeletedHook(
 @Single(createdAtStart = true)
 class ScheduleNodesSyncHooksRegistrar(
 	hookRegistry: HookRegistry,
-	scheduleNodeCreatedUpdatedHook: ScheduleNodeCreatedUpdatedHook,
-	scheduleNodeDeletedHook: ScheduleNodeDeletedHook,
+	nodeScheduler: NodeScheduler,
 ) {
 	init {
+		val scheduleNodeCreatedUpdatedHook = ScheduleNodeCreatedUpdatedHook(nodeScheduler)
 		hookRegistry.registerHook(NodeCreatedHook::class, scheduleNodeCreatedUpdatedHook)
 		hookRegistry.registerHook(NodeUpdatedHook::class, scheduleNodeCreatedUpdatedHook)
-		hookRegistry.registerHook(NodeDeletedHook::class, scheduleNodeDeletedHook)
+		hookRegistry.registerHook(NodeDeletedHook::class, ScheduleNodeDeletedHook(nodeScheduler))
 	}
 }

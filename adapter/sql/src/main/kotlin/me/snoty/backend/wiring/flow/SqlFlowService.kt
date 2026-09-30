@@ -4,7 +4,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
 import me.snoty.backend.database.sql.flowTransaction
 import me.snoty.backend.database.sql.suspendTransaction
-import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.wiring.node.NodeService
 import me.snoty.core.flow.*
 import me.snoty.core.user.UserId
@@ -18,7 +17,6 @@ import org.koin.core.annotation.Single
 @Single
 class SqlFlowService(
 	private val db: Database,
-	private val flowScheduler: FlowScheduler,
 	private val nodeService: NodeService,
 	private val flowTable: FlowTable,
 ) : FlowService {
@@ -30,9 +28,6 @@ class SqlFlowService(
 		}.first()
 
 		row.toStandalone(flowTable)
-			.also {
-				flowScheduler.schedule(it)
-			}
 	}
 
 	override fun query(userId: UserId): Flow<StandaloneWorkflow> = db.flowTransaction {
@@ -79,15 +74,11 @@ class SqlFlowService(
 		}
 	}
 
-	override suspend fun updateSettings(flow: Workflow, settings: WorkflowSettings) = db.suspendTransaction {
-		val flow = flowTable.updateReturning(flowTable.standaloneColumns, { flowTable.id eq flow.id }) {
+	override suspend fun updateSettings(flow: Workflow, settings: WorkflowSettings): Unit = db.suspendTransaction {
+		flowTable.update({ flowTable.id eq flow.id }) {
 			it[flowTable.settings] = settings
 			it[flowTable.modifiedAt] = CurrentTimestamp
 		}
-			.first()
-			.toStandalone(flowTable)
-
-		flowScheduler.reschedule(flow)
 	}
 
 	override suspend fun delete(flow: Workflow) = db.suspendTransaction<Unit> {
