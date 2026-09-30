@@ -1,12 +1,9 @@
 package me.snoty.backend.wiring.node
 
 import com.sksamuel.hoplite.ConfigFailure
-import dev.openfeature.sdk.Client
 import io.github.oshai.kotlinlogging.KotlinLogging
 import me.snoty.backend.config.ConfigException
 import me.snoty.backend.config.ConfigWrapper
-import me.snoty.backend.featureflags.FeatureFlagBoolean
-import me.snoty.backend.featureflags.FeatureFlagsContainer
 import me.snoty.backend.injection.getFromAllScopes
 import me.snoty.backend.utils.simpleClassName
 import me.snoty.backend.wiring.node.metadata.NodeMetadata
@@ -23,15 +20,7 @@ import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
 @Single
-class NodeHandlerContributorLookupFeatureFlags(override val client: Client) : FeatureFlagsContainer {
-	val crashOnStartupFailure by FeatureFlagBoolean(
-		"nodeHandlerContributorLookup.crashOnStartupFailure",
-		false
-	)
-}
-
-@Single
-class NodeHandlerContributorLookup(private val koin: Koin, private val featureFlags: NodeHandlerContributorLookupFeatureFlags) {
+class NodeHandlerContributorLookup(private val koin: Koin) {
 	val logger = KotlinLogging.logger {}
 
 	val nodeRegistry: NodeRegistry by koin.inject()
@@ -55,9 +44,7 @@ class NodeHandlerContributorLookup(private val koin: Koin, private val featureFl
 					val exception = prettify(ex)
 					val isFatal = reportStartupFailure(metadata, exception)
 
-					if (isFatal && featureFlags.crashOnStartupFailure) {
-						throw exception
-					}
+					if (isFatal) throw exception
 				}
 		}
 		val successCount = result.count { it.isSuccess }

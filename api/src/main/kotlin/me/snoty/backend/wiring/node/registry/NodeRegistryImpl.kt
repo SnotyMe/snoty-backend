@@ -20,6 +20,18 @@ class NodeRegistryImpl : NodeRegistry {
 
 	override fun registerHandler(metadata: NodeMetadata, handler: NodeHandler) {
 		val nodeType = metadata.type
+		val existingHandler = handlers[nodeType]
+		if (existingHandler != null) {
+			throw IllegalStateException(
+				"Cannot register handler ${handler.javaClass.name} for $nodeType, a handler (${existingHandler.javaClass.name}) is already registered."
+			)
+		}
+		val existingMetadata = metadatas[nodeType]
+		if (existingMetadata != null) {
+			throw IllegalStateException(
+				"Cannot register handler ${handler.javaClass.name} metadata for $nodeType, existing metadata for this node type is already registered."
+			)
+		}
 		handlers[nodeType] = handler
 		metadatas[nodeType] = metadata
 	}
