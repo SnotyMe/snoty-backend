@@ -1,5 +1,6 @@
 package me.snoty.node.schedule
 
+import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.scheduling.NodeScheduler
 import me.snoty.backend.scheduling.Schedulable
 import me.snoty.backend.wiring.flow.NodeCreatedHook
@@ -34,5 +35,18 @@ class ScheduleNodeDeletedHook(
 		node.settings.schedule ?: return
 
 		nodeScheduler.unschedule(node)
+	}
+}
+
+@Single(createdAtStart = true)
+class ScheduleNodesSyncHooksRegistrar(
+	hookRegistry: HookRegistry,
+	scheduleNodeCreatedUpdatedHook: ScheduleNodeCreatedUpdatedHook,
+	scheduleNodeDeletedHook: ScheduleNodeDeletedHook,
+) {
+	init {
+		hookRegistry.registerHook(NodeCreatedHook::class, scheduleNodeCreatedUpdatedHook)
+		hookRegistry.registerHook(NodeUpdatedHook::class, scheduleNodeCreatedUpdatedHook)
+		hookRegistry.registerHook(NodeDeletedHook::class, scheduleNodeDeletedHook)
 	}
 }
