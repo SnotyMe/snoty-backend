@@ -31,7 +31,7 @@ class FlowTracingImpl(
 	override fun createRootSpan(jobId: String, flow: Workflow): Span {
 		val flowId = flow.id
 
-		val rootSpan = spanBuilder("Flow ${flowId.value}")
+		val rootSpan = spanBuilder("Flow")
 			.setAttribute(USER_ID, flow.userId.value)
 			.setAttribute(JOB_ID, jobId)
 			.setAttribute(FLOW_ID, flowId.value)
@@ -44,7 +44,7 @@ class FlowTracingImpl(
 	override fun SpanBuilder.setNodeAttributes(node: NodeWithSettings, input: NodeInput?) = apply {
 		setAttribute(NODE_ID, node.id.value)
 		KMDC.put(NODE_ID, node.id.value)
-		setAttribute("node", node.type)
+		setAttribute("node.type", node.type)
 
 		if (featureFlags.traceConfig) {
 			setAttribute("config", json.encodeToString(node.settings))
@@ -55,5 +55,5 @@ class FlowTracingImpl(
 	}
 
 	override fun traceName(node: Node) =
-		"Node ${node.type.value} (${node.id.value})"
+		"Node ${node.type.value}"
 }

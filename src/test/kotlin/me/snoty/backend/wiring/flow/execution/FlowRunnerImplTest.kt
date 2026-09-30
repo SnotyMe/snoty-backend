@@ -110,7 +110,7 @@ class FlowRunnerImplTest {
 			.sortedBy { it.startEpochNanos }
 
 		assertEquals(3, spans.size)
-		assertTrue(spans[0].name.contains(flow.id.value))
+		assertFalse(spans[0].name.contains(flow.id.value))
 		assertEquals(tracing.traceName(emit), spans[1].name)
 		assertEquals(tracing.traceName(node), spans[2].name)
 		assertAny(spans) {
@@ -150,7 +150,7 @@ class FlowRunnerImplTest {
 
 			assertEquals(3, spans.size)
 			// root node
-			assertTrue(spans[0].name.contains(flow.id.value))
+			assertFalse(spans[0].name.contains(flow.id.value))
 			assertEquals(tracing.traceName(emit), spans[1].name)
 			// execution node (the one with an actual config)
 			assertEquals(tracing.traceName(node), spans[2].name)
@@ -184,7 +184,7 @@ class FlowRunnerImplTest {
 		val spans = otel.spanExporter.finishedSpanItems
 		assertEquals(4, spans.size)
 		val flowSpan = assertAny(spans) {
-			it.name.contains(flow.id.value)
+			it.name == "Flow"
 		}
 		assertEquals(SpanId.getInvalid(), flowSpan.parentSpanId)
 		assertNull(flowSpan.attributes.get(AttributeKey.stringKey("node.id")))
