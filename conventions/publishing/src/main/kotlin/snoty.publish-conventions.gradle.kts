@@ -3,6 +3,10 @@ plugins {
 	`maven-publish`
 }
 
+java {
+	withSourcesJar()
+}
+
 publishing {
 	if (publications.isNotEmpty()) return@publishing
 
@@ -16,7 +20,7 @@ publishing {
 				}
 			}
 
-			from(components["kotlin"])
+			from(components["java"])
 		}
 	}
 }
