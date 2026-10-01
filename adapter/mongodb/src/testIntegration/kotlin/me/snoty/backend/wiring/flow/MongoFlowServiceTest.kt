@@ -9,5 +9,5 @@ import org.bson.types.ObjectId
 class MongoFlowServiceTest : FlowServiceSpec({ ObjectId().toFlowId() }) {
 	private val mongoDB = MongoTest.getMongoDatabase {}
 	override val nodeService = MongoNodeService(mongoDB, mockk(relaxed = true))
-	override val service = MongoFlowService(mongoDB, flowScheduler, mockk(relaxed = true))
+	override val service = MongoFlowService(mongoDB, mockk(relaxed = true))
 }

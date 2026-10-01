@@ -1,6 +1,5 @@
 package me.snoty.backend.wiring.node
 
-import io.mockk.mockk
 import me.snoty.backend.database.sql.PostgresTest
 import me.snoty.backend.utils.snotyJson
 import me.snoty.backend.wiring.flow.FlowTable
@@ -26,7 +25,6 @@ class SqlNodeServiceTest : NodeServiceSpec() {
 
 	private val flowService = SqlFlowService(
 		db = db,
-		flowScheduler = mockk(relaxed = true),
 		nodeService = service,
 		flowTable = flowTable,
 	)
