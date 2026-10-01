@@ -1,10 +1,13 @@
 package me.snoty.backend.schema
 
+import io.ktor.openapi.JsonSchema
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 
 @Serializable
+@SerialName("SchemaFieldDetails")
+@JsonSchema.Title("SchemaFieldDetails")
 sealed class SchemaFieldDetails {
 	@Serializable
 	@SerialName("Enum")
