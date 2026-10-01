@@ -65,7 +65,7 @@ class JobRunrNodeJobHandler(
 					logLevel = jobRequest.logLevel,
 					startNode = startNode,
 					flow = flow,
-					input = emptyList(),
+					input = jobRequest.input,
 				)
 			}
 		}
