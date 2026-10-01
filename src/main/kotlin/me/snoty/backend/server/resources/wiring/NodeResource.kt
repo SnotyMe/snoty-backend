@@ -5,6 +5,7 @@ import io.ktor.server.routing.openapi.*
 import me.snoty.backend.server.resources.wiring.node.nodeConnectionRoutes
 import me.snoty.backend.server.resources.wiring.node.nodeCreate
 import me.snoty.backend.server.resources.wiring.node.nodeDelete
+import me.snoty.backend.server.resources.wiring.node.nodeTrigger
 import me.snoty.backend.server.resources.wiring.node.nodeUpdate
 import me.snoty.backend.wiring.flow.FlowService
 import me.snoty.backend.wiring.node.NodeService
@@ -20,6 +21,8 @@ fun Route.nodeResource() = route("node") {
 	nodeConnectionRoutes(nodeService)
 
 	nodeUpdate(nodeService)
+
+	nodeTrigger(get())
 }.describe {
 	tag("node")
 }

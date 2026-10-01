@@ -1,6 +1,7 @@
 package me.snoty.backend.scheduling.jobrunr
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import me.snoty.backend.scheduling.JobTriggerResult
 import me.snoty.backend.scheduling.Scheduler
 import me.snoty.backend.scheduling.SnotyJob
 import org.jobrunr.configuration.JobRunr
@@ -20,7 +21,10 @@ import kotlin.reflect.jvm.isAccessible
 
 @Single
 @Named("adapter")
-class JobRunrScheduler(private val jobRunrConfigurer: JobRunrConfigurer, private val storageProvider: SnotyJobRunrStorageProvider) : Scheduler {
+class JobRunrScheduler(
+	private val jobRunrConfigurer: JobRunrConfigurer,
+	private val storageProvider: SnotyJobRunrStorageProvider,
+) : Scheduler {
 	private val logger = KotlinLogging.logger {}
 
 	lateinit var jobRequestScheduler: JobRequestScheduler
@@ -60,8 +64,7 @@ class JobRunrScheduler(private val jobRunrConfigurer: JobRunrConfigurer, private
 		)
 	}
 
-	@Suppress("ERROR_SUPPRESSION")
-	override fun triggerRecurringJobOrSchedule(job: SnotyJob) {
+	override fun triggerRecurringJobOrSchedule(job: SnotyJob): JobTriggerResult? {
 		val recurringJobId = job.recurringJobId
 
 		val jobBuilder = aJob()
@@ -71,7 +74,7 @@ class JobRunrScheduler(private val jobRunrConfigurer: JobRunrConfigurer, private
 
 		if (recurringJobId != null && pendingJobForRecurringJobExists(recurringJobId)) {
 			logger.info { "Pending Job for ${job.recurringJobId} already exists, not scheduling" }
-			return
+			return null
 		}
 
 		val job = build
@@ -81,6 +84,10 @@ class JobRunrScheduler(private val jobRunrConfigurer: JobRunrConfigurer, private
 			}
 
 		backgroundJobServer.processJob(job)
+
+		return JobTriggerResult(
+			jobId = job.id.toString(),
+		)
 	}
 
 	override fun deleteRecurringJob(id: String) {

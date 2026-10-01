@@ -532,22 +532,6 @@ public final class me/snoty/backend/observability/OtelTransport : java/lang/Enum
 	public static fun values ()[Lme/snoty/backend/observability/OtelTransport;
 }
 
-public final class me/snoty/backend/scheduling/FlowJobRequest {
-	public fun <init> (ILorg/slf4j/event/Level;Lme/snoty/backend/scheduling/FlowTriggerReason;)V
-	public synthetic fun <init> (ILorg/slf4j/event/Level;Lme/snoty/backend/scheduling/FlowTriggerReason;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()I
-	public final fun component2 ()Lorg/slf4j/event/Level;
-	public final fun component3 ()Lme/snoty/backend/scheduling/FlowTriggerReason;
-	public final fun copy (ILorg/slf4j/event/Level;Lme/snoty/backend/scheduling/FlowTriggerReason;)Lme/snoty/backend/scheduling/FlowJobRequest;
-	public static synthetic fun copy$default (Lme/snoty/backend/scheduling/FlowJobRequest;ILorg/slf4j/event/Level;Lme/snoty/backend/scheduling/FlowTriggerReason;ILjava/lang/Object;)Lme/snoty/backend/scheduling/FlowJobRequest;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getLogLevel ()Lorg/slf4j/event/Level;
-	public final fun getRetries ()I
-	public final fun getTriggeredBy ()Lme/snoty/backend/scheduling/FlowTriggerReason;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
 public final class me/snoty/backend/scheduling/FlowTriggerReason : java/lang/Enum {
 	public static final field Companion Lme/snoty/backend/scheduling/FlowTriggerReason$Companion;
 	public static final field Manual Lme/snoty/backend/scheduling/FlowTriggerReason;
@@ -611,9 +595,25 @@ public final class me/snoty/backend/scheduling/JobSchedule$Recurring$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class me/snoty/backend/scheduling/JobTriggerResult {
+	public static final field Companion Lme/snoty/backend/scheduling/JobTriggerResult$Companion;
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lme/snoty/backend/scheduling/JobTriggerResult;
+	public static synthetic fun copy$default (Lme/snoty/backend/scheduling/JobTriggerResult;Ljava/lang/String;ILjava/lang/Object;)Lme/snoty/backend/scheduling/JobTriggerResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getJobId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/scheduling/JobTriggerResult$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public abstract interface class me/snoty/backend/scheduling/NodeScheduler {
 	public abstract fun schedule (Lme/snoty/core/node/NodeWithSettings;Lme/snoty/backend/scheduling/JobSchedule;)V
-	public abstract fun trigger (Lme/snoty/core/node/NodeWithSettings;Lorg/slf4j/event/Level;Ljava/util/Collection;)V
+	public abstract fun trigger (Lme/snoty/core/node/NodeWithSettings;Lorg/slf4j/event/Level;Ljava/util/Collection;)Lme/snoty/backend/scheduling/JobTriggerResult;
 	public abstract fun unschedule (Lme/snoty/core/node/NodeWithSettings;)V
 }
 
@@ -626,7 +626,7 @@ public abstract interface class me/snoty/backend/scheduling/Scheduler {
 	public abstract fun pendingJobForRecurringJobExists (Ljava/lang/String;)Z
 	public abstract fun scheduleRecurringJob (Lme/snoty/backend/scheduling/SnotyJob;)V
 	public abstract fun start ()V
-	public abstract fun triggerRecurringJobOrSchedule (Lme/snoty/backend/scheduling/SnotyJob;)V
+	public abstract fun triggerRecurringJobOrSchedule (Lme/snoty/backend/scheduling/SnotyJob;)Lme/snoty/backend/scheduling/JobTriggerResult;
 }
 
 public final class me/snoty/backend/scheduling/SnotyJob {

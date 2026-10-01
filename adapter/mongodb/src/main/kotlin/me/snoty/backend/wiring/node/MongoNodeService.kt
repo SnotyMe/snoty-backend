@@ -129,8 +129,8 @@ class MongoNodeService(
 			result.matchedCount == 0L -> NodeServiceResults.NodeNotFoundError(node.id)
 			else -> {
 				val newNode = get(node.userId, node.id) ?: error("Node not found")
-                NodeServiceResults.NodeUpdated(newNode)
-            }
+				NodeServiceResults.NodeUpdated(newNode)
+			}
 		}
 	}
 

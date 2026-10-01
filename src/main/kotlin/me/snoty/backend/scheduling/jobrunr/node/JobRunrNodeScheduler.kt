@@ -30,7 +30,7 @@ class JobRunrNodeScheduler(
 		jobRunrScheduler.scheduleRecurringJob(job)
 	}
 
-	override fun trigger(node: NodeWithSettings, logLevel: Level, input: NodeInput) {
+	override fun trigger(node: NodeWithSettings, logLevel: Level, input: NodeInput): JobTriggerResult? {
 		val jobRequest = JobRunrNodeJobRequest(
 			nodeId = node.id,
 			flowId = node.flowId,
@@ -46,7 +46,7 @@ class JobRunrNodeScheduler(
 			request = jobRequest,
 		)
 
-		jobRunrScheduler.triggerRecurringJobOrSchedule(job)
+		return jobRunrScheduler.triggerRecurringJobOrSchedule(job)
 	}
 
 	override fun unschedule(node: NodeWithSettings) {
