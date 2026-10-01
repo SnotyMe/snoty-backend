@@ -4,7 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.util.*
-import me.snoty.backend.utils.bson.parseJson
+import me.snoty.backend.utils.NodeSerializationUtils
 import me.snoty.backend.utils.proxy.withOptionalProxy
 import me.snoty.backend.wiring.credential.resolveOrNull
 import me.snoty.backend.wiring.data.NodeInput
@@ -18,8 +18,6 @@ import me.snoty.backend.wiring.node.RegisterNode
 import me.snoty.backend.wiring.node.metadata.NodeStereotype
 import me.snoty.core.node.NodeWithSettings
 import me.snoty.core.node.getConfig
-import org.bson.codecs.BsonTypeClassMap
-import org.bson.codecs.configuration.CodecRegistry
 import org.koin.core.annotation.Single
 
 @RegisterNode(
@@ -34,8 +32,7 @@ import org.koin.core.annotation.Single
 @Single
 class HttpNodeHandler(
 	private val httpClient: HttpClient,
-	private val codecRegistry: CodecRegistry,
-	private val bsonTypeClassMap: BsonTypeClassMap,
+	private val serializationUtils: NodeSerializationUtils,
 ) : NodeHandler {
 	context(_: NodeHandleContext)
 	override suspend fun process(node: NodeWithSettings, input: NodeInput): NodeOutput {
@@ -57,10 +54,7 @@ class HttpNodeHandler(
 				}
 
 			val bodyText = response.bodyAsText()
-			val body = when (settings.serializeOutputAs) {
-				HttpNodeSerializer.TEXT -> bodyText
-				HttpNodeSerializer.JSON -> parseJson(bodyText, codecRegistry, bsonTypeClassMap)
-			}
+			val body = serializationUtils.deserialize(settings.serializeOutputAs, bodyText)
 
 			HttpNodeOutput(
 				request.url,
