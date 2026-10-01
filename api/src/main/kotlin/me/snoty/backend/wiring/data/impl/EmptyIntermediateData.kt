@@ -4,6 +4,8 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.encoding.decodeStructure
+import kotlinx.serialization.encoding.encodeStructure
 import me.snoty.backend.wiring.data.IntermediateData
 import me.snoty.backend.wiring.data.IntermediateDataMapper
 import org.koin.core.annotation.Single
@@ -30,6 +32,8 @@ class EmptyIntermediateDataMapper : IntermediateDataMapper<EmptyIntermediateData
 	override fun <R : Any> serialize(data: R) = EmptyIntermediateData
 
 	override val descriptor = buildClassSerialDescriptor("EmptyIntermediateData") {}
-	override fun serialize(encoder: Encoder, value: EmptyIntermediateData) = Unit
-	override fun deserialize(decoder: Decoder) = EmptyIntermediateData
+	override fun serialize(encoder: Encoder, value: EmptyIntermediateData) = encoder.encodeStructure(descriptor) {}
+	override fun deserialize(decoder: Decoder) = decoder.decodeStructure(descriptor) {
+		EmptyIntermediateData
+	}
 }
