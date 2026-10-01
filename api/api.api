@@ -548,27 +548,6 @@ public final class me/snoty/backend/scheduling/FlowJobRequest {
 	public fun toString ()Ljava/lang/String;
 }
 
-public abstract interface class me/snoty/backend/scheduling/FlowScheduler {
-	public abstract fun deleteAll (Lme/snoty/core/flow/Workflow;)V
-	public fun jobId (Lme/snoty/core/flow/Workflow;)Ljava/lang/String;
-	public fun jobName (Lme/snoty/core/flow/Workflow;)Ljava/lang/String;
-	public abstract fun reschedule (Lme/snoty/core/flow/Workflow;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun schedule (Lme/snoty/core/flow/Workflow;Lme/snoty/backend/scheduling/FlowJobRequest;)V
-	public static synthetic fun schedule$default (Lme/snoty/backend/scheduling/FlowScheduler;Lme/snoty/core/flow/Workflow;Lme/snoty/backend/scheduling/FlowJobRequest;ILjava/lang/Object;)V
-	public abstract fun scheduleMissing (Lme/snoty/backend/wiring/flow/FlowService;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun trigger (Lme/snoty/core/flow/Workflow;Lme/snoty/backend/scheduling/FlowJobRequest;)V
-}
-
-public final class me/snoty/backend/scheduling/FlowScheduler$DefaultImpls {
-	public static fun jobId (Lme/snoty/backend/scheduling/FlowScheduler;Lme/snoty/core/flow/Workflow;)Ljava/lang/String;
-	public static fun jobName (Lme/snoty/backend/scheduling/FlowScheduler;Lme/snoty/core/flow/Workflow;)Ljava/lang/String;
-	public static synthetic fun schedule$default (Lme/snoty/backend/scheduling/FlowScheduler;Lme/snoty/core/flow/Workflow;Lme/snoty/backend/scheduling/FlowJobRequest;ILjava/lang/Object;)V
-}
-
-public final class me/snoty/backend/scheduling/FlowSchedulerKt {
-	public static final fun getDEFAULT_FLOW_JOB_REQUEST ()Lme/snoty/backend/scheduling/FlowJobRequest;
-}
-
 public final class me/snoty/backend/scheduling/FlowTriggerReason : java/lang/Enum {
 	public static final field Companion Lme/snoty/backend/scheduling/FlowTriggerReason$Companion;
 	public static final field Manual Lme/snoty/backend/scheduling/FlowTriggerReason;
@@ -638,6 +617,10 @@ public abstract interface class me/snoty/backend/scheduling/NodeScheduler {
 	public abstract fun unschedule (Lme/snoty/core/node/NodeWithSettings;)V
 }
 
+public abstract interface class me/snoty/backend/scheduling/Schedulable {
+	public abstract fun getSchedule ()Lme/snoty/backend/scheduling/JobSchedule;
+}
+
 public abstract interface class me/snoty/backend/scheduling/Scheduler {
 	public abstract fun deleteRecurringJob (Ljava/lang/String;)V
 	public abstract fun pendingJobForRecurringJobExists (Ljava/lang/String;)Z
@@ -672,6 +655,11 @@ public abstract interface class me/snoty/backend/scheduling/jobrunr/SnotyJobRunr
 
 public abstract interface annotation class me/snoty/backend/schema/DisplayName : java/lang/annotation/Annotation {
 	public abstract fun value ()Ljava/lang/String;
+}
+
+public abstract interface annotation class me/snoty/backend/schema/DurationLimits : java/lang/annotation/Annotation {
+	public abstract fun max ()Ljava/lang/String;
+	public abstract fun min ()Ljava/lang/String;
 }
 
 public final class me/snoty/backend/schema/EmptySchema {
@@ -787,6 +775,24 @@ public final class me/snoty/backend/schema/SchemaFieldDetails$CredentialDetails 
 }
 
 public final class me/snoty/backend/schema/SchemaFieldDetails$CredentialDetails$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class me/snoty/backend/schema/SchemaFieldDetails$DurationDetails : me/snoty/backend/schema/SchemaFieldDetails {
+	public static final field Companion Lme/snoty/backend/schema/SchemaFieldDetails$DurationDetails$Companion;
+	public synthetic fun <init> (Lkotlin/time/Duration;Lkotlin/time/Duration;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-FghU774 ()Lkotlin/time/Duration;
+	public final fun component2-FghU774 ()Lkotlin/time/Duration;
+	public final fun copy-NKUU228 (Lkotlin/time/Duration;Lkotlin/time/Duration;)Lme/snoty/backend/schema/SchemaFieldDetails$DurationDetails;
+	public static synthetic fun copy-NKUU228$default (Lme/snoty/backend/schema/SchemaFieldDetails$DurationDetails;Lkotlin/time/Duration;Lkotlin/time/Duration;ILjava/lang/Object;)Lme/snoty/backend/schema/SchemaFieldDetails$DurationDetails;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMax-FghU774 ()Lkotlin/time/Duration;
+	public final fun getMin-FghU774 ()Lkotlin/time/Duration;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class me/snoty/backend/schema/SchemaFieldDetails$DurationDetails$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -1492,13 +1498,20 @@ public final class me/snoty/backend/wiring/data/IntermediateDataMapper$DefaultIm
 
 public abstract interface class me/snoty/backend/wiring/data/IntermediateDataMapperRegistry {
 	public abstract fun get (Lkotlin/reflect/KClass;)Lme/snoty/backend/wiring/data/IntermediateDataMapper;
+	public abstract fun getAll ()Ljava/util/List;
 	public abstract fun getFirstCompatibleMapper (Lkotlin/reflect/KClass;)Lme/snoty/backend/wiring/data/IntermediateDataMapper;
 }
 
 public final class me/snoty/backend/wiring/data/IntermediateDataMapperRegistryImpl : me/snoty/backend/wiring/data/IntermediateDataMapperRegistry {
 	public fun <init> (Ljava/util/List;)V
 	public fun get (Lkotlin/reflect/KClass;)Lme/snoty/backend/wiring/data/IntermediateDataMapper;
+	public fun getAll ()Ljava/util/List;
 	public fun getFirstCompatibleMapper (Lkotlin/reflect/KClass;)Lme/snoty/backend/wiring/data/IntermediateDataMapper;
+}
+
+public final class me/snoty/backend/wiring/data/IntermediateDataSerializersModuleKt {
+	public static final field INTERMEDIATE_DATA_SERIALIZERS_MODULE Ljava/lang/String;
+	public static final fun provideIntermediateDataSerializersModule (Lme/snoty/backend/wiring/data/IntermediateDataMapperRegistry;)Lkotlinx/serialization/modules/SerializersModule;
 }
 
 public final class me/snoty/backend/wiring/data/NodeOutputKt {
@@ -1524,15 +1537,20 @@ public final class me/snoty/backend/wiring/data/impl/BsonIntermediateData : me/s
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class me/snoty/backend/wiring/data/impl/BsonIntermediateDataMapper : me/snoty/backend/wiring/data/IntermediateDataMapper {
+public final class me/snoty/backend/wiring/data/impl/BsonIntermediateDataMapper : kotlinx/serialization/KSerializer, me/snoty/backend/wiring/data/IntermediateDataMapper {
 	public fun <init> (Lorg/bson/codecs/configuration/CodecRegistry;Lorg/bson/codecs/DocumentCodec;)V
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lme/snoty/backend/wiring/data/impl/BsonIntermediateData;
 	public synthetic fun deserialize (Lme/snoty/backend/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
 	public fun deserialize (Lme/snoty/backend/wiring/data/impl/BsonIntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
 	public fun deserializeUnsafe (Lme/snoty/backend/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public fun getIntermediateDataClass ()Lkotlin/reflect/KClass;
 	public fun getPriority ()I
 	public synthetic fun serialize (Ljava/lang/Object;)Lme/snoty/backend/wiring/data/IntermediateData;
 	public fun serialize (Ljava/lang/Object;)Lme/snoty/backend/wiring/data/impl/BsonIntermediateData;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lme/snoty/backend/wiring/data/impl/BsonIntermediateData;)V
 	public fun supports (Lkotlin/reflect/KClass;)Z
 }
 
@@ -1544,15 +1562,20 @@ public final class me/snoty/backend/wiring/data/impl/EmptyIntermediateData : me/
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class me/snoty/backend/wiring/data/impl/EmptyIntermediateDataMapper : me/snoty/backend/wiring/data/IntermediateDataMapper {
+public final class me/snoty/backend/wiring/data/impl/EmptyIntermediateDataMapper : kotlinx/serialization/KSerializer, me/snoty/backend/wiring/data/IntermediateDataMapper {
 	public fun <init> ()V
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lme/snoty/backend/wiring/data/impl/EmptyIntermediateData;
 	public synthetic fun deserialize (Lme/snoty/backend/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
 	public fun deserialize (Lme/snoty/backend/wiring/data/impl/EmptyIntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
 	public fun deserializeUnsafe (Lme/snoty/backend/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
+	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public fun getIntermediateDataClass ()Lkotlin/reflect/KClass;
 	public fun getPriority ()I
 	public synthetic fun serialize (Ljava/lang/Object;)Lme/snoty/backend/wiring/data/IntermediateData;
 	public fun serialize (Ljava/lang/Object;)Lme/snoty/backend/wiring/data/impl/EmptyIntermediateData;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lme/snoty/backend/wiring/data/impl/EmptyIntermediateData;)V
 	public fun supports (Lkotlin/reflect/KClass;)Z
 }
 
@@ -2135,12 +2158,24 @@ public final class me/snoty/backend/wiring/node/NodePosition$Companion {
 public abstract interface class me/snoty/backend/wiring/node/NodeService {
 	public abstract fun connect (Lme/snoty/core/node/Node;Lme/snoty/core/node/Node;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun create-4Cl7p7Y (Ljava/lang/String;Lme/snoty/core/flow/Workflow;Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/wiring/node/NodePosition;Lme/snoty/backend/wiring/node/NodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun delete (Lme/snoty/core/node/Node;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun delete (Lme/snoty/core/node/NodeWithSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun disconnect (Lme/snoty/core/node/Node;Lme/snoty/core/node/Node;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun get-m1iW5FE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getByFlow-uS22NpI (Ljava/lang/String;)Lkotlinx/coroutines/flow/Flow;
 	public abstract fun patch (Lme/snoty/core/node/Node;Lme/snoty/backend/wiring/node/NodePatch;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun updateSettings (Lme/snoty/core/node/Node;Lme/snoty/backend/wiring/node/NodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class me/snoty/backend/wiring/node/NodeServiceInterceptor : me/snoty/backend/wiring/node/NodeService {
+	public fun <init> (Lme/snoty/backend/wiring/node/NodeService;Lme/snoty/backend/hooks/HookRegistry;)V
+	public fun connect (Lme/snoty/core/node/Node;Lme/snoty/core/node/Node;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun create-4Cl7p7Y (Ljava/lang/String;Lme/snoty/core/flow/Workflow;Ljava/lang/String;Ljava/lang/String;Lme/snoty/backend/wiring/node/NodePosition;Lme/snoty/backend/wiring/node/NodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun delete (Lme/snoty/core/node/NodeWithSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun disconnect (Lme/snoty/core/node/Node;Lme/snoty/core/node/Node;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun get-m1iW5FE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getByFlow-uS22NpI (Ljava/lang/String;)Lkotlinx/coroutines/flow/Flow;
+	public fun patch (Lme/snoty/core/node/Node;Lme/snoty/backend/wiring/node/NodePatch;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun updateSettings (Lme/snoty/core/node/Node;Lme/snoty/backend/wiring/node/NodeSettings;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class me/snoty/backend/wiring/node/NodeServiceResults {
@@ -2164,7 +2199,8 @@ public final class me/snoty/backend/wiring/node/NodeServiceResults$NodeNotFoundE
 }
 
 public final class me/snoty/backend/wiring/node/NodeServiceResults$NodeUpdated : me/snoty/backend/errors/ServiceResult {
-	public fun <init> (Lme/snoty/core/node/Node;)V
+	public fun <init> (Lme/snoty/core/node/NodeWithSettings;)V
+	public final fun getNode ()Lme/snoty/core/node/NodeWithSettings;
 }
 
 public abstract interface class me/snoty/backend/wiring/node/NodeSettings {
