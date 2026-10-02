@@ -1554,31 +1554,6 @@ public final class me/snoty/backend/wiring/data/impl/BsonIntermediateDataMapper 
 	public fun supports (Lkotlin/reflect/KClass;)Z
 }
 
-public final class me/snoty/backend/wiring/data/impl/EmptyIntermediateData : me/snoty/backend/wiring/data/IntermediateData {
-	public static final field INSTANCE Lme/snoty/backend/wiring/data/impl/EmptyIntermediateData;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun getValue ()Ljava/lang/Object;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class me/snoty/backend/wiring/data/impl/EmptyIntermediateDataMapper : kotlinx/serialization/KSerializer, me/snoty/backend/wiring/data/IntermediateDataMapper {
-	public fun <init> ()V
-	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lme/snoty/backend/wiring/data/impl/EmptyIntermediateData;
-	public synthetic fun deserialize (Lme/snoty/backend/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
-	public fun deserialize (Lme/snoty/backend/wiring/data/impl/EmptyIntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
-	public fun deserializeUnsafe (Lme/snoty/backend/wiring/data/IntermediateData;Lkotlin/reflect/KClass;)Ljava/lang/Object;
-	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
-	public fun getIntermediateDataClass ()Lkotlin/reflect/KClass;
-	public fun getPriority ()I
-	public synthetic fun serialize (Ljava/lang/Object;)Lme/snoty/backend/wiring/data/IntermediateData;
-	public fun serialize (Ljava/lang/Object;)Lme/snoty/backend/wiring/data/impl/EmptyIntermediateData;
-	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lme/snoty/backend/wiring/data/impl/EmptyIntermediateData;)V
-	public fun supports (Lkotlin/reflect/KClass;)Z
-}
-
 public final class me/snoty/backend/wiring/data/impl/SimpleIntermediateData : me/snoty/backend/wiring/data/IntermediateData {
 	public fun <init> (Ljava/lang/Object;Lkotlin/reflect/KClass;)V
 	public synthetic fun <init> (Ljava/lang/Object;Lkotlin/reflect/KClass;ILkotlin/jvm/internal/DefaultConstructorMarker;)V

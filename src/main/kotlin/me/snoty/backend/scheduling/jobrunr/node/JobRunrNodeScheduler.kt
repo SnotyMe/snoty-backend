@@ -2,7 +2,6 @@ package me.snoty.backend.scheduling.jobrunr.node
 
 import me.snoty.backend.scheduling.*
 import me.snoty.backend.wiring.data.NodeInput
-import me.snoty.backend.wiring.data.impl.EmptyIntermediateData
 import me.snoty.core.node.NodeWithSettings
 import org.koin.core.annotation.Single
 import org.slf4j.event.Level
@@ -16,7 +15,7 @@ class JobRunrNodeScheduler(
 			nodeId = node.id,
 			flowId = node.flowId,
 			triggeredBy = FlowTriggerReason.Scheduled,
-			input = listOf(EmptyIntermediateData),
+			input = emptyList(),
 		)
 
 		val job = SnotyJob(

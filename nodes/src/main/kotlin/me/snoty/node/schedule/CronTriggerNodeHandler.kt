@@ -8,7 +8,6 @@ import me.snoty.backend.schema.FieldDefaultValue
 import me.snoty.backend.schema.Language
 import me.snoty.backend.wiring.data.NodeInput
 import me.snoty.backend.wiring.data.NodeOutput
-import me.snoty.backend.wiring.data.impl.EmptyIntermediateData
 import me.snoty.backend.wiring.node.*
 import me.snoty.backend.wiring.node.metadata.NodeStereotype
 import me.snoty.core.node.NodeWithSettings
@@ -39,6 +38,5 @@ class CronTriggerNodeHandler : NodeHandler {
 	}
 
 	context(_: NodeHandleContext)
-	override suspend fun process(node: NodeWithSettings, input: NodeInput): NodeOutput =
-		listOf(EmptyIntermediateData)
+	override suspend fun process(node: NodeWithSettings, input: NodeInput): NodeOutput = emptyList()
 }

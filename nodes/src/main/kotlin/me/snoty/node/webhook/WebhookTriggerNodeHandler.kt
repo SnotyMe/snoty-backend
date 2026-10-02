@@ -5,6 +5,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import kotlinx.serialization.Serializable
 import me.snoty.backend.scheduling.NodeScheduler
+import me.snoty.backend.schema.EmptySchema
 import me.snoty.backend.schema.FieldCensored
 import me.snoty.backend.schema.FieldDescription
 import me.snoty.backend.utils.ForbiddenException
@@ -13,7 +14,6 @@ import me.snoty.backend.utils.SerializationFormat
 import me.snoty.backend.utils.respondStatus
 import me.snoty.backend.wiring.data.IntermediateDataMapperRegistry
 import me.snoty.backend.wiring.data.NodeInput
-import me.snoty.backend.wiring.data.impl.EmptyIntermediateData
 import me.snoty.backend.wiring.node.*
 import me.snoty.backend.wiring.node.metadata.NodeStereotype
 import me.snoty.backend.wiring.node.routing.NodeRouteFactory
@@ -32,7 +32,7 @@ data class WebhookTriggerNodeSettings(
 ): NodeSettings
 
 data class WebhookTriggerNodeOutput(
-	val payload: EmptyIntermediateData,
+	val payload: EmptySchema,
 )
 
 @RegisterNode(
