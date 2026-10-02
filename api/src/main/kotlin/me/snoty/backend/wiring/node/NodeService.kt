@@ -29,14 +29,14 @@ interface NodeService {
 	suspend fun patch(node: Node, patchRequest: NodePatch): ServiceResult
 	suspend fun updateSettings(node: Node, settings: NodeSettings): ServiceResult
 
-	suspend fun delete(node: Node): ServiceResult
+	suspend fun delete(node: NodeWithSettings): ServiceResult
 }
 
 object NodeServiceResults {
 	class NodeNotFoundError(id: NodeId) : ServiceResult(HttpStatusCode.NotFound, "Node with ID $id not found")
 	class NodeConnected(from: Node, to: Node) : ServiceResult(HttpStatusCode.OK, "Connected ${from.id} to ${to.id}")
 	class NodeDisconnected(from: Node, to: Node) : ServiceResult(HttpStatusCode.OK, "Disconnected ${from.id} from ${to.id}")
-	class NodeUpdated(node: Node) : ServiceResult(HttpStatusCode.OK, "Aspect of node ${node.id} updated")
+	class NodeUpdated(val node: NodeWithSettings) : ServiceResult(HttpStatusCode.OK, "Aspect of node ${node.id} updated")
 	class NodeDeleted(node: Node) : ServiceResult(HttpStatusCode.OK, "Node ${node.id} deleted")
 }
 

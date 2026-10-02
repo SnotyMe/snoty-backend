@@ -51,6 +51,7 @@ class FlowRunnerImpl(
 		logger: Logger,
 		logLevel: Level,
 		flow: WorkflowWithNodes,
+		startNode: FlowNode,
 		input: NodeInput,
 	) {
 		val kLogger = KotlinLogging.logger(logger)
@@ -75,14 +76,7 @@ class FlowRunnerImpl(
 			flowTracing = flowTracing,
 		)
 
-		flow.nodes
-			.asFlow()
-			.filter {
-				nodeRegistry.getMetadataOrNull(it.type)?.stereotype == NodeStereotype.START
-			}
-			.flatMapConcat {
-				executionContext.executeStartNode(rootSpan, it, input)
-			}
+		executionContext.executeStartNode(rootSpan, startNode, input)
 			.onCompletion {
 				logger.info("Flow completed.")
 				rootSpan.end()

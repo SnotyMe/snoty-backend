@@ -23,5 +23,5 @@ class SqlFlowServiceTest : FlowServiceSpec({ FlowId(Uuid.random().toString()) })
 		nodeTable = nodeTable,
 		nodeConnectionTable = nodeConnectionTable,
 	)
-	override val service: FlowService = SqlFlowService(db, flowScheduler, nodeService, flowTable)
+	override val service: FlowService = SqlFlowService(db, nodeService, flowTable)
 }

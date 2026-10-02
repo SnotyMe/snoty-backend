@@ -58,6 +58,12 @@ fun Route.flowExecutionResource() = route("flow") {
 					)
 				}
 		}.describe {
+			parameters {
+				query("eventTypes") {
+					schema = jsonSchema<List<String>>()
+				}
+			}
+
 			responses {
 				HttpStatusCode.OK {
 					schema = jsonSchema<List<FlowExecutionEvent>>()

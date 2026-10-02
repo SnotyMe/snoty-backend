@@ -21,6 +21,10 @@ data class SnotyJob(
 	val request: JobRequest,
 )
 
+interface Schedulable {
+	val schedule: JobSchedule
+}
+
 @Serializable
 sealed interface JobSchedule {
 	@Serializable
@@ -33,9 +37,3 @@ sealed interface JobSchedule {
 	@SerialName("never")
 	object Never : JobSchedule
 }
-
-data class FlowJobRequest(
-	val retries: Int = 0,
-	val logLevel: Level = Level.INFO,
-	val triggeredBy: FlowTriggerReason,
-)

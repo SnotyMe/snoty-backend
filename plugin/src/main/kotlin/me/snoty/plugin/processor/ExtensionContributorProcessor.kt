@@ -85,7 +85,7 @@ class ExtensionContributorProcessor(private val logger: KSPLogger, private val c
 
         koinModuleFileSpec.writeTo(
             codeGenerator = codeGenerator,
-            aggregating = false,
+            aggregating = true,
         )
     }
 

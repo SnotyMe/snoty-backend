@@ -1,12 +1,13 @@
 package me.snoty.backend.schema
 
-import io.ktor.openapi.*
+import io.ktor.openapi.JsonSchema
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration
 
 @Serializable
-@SerialName("NodeFieldDetails")
-@JsonSchema.Title("NodeFieldDetails") // workaround for kotlinx.serialization using `NodeFieldDetails?` as the title for some reason
+@SerialName("SchemaFieldDetails")
+@JsonSchema.Title("SchemaFieldDetails")
 sealed class SchemaFieldDetails {
 	@Serializable
 	@SerialName("Enum")
@@ -60,5 +61,12 @@ sealed class SchemaFieldDetails {
 	data class CredentialDetails(
 		val credentialType: String,
 		val schema: ObjectSchema,
+	) : SchemaFieldDetails()
+
+	@Serializable
+	@SerialName("Duration")
+	data class DurationDetails(
+		val min: Duration?,
+		val max: Duration?,
 	) : SchemaFieldDetails()
 }

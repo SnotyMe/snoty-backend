@@ -17,10 +17,12 @@ import me.snoty.core.flow.Workflow
 import me.snoty.core.node.*
 import me.snoty.core.user.UserId
 import org.bson.conversions.Bson
+import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 import kotlin.time.Clock
 
 @Single
+@Named("adapter")
 class MongoNodeService(
 	db: MongoDatabase,
 	private val settingsDeserializationService: NodeSettingsDeserializationService,
@@ -125,11 +127,14 @@ class MongoNodeService(
 		)
 		return when {
 			result.matchedCount == 0L -> NodeServiceResults.NodeNotFoundError(node.id)
-			else -> NodeServiceResults.NodeUpdated(node)
+			else -> {
+				val newNode = get(node.userId, node.id) ?: error("Node not found")
+				NodeServiceResults.NodeUpdated(newNode)
+			}
 		}
 	}
 
-	override suspend fun delete(node: Node): ServiceResult {
+	override suspend fun delete(node: NodeWithSettings): ServiceResult {
 		val result = collection.deleteOne(Filters.eq(MongoNode::_id, node.objectId))
 		collection.updateMany(
 			Filters.eq(MongoNode::flowId, node.flowId.objectId),

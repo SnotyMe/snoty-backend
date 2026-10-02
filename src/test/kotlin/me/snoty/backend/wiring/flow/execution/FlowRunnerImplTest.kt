@@ -91,7 +91,7 @@ class FlowRunnerImplTest {
 		// set in the scheduler
 		KMDC.put(JOB_ID, jobId)
 		withContext(MDCContext()) {
-			execute(jobId, FlowTriggerReason.Unknown, logger, Level.DEBUG, flow, input)
+			execute(jobId, FlowTriggerReason.Unknown, logger, Level.DEBUG, flow, flow.nodes.first(), input)
 		}
 	}
 

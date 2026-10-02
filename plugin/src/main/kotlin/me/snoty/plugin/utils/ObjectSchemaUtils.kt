@@ -15,11 +15,13 @@ import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toClassNameOrNull
 import com.squareup.kotlinpoet.ksp.toTypeName
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Transient
 import me.snoty.backend.schema.*
 import me.snoty.backend.utils.toTitleCase
 import me.snoty.backend.wiring.credential.CredentialRef
 import me.snoty.backend.wiring.credential.RegisterCredential
 import kotlin.reflect.KClass
+import kotlin.time.Duration
 
 @OptIn(KspExperimental::class)
 fun generateObjectSchema(resolver: Resolver, clazz: KSClassDeclaration, visited: List<ClassName> = emptyList()): ObjectSchema? {
@@ -28,7 +30,7 @@ fun generateObjectSchema(resolver: Resolver, clazz: KSClassDeclaration, visited:
 		EmptySchema::class.asClassName() -> return emptyList()
 	}
 
-	return clazz.getDeclaredProperties().map { prop ->
+	return clazz.getDeclaredProperties().filterNot { it.hasAnnotation<Transient>() }.map { prop ->
 		val name = prop.simpleName
 		val hidden = prop.hasAnnotation<FieldHidden>()
 		val censored = prop.hasAnnotation<FieldCensored>()
@@ -106,6 +108,15 @@ fun Resolver.getDetails(
 			SchemaFieldDetails.CredentialDetails(
 				credentialType = registerCredential.type,
 				schema = generateObjectSchema(resolver = this, clazz = credentialClass, visited = visited + className)!!
+			)
+		}
+
+		Duration::class.isAssignableFrom(type, this) -> {
+			val limits = annotated.getAnnotation<DurationLimits>()
+
+			SchemaFieldDetails.DurationDetails(
+				min = limits?.min?.let(Duration::parse),
+				max = limits?.max?.let(Duration::parse),
 			)
 		}
 
