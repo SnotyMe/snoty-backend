@@ -2,7 +2,6 @@ package me.snoty.backend.scheduling
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.slf4j.event.Level
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import org.jobrunr.jobs.lambdas.JobRequest as JobRunrRequest
@@ -22,7 +21,7 @@ data class SnotyJob(
 )
 
 interface Schedulable {
-	val schedule: JobSchedule
+	fun getSchedule(): JobSchedule
 }
 
 @Serializable

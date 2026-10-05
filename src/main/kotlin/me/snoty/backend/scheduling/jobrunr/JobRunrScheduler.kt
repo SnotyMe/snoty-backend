@@ -11,6 +11,7 @@ import org.jobrunr.scheduling.JobBuilder
 import org.jobrunr.scheduling.JobBuilder.aJob
 import org.jobrunr.scheduling.JobRequestScheduler
 import org.jobrunr.scheduling.RecurringJobBuilder.aRecurringJob
+import org.jobrunr.server.BackgroundJobServer
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 import kotlin.reflect.KFunction
@@ -27,9 +28,8 @@ class JobRunrScheduler(
 ) : Scheduler {
 	private val logger = KotlinLogging.logger {}
 
-	lateinit var jobRequestScheduler: JobRequestScheduler
-		private set
-	private lateinit var backgroundJobServer: org.jobrunr.server.BackgroundJobServer
+	private lateinit var jobRequestScheduler: JobRequestScheduler
+	private lateinit var backgroundJobServer: BackgroundJobServer
 	private lateinit var build: KFunction<Job>
 	private lateinit var saveJob: KFunction<*>
 
@@ -64,7 +64,7 @@ class JobRunrScheduler(
 		)
 	}
 
-	override fun triggerRecurringJobOrSchedule(job: SnotyJob): JobTriggerResult? {
+	override fun triggerJob(job: SnotyJob): JobTriggerResult? {
 		val recurringJobId = job.recurringJobId
 
 		val jobBuilder = aJob()

@@ -1,7 +1,6 @@
 package me.snoty.node.schedule
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 import me.snoty.backend.scheduling.JobSchedule
 import me.snoty.backend.scheduling.Schedulable
 import me.snoty.backend.schema.FieldDefaultValue
@@ -19,12 +18,11 @@ data class CronTriggerNodeSettings(
 	@Language("cron")
 	val expression: String,
 ) : NodeSettings, Schedulable {
-	@Transient
-	override val schedule = JobSchedule.Cron(expression)
+	override fun getSchedule() = JobSchedule.Cron(expression)
 }
 
 @RegisterNode(
-	name = CronTriggerNodeHandler.TYPE,
+	name = "cron_schedule_trigger",
 	displayName = "CRON Schedule",
 	icon = Icon(name = "lucide-calendar-clock"),
 	stereotype = NodeStereotype.START,
@@ -33,10 +31,6 @@ data class CronTriggerNodeSettings(
 )
 @Single
 class CronTriggerNodeHandler : NodeHandler {
-	companion object {
-		const val TYPE = "cron_schedule_trigger"
-	}
-
 	context(_: NodeHandleContext)
 	override suspend fun process(node: NodeWithSettings, input: NodeInput): NodeOutput = emptyList()
 }

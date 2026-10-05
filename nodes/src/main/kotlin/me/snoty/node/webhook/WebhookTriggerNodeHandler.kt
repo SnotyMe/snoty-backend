@@ -9,8 +9,8 @@ import me.snoty.backend.schema.EmptySchema
 import me.snoty.backend.schema.FieldCensored
 import me.snoty.backend.schema.FieldDescription
 import me.snoty.backend.utils.ForbiddenException
-import me.snoty.backend.utils.NodeSerializationUtils
-import me.snoty.backend.utils.SerializationFormat
+import me.snoty.backend.utils.ParseFormat
+import me.snoty.backend.utils.TextParser
 import me.snoty.backend.utils.respondStatus
 import me.snoty.backend.wiring.data.IntermediateDataMapperRegistry
 import me.snoty.backend.wiring.data.NodeInput
@@ -28,7 +28,7 @@ data class WebhookTriggerNodeSettings(
 	@FieldDescription("Optional Secret to verify the webhook request")
 	@FieldCensored
 	val secret: String? = null,
-	val serializeAs: SerializationFormat,
+	val serializeAs: ParseFormat,
 ): NodeSettings
 
 data class WebhookTriggerNodeOutput(
@@ -46,7 +46,7 @@ data class WebhookTriggerNodeOutput(
 @Single
 class WebhookTriggerNodeHandler(
 	nodeRouteFactory: NodeRouteFactory,
-	nodeSerializationUtils: NodeSerializationUtils,
+	textParser: TextParser,
 	intermediateDataMapperRegistry: IntermediateDataMapperRegistry,
 	nodeScheduler: NodeScheduler,
 ): NodeHandler {
@@ -60,7 +60,7 @@ class WebhookTriggerNodeHandler(
 			}
 
 			val payloadText = call.receiveText()
-			val payload = nodeSerializationUtils.deserialize(settings.serializeAs, payloadText)
+			val payload = textParser.parse(settings.serializeAs, payloadText)
 
 			val inputDocument = Document(WebhookTriggerNodeOutput::payload.name, payload)
 			val mapper = intermediateDataMapperRegistry.getFirstCompatibleMapper(inputDocument::class)

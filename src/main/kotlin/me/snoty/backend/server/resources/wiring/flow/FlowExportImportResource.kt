@@ -9,12 +9,16 @@ import me.snoty.backend.utils.getUser
 import me.snoty.backend.wiring.flow.ImportFlow
 import me.snoty.backend.wiring.flow.export.FlowExportService
 import me.snoty.backend.wiring.flow.import.FlowImportService
+import me.snoty.core.flow.FlowId
 import org.koin.ktor.ext.get
 
 @Serializable
 private data class ExportOptions(
 	val withSensitiveData: Boolean = false,
 )
+
+@Serializable
+data class FlowImportResponse(val id: FlowId)
 
 fun Route.flowExportImportResource() {
 	val exportService: FlowExportService = get()
@@ -50,7 +54,8 @@ fun Route.flowExportImportResource() {
 
 		val imported: ImportFlow = call.receive()
 		val createdId = importService.import(user.id, imported)
+		val response = FlowImportResponse(createdId)
 
-		call.respondText(text = createdId.value, status = HttpStatusCode.OK)
+		call.respond(response)
 	}
 }

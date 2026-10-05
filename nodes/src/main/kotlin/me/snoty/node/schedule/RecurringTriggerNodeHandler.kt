@@ -1,7 +1,6 @@
 package me.snoty.node.schedule
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 import me.snoty.backend.scheduling.JobSchedule
 import me.snoty.backend.scheduling.Schedulable
 import me.snoty.backend.schema.DurationLimits
@@ -37,12 +36,11 @@ data class RecurringTriggerNodeSettings(
 		}
 	}
 
-	@Transient
-	override val schedule = JobSchedule.Recurring(interval)
+	override fun getSchedule() = JobSchedule.Recurring(interval)
 }
 
 @RegisterNode(
-	name = RecurringTriggerNodeHandler.TYPE,
+	name = "recurring_schedule_trigger",
 	displayName = "Recurring Schedule",
 	icon = Icon(name = "lucide-clock"),
 	stereotype = NodeStereotype.START,
@@ -51,10 +49,6 @@ data class RecurringTriggerNodeSettings(
 )
 @Single
 class RecurringTriggerNodeHandler : NodeHandler {
-	companion object {
-		const val TYPE = "recurring_schedule_trigger"
-	}
-
 	context(_: NodeHandleContext)
 	override suspend fun process(node: NodeWithSettings, input: NodeInput): NodeOutput = emptyList()
 }

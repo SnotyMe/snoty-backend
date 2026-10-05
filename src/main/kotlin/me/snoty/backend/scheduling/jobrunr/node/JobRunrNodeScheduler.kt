@@ -45,7 +45,7 @@ class JobRunrNodeScheduler(
 			request = jobRequest,
 		)
 
-		return jobRunrScheduler.triggerRecurringJobOrSchedule(job)
+		return jobRunrScheduler.triggerJob(job)
 	}
 
 	override fun unschedule(node: NodeWithSettings) {

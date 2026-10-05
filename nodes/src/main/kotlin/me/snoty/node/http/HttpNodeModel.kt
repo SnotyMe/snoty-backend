@@ -4,7 +4,7 @@ import io.ktor.client.*
 import kotlinx.serialization.Serializable
 import me.snoty.backend.schema.FieldDefaultValue
 import me.snoty.backend.schema.FieldDescription
-import me.snoty.backend.utils.SerializationFormat
+import me.snoty.backend.utils.ParseFormat
 import me.snoty.backend.utils.proxy.ProxyCredential
 import me.snoty.backend.wiring.credential.CredentialRef
 import me.snoty.backend.wiring.node.NodeSettings
@@ -13,7 +13,7 @@ import io.ktor.http.HttpMethod as KtorHttpMethod
 
 @Serializable
 data class HttpNodeSettings(
-	val serializeOutputAs: SerializationFormat,
+	val serializeOutputAs: ParseFormat,
 	val requests: List<HttpNodeInput>,
 
 	val proxy: CredentialRef<ProxyCredential>? = null,

@@ -4,7 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.util.*
-import me.snoty.backend.utils.NodeSerializationUtils
+import me.snoty.backend.utils.TextParser
 import me.snoty.backend.utils.proxy.withOptionalProxy
 import me.snoty.backend.wiring.credential.resolveOrNull
 import me.snoty.backend.wiring.data.NodeInput
@@ -32,7 +32,7 @@ import org.koin.core.annotation.Single
 @Single
 class HttpNodeHandler(
 	private val httpClient: HttpClient,
-	private val serializationUtils: NodeSerializationUtils,
+	private val serializationUtils: TextParser,
 ) : NodeHandler {
 	context(_: NodeHandleContext)
 	override suspend fun process(node: NodeWithSettings, input: NodeInput): NodeOutput {
@@ -54,7 +54,7 @@ class HttpNodeHandler(
 				}
 
 			val bodyText = response.bodyAsText()
-			val body = serializationUtils.deserialize(settings.serializeOutputAs, bodyText)
+			val body = serializationUtils.parse(settings.serializeOutputAs, bodyText)
 
 			HttpNodeOutput(
 				request.url,

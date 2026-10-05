@@ -11,7 +11,7 @@ import me.snoty.core.node.NodeWithSettings
 import org.koin.core.annotation.Single
 
 private val NodeSettings.schedule get() = when (this) {
-	is Schedulable -> this.schedule
+	is Schedulable -> this.getSchedule()
 	else -> null
 }
 
