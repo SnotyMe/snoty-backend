@@ -2,7 +2,6 @@ package me.snoty.backend.scheduling
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.slf4j.event.Level
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import org.jobrunr.jobs.lambdas.JobRequest as JobRunrRequest
@@ -21,6 +20,10 @@ data class SnotyJob(
 	val request: JobRequest,
 )
 
+interface Schedulable {
+	fun getSchedule(): JobSchedule
+}
+
 @Serializable
 sealed interface JobSchedule {
 	@Serializable
@@ -33,9 +36,3 @@ sealed interface JobSchedule {
 	@SerialName("never")
 	object Never : JobSchedule
 }
-
-data class FlowJobRequest(
-	val retries: Int = 0,
-	val logLevel: Level = Level.INFO,
-	val triggeredBy: FlowTriggerReason,
-)

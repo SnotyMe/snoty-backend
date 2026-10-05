@@ -6,10 +6,7 @@ import kotlinx.coroutines.slf4j.MDCContext
 import kotlinx.coroutines.withContext
 import me.snoty.backend.logging.KMDC
 import me.snoty.backend.logging.NodeLogAppender
-import me.snoty.backend.observability.APPENDER_LOG_LEVEL
-import me.snoty.backend.observability.FLOW_ID
-import me.snoty.backend.observability.JOB_ID
-import me.snoty.backend.observability.USER_ID
+import me.snoty.backend.observability.*
 import me.snoty.backend.scheduling.JobRequestHandler
 import me.snoty.backend.wiring.flow.FlowRunner
 import me.snoty.backend.wiring.flow.FlowService
@@ -22,13 +19,13 @@ import org.slf4j.LoggerFactory
 import ch.qos.logback.classic.Logger as LogbackLogger
 
 @Single
-class JobRunrFlowJobHandler(
+class JobRunrNodeJobHandler(
 	private val flowService: FlowService,
 	private val flowRunner: FlowRunner,
 	flowExecutionService: FlowExecutionService,
 	flowExecutionEventService: FlowExecutionEventService,
-) : JobRequestHandler<JobRunrFlowJobRequest> {
-	private val rootLogger = LoggerFactory.getLogger(JobRunrFlowJobHandler::class.java) as LogbackLogger
+) : JobRequestHandler<JobRunrNodeJobRequest> {
+	private val rootLogger = LoggerFactory.getLogger(JobRunrNodeJobHandler::class.java) as LogbackLogger
 
 	init {
 		val nodeLogAppender = NodeLogAppender(flowExecutionService, flowExecutionEventService)
@@ -38,12 +35,13 @@ class JobRunrFlowJobHandler(
 		rootLogger.level = Level.DEBUG
 	}
 
-	override fun run(jobRequest: JobRunrFlowJobRequest) {
+	override fun run(jobRequest: JobRunrNodeJobRequest) {
 		val jobContext = ThreadLocalJobContext.getJobContext()
 		val logger = JobRunrDashboardLogger(this.rootLogger)
 
-		KMDC.put(JOB_ID, jobContext.jobId.toString())
 		KMDC.put(FLOW_ID, jobRequest.flowId.value)
+		KMDC.put(NODE_ID, jobRequest.nodeId.value)
+		KMDC.put(JOB_ID, jobContext.jobId.toString())
 		KMDC.put(APPENDER_LOG_LEVEL, jobRequest.logLevel.name)
 
 		runBlocking(MDCContext()) {
@@ -54,14 +52,20 @@ class JobRunrFlowJobHandler(
 
 			KMDC.put(USER_ID, flow.userId.toString())
 
+			val startNode = flow.nodes.singleOrNull { it.id == jobRequest.nodeId } ?: let {
+				logger.error("Start Node not found: {} in Flow {}", jobRequest.nodeId, jobRequest.flowId)
+				return@runBlocking
+			}
+
 			withContext(MDCContext()) {
 				flowRunner.execute(
 					jobId = jobContext.jobId.toString(),
 					triggeredBy = jobRequest.triggeredBy,
 					logger = logger,
 					logLevel = jobRequest.logLevel,
+					startNode = startNode,
 					flow = flow,
-					input = emptyList(),
+					input = jobRequest.input,
 				)
 			}
 		}

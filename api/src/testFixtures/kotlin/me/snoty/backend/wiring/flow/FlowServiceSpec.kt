@@ -3,9 +3,7 @@ package me.snoty.backend.wiring.flow
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import io.mockk.verify
 import kotlinx.coroutines.runBlocking
-import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.test.TestIds.USER_ID_1
 import me.snoty.backend.test.TestIds.USER_ID_CONTROL
 import me.snoty.backend.test.assertAny
@@ -32,7 +30,6 @@ abstract class FlowServiceSpec(private val makeId: () -> FlowId) {
 	protected abstract val service: FlowService
 	protected abstract val nodeService: NodeService
 
-	protected val flowScheduler: FlowScheduler = mockk(relaxed = true)
 	protected val nodeRegistry: NodeRegistry = mockk(relaxed = true)
 
 	init {
@@ -65,10 +62,6 @@ abstract class FlowServiceSpec(private val makeId: () -> FlowId) {
 		val result = service.getWithNodes(USER_ID_1, flowId)
 		assertNotNull(result)
 		assertEquals(0, result.nodes.size)
-
-		verify(exactly = 1) {
-			flowScheduler.schedule(match { it.id == result.id })
-		}
 	}
 
 	@Test

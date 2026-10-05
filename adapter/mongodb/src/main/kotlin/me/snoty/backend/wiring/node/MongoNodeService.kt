@@ -1,5 +1,7 @@
 package me.snoty.backend.wiring.node
 
+import com.mongodb.client.model.FindOneAndUpdateOptions
+import com.mongodb.client.model.ReturnDocument
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import com.mongodb.kotlin.client.model.Filters
 import com.mongodb.kotlin.client.model.Updates
@@ -17,10 +19,12 @@ import me.snoty.core.flow.Workflow
 import me.snoty.core.node.*
 import me.snoty.core.user.UserId
 import org.bson.conversions.Bson
+import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 import kotlin.time.Clock
 
 @Single
+@Named("adapter")
 class MongoNodeService(
 	db: MongoDatabase,
 	private val settingsDeserializationService: NodeSettingsDeserializationService,
@@ -119,17 +123,21 @@ class MongoNodeService(
 	)
 
 	private suspend fun updateNode(node: Node, updates: Collection<Bson>): ServiceResult {
-		val result = collection.updateOne(
+		val result = collection.findOneAndUpdate(
 			Filters.eq(MongoNode::_id, node.objectId),
-			Updates.combine(*updates.toTypedArray(), Updates.set(MongoNode::modifiedAt, Clock.System.now()))
+			Updates.combine(*updates.toTypedArray(), Updates.set(MongoNode::modifiedAt, Clock.System.now())),
+			FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
 		)
-		return when {
-			result.matchedCount == 0L -> NodeServiceResults.NodeNotFoundError(node.id)
-			else -> NodeServiceResults.NodeUpdated(node)
+		return when (result) {
+			null -> NodeServiceResults.NodeNotFoundError(node.id)
+			else -> {
+				val settings = settingsDeserializationService.deserializeOrInvalid(result)
+				NodeServiceResults.NodeUpdated(result.toStandalone(settings))
+			}
 		}
 	}
 
-	override suspend fun delete(node: Node): ServiceResult {
+	override suspend fun delete(node: NodeWithSettings): ServiceResult {
 		val result = collection.deleteOne(Filters.eq(MongoNode::_id, node.objectId))
 		collection.updateMany(
 			Filters.eq(MongoNode::flowId, node.flowId.objectId),

@@ -3,15 +3,12 @@ package me.snoty.backend.wiring.flow
 import com.mongodb.client.model.Aggregates.lookup
 import com.mongodb.client.model.Aggregates.match
 import com.mongodb.client.model.Filters
-import com.mongodb.client.model.FindOneAndUpdateOptions
-import com.mongodb.client.model.ReturnDocument
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import me.snoty.backend.database.mongo.*
-import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.wiring.node.MongoNode
 import me.snoty.backend.wiring.node.NodeSettingsDeserializationService
 import me.snoty.backend.wiring.node.toRelational
@@ -26,7 +23,6 @@ import kotlin.time.Instant
 @Single
 class MongoFlowService(
 	db: MongoDatabase,
-	private val flowScheduler: FlowScheduler,
 	private val settingsDeserializationService: NodeSettingsDeserializationService,
 ) : FlowService {
 	private val collection = db.getCollection<MongoWorkflow>(FLOW_COLLECTION_NAME)
@@ -41,9 +37,7 @@ class MongoFlowService(
 			modifiedAt = now,
 		)
 		collection.insertOne(mongoWorkflow)
-		val workflow = mongoWorkflow.toStandalone()
-		flowScheduler.schedule(workflow)
-		return workflow
+		return mongoWorkflow.toStandalone()
 	}
 
 	override fun query(userId: UserId): Flow<StandaloneWorkflow> = collection.find(
@@ -95,16 +89,13 @@ class MongoFlowService(
 	}
 
 	override suspend fun updateSettings(flow: Workflow, settings: WorkflowSettings) {
-		val workflow = collection.findOneAndUpdate(
+		collection.findOneAndUpdate(
 			Filters.eq(MongoWorkflow::_id.name, flow.objectId),
 			Updates.combine(
 				Updates.set(MongoWorkflow::settings.name, settings),
 				Updates.set(MongoWorkflow::modifiedAt.name, Clock.System.now())
 			),
-			FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
-		)!!.toStandalone()
-
-		flowScheduler.reschedule(workflow)
+		)
 	}
 
 	override suspend fun delete(flow: Workflow) {

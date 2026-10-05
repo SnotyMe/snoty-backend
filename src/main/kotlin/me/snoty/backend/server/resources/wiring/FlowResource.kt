@@ -8,9 +8,6 @@ import io.ktor.server.routing.*
 import io.ktor.server.routing.openapi.*
 import kotlinx.coroutines.flow.toList
 import kotlinx.serialization.Serializable
-import me.snoty.backend.scheduling.FlowJobRequest
-import me.snoty.backend.scheduling.FlowScheduler
-import me.snoty.backend.scheduling.FlowTriggerReason
 import me.snoty.backend.server.resources.wiring.flow.flowExportImportResource
 import me.snoty.backend.server.resources.wiring.flow.getPersonalFlowOrNull
 import me.snoty.backend.utils.getUser
@@ -22,13 +19,9 @@ import me.snoty.backend.wiring.flow.execution.FlowExecutionService
 import me.snoty.core.flow.FlowId
 import me.snoty.core.flow.WorkflowSettings
 import org.koin.ktor.ext.get
-import org.slf4j.event.Level
 
 @Serializable
 data class FlowCreateRequest(val name: String, val settings: WorkflowSettings = WorkflowSettings())
-
-@Serializable
-private data class FlowJobRequestRequest(val logLevel: Level)
 
 fun Route.flowResource() = route("flow") {
 	val flowService: FlowService = get()
@@ -57,24 +50,6 @@ fun Route.flowResource() = route("flow") {
 			.toList()
 
 		call.respond(executions)
-	}
-
-	val flowScheduler: FlowScheduler = get()
-	post("{id}/trigger") {
-		val flow = getPersonalFlowOrNull() ?: return@post
-
-		fun FlowJobRequestRequest?.toFlowJobRequest() = FlowJobRequest(
-			// don't retry (#94)
-			retries = 0,
-			logLevel = this?.logLevel ?: Level.DEBUG,
-			triggeredBy = FlowTriggerReason.Manual,
-		)
-
-		val jobRequest = call.receiveNullable<FlowJobRequestRequest?>().toFlowJobRequest()
-
-		flowScheduler.trigger(flow, jobRequest)
-
-		call.respond(HttpStatusCode.Accepted)
 	}
 
 	get("{id}") {

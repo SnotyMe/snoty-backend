@@ -8,4 +8,8 @@ interface FlowManagementService {
 	suspend fun deleteFlowCascading(workflow: Workflow)
 }
 
+fun interface NodeCreatedHook : LifecycleHook<NodeWithSettings>
+
+fun interface NodeUpdatedHook : LifecycleHook<NodeWithSettings>
+
 fun interface NodeDeletedHook : LifecycleHook<NodeWithSettings>

@@ -23,4 +23,6 @@ annotation class Multiline(
 @Target(AnnotationTarget.PROPERTY, AnnotationTarget.CLASS, AnnotationTarget.TYPE)
 annotation class Language(val value: String)
 
+annotation class DurationLimits(val min: String, val max: String)
+
 annotation class DisplayName(val value: String)

@@ -18,9 +18,11 @@ import org.jetbrains.exposed.v1.core.inList
 import org.jetbrains.exposed.v1.core.statements.UpdateStatement
 import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
 import org.jetbrains.exposed.v1.jdbc.*
+import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 
 @Single
+@Named("adapter")
 class SqlNodeService(
 	private val db: Database,
 	private val json: Json,
@@ -129,20 +131,19 @@ class SqlNodeService(
 		it[nodeTable.settings] = json.hackyEncodeToString(settings)
 	}
 
-	private suspend fun updateNode(node: Node, update: NodeTable.(UpdateStatement) -> Unit): ServiceResult {
-		val changeCount = db.suspendTransaction {
-			nodeTable.update(where = { nodeTable.id eq node.id }) {
-				update(it)
-				it[nodeTable.modifiedAt] = CurrentTimestamp
-			}
+	private suspend fun updateNode(node: Node, update: NodeTable.(UpdateStatement) -> Unit): ServiceResult = db.suspendTransaction {
+		val result = nodeTable.updateReturning(where = { nodeTable.id eq node.id }) {
+			update(it)
+			it[nodeTable.modifiedAt] = CurrentTimestamp
 		}
-		return when (changeCount) {
-			0 -> NodeServiceResults.NodeNotFoundError(node.id)
-			else -> NodeServiceResults.NodeUpdated(node)
+
+		return@suspendTransaction when (val changedNode = result.singleOrNull()) {
+			null -> NodeServiceResults.NodeNotFoundError(node.id)
+			else -> NodeServiceResults.NodeUpdated(changedNode.toStandalone(nodeTable, json, nodeRegistry))
 		}
 	}
 
-	override suspend fun delete(node: Node): ServiceResult = db.suspendTransaction {
+	override suspend fun delete(node: NodeWithSettings): ServiceResult = db.suspendTransaction {
 		when (nodeTable.deleteWhere { nodeTable.id eq node.id }) {
 			0 -> NodeServiceResults.NodeNotFoundError(node.id)
 			else -> NodeServiceResults.NodeDeleted(node)

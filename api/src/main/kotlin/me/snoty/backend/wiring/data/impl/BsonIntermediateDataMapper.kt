@@ -1,5 +1,12 @@
 package me.snoty.backend.wiring.data.impl
 
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.descriptors.serialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.encoding.decodeStructure
+import kotlinx.serialization.encoding.encodeStructure
 import me.snoty.backend.utils.bson.decode
 import me.snoty.backend.utils.bson.encode
 import me.snoty.backend.wiring.data.IntermediateData
@@ -15,7 +22,7 @@ data class BsonIntermediateData(override val value: Document, val documentCodec:
 }
 
 @Single
-class BsonIntermediateDataMapper(private val codecRegistry: CodecRegistry, private val documentCodec: DocumentCodec) : IntermediateDataMapper<BsonIntermediateData> {
+class BsonIntermediateDataMapper(private val codecRegistry: CodecRegistry, private val documentCodec: DocumentCodec) : IntermediateDataMapper<BsonIntermediateData>, KSerializer<BsonIntermediateData> {
 	override val priority = 1000
 	override fun supports(clazz: KClass<*>) = clazz == Document::class
 	override val intermediateDataClass = BsonIntermediateData::class
@@ -37,4 +44,18 @@ class BsonIntermediateDataMapper(private val codecRegistry: CodecRegistry, priva
 		},
 		documentCodec
 	)
+
+	override val descriptor = buildClassSerialDescriptor("BsonIntermediateData") {
+		element("value", serialDescriptor<String>())
+	}
+
+	override fun serialize(encoder: Encoder, value: BsonIntermediateData) = encoder.encodeStructure(descriptor) {
+		encodeStringElement(descriptor, 0, value.value.toJson(value.documentCodec))
+	}
+
+	override fun deserialize(decoder: Decoder): BsonIntermediateData = decoder.decodeStructure(descriptor) {
+		val json = decodeStringElement(descriptor, 0)
+		val document = Document.parse(json, documentCodec)
+		BsonIntermediateData(document, documentCodec)
+	}
 }

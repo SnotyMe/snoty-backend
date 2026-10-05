@@ -6,7 +6,6 @@ import me.snoty.ApiKoinModule
 import me.snoty.backend.extension.ExtensionContributorLookup
 import me.snoty.backend.hooks.HookRegistry
 import me.snoty.backend.hooks.impl.PreBusinessStartupHook
-import me.snoty.backend.scheduling.FlowScheduler
 import me.snoty.backend.scheduling.Scheduler
 import me.snoty.backend.server.KtorServer
 import me.snoty.backend.wiring.node.NodeHandlerContributorLookup
@@ -37,19 +36,6 @@ class Application : KoinComponent {
 
 		// now that the application is initialized, start the scheduler
 		get<Scheduler>().start()
-
-		// schedule missing jobs
-		@OptIn(DelicateCoroutinesApi::class)
-		@Suppress("CoroutineContextWithJob")
-		launch(
-			newSingleThreadContext("FlowScheduler") +
-				SupervisorJob() +
-				CoroutineExceptionHandler { _, err ->
-					logger.error(err) { "Exception scheduling flows" }
-				}
-		) {
-			get<FlowScheduler>().scheduleMissing(get())
-		}
 
 		// final step: running the ktor server
 		// this is the last step so health checks only pass once everything is up and running
