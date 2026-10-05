@@ -626,7 +626,7 @@ public abstract interface class me/snoty/backend/scheduling/Scheduler {
 	public abstract fun pendingJobForRecurringJobExists (Ljava/lang/String;)Z
 	public abstract fun scheduleRecurringJob (Lme/snoty/backend/scheduling/SnotyJob;)V
 	public abstract fun start ()V
-	public abstract fun triggerRecurringJobOrSchedule (Lme/snoty/backend/scheduling/SnotyJob;)Lme/snoty/backend/scheduling/JobTriggerResult;
+	public abstract fun triggerJob (Lme/snoty/backend/scheduling/SnotyJob;)Lme/snoty/backend/scheduling/JobTriggerResult;
 }
 
 public final class me/snoty/backend/scheduling/SnotyJob {
