@@ -14,17 +14,22 @@ import me.snoty.backend.injection.getFromAllScopes
 import org.koin.core.Koin
 import org.koin.ktor.ext.get as getDependency
 
+private const val API_BASE_PATH = "/api"
+
 fun Application.addResources(koin: Koin, resources: List<Resource>) = routing {
 	val logger = KotlinLogging.logger {}
-	resources.forEach {
-		logger.debug { "Adding resource $it" }
-		with (it) { register() }
-	}
 
-	setupOpenApi(koin)
+	route(API_BASE_PATH) {
+		resources.forEach {
+			logger.debug { "Adding resource $it" }
+			with (it) { register() }
+		}
+
+		setupOpenApi(koin, this)
+	}
 }
 
-fun Application.setupOpenApi(koin: Koin) = routing {
+fun Route.setupOpenApi(koin: Koin, apiRoot: Route) {
 	val buildInfo: BuildInfo = getDependency()
 	val extraSchemas: List<JsonSchema> = koin.getFromAllScopes()
 
@@ -39,7 +44,15 @@ fun Application.setupOpenApi(koin: Koin) = routing {
 	}
 
 	get("/openapi.json") {
-		val doc = OpenApiDoc(info = info, components = components) + application.routingRoot.descendants()
+		var doc = OpenApiDoc(
+			info = info,
+			servers = listOf(Server(url = API_BASE_PATH)),
+			components = components,
+		) + apiRoot.descendants()
+		val paths = doc.paths.mapKeys { (key, _) ->
+			key.substringAfter(API_BASE_PATH)
+		}.toSortedMap()
+		doc = doc.copy(paths = paths)
 		call.respondText(openApiJson.encodeToString(doc), contentType = ContentType.Application.Json)
 	}.describe {
 		responses {

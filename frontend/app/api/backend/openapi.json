@@ -4,7 +4,25 @@
         "title": "snoty-backend",
         "version": "0.8.0-alpha.4"
     },
+    "servers": [
+        {
+            "url": "/api"
+        }
+    ],
     "paths": {
+        "/auth/callback": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "",
+                "security": [
+                    {
+                        "oidc": []
+                    }
+                ]
+            }
+        },
         "/auth/login": {
             "get": {
                 "tags": [
@@ -18,15 +36,105 @@
                 ]
             }
         },
-        "/auth/callback": {
+        "/auth/logout": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id_token",
+                        "in": "query",
+                        "description": "The ID token received from the OIDC provider, used to sign the user out of the OIDC provider as well",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/auth/metadata": {
             "get": {
                 "tags": [
                     "auth"
                 ],
                 "summary": "",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthenticationMetadata"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "refresh_token",
+                        "in": "query",
+                        "description": "The refresh token received from the OIDC provider, used to obtain a new access token without requiring the user to re-authenticate",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully obtained a new access token, the response body will contain the new token information",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OAuth2TokenResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/roles": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Role"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "security": [
                     {
-                        "oidc": []
+                        "jwt-auth": []
                     }
                 ]
             }
@@ -77,61 +185,6 @@
                 }
             }
         },
-        "/auth/refresh": {
-            "post": {
-                "tags": [
-                    "auth"
-                ],
-                "summary": "",
-                "parameters": [
-                    {
-                        "name": "refresh_token",
-                        "in": "query",
-                        "description": "The refresh token received from the OIDC provider, used to obtain a new access token without requiring the user to re-authenticate",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully obtained a new access token, the response body will contain the new token information",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/OAuth2TokenResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/logout": {
-            "post": {
-                "tags": [
-                    "auth"
-                ],
-                "summary": "",
-                "parameters": [
-                    {
-                        "name": "id_token",
-                        "in": "query",
-                        "description": "The ID token received from the OIDC provider, used to sign the user out of the OIDC provider as well",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
         "/auth/userInfo": {
             "get": {
                 "tags": [
@@ -145,11 +198,8 @@
                 ]
             }
         },
-        "/auth/roles": {
+        "/info": {
             "get": {
-                "tags": [
-                    "auth"
-                ],
                 "summary": "",
                 "responses": {
                     "200": {
@@ -157,65 +207,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Role"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
-        "/auth/metadata": {
-            "get": {
-                "tags": [
-                    "auth"
-                ],
-                "summary": "",
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthenticationMetadata"
+                                    "$ref": "#/components/schemas/AboutResponse"
                                 }
                             }
                         }
                     }
                 }
-            }
-        },
-        "/notification/list": {
-            "get": {
-                "tags": [
-                    "notification"
-                ],
-                "summary": "",
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
             }
         },
         "/notification/count": {
@@ -231,6 +228,31 @@
                             "application/json": {
                                 "schema": {
                                     "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/notification/list": {
+            "get": {
+                "tags": [
+                    "notification"
+                ],
+                "summary": "",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
                                 }
                             }
                         }
@@ -314,7 +336,7 @@
                 ]
             }
         },
-        "/info": {
+        "/openapi.json": {
             "get": {
                 "summary": "",
                 "responses": {
@@ -323,7 +345,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/AboutResponse"
+                                    "type": "object"
                                 }
                             }
                         }
@@ -379,6 +401,824 @@
                         "description": ""
                     }
                 },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/credential": {
+            "post": {
+                "tags": [
+                    "credential"
+                ],
+                "summary": "",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CredentialCreateDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CredentialDto"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/credential/overview": {
+            "get": {
+                "tags": [
+                    "credential"
+                ],
+                "summary": "",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CredentialDefinitionWithStatisticsDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/credential/search": {
+            "get": {
+                "tags": [
+                    "credential"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/credential/{credentialType}/enumerate": {
+            "get": {
+                "tags": [
+                    "credential"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "credentialType",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/EnumeratedCredentialDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/credential/{credentialType}/list": {
+            "get": {
+                "tags": [
+                    "credential"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "credentialType",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/credential/{id}": {
+            "put": {
+                "tags": [
+                    "credential"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CredentialUpdateDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CredentialDto"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "credential"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            },
+            "get": {
+                "tags": [
+                    "credential"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PotentiallyAccessibleCredentialDto"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow": {
+            "post": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FlowCreateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandaloneWorkflow"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow/executions/sse": {
+            "get": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow/import": {
+            "post": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ImportFlow"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FlowImportResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow/list": {
+            "get": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/StandaloneWorkflow"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow/list/executions": {
+            "get": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/EnumeratedFlowExecution"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow/{id}": {
+            "delete": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            },
+            "get": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WorkflowWithNodes"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow/{id}/executions": {
+            "get": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "startFrom",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/FlowExecution"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow/{id}/executions/sse": {
+            "get": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "eventTypes",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/FlowExecutionEvent"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow/{id}/export": {
+            "post": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ExportOptions"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExportFlow"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            },
+            "get": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "headers": {
+                            "Content-Disposition": {
+                                "content": {
+                                    "text/plain": {}
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExportFlow"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow/{id}/rename": {
+            "put": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "text/plain": {
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow/{id}/settings": {
+            "put": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkflowSettings"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/node/connect": {
+            "put": {
+                "tags": [
+                    "node"
+                ],
+                "summary": "",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ConnectionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {},
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/node/create": {
+            "post": {
+                "tags": [
+                    "node"
+                ],
+                "summary": "",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/NodeCreateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandaloneNode"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/node/disconnect": {
+            "put": {
+                "tags": [
+                    "node"
+                ],
+                "summary": "",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ConnectionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {},
                 "security": [
                     {
                         "jwt-auth": []
@@ -479,165 +1319,6 @@
                         }
                     }
                 }
-            }
-        },
-        "/wiring/nodeapi/diffinjector/{nodeId}/state": {
-            "get": {
-                "tags": [
-                    "node:diffinjector"
-                ],
-                "summary": "",
-                "parameters": [
-                    {
-                        "name": "nodeId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {},
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
-        "/wiring/nodeapi/diffinjector/{nodeId}/clear": {
-            "post": {
-                "tags": [
-                    "node:diffinjector"
-                ],
-                "summary": "",
-                "parameters": [
-                    {
-                        "name": "nodeId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {},
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
-        "/wiring/nodeapi/unchangedfilter/{nodeId}/state": {
-            "get": {
-                "tags": [
-                    "node:unchangedfilter"
-                ],
-                "summary": "",
-                "parameters": [
-                    {
-                        "name": "nodeId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {},
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
-        "/wiring/nodeapi/unchangedfilter/{nodeId}/clear": {
-            "post": {
-                "tags": [
-                    "node:unchangedfilter"
-                ],
-                "summary": "",
-                "parameters": [
-                    {
-                        "name": "nodeId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {},
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
-        "/wiring/nodeapi/ical/{nodeId}/calendar.ics": {
-            "get": {
-                "tags": [
-                    "node:ical"
-                ],
-                "summary": "",
-                "parameters": [
-                    {
-                        "name": "nodeId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/wiring/node/create": {
-            "post": {
-                "tags": [
-                    "node"
-                ],
-                "summary": "",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/NodeCreateRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "400": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
-                    "201": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/StandaloneNode"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
             }
         },
         "/wiring/node/{id}": {
@@ -795,21 +1476,22 @@
                 ]
             }
         },
-        "/wiring/node/connect": {
-            "put": {
+        "/wiring/nodeapi/diffinjector/{nodeId}/clear": {
+            "post": {
                 "tags": [
-                    "node"
+                    "node:diffinjector"
                 ],
                 "summary": "",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ConnectionRequest"
-                            }
+                "parameters": [
+                    {
+                        "name": "nodeId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
                         }
                     }
-                },
+                ],
                 "responses": {},
                 "security": [
                     {
@@ -818,21 +1500,22 @@
                 ]
             }
         },
-        "/wiring/node/disconnect": {
-            "put": {
+        "/wiring/nodeapi/diffinjector/{nodeId}/state": {
+            "get": {
                 "tags": [
-                    "node"
+                    "node:diffinjector"
                 ],
                 "summary": "",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ConnectionRequest"
-                            }
+                "parameters": [
+                    {
+                        "name": "nodeId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
                         }
                     }
-                },
+                ],
                 "responses": {},
                 "security": [
                     {
@@ -841,33 +1524,42 @@
                 ]
             }
         },
-        "/wiring/flow": {
+        "/wiring/nodeapi/ical/{nodeId}/calendar.ics": {
+            "get": {
+                "tags": [
+                    "node:ical"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "nodeId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/wiring/nodeapi/unchangedfilter/{nodeId}/clear": {
             "post": {
                 "tags": [
-                    "flow"
+                    "node:unchangedfilter"
                 ],
                 "summary": "",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/FlowCreateRequest"
-                            }
+                "parameters": [
+                    {
+                        "name": "nodeId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
                         }
                     }
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/StandaloneWorkflow"
-                                }
-                            }
-                        }
-                    }
-                },
+                ],
+                "responses": {},
                 "security": [
                     {
                         "jwt-auth": []
@@ -875,71 +1567,15 @@
                 ]
             }
         },
-        "/wiring/flow/list": {
+        "/wiring/nodeapi/unchangedfilter/{nodeId}/state": {
             "get": {
                 "tags": [
-                    "flow"
-                ],
-                "summary": "",
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/StandaloneWorkflow"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
-        "/wiring/flow/list/executions": {
-            "get": {
-                "tags": [
-                    "flow"
-                ],
-                "summary": "",
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/EnumeratedFlowExecution"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
-        "/wiring/flow/{id}": {
-            "delete": {
-                "tags": [
-                    "flow"
+                    "node:unchangedfilter"
                 ],
                 "summary": "",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "nodeId",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -947,44 +1583,7 @@
                         }
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": ""
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            },
-            "get": {
-                "tags": [
-                    "flow"
-                ],
-                "summary": "",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/WorkflowWithNodes"
-                                }
-                            }
-                        }
-                    }
-                },
+                "responses": {},
                 "security": [
                     {
                         "jwt-auth": []
@@ -992,89 +1591,15 @@
                 ]
             }
         },
-        "/wiring/flow/{id}/rename": {
-            "put": {
-                "tags": [
-                    "flow"
-                ],
-                "summary": "",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "text/plain": {
-                            "schema": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "204": {
-                        "description": ""
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
-        "/wiring/flow/{id}/settings": {
-            "put": {
-                "tags": [
-                    "flow"
-                ],
-                "summary": "",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/WorkflowSettings"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "204": {
-                        "description": ""
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
-        "/wiring/flow/{id}/export": {
+        "/wiring/nodeapi/webhook_trigger/{nodeId}/webhook": {
             "post": {
                 "tags": [
-                    "flow"
+                    "node:webhook_trigger"
                 ],
                 "summary": "",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "nodeId",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -1082,508 +1607,7 @@
                         }
                     }
                 ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ExportOptions"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExportFlow"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            },
-            "get": {
-                "tags": [
-                    "flow"
-                ],
-                "summary": "",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "headers": {
-                            "Content-Disposition": {
-                                "content": {
-                                    "text/plain": {}
-                                }
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExportFlow"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
-        "/wiring/flow/{id}/executions": {
-            "get": {
-                "tags": [
-                    "flow"
-                ],
-                "summary": "",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "startFrom",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "limit",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/FlowExecution"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
-        "/wiring/flow/{id}/executions/sse": {
-            "get": {
-                "tags": [
-                    "flow"
-                ],
-                "summary": "",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "eventTypes",
-                        "in": "query",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/FlowExecutionEvent"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
-        "/wiring/flow/import": {
-            "post": {
-                "tags": [
-                    "flow"
-                ],
-                "summary": "",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ImportFlow"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/FlowImportResponse"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
-        "/wiring/flow/executions/sse": {
-            "get": {
-                "tags": [
-                    "flow"
-                ],
-                "summary": "",
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
-        "/wiring/credential": {
-            "post": {
-                "tags": [
-                    "credential"
-                ],
-                "summary": "",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CredentialCreateDto"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CredentialDto"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
-        "/wiring/credential/{id}": {
-            "put": {
-                "tags": [
-                    "credential"
-                ],
-                "summary": "",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CredentialUpdateDto"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CredentialDto"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "credential"
-                ],
-                "summary": "",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": ""
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            },
-            "get": {
-                "tags": [
-                    "credential"
-                ],
-                "summary": "",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PotentiallyAccessibleCredentialDto"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
-        "/wiring/credential/overview": {
-            "get": {
-                "tags": [
-                    "credential"
-                ],
-                "summary": "",
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/CredentialDefinitionWithStatisticsDto"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
-        "/wiring/credential/search": {
-            "get": {
-                "tags": [
-                    "credential"
-                ],
-                "summary": "",
-                "parameters": [
-                    {
-                        "name": "type",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
-        "/wiring/credential/{credentialType}/enumerate": {
-            "get": {
-                "tags": [
-                    "credential"
-                ],
-                "summary": "",
-                "parameters": [
-                    {
-                        "name": "credentialType",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/EnumeratedCredentialDto"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
-        "/wiring/credential/{credentialType}/list": {
-            "get": {
-                "tags": [
-                    "credential"
-                ],
-                "summary": "",
-                "parameters": [
-                    {
-                        "name": "credentialType",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-auth": []
-                    }
-                ]
-            }
-        },
-        "/openapi.json": {
-            "get": {
-                "summary": "",
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
+                "responses": {}
             }
         }
     },
@@ -1668,90 +1692,6 @@
                     "propertyName": "AuthenticationMetadata"
                 }
             },
-            "OAuth2TokenResponse": {
-                "type": "object",
-                "title": "OAuth2TokenResponse",
-                "required": [
-                    "access_token",
-                    "token_type",
-                    "expires_in"
-                ],
-                "properties": {
-                    "access_token": {
-                        "type": "string"
-                    },
-                    "token_type": {
-                        "type": "string"
-                    },
-                    "expires_in": {
-                        "type": "integer"
-                    },
-                    "refresh_token": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "id_token": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    }
-                }
-            },
-            "Role": {
-                "type": [
-                    "object",
-                    "null"
-                ],
-                "title": "Role",
-                "required": [
-                    "name"
-                ],
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    }
-                }
-            },
-            "KeycloakIdentityProvider": {
-                "type": "object",
-                "title": "KeycloakIdentityProvider",
-                "required": [
-                    "id",
-                    "alias",
-                    "providerId"
-                ],
-                "properties": {
-                    "id": {
-                        "type": "string"
-                    },
-                    "alias": {
-                        "type": "string"
-                    },
-                    "displayName": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "providerId": {
-                        "type": "string"
-                    }
-                }
-            },
-            "AuthenticationMetadata": {
-                "title": "AuthenticationMetadata",
-                "oneOf": [
-                    {
-                        "$ref": "#/components/schemas/KeycloakAuthenticationMetadata"
-                    },
-                    {
-                        "$ref": "#/components/schemas/OidcAuthenticationMetadata"
-                    }
-                ]
-            },
             "BuildInfo": {
                 "type": "object",
                 "title": "BuildInfo",
@@ -1804,6 +1744,90 @@
                     },
                     "buildInfo": {
                         "$ref": "#/components/schemas/BuildInfo"
+                    }
+                }
+            },
+            "KeycloakIdentityProvider": {
+                "type": "object",
+                "title": "KeycloakIdentityProvider",
+                "required": [
+                    "id",
+                    "alias",
+                    "providerId"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "alias": {
+                        "type": "string"
+                    },
+                    "displayName": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "providerId": {
+                        "type": "string"
+                    }
+                }
+            },
+            "AuthenticationMetadata": {
+                "title": "AuthenticationMetadata",
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/KeycloakAuthenticationMetadata"
+                    },
+                    {
+                        "$ref": "#/components/schemas/OidcAuthenticationMetadata"
+                    }
+                ]
+            },
+            "OAuth2TokenResponse": {
+                "type": "object",
+                "title": "OAuth2TokenResponse",
+                "required": [
+                    "access_token",
+                    "token_type",
+                    "expires_in"
+                ],
+                "properties": {
+                    "access_token": {
+                        "type": "string"
+                    },
+                    "token_type": {
+                        "type": "string"
+                    },
+                    "expires_in": {
+                        "type": "integer"
+                    },
+                    "refresh_token": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "id_token": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "Role": {
+                "type": [
+                    "object",
+                    "null"
+                ],
+                "title": "Role",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
                     }
                 }
             },

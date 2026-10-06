@@ -9,7 +9,7 @@
 		"postinstall": "nuxt prepare",
 		"lint": "eslint .",
 		"typecheck": "nuxt typecheck",
-		"fetch-api-spec:backend": "curl -o ./app/api/backend/openapi.json http://localhost:8080/openapi.json",
+		"fetch-api-spec:backend": "curl -o ./app/api/backend/openapi.json http://localhost:8080/api/openapi.json",
 		"generate:api": "export TS_POST_PROCESS_FILE=app/api/post-process.sh && for dir in app/api/*/; do openapi-generator-cli generate -c \"$dir/openapi-config.yml\" --skip-validate-spec --enable-post-process-file & done; wait; app/api/patch.sh"
 	},
 	"dependencies": {

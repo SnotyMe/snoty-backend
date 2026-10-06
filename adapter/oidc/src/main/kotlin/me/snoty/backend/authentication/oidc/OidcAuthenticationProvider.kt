@@ -32,6 +32,7 @@ const val OIDC = "oidc"
 open class OidcAuthenticationProvider(
 	private val config: Config,
 	private val oidcConfig: OidcConfig,
+	private val oidcProvider: OAuthServerSettings.OAuth2ServerSettings,
 	@Named(INTERNAL_HTTP_CLIENT) private val httpClient: HttpClient,
 ) : AuthenticationProvider {
 	private val logger = KotlinLogging.logger {}
@@ -67,17 +68,6 @@ open class OidcAuthenticationProvider(
 	}.map { Role(it) }
 
 	override fun configureKtor(application: Application): Unit = with(application) {
-		val oidcProvider = OAuthServerSettings.OAuth2ServerSettings(
-			name = OIDC,
-			authorizeUrl = oidcConfig.authUrl,
-			accessTokenUrl = oidcConfig.tokenUrl,
-			clientId = oidcConfig.clientId,
-			clientSecret = oidcConfig.clientSecret,
-			accessTokenRequiresBasicAuth = false,
-			requestMethod = HttpMethod.Post,
-			defaultScopes = listOf("openid")
-		)
-
 		install(Authentication) {
 			oauth(OIDC) {
 				client = httpClient
@@ -99,9 +89,6 @@ open class OidcAuthenticationProvider(
 					JWTPrincipal(credential.payload)
 				}
 			}
-		}
-		routing {
-			authenticationResource(oidcConfig, httpClient, oidcProvider)
 		}
 	}
 }

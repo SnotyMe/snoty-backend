@@ -1,6 +1,8 @@
 package me.snoty.backend.authentication.oidc
 
+import io.ktor.http.HttpMethod
 import io.ktor.openapi.*
+import io.ktor.server.auth.OAuthServerSettings
 import me.snoty.backend.authentication.AuthenticationAdapter
 import me.snoty.backend.authentication.Role
 import me.snoty.backend.config.ConfigLoader
@@ -61,3 +63,15 @@ typealias RoleMapping = Map<String, String>
 
 @Single
 fun provideOidcConfig(configLoader: ConfigLoader): OidcConfig = configLoader.load(AuthenticationAdapter.CONFIG_GROUP)
+
+@Single
+fun provideOidcServerSettings(oidcConfig: OidcConfig) = OAuthServerSettings.OAuth2ServerSettings(
+	name = OIDC,
+	authorizeUrl = oidcConfig.authUrl,
+	accessTokenUrl = oidcConfig.tokenUrl,
+	clientId = oidcConfig.clientId,
+	clientSecret = oidcConfig.clientSecret,
+	accessTokenRequiresBasicAuth = false,
+	requestMethod = HttpMethod.Post,
+	defaultScopes = listOf("openid")
+)

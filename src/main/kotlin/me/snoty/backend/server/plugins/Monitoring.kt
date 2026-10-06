@@ -10,6 +10,7 @@ import io.ktor.server.metrics.micrometer.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.callid.*
 import io.ktor.server.plugins.calllogging.*
+import io.ktor.server.request.path
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.micrometer.core.instrument.MeterRegistry
@@ -32,6 +33,9 @@ fun Application.configureMonitoring(koin: Koin, config: Config, openTelemetry: O
 		// doesn't play nicely with OpenTelemetry and the custom color log format in dev
 		disableDefaultColors()
 		callIdMdc("call-id")
+		filter { call ->
+			call.request.path().startsWith("/api")
+		}
 	}
 	install(KtorServerTracing) {
 		setOpenTelemetry(openTelemetry)

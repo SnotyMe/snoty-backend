@@ -6,11 +6,15 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.routing.routing
 import me.snoty.backend.authentication.keycloak.KeycloakAuthenticationProvider
 import me.snoty.backend.authentication.keycloak.KeycloakConfig
+import me.snoty.backend.authentication.keycloak.keycloakAuthenticationResource
+import me.snoty.backend.authentication.keycloak.provideKeycloakServerSettings
 import me.snoty.backend.authentication.keycloak.toOidcConfig
 import me.snoty.backend.dev.authentication.KeycloakConfigurer
 import me.snoty.backend.dev.authentication.REALM_NAME
+import me.snoty.backend.server.routing.register
 import me.snoty.backend.test.TestConfig
 import me.snoty.backend.test.assertErrorResponse
 import me.snoty.backend.test.createAndLoginUser
@@ -49,13 +53,18 @@ class AuthenticationTest {
 	}
 
 	private val keycloakAuthenticationProvider = KeycloakAuthenticationProvider(
-		keycloakConfig = keycloakConfig,
+		oidcConfig = oidcConfig,
+		oidcProvider = provideKeycloakServerSettings(oidcConfig),
 		realm = keycloakContainer.keycloakAdminClient.realm(REALM_NAME),
 		config = TestConfig,
 		httpClient = HttpClient {}
 	)
 	private val configure: Application.() -> Unit = {
 		keycloakAuthenticationProvider.configureKtor(this)
+		routing {
+			keycloakAuthenticationResource(oidcConfig, HttpClient {}, provideKeycloakServerSettings(oidcConfig))
+				.register(this)
+		}
 	}
 
 	@Test
