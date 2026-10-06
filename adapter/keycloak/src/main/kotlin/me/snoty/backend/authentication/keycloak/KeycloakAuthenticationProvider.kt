@@ -1,9 +1,11 @@
 package me.snoty.backend.authentication.keycloak
 
 import io.ktor.client.*
+import io.ktor.server.auth.OAuthServerSettings
 import me.snoty.backend.authentication.AuthenticationProvider
 import me.snoty.backend.authentication.Role
 import me.snoty.backend.authentication.oidc.OidcAuthenticationProvider
+import me.snoty.backend.authentication.oidc.OidcConfig
 import me.snoty.backend.config.Config
 import me.snoty.backend.utils.http.INTERNAL_HTTP_CLIENT
 import me.snoty.core.user.UserId
@@ -13,12 +15,14 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [AuthenticationProvider::class])
 class KeycloakAuthenticationProvider(
-	keycloakConfig: KeycloakConfig,
+	oidcConfig: OidcConfig,
+	oidcProvider: OAuthServerSettings.OAuth2ServerSettings,
 	realm: RealmResource,
 	config: Config,
 	@Named(INTERNAL_HTTP_CLIENT) httpClient: HttpClient,
 ) : OidcAuthenticationProvider(
-	oidcConfig = keycloakConfig.toOidcConfig(keycloakConfig.internalBaseUrl),
+	oidcConfig = oidcConfig,
+	oidcProvider = oidcProvider,
 	httpClient = httpClient,
 	config = config,
 ) {

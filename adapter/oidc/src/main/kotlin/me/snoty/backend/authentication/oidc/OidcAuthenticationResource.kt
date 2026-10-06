@@ -15,7 +15,11 @@ import io.ktor.server.routing.openapi.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import me.snoty.backend.authentication.Role
+import me.snoty.backend.server.routing.Resource
 import me.snoty.backend.utils.*
+import me.snoty.backend.utils.http.INTERNAL_HTTP_CLIENT
+import org.koin.core.annotation.Named
+import org.koin.core.annotation.Single
 
 @Serializable
 data class OAuth2TokenResponse(
@@ -32,12 +36,18 @@ data class OAuth2TokenResponse(
 	val idToken: String?,
 )
 
-fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClient, provider: OAuthServerSettings.OAuth2ServerSettings) {
+@Single
+@Named("oidcAuthentication")
+fun oidcAuthenticationResource(
+	authConfig: OidcConfig,
+	@Named(INTERNAL_HTTP_CLIENT) httpClient: HttpClient,
+	serverSettings: OAuthServerSettings.OAuth2ServerSettings,
+) = Resource {
 	val logger = KotlinLogging.logger {}
 	val httpClient = httpClient.config {
 		expectSuccess = false
 	}
-	route("/auth") {
+	route("auth") {
 		authenticate(OIDC) {
 			get("/login") {}
 			get("/callback") {
@@ -58,7 +68,7 @@ fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClien
 			val redirectUrl = call.queryParameters["redirect_url"]
 				?: return@post call.respondStatus(BadRequestException("Redirect URL is missing"))
 			val response = httpClient.submitForm(
-				url = provider.accessTokenUrl,
+				url = serverSettings.accessTokenUrl,
 				formParameters = parameters {
 					set("grant_type", "authorization_code")
 					set("code", code)
@@ -86,12 +96,14 @@ fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClien
 			parameters {
 				query("code") {
 					this.schema = jsonSchema<String>()
-					this.description = "The authorization code received from the OIDC provider after a successful authentication"
+					this.description =
+						"The authorization code received from the OIDC provider after a successful authentication"
 					this.required = true
 				}
 				query("redirect_url") {
 					this.schema = jsonSchema<String>()
-					this.description = "The redirect URL used in the authentication request, must match the one used in the initial request"
+					this.description =
+						"The redirect URL used in the authentication request, must match the one used in the initial request"
 					this.required = true
 				}
 			}
@@ -113,7 +125,7 @@ fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClien
 			val refreshToken = call.queryParameters["refresh_token"]
 				?: return@post call.respondStatus(BadRequestException("Refresh token is missing"))
 			val response = httpClient.submitForm(
-				url = provider.accessTokenUrl,
+				url = serverSettings.accessTokenUrl,
 				formParameters = parameters {
 					set("grant_type", "refresh_token")
 					set("refresh_token", refreshToken)
@@ -127,14 +139,16 @@ fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClien
 			parameters {
 				query("refresh_token") {
 					this.schema = jsonSchema<String>()
-					this.description = "The refresh token received from the OIDC provider, used to obtain a new access token without requiring the user to re-authenticate"
+					this.description =
+						"The refresh token received from the OIDC provider, used to obtain a new access token without requiring the user to re-authenticate"
 					this.required = true
 				}
 			}
 
 			responses {
 				HttpStatusCode.OK {
-					description = "Successfully obtained a new access token, the response body will contain the new token information"
+					description =
+						"Successfully obtained a new access token, the response body will contain the new token information"
 					schema = jsonSchema<OAuth2TokenResponse>()
 				}
 			}
@@ -142,7 +156,8 @@ fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClien
 
 		authenticate("jwt-auth") {
 			post("/logout") {
-				val idToken = call.queryParameters["id_token"] ?: return@post call.respondStatus(BadRequestException("ID token is missing"))
+				val idToken = call.queryParameters["id_token"]
+					?: return@post call.respondStatus(BadRequestException("ID token is missing"))
 				val response = httpClient.get("${authConfig.logoutUrl}?id_token_hint=$idToken") {
 					contentType(ContentType.Application.FormUrlEncoded)
 					parameter("id_token_hint", idToken)
@@ -152,7 +167,8 @@ fun Routing.authenticationResource(authConfig: OidcConfig, httpClient: HttpClien
 				parameters {
 					query("id_token") {
 						this.schema = jsonSchema<String>()
-						this.description = "The ID token received from the OIDC provider, used to sign the user out of the OIDC provider as well"
+						this.description =
+							"The ID token received from the OIDC provider, used to sign the user out of the OIDC provider as well"
 						this.required = true
 					}
 				}

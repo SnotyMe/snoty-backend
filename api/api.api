@@ -905,6 +905,10 @@ public final class me/snoty/backend/schema/SchemaFieldDetails$PlaintextDetails$C
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public abstract interface class me/snoty/backend/server/routing/Resource {
+	public abstract fun register (Lio/ktor/server/routing/Route;)V
+}
+
 public class me/snoty/backend/utils/BadRequestException : me/snoty/backend/utils/HttpStatusException {
 	public fun <init> (Ljava/lang/String;)V
 }

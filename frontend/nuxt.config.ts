@@ -1,5 +1,13 @@
 import { locales } from "./shared/i18n.ts"
 
+const isStaticFileHosting = process.env.FRONTEND_STATIC_FILE_HOSTING === "true"
+const apiBaseUrl = process.env.API_BASE_URL ?? (() => {
+	if (isStaticFileHosting) return "/api"
+	if (import.meta.dev || process.env.NODE_ENV === "development") return "http://localhost:8080/api"
+
+	return undefined
+})()
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
 	extends: [
@@ -39,9 +47,9 @@ export default defineNuxtConfig({
 	},
 
 	runtimeConfig: {
-		internalApiBaseUrl: process.env.INTERNAL_API_BASE_URL ?? process.env.API_BASE_URL,
+		internalApiBaseUrl: process.env.INTERNAL_API_BASE_URL ?? apiBaseUrl,
 		public: {
-			apiBaseUrl: process.env.API_BASE_URL,
+			apiBaseUrl,
 			docsBaseUrl: process.env.DOCS_BASE_URL ?? "https://docs.snoty.me/embed",
 		},
 	},
