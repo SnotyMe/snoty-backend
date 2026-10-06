@@ -1,0 +1,32 @@
+{
+  "navigation": {
+    "page": {
+      "home": "Home",
+      "flows": "Flows",
+      "credentials": "Credentials",
+      "settings": {
+        "_": "Settings",
+        "general": "General",
+        "flow": "Flow",
+      },
+      "reportIssue": "Report Issue",
+      "documentation": "Documentation",
+      "admin": {
+        "_": "Admin",
+        "apiDocs": "API Docs",
+      },
+    },
+  },
+  "ui": {
+    "pagination": {
+      "info": "Showing {from} to {to} of {total} entries",
+    },
+    "copyId": "Copy ID",
+    "colorScheme": "Color Scheme",
+    "locale": "Locale",
+    "logOut": "Log out",
+  },
+  "validation": {
+    "required": "This field is required",
+  },
+}

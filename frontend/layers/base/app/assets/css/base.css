@@ -1,0 +1,29 @@
+:root {
+	--color-surface-50: oklch(99% 0 0);
+	--color-surface-100: oklch(91% 0 0);
+	--color-surface-200: oklch(81% 0 0);
+	--color-surface-300: oklch(72% 0 0);
+	--color-surface-400: oklch(62% 0 0);
+	--color-surface-500: oklch(51% 0 0);
+	--color-surface-600: oklch(45% 0 0);
+	--color-surface-700: oklch(39% 0 0);
+	--color-surface-800: oklch(32% 0 0);
+	--color-surface-900: oklch(25% 0 0);
+	--color-surface-950: oklch(18% 0 0);
+}
+
+:root {
+	--ui-bg: var(--color-surface-50);
+	--ui-bg-muted: var(--color-surface-100);
+	--ui-bg-elevated: var(--color-surface-200);
+	--ui-bg-accented: var(--color-surface-300);
+	--ui-bg-inverted: var(--color-surface-300);
+}
+
+:root.dark {
+	--ui-bg: var(--ui-color-neutral-950);
+	--ui-bg-muted: var(--ui-color-neutral-900);
+	--ui-bg-elevated: var(--ui-color-neutral-800);
+	--ui-bg-accented: var(--ui-color-neutral-700);
+	--ui-bg-inverted: white;
+}

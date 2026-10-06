@@ -1,0 +1,32 @@
+{
+  "navigation": {
+    "page": {
+      "home": "Startseite",
+      "flows": "Flows",
+      "credentials": "Zugangsdaten",
+      "settings": {
+        "_": "Einstellungen",
+        "general": "Allgemein",
+        "flow": "Flow",
+      },
+      "reportIssue": "Problem melden",
+      "documentation": "Dokumentation",
+      "admin": {
+        "_": "Administration",
+        "apiDocs": "API Dokumentation",
+      },
+    },
+  },
+  "ui": {
+    "pagination": {
+      "info": "{from} bis {to} von {total} Einträgen",
+    },
+    "copyId": "ID kopieren",
+    "colorScheme": "Farbschema",
+    "locale": "Sprache",
+    "logOut": "Abmelden",
+  },
+  "validation": {
+    "required": "Dieses Feld ist erforderlich",
+  },
+}

@@ -1,0 +1,3300 @@
+{
+    "openapi": "3.1.1",
+    "info": {
+        "title": "snoty-backend",
+        "version": "0.8.0-alpha.4"
+    },
+    "paths": {
+        "/auth/login": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "",
+                "security": [
+                    {
+                        "oidc": []
+                    }
+                ]
+            }
+        },
+        "/auth/callback": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "",
+                "security": [
+                    {
+                        "oidc": []
+                    }
+                ]
+            }
+        },
+        "/auth/token": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "code",
+                        "in": "query",
+                        "description": "The authorization code received from the OIDC provider after a successful authentication",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "redirect_url",
+                        "in": "query",
+                        "description": "The redirect URL used in the authentication request, must match the one used in the initial request",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OAuth2TokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Failed to get token from OIDC provider, check the response body for more details"
+                    },
+                    "400": {
+                        "description": "Missing required query parameters"
+                    }
+                }
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "refresh_token",
+                        "in": "query",
+                        "description": "The refresh token received from the OIDC provider, used to obtain a new access token without requiring the user to re-authenticate",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully obtained a new access token, the response body will contain the new token information",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OAuth2TokenResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id_token",
+                        "in": "query",
+                        "description": "The ID token received from the OIDC provider, used to sign the user out of the OIDC provider as well",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/auth/userInfo": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "",
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/auth/roles": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Role"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/auth/metadata": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthenticationMetadata"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/notification/list": {
+            "get": {
+                "tags": [
+                    "notification"
+                ],
+                "summary": "",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/notification/count": {
+            "get": {
+                "tags": [
+                    "notification"
+                ],
+                "summary": "",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/notification/resolve": {
+            "put": {
+                "tags": [
+                    "notification"
+                ],
+                "summary": "",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "additionalProperties": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/notification/{id}": {
+            "delete": {
+                "tags": [
+                    "notification"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": ""
+                    },
+                    "404": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/info": {
+            "get": {
+                "summary": "",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AboutResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/task/list": {
+            "get": {
+                "tags": [
+                    "task"
+                ],
+                "summary": "",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Task"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/task/trigger": {
+            "post": {
+                "tags": [
+                    "task"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "action",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/node/metadata": {
+            "get": {
+                "tags": [
+                    "node-metadata"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "If-None-Match",
+                        "in": "header",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "304": {
+                        "description": "",
+                        "headers": {
+                            "ETag": {
+                                "content": {
+                                    "text/plain": {}
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "",
+                        "headers": {
+                            "ETag": {
+                                "content": {
+                                    "text/plain": {}
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/NodeDescription"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/wiring/node/metadata/template": {
+            "get": {
+                "tags": [
+                    "node-metadata"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "If-None-Match",
+                        "in": "header",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "304": {
+                        "description": "",
+                        "headers": {
+                            "ETag": {
+                                "content": {
+                                    "text/plain": {}
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "",
+                        "headers": {
+                            "ETag": {
+                                "content": {
+                                    "text/plain": {}
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonElement"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/wiring/nodeapi/diffinjector/{nodeId}/state": {
+            "get": {
+                "tags": [
+                    "node:diffinjector"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "nodeId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {},
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/nodeapi/diffinjector/{nodeId}/clear": {
+            "post": {
+                "tags": [
+                    "node:diffinjector"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "nodeId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {},
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/nodeapi/unchangedfilter/{nodeId}/state": {
+            "get": {
+                "tags": [
+                    "node:unchangedfilter"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "nodeId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {},
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/nodeapi/unchangedfilter/{nodeId}/clear": {
+            "post": {
+                "tags": [
+                    "node:unchangedfilter"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "nodeId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {},
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/nodeapi/ical/{nodeId}/calendar.ics": {
+            "get": {
+                "tags": [
+                    "node:ical"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "nodeId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/wiring/node/create": {
+            "post": {
+                "tags": [
+                    "node"
+                ],
+                "summary": "",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/NodeCreateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandaloneNode"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/node/{id}": {
+            "put": {
+                "tags": [
+                    "node"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/JsonElement"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "node"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {},
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "node"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/NodePatchRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/node/{id}/trigger": {
+            "post": {
+                "tags": [
+                    "node"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/NodeTriggerRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JobTriggerResult"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/node/connect": {
+            "put": {
+                "tags": [
+                    "node"
+                ],
+                "summary": "",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ConnectionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {},
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/node/disconnect": {
+            "put": {
+                "tags": [
+                    "node"
+                ],
+                "summary": "",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ConnectionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {},
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow": {
+            "post": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FlowCreateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandaloneWorkflow"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow/list": {
+            "get": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/StandaloneWorkflow"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow/list/executions": {
+            "get": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/EnumeratedFlowExecution"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow/{id}": {
+            "delete": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            },
+            "get": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WorkflowWithNodes"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow/{id}/rename": {
+            "put": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "text/plain": {
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow/{id}/settings": {
+            "put": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkflowSettings"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow/{id}/export": {
+            "post": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ExportOptions"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExportFlow"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            },
+            "get": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "headers": {
+                            "Content-Disposition": {
+                                "content": {
+                                    "text/plain": {}
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExportFlow"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow/{id}/executions": {
+            "get": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "startFrom",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/FlowExecution"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow/{id}/executions/sse": {
+            "get": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "eventTypes",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/FlowExecutionEvent"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow/import": {
+            "post": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ImportFlow"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FlowImportResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/flow/executions/sse": {
+            "get": {
+                "tags": [
+                    "flow"
+                ],
+                "summary": "",
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/credential": {
+            "post": {
+                "tags": [
+                    "credential"
+                ],
+                "summary": "",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CredentialCreateDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CredentialDto"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/credential/{id}": {
+            "put": {
+                "tags": [
+                    "credential"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CredentialUpdateDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CredentialDto"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "credential"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            },
+            "get": {
+                "tags": [
+                    "credential"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PotentiallyAccessibleCredentialDto"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/credential/overview": {
+            "get": {
+                "tags": [
+                    "credential"
+                ],
+                "summary": "",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CredentialDefinitionWithStatisticsDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/credential/search": {
+            "get": {
+                "tags": [
+                    "credential"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/credential/{credentialType}/enumerate": {
+            "get": {
+                "tags": [
+                    "credential"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "credentialType",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/EnumeratedCredentialDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/wiring/credential/{credentialType}/list": {
+            "get": {
+                "tags": [
+                    "credential"
+                ],
+                "summary": "",
+                "parameters": [
+                    {
+                        "name": "credentialType",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-auth": []
+                    }
+                ]
+            }
+        },
+        "/openapi.json": {
+            "get": {
+                "summary": "",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "KeycloakAuthenticationMetadata": {
+                "type": "object",
+                "title": "KeycloakAuthenticationMetadata",
+                "required": [
+                    "authUrl",
+                    "tokenUrl",
+                    "logoutUrl",
+                    "clientId",
+                    "providers"
+                ],
+                "properties": {
+                    "adapter": {
+                        "type": "string"
+                    },
+                    "authUrl": {
+                        "type": "string"
+                    },
+                    "tokenUrl": {
+                        "type": "string"
+                    },
+                    "logoutUrl": {
+                        "type": "string"
+                    },
+                    "clientId": {
+                        "type": "string"
+                    },
+                    "publicClientId": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "providers": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/KeycloakIdentityProvider"
+                        }
+                    }
+                },
+                "discriminator": {
+                    "propertyName": "AuthenticationMetadata"
+                }
+            },
+            "OidcAuthenticationMetadata": {
+                "type": "object",
+                "title": "OidcAuthenticationMetadata",
+                "required": [
+                    "authUrl",
+                    "tokenUrl",
+                    "logoutUrl",
+                    "clientId"
+                ],
+                "properties": {
+                    "adapter": {
+                        "type": "string"
+                    },
+                    "authUrl": {
+                        "type": "string"
+                    },
+                    "tokenUrl": {
+                        "type": "string"
+                    },
+                    "logoutUrl": {
+                        "type": "string"
+                    },
+                    "clientId": {
+                        "type": "string"
+                    },
+                    "publicClientId": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "discriminator": {
+                    "propertyName": "AuthenticationMetadata"
+                }
+            },
+            "OAuth2TokenResponse": {
+                "type": "object",
+                "title": "OAuth2TokenResponse",
+                "required": [
+                    "access_token",
+                    "token_type",
+                    "expires_in"
+                ],
+                "properties": {
+                    "access_token": {
+                        "type": "string"
+                    },
+                    "token_type": {
+                        "type": "string"
+                    },
+                    "expires_in": {
+                        "type": "integer"
+                    },
+                    "refresh_token": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "id_token": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "Role": {
+                "type": [
+                    "object",
+                    "null"
+                ],
+                "title": "Role",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "KeycloakIdentityProvider": {
+                "type": "object",
+                "title": "KeycloakIdentityProvider",
+                "required": [
+                    "id",
+                    "alias",
+                    "providerId"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "alias": {
+                        "type": "string"
+                    },
+                    "displayName": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "providerId": {
+                        "type": "string"
+                    }
+                }
+            },
+            "AuthenticationMetadata": {
+                "title": "AuthenticationMetadata",
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/KeycloakAuthenticationMetadata"
+                    },
+                    {
+                        "$ref": "#/components/schemas/OidcAuthenticationMetadata"
+                    }
+                ]
+            },
+            "BuildInfo": {
+                "type": "object",
+                "title": "BuildInfo",
+                "required": [
+                    "gitBranch",
+                    "gitCommit",
+                    "gitCommitDate",
+                    "buildDate",
+                    "version",
+                    "application"
+                ],
+                "properties": {
+                    "gitBranch": {
+                        "type": "string"
+                    },
+                    "gitCommit": {
+                        "type": "string"
+                    },
+                    "gitCommitDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "buildDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "version": {
+                        "type": "string"
+                    },
+                    "application": {
+                        "type": "string"
+                    }
+                }
+            },
+            "AboutResponse": {
+                "type": "object",
+                "title": "AboutResponse",
+                "required": [
+                    "serverTime",
+                    "hostname",
+                    "buildInfo"
+                ],
+                "properties": {
+                    "serverTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "hostname": {
+                        "type": "string"
+                    },
+                    "buildInfo": {
+                        "$ref": "#/components/schemas/BuildInfo"
+                    }
+                }
+            },
+            "Task": {
+                "type": "object",
+                "title": "Task",
+                "required": [
+                    "displayName",
+                    "name"
+                ],
+                "properties": {
+                    "displayName": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Icon": {
+                "type": [
+                    "object",
+                    "null"
+                ],
+                "title": "Icon",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "color": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "SchemaFieldDetails.CollectionDetails": {
+                "type": "object",
+                "title": "SchemaFieldDetails.CollectionDetails",
+                "required": [
+                    "type"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "Collection"
+                        ]
+                    },
+                    "elementDetails": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/SchemaFieldDetails"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                }
+            },
+            "SchemaFieldDetails.CredentialDetails": {
+                "type": "object",
+                "title": "SchemaFieldDetails.CredentialDetails",
+                "required": [
+                    "type",
+                    "credentialType",
+                    "schema"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "Credential"
+                        ]
+                    },
+                    "credentialType": {
+                        "type": "string"
+                    },
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SchemaField"
+                        }
+                    }
+                }
+            },
+            "SchemaFieldDetails.DurationDetails": {
+                "type": "object",
+                "title": "SchemaFieldDetails.DurationDetails",
+                "required": [
+                    "type"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "Duration"
+                        ]
+                    },
+                    "min": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "duration"
+                    },
+                    "max": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "duration"
+                    }
+                }
+            },
+            "SchemaFieldDetails.EnumDetails.EnumConstant": {
+                "type": "object",
+                "title": "SchemaFieldDetails.EnumDetails.EnumConstant",
+                "required": [
+                    "value",
+                    "displayName"
+                ],
+                "properties": {
+                    "value": {
+                        "type": "string"
+                    },
+                    "displayName": {
+                        "type": "string"
+                    }
+                }
+            },
+            "SchemaFieldDetails.EnumDetails": {
+                "type": "object",
+                "title": "SchemaFieldDetails.EnumDetails",
+                "required": [
+                    "type",
+                    "values"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "Enum"
+                        ]
+                    },
+                    "values": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SchemaFieldDetails.EnumDetails.EnumConstant"
+                        }
+                    }
+                }
+            },
+            "SchemaFieldDetails.GenericDetails": {
+                "type": "object",
+                "title": "SchemaFieldDetails.GenericDetails",
+                "required": [
+                    "type",
+                    "genericType"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "Generic"
+                        ]
+                    },
+                    "genericType": {
+                        "type": "string"
+                    }
+                }
+            },
+            "SchemaFieldDetails.MapDetails": {
+                "type": "object",
+                "title": "SchemaFieldDetails.MapDetails",
+                "required": [
+                    "type"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "Map"
+                        ]
+                    },
+                    "keyDetails": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/SchemaFieldDetails"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "valueDetails": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/SchemaFieldDetails"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                }
+            },
+            "SchemaFieldDetails.ObjectDetails": {
+                "type": "object",
+                "title": "SchemaFieldDetails.ObjectDetails",
+                "required": [
+                    "type",
+                    "className",
+                    "schema"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "Object"
+                        ]
+                    },
+                    "className": {
+                        "type": "string"
+                    },
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SchemaField"
+                        }
+                    }
+                }
+            },
+            "SchemaFieldDetails.PlaintextDetails": {
+                "type": "object",
+                "title": "SchemaFieldDetails.PlaintextDetails",
+                "required": [
+                    "type",
+                    "lines"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "Plaintext"
+                        ]
+                    },
+                    "lines": {
+                        "type": "integer"
+                    },
+                    "defaultValue": {
+                        "type": "string"
+                    },
+                    "language": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "SchemaFieldDetails": {
+                "type": [
+                    "object",
+                    "null"
+                ],
+                "title": "SchemaFieldDetails",
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/SchemaFieldDetails.CollectionDetails"
+                    },
+                    {
+                        "$ref": "#/components/schemas/SchemaFieldDetails.CredentialDetails"
+                    },
+                    {
+                        "$ref": "#/components/schemas/SchemaFieldDetails.DurationDetails"
+                    },
+                    {
+                        "$ref": "#/components/schemas/SchemaFieldDetails.EnumDetails"
+                    },
+                    {
+                        "$ref": "#/components/schemas/SchemaFieldDetails.GenericDetails"
+                    },
+                    {
+                        "$ref": "#/components/schemas/SchemaFieldDetails.MapDetails"
+                    },
+                    {
+                        "$ref": "#/components/schemas/SchemaFieldDetails.ObjectDetails"
+                    },
+                    {
+                        "$ref": "#/components/schemas/SchemaFieldDetails.PlaintextDetails"
+                    }
+                ],
+                "discriminator": {
+                    "propertyName": "type",
+                    "mapping": {
+                        "Collection": "#/components/schemas/SchemaFieldDetails.CollectionDetails",
+                        "Credential": "#/components/schemas/SchemaFieldDetails.CredentialDetails",
+                        "Duration": "#/components/schemas/SchemaFieldDetails.DurationDetails",
+                        "Enum": "#/components/schemas/SchemaFieldDetails.EnumDetails",
+                        "Generic": "#/components/schemas/SchemaFieldDetails.GenericDetails",
+                        "Map": "#/components/schemas/SchemaFieldDetails.MapDetails",
+                        "Object": "#/components/schemas/SchemaFieldDetails.ObjectDetails",
+                        "Plaintext": "#/components/schemas/SchemaFieldDetails.PlaintextDetails"
+                    }
+                }
+            },
+            "SchemaField": {
+                "type": "object",
+                "title": "SchemaField",
+                "required": [
+                    "name",
+                    "type",
+                    "displayName",
+                    "hidden",
+                    "censored"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "defaultValue": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "displayName": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "hidden": {
+                        "type": "boolean"
+                    },
+                    "censored": {
+                        "type": "boolean"
+                    },
+                    "details": {
+                        "$ref": "#/components/schemas/SchemaFieldDetails"
+                    }
+                }
+            },
+            "NodeMetadata": {
+                "type": "object",
+                "title": "NodeMetadata",
+                "required": [
+                    "displayName",
+                    "type",
+                    "stereotype",
+                    "settings"
+                ],
+                "properties": {
+                    "displayName": {
+                        "type": "string"
+                    },
+                    "icon": {
+                        "$ref": "#/components/schemas/Icon"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "stereotype": {
+                        "type": "string",
+                        "enum": [
+                            "START",
+                            "MIDDLE",
+                            "END"
+                        ]
+                    },
+                    "settings": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SchemaField"
+                        }
+                    },
+                    "input": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {
+                            "$ref": "#/components/schemas/SchemaField"
+                        }
+                    },
+                    "receiveEmptyInput": {
+                        "type": "boolean"
+                    },
+                    "output": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {
+                            "$ref": "#/components/schemas/SchemaField"
+                        }
+                    }
+                }
+            },
+            "NodeDescription": {
+                "type": "object",
+                "title": "NodeDescription",
+                "required": [
+                    "type",
+                    "metadata"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string"
+                    },
+                    "metadata": {
+                        "$ref": "#/components/schemas/NodeMetadata"
+                    }
+                }
+            },
+            "JsonElement": {
+                "type": "object",
+                "title": "JsonElement"
+            },
+            "NodePosition": {
+                "type": "object",
+                "title": "NodePosition",
+                "required": [
+                    "x",
+                    "y",
+                    "width",
+                    "height"
+                ],
+                "properties": {
+                    "x": {
+                        "type": "integer"
+                    },
+                    "y": {
+                        "type": "integer"
+                    },
+                    "width": {
+                        "type": "integer"
+                    },
+                    "height": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "NodeCreateRequest": {
+                "type": "object",
+                "title": "NodeCreateRequest",
+                "required": [
+                    "flowId",
+                    "type",
+                    "name",
+                    "position",
+                    "settings"
+                ],
+                "properties": {
+                    "flowId": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "position": {
+                        "$ref": "#/components/schemas/NodePosition"
+                    },
+                    "settings": {
+                        "$ref": "#/components/schemas/JsonElement"
+                    }
+                }
+            },
+            "StandaloneNode": {
+                "type": "object",
+                "title": "StandaloneNode",
+                "required": [
+                    "id",
+                    "flowId",
+                    "userId",
+                    "type",
+                    "name",
+                    "position",
+                    "createdAt",
+                    "modifiedAt",
+                    "settings"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "flowId": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "logLevel": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "ERROR",
+                            "WARN",
+                            "INFO",
+                            "DEBUG",
+                            "TRACE"
+                        ]
+                    },
+                    "position": {
+                        "$ref": "#/components/schemas/NodePosition"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "modifiedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "settings": {
+                        "type": "object"
+                    }
+                }
+            },
+            "JsonElement?": {
+                "type": [
+                    "object",
+                    "null"
+                ],
+                "title": "JsonElement?"
+            },
+            "NodePatchRequest": {
+                "type": "object",
+                "title": "NodePatchRequest",
+                "properties": {
+                    "name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "position": {
+                        "$ref": "#/components/schemas/NodePosition"
+                    },
+                    "logLevel": {
+                        "$ref": "#/components/schemas/JsonElement?"
+                    },
+                    "settings": {
+                        "$ref": "#/components/schemas/JsonElement?"
+                    }
+                }
+            },
+            "NodeTriggerRequest": {
+                "type": "object",
+                "title": "NodeTriggerRequest",
+                "required": [
+                    "logLevel",
+                    "input"
+                ],
+                "properties": {
+                    "logLevel": {
+                        "type": "string",
+                        "enum": [
+                            "ERROR",
+                            "WARN",
+                            "INFO",
+                            "DEBUG",
+                            "TRACE"
+                        ]
+                    },
+                    "input": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "JobTriggerResult": {
+                "type": "object",
+                "title": "JobTriggerResult",
+                "required": [
+                    "jobId"
+                ],
+                "properties": {
+                    "jobId": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ConnectionRequest": {
+                "type": "object",
+                "title": "ConnectionRequest",
+                "required": [
+                    "from",
+                    "to"
+                ],
+                "properties": {
+                    "from": {
+                        "type": "string"
+                    },
+                    "to": {
+                        "type": "string"
+                    }
+                }
+            },
+            "JobSchedule.Cron": {
+                "type": "object",
+                "title": "JobSchedule.Cron",
+                "required": [
+                    "type",
+                    "expression"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "cron"
+                        ]
+                    },
+                    "expression": {
+                        "type": "string"
+                    }
+                }
+            },
+            "JobSchedule.Never": {
+                "type": "object",
+                "title": "JobSchedule.Never",
+                "required": [
+                    "type"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "never"
+                        ]
+                    }
+                }
+            },
+            "JobSchedule.Recurring": {
+                "type": "object",
+                "title": "JobSchedule.Recurring",
+                "required": [
+                    "type",
+                    "interval"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "recurring"
+                        ]
+                    },
+                    "interval": {
+                        "type": "string",
+                        "format": "duration"
+                    }
+                }
+            },
+            "JobSchedule": {
+                "type": "object",
+                "title": "JobSchedule",
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/JobSchedule.Cron"
+                    },
+                    {
+                        "$ref": "#/components/schemas/JobSchedule.Never"
+                    },
+                    {
+                        "$ref": "#/components/schemas/JobSchedule.Recurring"
+                    }
+                ],
+                "discriminator": {
+                    "propertyName": "type",
+                    "mapping": {
+                        "cron": "#/components/schemas/JobSchedule.Cron",
+                        "never": "#/components/schemas/JobSchedule.Never",
+                        "recurring": "#/components/schemas/JobSchedule.Recurring"
+                    }
+                }
+            },
+            "WorkflowSettings": {
+                "type": "object",
+                "title": "WorkflowSettings",
+                "properties": {
+                    "schedule": {
+                        "$ref": "#/components/schemas/JobSchedule"
+                    }
+                }
+            },
+            "FlowCreateRequest": {
+                "type": "object",
+                "title": "FlowCreateRequest",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "settings": {
+                        "$ref": "#/components/schemas/WorkflowSettings"
+                    }
+                }
+            },
+            "StandaloneWorkflow": {
+                "type": "object",
+                "title": "StandaloneWorkflow",
+                "required": [
+                    "id",
+                    "name",
+                    "userId",
+                    "settings",
+                    "createdAt",
+                    "modifiedAt"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "string"
+                    },
+                    "settings": {
+                        "$ref": "#/components/schemas/WorkflowSettings"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "modifiedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "EnumeratedFlowExecution": {
+                "type": "object",
+                "title": "EnumeratedFlowExecution",
+                "required": [
+                    "jobId",
+                    "flowId",
+                    "triggeredBy",
+                    "timestamp",
+                    "status"
+                ],
+                "properties": {
+                    "jobId": {
+                        "type": "string"
+                    },
+                    "flowId": {
+                        "type": "string"
+                    },
+                    "triggeredBy": {
+                        "type": "string",
+                        "enum": [
+                            "Unknown",
+                            "Scheduled",
+                            "Manual"
+                        ]
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "RUNNING",
+                            "SUCCESS",
+                            "FAILED"
+                        ]
+                    }
+                }
+            },
+            "FlowNode": {
+                "type": "object",
+                "title": "FlowNode",
+                "required": [
+                    "id",
+                    "flowId",
+                    "userId",
+                    "type",
+                    "name",
+                    "position",
+                    "settings",
+                    "createdAt",
+                    "modifiedAt"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "flowId": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "logLevel": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "ERROR",
+                            "WARN",
+                            "INFO",
+                            "DEBUG",
+                            "TRACE"
+                        ]
+                    },
+                    "position": {
+                        "$ref": "#/components/schemas/NodePosition"
+                    },
+                    "settings": {
+                        "type": "object"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "modifiedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "next": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "WorkflowWithNodes": {
+                "type": "object",
+                "title": "WorkflowWithNodes",
+                "required": [
+                    "id",
+                    "name",
+                    "userId",
+                    "settings",
+                    "createdAt",
+                    "modifiedAt",
+                    "nodes"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "string"
+                    },
+                    "settings": {
+                        "$ref": "#/components/schemas/WorkflowSettings"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "modifiedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "nodes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/FlowNode"
+                        }
+                    }
+                }
+            },
+            "ExportNode": {
+                "type": "object",
+                "title": "ExportNode",
+                "required": [
+                    "id",
+                    "type",
+                    "name",
+                    "position",
+                    "settings",
+                    "next"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "position": {
+                        "$ref": "#/components/schemas/NodePosition"
+                    },
+                    "settings": {
+                        "type": "object"
+                    },
+                    "next": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "ExportFlow": {
+                "type": "object",
+                "title": "ExportFlow",
+                "required": [
+                    "version",
+                    "templateName",
+                    "settings",
+                    "nodes"
+                ],
+                "properties": {
+                    "version": {
+                        "type": "string"
+                    },
+                    "templateName": {
+                        "type": "string"
+                    },
+                    "settings": {
+                        "$ref": "#/components/schemas/WorkflowSettings"
+                    },
+                    "nodes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ExportNode"
+                        }
+                    }
+                }
+            },
+            "ExportOptions": {
+                "type": [
+                    "object",
+                    "null"
+                ],
+                "title": "ExportOptions",
+                "properties": {
+                    "withSensitiveData": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "NodeLogEntryDto": {
+                "type": "object",
+                "title": "NodeLogEntryDto",
+                "required": [
+                    "id",
+                    "timestamp",
+                    "level",
+                    "message"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "level": {
+                        "type": "string",
+                        "enum": [
+                            "ERROR",
+                            "WARN",
+                            "INFO",
+                            "DEBUG",
+                            "TRACE"
+                        ]
+                    },
+                    "message": {
+                        "type": "string"
+                    },
+                    "node": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "FlowExecution": {
+                "type": "object",
+                "title": "FlowExecution",
+                "required": [
+                    "jobId",
+                    "flowId",
+                    "triggeredBy",
+                    "timestamp"
+                ],
+                "properties": {
+                    "jobId": {
+                        "type": "string"
+                    },
+                    "flowId": {
+                        "type": "string"
+                    },
+                    "triggeredBy": {
+                        "type": "string",
+                        "enum": [
+                            "Unknown",
+                            "Scheduled",
+                            "Manual"
+                        ]
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "status": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "RUNNING",
+                            "SUCCESS",
+                            "FAILED"
+                        ]
+                    },
+                    "logs": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {
+                            "$ref": "#/components/schemas/NodeLogEntryDto"
+                        }
+                    }
+                }
+            },
+            "FlowExecutionEvent.FlowEndedEvent": {
+                "type": "object",
+                "title": "FlowExecutionEvent.FlowEndedEvent",
+                "required": [
+                    "type",
+                    "eventType",
+                    "userId",
+                    "flowId",
+                    "jobId",
+                    "status"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "FlowEndedEvent"
+                        ]
+                    },
+                    "eventType": {
+                        "type": "string"
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "userId": {
+                        "type": "string"
+                    },
+                    "flowId": {
+                        "type": "string"
+                    },
+                    "jobId": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "RUNNING",
+                            "SUCCESS",
+                            "FAILED"
+                        ]
+                    }
+                }
+            },
+            "FlowExecutionEvent.FlowLogEvent": {
+                "type": "object",
+                "title": "FlowExecutionEvent.FlowLogEvent",
+                "required": [
+                    "type",
+                    "eventType",
+                    "userId",
+                    "flowId",
+                    "jobId",
+                    "entry"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "FlowLogEvent"
+                        ]
+                    },
+                    "eventType": {
+                        "type": "string"
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "userId": {
+                        "type": "string"
+                    },
+                    "flowId": {
+                        "type": "string"
+                    },
+                    "jobId": {
+                        "type": "string"
+                    },
+                    "entry": {
+                        "$ref": "#/components/schemas/NodeLogEntryDto"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "RUNNING",
+                            "SUCCESS",
+                            "FAILED"
+                        ]
+                    }
+                }
+            },
+            "FlowExecutionEvent.FlowStartedEvent": {
+                "type": "object",
+                "title": "FlowExecutionEvent.FlowStartedEvent",
+                "required": [
+                    "type",
+                    "eventType",
+                    "userId",
+                    "flowId",
+                    "jobId",
+                    "triggeredBy"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "FlowStartedEvent"
+                        ]
+                    },
+                    "eventType": {
+                        "type": "string"
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "userId": {
+                        "type": "string"
+                    },
+                    "flowId": {
+                        "type": "string"
+                    },
+                    "jobId": {
+                        "type": "string"
+                    },
+                    "triggeredBy": {
+                        "type": "string",
+                        "enum": [
+                            "Unknown",
+                            "Scheduled",
+                            "Manual"
+                        ]
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "RUNNING",
+                            "SUCCESS",
+                            "FAILED"
+                        ]
+                    }
+                }
+            },
+            "FlowExecutionEvent": {
+                "type": "object",
+                "title": "FlowExecutionEvent",
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/FlowExecutionEvent.FlowEndedEvent"
+                    },
+                    {
+                        "$ref": "#/components/schemas/FlowExecutionEvent.FlowLogEvent"
+                    },
+                    {
+                        "$ref": "#/components/schemas/FlowExecutionEvent.FlowStartedEvent"
+                    }
+                ],
+                "discriminator": {
+                    "propertyName": "type",
+                    "mapping": {
+                        "FlowEndedEvent": "#/components/schemas/FlowExecutionEvent.FlowEndedEvent",
+                        "FlowLogEvent": "#/components/schemas/FlowExecutionEvent.FlowLogEvent",
+                        "FlowStartedEvent": "#/components/schemas/FlowExecutionEvent.FlowStartedEvent"
+                    }
+                }
+            },
+            "ImportNodeDescriptor": {
+                "type": [
+                    "object",
+                    "null"
+                ],
+                "title": "ImportNodeDescriptor",
+                "required": [
+                    "namespace",
+                    "name"
+                ],
+                "properties": {
+                    "namespace": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ImportNode": {
+                "type": "object",
+                "title": "ImportNode",
+                "required": [
+                    "id",
+                    "settings",
+                    "next"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "descriptor": {
+                        "$ref": "#/components/schemas/ImportNodeDescriptor"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "position": {
+                        "$ref": "#/components/schemas/NodePosition"
+                    },
+                    "settings": {
+                        "type": "object"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "next": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "ImportFlow": {
+                "type": "object",
+                "title": "ImportFlow",
+                "required": [
+                    "name",
+                    "nodes"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "settings": {
+                        "$ref": "#/components/schemas/WorkflowSettings"
+                    },
+                    "nodes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ImportNode"
+                        }
+                    }
+                }
+            },
+            "FlowImportResponse": {
+                "type": "object",
+                "title": "FlowImportResponse",
+                "required": [
+                    "id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    }
+                }
+            },
+            "CredentialCreateDto": {
+                "type": "object",
+                "title": "CredentialCreateDto",
+                "required": [
+                    "type",
+                    "name",
+                    "scope",
+                    "data"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "scope": {
+                        "type": "string",
+                        "enum": [
+                            "USER",
+                            "ROLE",
+                            "GLOBAL"
+                        ]
+                    },
+                    "role": {
+                        "$ref": "#/components/schemas/Role"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/JsonElement"
+                    }
+                }
+            },
+            "CredentialDto": {
+                "type": "object",
+                "title": "CredentialDto",
+                "required": [
+                    "id",
+                    "type",
+                    "scope",
+                    "name",
+                    "data"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "scope": {
+                        "type": "string",
+                        "enum": [
+                            "USER",
+                            "ROLE",
+                            "GLOBAL"
+                        ]
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "data": {
+                        "type": "object"
+                    }
+                }
+            },
+            "PotentiallyAccessibleCredentialDto": {
+                "type": "object",
+                "title": "PotentiallyAccessibleCredentialDto",
+                "required": [
+                    "id",
+                    "type",
+                    "scope",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "scope": {
+                        "type": "string",
+                        "enum": [
+                            "USER",
+                            "ROLE",
+                            "GLOBAL"
+                        ]
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "requiredRole": {
+                        "$ref": "#/components/schemas/Role"
+                    },
+                    "data": {
+                        "type": [
+                            "object",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "CredentialUpdateDto": {
+                "type": "object",
+                "title": "CredentialUpdateDto",
+                "required": [
+                    "name",
+                    "data"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/JsonElement"
+                    }
+                }
+            },
+            "CredentialDefinitionWithStatisticsDto": {
+                "type": "object",
+                "title": "CredentialDefinitionWithStatisticsDto",
+                "required": [
+                    "type",
+                    "displayName",
+                    "schema",
+                    "count"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string"
+                    },
+                    "displayName": {
+                        "type": "string"
+                    },
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SchemaField"
+                        }
+                    },
+                    "count": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "EnumeratedCredentialDto": {
+                "type": "object",
+                "title": "EnumeratedCredentialDto",
+                "required": [
+                    "scope",
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "scope": {
+                        "type": "string",
+                        "enum": [
+                            "USER",
+                            "ROLE",
+                            "GLOBAL"
+                        ]
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
