@@ -36,6 +36,7 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.9" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+node = { id = "com.github.node-gradle.node", version = "7.1.0" }
 
 [libraries]
 configuration-hoplite-core = { group = "com.sksamuel.hoplite", name = "hoplite-core", version.ref = "hoplite" }
@@ -112,6 +113,7 @@ libraries-jobrunr = { group = "org.jobrunr", name = "jobrunr", version.ref = "jo
 libraries-jobrunr-kotlin = { group = "org.jobrunr", name = "jobrunr-kotlin-support", version.ref = "jobrunr" }
 libraries-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.8.0" }
 libraries-kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
+libraries-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 libraries-openfeature = { group = "dev.openfeature", name = "sdk", version = "1.20.1" }
 libraries-openfeature-flagd = { group = "dev.openfeature.contrib.providers", name = "flagd", version = "0.11.20" }
 

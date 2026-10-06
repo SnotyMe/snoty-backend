@@ -25,6 +25,8 @@ export default defineNuxtConfig({
 		"@pinia/nuxt",
 	],
 
+	ssr: !isStaticFileHosting,
+
 	devtools: {
 		enabled: true,
 	},

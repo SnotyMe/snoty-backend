@@ -6,6 +6,7 @@
 		"build": "nuxt build",
 		"dev": "nuxt dev",
 		"preview": "nuxt preview",
+		"generate": "nuxt generate",
 		"postinstall": "nuxt prepare",
 		"lint": "eslint .",
 		"typecheck": "nuxt typecheck",

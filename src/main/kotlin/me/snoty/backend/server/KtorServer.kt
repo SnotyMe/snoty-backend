@@ -9,6 +9,7 @@ import io.opentelemetry.api.OpenTelemetry
 import kotlinx.serialization.json.Json
 import me.snoty.backend.authentication.AuthenticationProvider
 import me.snoty.backend.config.Config
+import me.snoty.backend.server.plugins.configureFrontend
 import me.snoty.backend.server.plugins.configureHTTP
 import me.snoty.backend.server.plugins.configureMonitoring
 import me.snoty.backend.server.plugins.configureRouting
@@ -56,6 +57,7 @@ class KtorServer(
 		authenticationProvider.configureKtor(this)
 		configureSerialization(json)
 		configureRouting(config)
+		if (config.applicationMode.withFrontend) configureFrontend()
 		addResources(koin, koin.getAll())
 	}
 }

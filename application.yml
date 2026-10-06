@@ -1,4 +1,5 @@
 environment: DEVELOPMENT
+applicationMode: FULLSTACK
 port: 8080
 publicHost: http://localhost:{{port}}
 featureFlags:
