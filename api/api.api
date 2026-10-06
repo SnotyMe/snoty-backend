@@ -159,18 +159,29 @@ public final class me/snoty/backend/build/BuildInfo$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class me/snoty/backend/config/ApplicationMode : java/lang/Enum {
+	public static final field BACKEND Lme/snoty/backend/config/ApplicationMode;
+	public static final field FULLSTACK Lme/snoty/backend/config/ApplicationMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getWithFrontend ()Z
+	public static fun valueOf (Ljava/lang/String;)Lme/snoty/backend/config/ApplicationMode;
+	public static fun values ()[Lme/snoty/backend/config/ApplicationMode;
+}
+
 public final class me/snoty/backend/config/Config {
-	public fun <init> (Lme/snoty/backend/config/ServerConfig;SSLjava/lang/String;Ljava/util/List;Lme/snoty/backend/config/Environment;)V
-	public synthetic fun <init> (Lme/snoty/backend/config/ServerConfig;SSLjava/lang/String;Ljava/util/List;Lme/snoty/backend/config/Environment;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lme/snoty/backend/config/ServerConfig;SSLme/snoty/backend/config/ApplicationMode;Ljava/lang/String;Ljava/util/List;Lme/snoty/backend/config/Environment;)V
+	public synthetic fun <init> (Lme/snoty/backend/config/ServerConfig;SSLme/snoty/backend/config/ApplicationMode;Ljava/lang/String;Ljava/util/List;Lme/snoty/backend/config/Environment;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lme/snoty/backend/config/ServerConfig;
 	public final fun component2 ()S
 	public final fun component3 ()S
-	public final fun component4 ()Ljava/lang/String;
-	public final fun component5 ()Ljava/util/List;
-	public final fun component6 ()Lme/snoty/backend/config/Environment;
-	public final fun copy (Lme/snoty/backend/config/ServerConfig;SSLjava/lang/String;Ljava/util/List;Lme/snoty/backend/config/Environment;)Lme/snoty/backend/config/Config;
-	public static synthetic fun copy$default (Lme/snoty/backend/config/Config;Lme/snoty/backend/config/ServerConfig;SSLjava/lang/String;Ljava/util/List;Lme/snoty/backend/config/Environment;ILjava/lang/Object;)Lme/snoty/backend/config/Config;
+	public final fun component4 ()Lme/snoty/backend/config/ApplicationMode;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/util/List;
+	public final fun component7 ()Lme/snoty/backend/config/Environment;
+	public final fun copy (Lme/snoty/backend/config/ServerConfig;SSLme/snoty/backend/config/ApplicationMode;Ljava/lang/String;Ljava/util/List;Lme/snoty/backend/config/Environment;)Lme/snoty/backend/config/Config;
+	public static synthetic fun copy$default (Lme/snoty/backend/config/Config;Lme/snoty/backend/config/ServerConfig;SSLme/snoty/backend/config/ApplicationMode;Ljava/lang/String;Ljava/util/List;Lme/snoty/backend/config/Environment;ILjava/lang/Object;)Lme/snoty/backend/config/Config;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getApplicationMode ()Lme/snoty/backend/config/ApplicationMode;
 	public final fun getCorsHosts ()Ljava/util/List;
 	public final fun getEnvironment ()Lme/snoty/backend/config/Environment;
 	public final fun getMonitoringPort ()S

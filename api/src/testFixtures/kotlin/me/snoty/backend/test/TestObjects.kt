@@ -1,5 +1,6 @@
 package me.snoty.backend.test
 
+import me.snoty.backend.config.ApplicationMode
 import me.snoty.backend.config.Config
 import me.snoty.backend.config.Environment
 import me.snoty.backend.utils.bson.bsonTypeClassMap
@@ -22,6 +23,7 @@ import kotlin.reflect.KClass
 val TestConfig = Config(
 	port = 8080,
 	environment = Environment.TEST,
+	applicationMode = ApplicationMode.BACKEND,
 	publicHost = "http://localhost:8080",
 )
 
@@ -37,6 +39,7 @@ class TestConfigBuilder(block: TestConfigBuilder.() -> Unit) {
 	fun build() = Config(
 		port = port,
 		environment = environment,
+		applicationMode = ApplicationMode.BACKEND,
 		publicHost = publicHost,
 	)
 }

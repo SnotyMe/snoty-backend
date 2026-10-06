@@ -9,6 +9,7 @@ dependencies {
 	libs.plugins.kotlin.jvm.get().apply {
 		implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$version")
 	}
+	implementation(libs.libraries.kotlinx.serialization.json)
 	libs.plugins.kotlin.kover.get().apply {
 		implementation("org.jetbrains.kotlinx:kover-gradle-plugin:$version")
 	}
@@ -27,6 +28,9 @@ dependencies {
 	}
 	libs.plugins.buildinfo.get().apply {
 		implementation("io.github.simulatan:gradle-buildinfo-plugin:$version")
+	}
+	libs.plugins.node.get().apply {
+		implementation("com.github.node-gradle.node:com.github.node-gradle.node.gradle.plugin:$version")
 	}
 }
 
