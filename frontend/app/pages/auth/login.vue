@@ -52,13 +52,14 @@ const fields: AuthFormField[] = [
 	},
 ]
 
-const { authMetadata, login } = useAuth()
+const authStore = useAuth()
+const { authMetadata } = storeToRefs(authStore)
 
 const route = useRoute()
 const backlink = route.query.to as string | undefined
 
 const providers = computed(() => {
-	const metadata = authMetadata
+	const metadata = authMetadata.value
 	if (!metadata) return
 
 	switch (metadata?.adapter) {
@@ -77,7 +78,7 @@ const schema = z.object({
 type Schema = z.output<typeof schema>
 
 async function onSubmit(payload: FormSubmitEvent<Schema>) {
-	const authMetadataValue = authMetadata
+	const authMetadataValue = authMetadata.value
 	if (!authMetadataValue?.publicClientId) return
 
 	const params = new URLSearchParams({
@@ -94,7 +95,7 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
 			body: params,
 		},
 	).then(res => res.json())
-	await login(response, backlink)
+	await authStore.login(response, backlink)
 }
 </script>
 
