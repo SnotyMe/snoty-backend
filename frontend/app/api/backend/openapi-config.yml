@@ -1,0 +1,6 @@
+generatorName: typescript-fetch
+inputSpec: ./app/api/backend/openapi.json
+outputDir: ./app/api/backend/generated
+modelPropertyNaming: original
+typeMappings:
+  DateTime: Date

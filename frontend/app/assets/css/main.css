@@ -1,0 +1,84 @@
+@layer scalar-base, scalar-theme, scalar-config, theme, base, components, utilities;
+
+@import "tailwindcss";
+@import "@nuxt/ui";
+@import "@vue-flow/core/dist/style.css";
+
+@theme static {
+  --font-sans: 'Public Sans', sans-serif;
+
+	--flow-control-padding: 0.5em;
+	--flow-control-button-size: 1.25em;
+	--flow-resize-thickness: 10px;
+
+	--color-log-trace: var(--ui-bg-inverted);
+	--color-log-debug: var(--ui-bg-inverted);
+	--color-log-info: var(--ui-success);
+	--color-log-warn: var(--ui-warning);
+	--color-log-error: var(--ui-error);
+
+	--animate-highlight: highlight 1.25s ease-in-out;
+	@keyframes highlight {
+		0%, 100% {
+			box-shadow: 0 0 0 light-dark(var(--color-surface-900), var(--color-surface-100));
+		}
+		50% {
+			box-shadow: 0 0 3em light-dark(var(--color-surface-900), var(--color-surface-100));
+		}
+	}
+}
+
+.vue-flow__panel {
+	margin: var(--flow-control-padding);
+}
+
+.vue-flow__resize-control {
+	opacity: 0;
+}
+
+.vue-flow .vue-flow__resize-control.line.left, .vue-flow .vue-flow__resize-control.line.right {
+	width: var(--flow-resize-thickness);
+}
+
+.vue-flow .vue-flow__resize-control.line.top, .vue-flow .vue-flow__resize-control.line.bottom {
+	height: var(--flow-resize-thickness);
+}
+
+.vue-flow .vue-flow__resize-control.handle {
+	width: var(--flow-resize-thickness);
+	height: var(--flow-resize-thickness);
+}
+
+.vue-flow__controls-button {
+	width: var(--flow-control-button-size);
+	height: var(--flow-control-button-size);
+	box-shadow: 0 0 1em 0 var(--ui-bg);
+	box-sizing: content-box;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	user-select: none;
+	@apply bg-muted hover:bg-accented fill-inverted not-last-of-type:border-b not-last-of-type:border-b-accented rounded-none p-1;
+}
+
+.vue-flow__controls-button:disabled {
+	pointer-events: none;
+}
+
+.vue-flow__controls-button svg {
+	@apply size-3;
+}
+
+.vue-flow__controls-button {
+	/* compen */
+	@apply size-5;
+}
+
+.vue-flow__controls-button:disabled svg {
+	fill-opacity: 0.4;
+}
+
+.shadow-lg-center {
+	box-shadow: 0 0 25px -3px var(--tw-shadow-color, oklab(from rgb(0 0 0 / 0.1) l a b / 70%)), 0 4px 6px -4px var(--tw-shadow-color, oklab(from rgb(0 0 0 / 0.1) l a b / 70%))
+}

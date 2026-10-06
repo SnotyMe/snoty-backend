@@ -1,0 +1,29 @@
+# editorconfig.org
+root = true
+
+[*]
+indent_size = 3
+indent_style = tab
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[{*.ts,*.js}]
+ij_typescript_spaces_within_object_literal_braces = true
+
+[*.yml]
+indent_size = 2
+indent_style = space
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.json5]
+indent_size = 2
+indent_style = space
+ij_json_keep_trailing_comma = true
+
+[openapi.json]
+indent_size = 4
+indent_style = space

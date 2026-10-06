@@ -1,0 +1,12 @@
+diff --git a/app/api/backend/generated/runtime.ts b/app/api/backend/generated/runtime.ts
+--- a/app/api/backend/generated/runtime.ts
++++ b/app/api/backend/generated/runtime.ts
+@@ -132,7 +132,7 @@ export class BaseAPI {
+         return BaseAPI.jsonRegex.test(mime);
+     }
+
+-    protected async request(context: RequestOpts, initOverrides?: RequestInit | InitOverrideFunction): Promise<Response> {
++    async request(context: RequestOpts, initOverrides?: RequestInit | InitOverrideFunction): Promise<Response> {
+         const { url, init } = await this.createFetchParams(context, initOverrides);
+         const response = await this.fetchApi(url, init);
+         if (response && (response.status >= 200 && response.status < 300)) {
