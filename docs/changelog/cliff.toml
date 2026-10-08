@@ -2,8 +2,12 @@
 # https://git-cliff.org/docs/configuration
 
 [changelog]
-header = "<!-- IMPORTANT: fix incorrect usernames in the changelog!! -->"
 body = """
+{%- macro commit_line(commit) -%}
+{%- set repo = remote.github.owner ~ "/" ~ remote.github.repo -%}
+{{ commit.message | replace_regex(from="([ \\(])\\#([0-9]+)", to="${1}" ~ repo ~ "#${2}") }} - by @{{ commit.remote.username }} in {{ repo }}@{{ commit.id }}
+{%- endmacro -%}
+
 ## Notable Changes
 None.
 
@@ -33,12 +37,12 @@ None.
         {%- if commit.scope == "deps" -%}{% continue %}{%- endif -%}
         {%- if commit.scope | truncate(length=1) == commit.scope | upper | truncate(length=1) -%}{% continue %}{%- endif %}
         - {% if commit.breaking %}[**breaking**] {% endif %}**{{commit.scope}}**: \
-            {{ commit.message }} - by @{{ commit.author.name }} in {{ commit.id }}
+            {{ self::commit_line(commit=commit) }}
     {%- endfor %}
     {% for commit in commits -%}
         {%- if not commit.scope -%}
             - {% if commit.breaking %}[**breaking**] {% endif %}\
-                {{ commit.message }} - by @{{ commit.author.name }} in {{ commit.id }}
+                {{ self::commit_line(commit=commit) }}
         {% endif -%}
     {%- endfor -%}
     {%- if loop.last %}{% else %}\n{% endif %}\
