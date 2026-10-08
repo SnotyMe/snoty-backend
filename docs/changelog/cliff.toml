@@ -5,7 +5,11 @@
 body = """
 {%- macro commit_line(commit) -%}
 {%- set repo = remote.github.owner ~ "/" ~ remote.github.repo -%}
-{{ commit.message | replace_regex(from="([ \\(])\\#([0-9]+)", to="${1}" ~ repo ~ "#${2}") }} - by @{{ commit.remote.username }} in {{ repo }}@{{ commit.id }}
+{%- if extra.explicit_repo -%}
+{{ commit.message | replace_regex(from="([ \\(])\\#([0-9]+)", to="${1}" ~ repo ~ "#${2}") }}
+{%- else -%}
+{{ commit.message }}
+{%- endif %} - by @{{ commit.remote.username }} in {% if extra.explicit_repo %}{{ repo }}@{% endif %}{{ commit.id }}
 {%- endmacro -%}
 
 ## Notable Changes
