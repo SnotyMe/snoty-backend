@@ -29,8 +29,8 @@ const flowState = useFlowState()
 const open = defineModel<FlowDrawer | undefined>()
 const query = ref("")
 
-const { metadata } = useNodeMetadataStore()
-const items = computed(() => metadata
+const { metadata } = storeToRefs(useNodeMetadataStore())
+const items = computed(() => metadata.value
 	?.filter(({ metadata }) => metadata.displayName.toLowerCase().includes(query.value.toLowerCase()))
 	?.map(({ metadata }) => ({
 		label: metadata.displayName,
