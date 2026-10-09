@@ -1,0 +1,34 @@
+name: Determine Snapshot Version
+
+on:
+  workflow_call:
+    outputs:
+      version:
+        description: 'The full snapshot version (branch + 7-character commit SHA)'
+        value: ${{ jobs.determine-version.outputs.version }}
+      organization:
+        description: 'The GitHub user or organization name in lowercase'
+        value: ${{ jobs.determine-version.outputs.organization }}
+
+jobs:
+  determine-version:
+    runs-on: ubuntu-latest
+
+    outputs:
+      version: ${{ steps.determine-version.outputs.version }}
+      organization: ${{ steps.determine-version.outputs.organization }}
+
+    steps:
+      - name: Determine version
+        id: determine-version
+        run: |
+          branch="${GITHUB_REF#refs/heads/}"
+          branch_tag="${branch//\//-}"
+          sha_short="${GITHUB_SHA::7}"
+          version="${branch_tag}-${sha_short}"
+          organization="${GITHUB_REPOSITORY##*/}"
+          
+          echo "version=${version}" >> $GITHUB_OUTPUT
+          echo "organization=${organization}" >> $GITHUB_OUTPUT
+
+          echo "**Version**: \`${version}\`" >> $GITHUB_STEP_SUMMARY
