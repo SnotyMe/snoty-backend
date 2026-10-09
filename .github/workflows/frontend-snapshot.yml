@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   get-version:
-    uses: ./.github/actions/determine-version.yml
+    uses: ./.github/workflows/determine-version.yml
 
   build:
     runs-on: ubuntu-latest
