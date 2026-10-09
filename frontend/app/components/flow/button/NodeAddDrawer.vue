@@ -17,10 +17,11 @@ de:
 import FlowMenuDrawer from "~/components/flow/button/FlowMenuDrawer.vue"
 import { FlowDrawer } from "~/types/drawer"
 import NodeFieldRow from "~/components/node/NodeFieldRow.vue"
-import type { NodeMetadata } from "~/api/backend/generated"
+import { type NodeMetadata, NodeMetadataStereotypeEnum } from "~/api/backend/generated"
 import { defaultRecordFromSchema } from "~/utils/node"
 import { useFlowNodes } from "~/composables/node/useFlowNodes"
 import { useFlowState } from "~/composables/flow/useFlowState.ts"
+import PillFilter from "~/components/ui/PillFilter.vue"
 
 const { t } = useI18n({ useScope: "local" })
 const { createNode } = useFlowNodes()
@@ -29,9 +30,29 @@ const flowState = useFlowState()
 const open = defineModel<FlowDrawer | undefined>()
 const query = ref("")
 
+const FILTER_ALL = "all"
+
+const explicitStereotypeFilter = ref()
+const stereotypeFilter = computed({
+	get: () => explicitStereotypeFilter.value
+		?? (flowState.nodes.value.length > 0 ? FILTER_ALL : NodeMetadataStereotypeEnum.Start),
+	set: it => explicitStereotypeFilter.value = it,
+})
+const stereotypeItems = [
+	{ label: "All", value: FILTER_ALL },
+	...Object.entries(NodeMetadataStereotypeEnum)
+	// eslint-disable-next-line array-element-newline
+		.map(([label, value]) => ({ label, value })),
+]
+
 const { metadata } = storeToRefs(useNodeMetadataStore())
 const items = computed(() => metadata.value
-	?.filter(({ metadata }) => metadata.displayName.toLowerCase().includes(query.value.toLowerCase()))
+	?.filter(({ metadata }) => {
+		const requiredStereotype = stereotypeFilter.value
+
+		return metadata.displayName.toLowerCase().includes(query.value.toLowerCase())
+			&& (requiredStereotype == FILTER_ALL || metadata.stereotype == stereotypeFilter.value)
+	})
 	?.map(({ metadata }) => ({
 		label: metadata.displayName,
 		icon: metadata.icon,
@@ -87,6 +108,12 @@ async function addNode(metadata: NodeMetadata) {
 				/>
 			</template>
 		</UInput>
+		<PillFilter
+			v-model="stereotypeFilter"
+			:items="stereotypeItems"
+			class="block"
+			:ui="{ trigger: 'first-of-type:max-w-min' }"
+		/>
 		<UAccordion
 			:items="items"
 			class="flex-1 overflow-y-auto"

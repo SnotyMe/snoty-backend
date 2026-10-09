@@ -3,15 +3,8 @@ import { ConnectionMode, useVueFlow, VueFlow } from "@vue-flow/core"
 import { Background } from "@vue-flow/background"
 import Node from "~/components/node/Node.vue"
 import { useNodeMetadataStore } from "~/stores/nodeMetadata"
-import { ControlButton, Controls } from "@vue-flow/controls"
-import { FlowDrawer } from "~/types/drawer"
-import { useElkLayout } from "~/composables/flow/useElkLayout"
-import NodeAddDrawer from "~/components/flow/button/NodeAddDrawer.vue"
-import FlowJournalDrawer from "~/components/flow/button/FlowJournalDrawer.vue"
 import { useFlow } from "~/composables/flow/useFlow"
-import FlowExportButton from "~/components/flow/button/FlowExportButton.vue"
 import { FLOW_ID } from "~/utils/flowContext"
-import { nextTick } from "#imports"
 import { useOnce } from "~/composables/utils/useOnce"
 import { useFlowEdges } from "~/composables/edge/useFlowEdges.ts"
 import { snotyNodeToVueFlowNode } from "~/utils/vueFlow.ts"
@@ -25,7 +18,7 @@ const route = useRoute()
 const id = route.params.id as string
 provide(FLOW_ID, id)
 
-const { getFlow, renameFlow } = useFlow(id)
+const { getFlow } = useFlow(id)
 const { state: flow, execute: loadFlow, isReady: flowDone } = useAsyncState(getFlow, null, { shallow: false })
 const { connect, disconnect } = provideFlowExecutionSse(id)
 
@@ -33,10 +26,8 @@ useHead({
 	title: () => flow.value?.name,
 })
 
-const { layout } = useElkLayout()
-const { onNodesInitialized, fitView: fitViewImpl } = useVueFlow()
-const fitView = () => fitViewImpl({ padding: "10%" })
-const fitViewOnce = useOnce(fitView)
+const { onNodesInitialized, fitView } = useVueFlow()
+const fitViewOnce = useOnce(() => fitView({ padding: "10%" }))
 
 const { nodes, edges } = provideFlowState()
 
@@ -66,21 +57,6 @@ onUnmounted(async () => {
 	disconnect()
 })
 
-const openDrawer = ref<FlowDrawer | undefined>()
-function toggleDrawer(drawer: FlowDrawer) {
-	openDrawer.value = openDrawer.value === drawer ? undefined : drawer
-}
-
-async function doLayoutGraph(direction: "LR" | "TB") {
-	const layouted = await layout?.(nodes.value, edges.value, direction)
-	if (layouted) {
-		nodes.value = layouted
-	}
-
-	await nextTick(() => fitView())
-}
-const { executeImmediate: layoutGraph } = useAsyncState(doLayoutGraph, null, { immediate: false })
-
 const progress = computed(() => {
 	const steps = [
 		flowDone,
@@ -100,55 +76,7 @@ const progress = computed(() => {
 		:default-edge-options="{ animated: true }"
 		:connection-mode="ConnectionMode.Strict"
 	>
-		<Controls :show-interactive="false">
-			<template #icon-zoom-in>
-				<UIcon name="i-lucide-plus"/>
-			</template>
-			<template #icon-zoom-out>
-				<UIcon name="i-lucide-minus"/>
-			</template>
-			<template #icon-fit-view>
-				<UIcon name="i-lucide-scan"/>
-			</template>
-			<ControlButton @click="layoutGraph('LR')">
-				<UIcon name="i-lucide-network"/>
-			</ControlButton>
-		</Controls>
-		<NodeAddDrawer v-model="openDrawer"/>
-		<FlowJournalDrawer v-if="flow" v-model="openDrawer" :flow-id="flow.id"/>
-		<Controls
-			position="top-left"
-			:show-zoom="false"
-			:show-fit-view="false"
-			:show-interactive="false"
-		>
-			<div class="flex items-center gap-2">
-				<UDashboardSidebarToggle/>
-				<ControlButton @click="toggleDrawer(FlowDrawer.NodeAdd)">
-					<UIcon name="i-lucide-plus"/>
-				</ControlButton>
-				<UInput
-					v-if="flow"
-					v-model="flow.name"
-					variant="ghost"
-					color="primary"
-					@change="renameFlow(flow.name)"
-				/>
-			</div>
-		</Controls>
-		<Controls
-			position="top-right"
-			:show-zoom="false"
-			:show-fit-view="false"
-			:show-interactive="false"
-		>
-			<div>
-				<ControlButton @click="toggleDrawer(FlowDrawer.Journal)">
-					<UIcon :name="openDrawer === FlowDrawer.Journal ? `i-lucide-scroll-text` : `i-lucide-scroll`"/>
-				</ControlButton>
-				<FlowExportButton v-if="flow" :flow="flow"/>
-			</div>
-		</Controls>
+		<FlowControls v-if="flow" v-model="flow"/>
 		<template #edge-default="edge">
 			<EdgeButton v-bind="edge"/>
 		</template>
