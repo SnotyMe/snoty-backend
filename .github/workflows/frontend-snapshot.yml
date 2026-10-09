@@ -31,4 +31,4 @@ jobs:
         with:
           context: "{{defaultContext}}:frontend"
           push: true
-          tags: ${{ needs.get-version.outputs.organization }}/snoty-frontend-snapshot:${{ needs.get-version.outputs.version }}
+          tags: ghcr.io/${{ needs.get-version.outputs.organization }}/snoty-frontend-snapshot:${{ needs.get-version.outputs.version }}
